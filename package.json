@@ -1,0 +1,22 @@
+{
+  "name": "wmail",
+  "version": "1.0.0",
+  "description": "OSX app wrapper for Google Inbox and Google Mail",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js"
+  },
+  "keywords": [],
+  "author": "Thomas Beverley",
+  "license": "BSD-2-Clause",
+  "repository": "https://github.com/Thomas101/wmail",
+  "devDependencies": {
+    "electron-packager": "^5.2.0",
+    "electron-prebuilt": "^0.36.2"
+  },
+  "dependencies": {
+    "electron-google-oauth": "^1.1.4",
+    "electron-rpc": "^1.0.3",
+    "googleapis": "^2.1.7"
+  }
+}
