@@ -1,0 +1,1 @@
+electron-packager . "WMail" --platform=darwin --arch=all --version=0.36.2 --app-bundle-id="tombeverley.wmail" --app-version="1.0.0" --icon="icons/app.icns" --overwrite

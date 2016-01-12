@@ -1,0 +1,31 @@
+#mailboxes {
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+}
+
+#mailboxes .mailbox {
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	left: auto;
+	right: -10000px;
+	width: 100%;
+	height: 100%;
+}
+
+#mailboxes .mailbox.active {
+	left: 0px;
+	right: 0px;
+	display: block;
+}
+
+#mailboxes .inbox-counter {
+	position: absolute;
+	top: 0px;
+	right: -10000px;
+	width: 10px;
+	height: 10px;
+}
