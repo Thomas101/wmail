@@ -4,7 +4,7 @@ A Mac app wrapper around Google Inbox and GMail. Multiple account support, unrea
 
 [Download the latest version](https://raw.githubusercontent.com/Thomas101/wmail/master/releases/WMail_1_0_0.zip)
 
-[Found an issue or request a feature](https://github.com/Thomas101/wmail/issues)
+[Raise an issue or request a feature](https://github.com/Thomas101/wmail/issues)
 
 ![Screenshot](https://raw.githubusercontent.com/Thomas101/wmail/master/screenshot.png "Screenshot")
 
