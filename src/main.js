@@ -7,6 +7,7 @@ const shell = require('shell')
 const GoogleAuthServer = require('./auth/GoogleAuthServer')
 const CONSTANTS = require('./constants')
 const update = require('./update')
+const analytics = require('./analytics')
 
 let mailboxWindow
 let googleAuth
@@ -125,4 +126,8 @@ app.on('ready', function() {
 
   // Save some analytics
   update.checkNow(mailboxWindow)
+  analytics.appOpened()
+  setInterval(() => {
+    analytics.appHeartbeat()
+  }, 1000 * 60 * 5) // 5 mins
 })
