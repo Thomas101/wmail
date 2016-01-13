@@ -15,7 +15,7 @@ class Update {
 		fetch(constants.UPDATE_CHECK_URL).then((res) => {
 			return res.json()
 		}).then((json) => {
-			if (compareVersion('1.2.3', pkg.version) >= 1) {
+			if (compareVersion(json.version, pkg.version) >= 1) {
 				dialog.showMessageBox(window, {
 					type: 'question',
 					title:'Updates Available',

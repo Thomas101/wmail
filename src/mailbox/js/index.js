@@ -4,6 +4,7 @@ const MailboxList = require('./js/MailboxList')
 const Mailboxes = require('./js/Mailboxes')
 const MMailbox = require('./js/models/MMailbox')
 const GoogleMailboxSyncManger = require('./js/sync/GoogleMailboxSyncManager')
+const credentials = require('../credentials')
 
 const remote = require('remote');
 const app = remote.require('app');

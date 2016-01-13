@@ -89,7 +89,7 @@ class GoogleMailboxSync {
 					reject("Local - Mailbox has no email address")
 				} else {
 					let payload = { userId:mailbox.email, q:'label:inbox label:unread', auth:this.auth }
-					gmail.users.messages.list(payload, function(err, response) {
+					gmail.users.threads.list(payload, function(err, response) {
 						if (err) {
 							reject(err)
 						} else {
