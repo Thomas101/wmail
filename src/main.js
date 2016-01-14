@@ -45,7 +45,7 @@ app.on('ready', function() {
   mailboxWindow.loadURL('file://' + __dirname + '/mailbox/index.html')
   googleAuth = new GoogleAuthServer(mailboxWindow.webContents)
 
-  // Setup the menu
+  // Setup the menu & Shortcuts
   Menu.setApplicationMenu(appMenu.build({
     fullQuit : () => { fullQuit = true; app.quit() },
     fullscreenToggle : () => { mailboxWindow.setFullScreen(!mailboxWindow.isFullScreen()) },
@@ -54,9 +54,11 @@ app.on('ready', function() {
     learnMore : () => { shell.openExternal(CONSTANTS.GITHUB_URL) },
     bugReport : () => { shell.openExternal(CONSTANTS.GITHUB_ISSUE_URL) }
   }));
+  appMenu.bindHiddenShortcuts({
+    hide : () => { mailboxWindow.hide() }
+  })
 
   //Bind to window events
-  appMenu.bindHiddenShortcuts(mailboxWindow)
   mailboxWindow.on('close', (evt) => {
     if (mailboxWindow.isFocused() && !fullQuit) {
       evt.preventDefault()

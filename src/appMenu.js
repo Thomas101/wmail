@@ -57,11 +57,11 @@ module.exports = {
 
 	/**
 	* Binds the hidden shortcuts that don't appear in the menu to a window
-	* @param window: the window to bind to
+	* @param selectors: the selectors for the non-standard actions
 	*/
-	bindHiddenShortcuts : function(window) {
-		electronLocalshortcut.register(window, 'Cmd+H', () => {
-	    window.hide()
+	bindHiddenShortcuts : function(selectors) {
+		electronLocalshortcut.register('Cmd+H', () => {
+			selectors.hide()
 	  });
 	}
 }
