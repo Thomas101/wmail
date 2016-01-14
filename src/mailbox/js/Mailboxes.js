@@ -40,7 +40,7 @@ class Mailboxes {
 		var src
 		switch(mailbox.type) {
 			case 'ginbox': src='https://inbox.google.com'; break;
-			case 'gmail': src='https://mail.google.com'; break;
+			case 'gmail': src='https://mail.google.com?ibxr=0'; break;
 		}
 
 		// Create dom
