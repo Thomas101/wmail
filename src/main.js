@@ -74,4 +74,9 @@ app.on('ready', function() {
   setInterval(() => {
     analytics.appHeartbeat(mailboxWindow)
   }, 1000 * 60 * 5) // 5 mins
+
+  // Send crash reports
+  process.on('uncaughtException', err => {
+    analytics.appException(mailboxWindow, 'main', err)
+  })
 })
