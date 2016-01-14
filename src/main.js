@@ -56,13 +56,13 @@ app.on('ready', function() {
   }));
 
   //Bind to window events
+  appMenu.bindHiddenShortcuts(mailboxWindow)
   mailboxWindow.on('close', (evt) => {
     if (mailboxWindow.isFocused() && !fullQuit) {
       evt.preventDefault()
       mailboxWindow.hide()
     }
   })
-
   mailboxWindow.on('closed', (evt) => {
     mailboxWindow = null
     app.quit()

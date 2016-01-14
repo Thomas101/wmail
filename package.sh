@@ -9,5 +9,6 @@ cp ./node_modules/electron-prebuilt/LICENSE ./WMail-darwin-x64/vendor-licenses/L
 cp ./node_modules/googleapis/COPYING ./WMail-darwin-x64/vendor-licenses/LICENSE.googleapis;
 cp ./node_modules/node-fetch/LICENSE.md ./WMail-darwin-x64/vendor-licenses/LICENSE.node-fetch;
 cp ./node_modules/appdirectory/LICENSE.md ./WMail-darwin-x64/vendor-licenses/LICENSE.appdirectory;
-cp ./LICENSE ./WMail-darwin-x64/LICENSE
+cp ./node_modules/electron-localshortcut/license ./WMail-darwin-x64/vendor-licenses/LICENSE.electron-localshortcut;
+cp ./LICENSE ./WMail-darwin-x64/LICENSE;
 
