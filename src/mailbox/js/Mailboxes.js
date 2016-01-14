@@ -14,6 +14,22 @@ class Mailboxes {
 	}
 
 	/***************************************************************************/
+	// Urls
+	/***************************************************************************/
+
+	/**
+	* @param url: the url to check
+	* @return true if the given url is in the trusted whitelist
+	*/
+	isWhitelistedURL(url) {
+		const whitelist = [
+			'https://inbox.google.com',
+			'https://mail.google.com'
+		]
+		return whitelist.findIndex(w => url.indexOf(w) === 0) !== -1
+	}
+
+	/***************************************************************************/
 	// Active state
 	/***************************************************************************/
 
@@ -44,7 +60,7 @@ class Mailboxes {
 		}
 
 		// Create dom
-		let webview = $([
+		const webview = $([
 			'<webview',
 				'class="mailbox"',
 				'data-id="' + mailbox.id + '"',
@@ -64,7 +80,11 @@ class Mailboxes {
 			}
 		});
 		webview.addEventListener('new-window', (event) => {
-			shell.openExternal(event.url)
+			if (this.isWhitelistedURL(event.url)) {
+				webview.src = event.url
+			} else {
+				shell.openExternal(event.url)
+			}
 		})
 
 		return webview
