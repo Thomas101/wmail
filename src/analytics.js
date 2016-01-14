@@ -46,7 +46,6 @@ class Analytics {
 			aid 			: constants.APP_ID,
 			ua 				: window.webContents.getUserAgent()
 		}, args)
-		console.log(full_args)
 
 		const qs = Object.keys(args).reduce((acc, k) => {
 			acc.push(k + '=' + encodeURIComponent(args[k]))

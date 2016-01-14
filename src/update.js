@@ -21,7 +21,7 @@ class Update {
 				dialog.showMessageBox(window, {
 					type: 'question',
 					title:'Updates Available',
-					message:'An update is available. Do you want to download it now?',
+					message:'Version ' + latestTag + ' is now available. Do you want to download it now?',
 					buttons: ['Download Now', 'Download Later'],
 					defaultId: 1,
 				}, (response) => {

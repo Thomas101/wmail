@@ -57,14 +57,14 @@ class Mailboxes {
 		// Bind events
 		webview.addEventListener('dom-ready', () => {
 			webview.insertCSS('.gb_9a { visibility: hidden !important; }')
-			webview.addEventListener('ipc-message', (event) => {
-				if (event.channel.type === 'page-click') {
-					this.app.procResyncMailboxUnread(mailbox.id)
-				}
-			});
-			webview.addEventListener('new-window', (event) => {
-				shell.openExternal(event.url)
-			})
+		})
+		webview.addEventListener('ipc-message', (event) => {
+			if (event.channel.type === 'page-click') {
+				this.app.procResyncMailboxUnread(mailbox.id)
+			}
+		});
+		webview.addEventListener('new-window', (event) => {
+			shell.openExternal(event.url)
 		})
 
 		return webview
