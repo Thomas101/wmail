@@ -1,13 +1,16 @@
+"use strict"
+
 const Menu = require('menu')
 const electronLocalshortcut = require('electron-localshortcut')
 
 module.exports = {
 	/**
 	* @param selectors: the selectors for the non-standard actions
+	* @param mailboxes: the mailboxes that the app has
 	* @return the menu
 	*/
-	build : function(selectors) {
-	  return Menu.buildFromTemplate([
+	build : function(selectors, mailboxes) {
+		return Menu.buildFromTemplate([
 	    {
 	      label: "Application",
 	      submenu: [
@@ -43,6 +46,10 @@ module.exports = {
 	      submenu: [
 	        { label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize' }
 	      ]
+	      .concat(mailboxes.length ? [{ type: "separator" }] : [])
+	      .concat(mailboxes.map((mailbox, index) => {
+	      	return { label: mailbox.name || 'Untitled', accelerator: 'CmdOrCtrl+' + (index + 1), click: () => { selectors.mailbox(mailbox.id); } }
+	      }))
 	    },
 	    {
 	      label: 'Help',

@@ -9,10 +9,12 @@ const CONSTANTS = require('./constants')
 const update = require('./update')
 const analytics = require('./analytics')
 const appMenu = require('./appMenu')
+const RPCServer = require('electron-rpc/server')
 
 let mailboxWindow
 let googleAuth
 let fullQuit = false
+let rpcServer = new RPCServer()
 
 /*****************************************************************************/
 // App Lifecycle
@@ -46,14 +48,18 @@ app.on('ready', function() {
   googleAuth = new GoogleAuthServer(mailboxWindow.webContents)
 
   // Setup the menu & Shortcuts
-  Menu.setApplicationMenu(appMenu.build({
+  const appMenuSelectors = {
     fullQuit : () => { fullQuit = true; app.quit() },
     fullscreenToggle : () => { mailboxWindow.setFullScreen(!mailboxWindow.isFullScreen()) },
     reload : () => { mailboxWindow.webContents.reload() },
     devTools : () => { mailboxWindow.webContents.openDevTools() },
     learnMore : () => { shell.openExternal(CONSTANTS.GITHUB_URL) },
-    bugReport : () => { shell.openExternal(CONSTANTS.GITHUB_ISSUE_URL) }
-  }));
+    bugReport : () => { shell.openExternal(CONSTANTS.GITHUB_ISSUE_URL) },
+    mailbox : (mailboxId) => {
+      rpcServer.send('switch-mailbox', { mailboxId:mailboxId })
+    }
+  }
+  Menu.setApplicationMenu(appMenu.build(appMenuSelectors, []))
   appMenu.bindHiddenShortcuts({
     hide : () => { mailboxWindow.hide() }
   })
@@ -70,6 +76,13 @@ app.on('ready', function() {
     app.quit()
   })
 
+  // Bind to page events
+  rpcServer.configure(mailboxWindow.webContents)
+  rpcServer.on('mailboxes-changed', (req) => {
+    Menu.setApplicationMenu(appMenu.build(appMenuSelectors, req.body.mailboxes))
+  })
+
+
   // Save some analytics
   update.checkNow(mailboxWindow)
   analytics.appOpened(mailboxWindow)
@@ -80,5 +93,6 @@ app.on('ready', function() {
   // Send crash reports
   process.on('uncaughtException', err => {
     analytics.appException(mailboxWindow, 'main', err)
+    console.error(err)
   })
 })

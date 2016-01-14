@@ -5,6 +5,7 @@ const Mailboxes = require('./js/Mailboxes')
 const MMailbox = require('./js/models/MMailbox')
 const GoogleMailboxSyncManger = require('./js/sync/GoogleMailboxSyncManager')
 const credentials = require('../credentials')
+const RPCClient = require('electron-rpc/client')
 
 const remote = require('remote');
 const app = remote.require('app');
@@ -18,20 +19,19 @@ class App {
 		this.mailboxes = new Mailboxes(this)
 
 		this.googleMailbox = new GoogleMailboxSyncManger(this)
+		this.rpcClient = new RPCClient()
 	}
 
 	load() {
-		document.addEventListener('drop', function(e) {
-			e.preventDefault()
-		})
-		document.addEventListener('dragover', function(e) {
-			e.preventDefault()
-		})
-		document.addEventListener('dragover', function(e) {
-			e.preventDefault()
+		// Bind event listeners
+		document.addEventListener('drop', evt => { evt.preventDefault() }, false)
+		document.addEventListener('dragover', evt => { evt.preventDefault() }, false)
+		document.addEventListener('dragover', evt => { evt.preventDefault() }, false)
+		this.rpcClient.on('switch-mailbox', (err, res) => {
+			this.procChangeActive(res.mailboxId)
 		})
 
-
+		// Render our first run
 		let activeId = MMailbox.ids()[0]
 		this.procChange()
 		this.procResyncRemote()
@@ -91,6 +91,11 @@ class App {
 		} else {
 			app.dock.setBadge('')
 		}
+
+		const mailboxSummaries = MMailbox.all().map(mailbox => {
+			return { id:mailbox.id, name:mailbox.name, email:mailbox.email }
+		})
+		this.rpcClient.request('mailboxes-changed', { mailboxes:mailboxSummaries })
 	}
 
 	/**
@@ -102,6 +107,16 @@ class App {
 		}
 		this.mailboxList.updateActive(mailboxId)
 		this.mailboxes.updateActive(mailboxId)
+	}
+
+	/**
+	* Execute a change active index
+	*/
+	procChangeActiveIndex(index) {
+		const ids = MMailbox.ids()
+		if (ids[index]) {
+			this.procChangeActive(ids[index])
+		}
 	}
 }
 
