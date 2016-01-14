@@ -4,17 +4,15 @@ const app = require('app')
 const BrowserWindow = require('browser-window')
 const Menu = require('menu')
 const shell = require('shell')
-const GoogleAuthServer = require('./auth/GoogleAuthServer')
+const googleAuth = require('./auth/googleAuth')
 const CONSTANTS = require('./constants')
 const update = require('./update')
 const analytics = require('./analytics')
 const appMenu = require('./appMenu')
-const RPCServer = require('electron-rpc/server')
+const ipcMain = require('electron').ipcMain
 
 let mailboxWindow
-let googleAuth
 let fullQuit = false
-let rpcServer = new RPCServer()
 
 /*****************************************************************************/
 // App Lifecycle
@@ -45,7 +43,6 @@ app.on('ready', function() {
     }
   })
   mailboxWindow.loadURL('file://' + __dirname + '/mailbox/index.html')
-  googleAuth = new GoogleAuthServer(mailboxWindow.webContents)
 
   // Setup the menu & Shortcuts
   const appMenuSelectors = {
@@ -56,7 +53,7 @@ app.on('ready', function() {
     learnMore : () => { shell.openExternal(CONSTANTS.GITHUB_URL) },
     bugReport : () => { shell.openExternal(CONSTANTS.GITHUB_ISSUE_URL) },
     mailbox : (mailboxId) => {
-      rpcServer.send('switch-mailbox', { mailboxId:mailboxId })
+      mailboxWindow.webContents.send('switch-mailbox', {mailboxId:mailboxId })
     }
   }
   Menu.setApplicationMenu(appMenu.build(appMenuSelectors, []))
@@ -77,9 +74,8 @@ app.on('ready', function() {
   })
 
   // Bind to page events
-  rpcServer.configure(mailboxWindow.webContents)
-  rpcServer.on('mailboxes-changed', (req) => {
-    Menu.setApplicationMenu(appMenu.build(appMenuSelectors, req.body.mailboxes))
+  ipcMain.on('mailboxes-changed', (evt, body) => {
+    Menu.setApplicationMenu(appMenu.build(appMenuSelectors, body.mailboxes))
   })
 
 

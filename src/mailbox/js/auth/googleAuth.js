@@ -1,6 +1,6 @@
 "use strict"
 
-const Client = require('electron-rpc/client')
+const ipcRenderer = require('electron').ipcRenderer;
 
 class GoogleAuthClient {
 	/*****************************************************************************/
@@ -8,7 +8,11 @@ class GoogleAuthClient {
 	/*****************************************************************************/
 
 	constructor() {
-		this.client = new Client()
+		this.requests = {}
+		ipcRenderer.on('auth-google-complete', (evt, body) => {
+			this.requests[body.id](evt, body)
+			delete this.requests[body.id]
+		})
 	}
 
 	/*****************************************************************************/
@@ -22,15 +26,12 @@ class GoogleAuthClient {
 	*/
 	auth(id) {
 		return new Promise((resolve, reject) => {
-			this.client.request('authgoogle', { id:id }, (err, body) => {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(body)
-				}
-			})
+			this.requests[id] = (evt, body) => {
+				resolve(body.auth)
+			}
+			ipcRenderer.send('auth-google', { id:id })
 		})
 	}
 }
 
-module.exports = GoogleAuthClient
+module.exports = new GoogleAuthClient()

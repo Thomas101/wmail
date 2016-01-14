@@ -5,7 +5,8 @@ const Mailboxes = require('./js/Mailboxes')
 const MMailbox = require('./js/models/MMailbox')
 const GoogleMailboxSyncManger = require('./js/sync/GoogleMailboxSyncManager')
 const credentials = require('../credentials')
-const RPCClient = require('electron-rpc/client')
+const ipcRenderer = require('electron').ipcRenderer;
+
 
 const remote = require('remote');
 const app = remote.require('app');
@@ -19,7 +20,6 @@ class App {
 		this.mailboxes = new Mailboxes(this)
 
 		this.googleMailbox = new GoogleMailboxSyncManger(this)
-		this.rpcClient = new RPCClient()
 	}
 
 	load() {
@@ -27,8 +27,8 @@ class App {
 		document.addEventListener('drop', evt => { evt.preventDefault() }, false)
 		document.addEventListener('dragover', evt => { evt.preventDefault() }, false)
 		document.addEventListener('dragover', evt => { evt.preventDefault() }, false)
-		this.rpcClient.on('switch-mailbox', (err, res) => {
-			this.procChangeActive(res.mailboxId)
+		ipcRenderer.on('switch-mailbox', (evt, body) => {
+  		this.procChangeActive(body.mailboxId)
 		})
 
 		// Render our first run
@@ -92,10 +92,11 @@ class App {
 			app.dock.setBadge('')
 		}
 
-		const mailboxSummaries = MMailbox.all().map(mailbox => {
-			return { id:mailbox.id, name:mailbox.name, email:mailbox.email }
+		ipcRenderer.send('mailboxes-changed', {
+			mailboxes : MMailbox.all().map(mailbox => {
+				return { id:mailbox.id, name:mailbox.name, email:mailbox.email }
+			})
 		})
-		this.rpcClient.request('mailboxes-changed', { mailboxes:mailboxSummaries })
 	}
 
 	/**

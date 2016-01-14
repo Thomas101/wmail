@@ -1,6 +1,6 @@
 #!/bin/bash
 
-electron-packager . "WMail" --platform=darwin --arch=all --version=0.36.2 --app-bundle-id="tombeverley.wmail" --app-version="1.1.1" --icon="icons/app.icns" --overwrite --ignore="/release/|/icons/|package.sh|screenshot.png|README.md";
+electron-packager . "WMail" --platform=darwin --arch=all --version=0.36.2 --app-bundle-id="tombeverley.wmail" --app-version="1.1.2" --icon="icons/app.icns" --overwrite --ignore="/release/|/icons/|package.sh|screenshot.png|README.md";
 mkdir ./WMail-darwin-x64/vendor-licenses;
 mv ./WMail-darwin-x64/LICENSES.chromium.html ./WMail-darwin-x64/vendor-licenses/LICENSES.chromium.html;
 mv ./WMail-darwin-x64/LICENSE ./WMail-darwin-x64/vendor-licenses/LICENSE.electron;

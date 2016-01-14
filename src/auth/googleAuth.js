@@ -1,21 +1,18 @@
 "use strict"
 
-const Server = require('electron-rpc/server')
+const ipcMain = require('electron').ipcMain;
 const electronGoogleOauth = require('electron-google-oauth')  
 const credentials = require('../credentials')
 
-class GoogleAuthServer {
+class GoogleAuth {
 	/*****************************************************************************/
 	// Lifecycle
 	/*****************************************************************************/
 
-	/**
-	* @param webContent: the webcontent to listen on
-	*/
-	constructor(webContent) {
-		this.app = new Server()
-		this.app.configure(webContent)
-		this.app.on('authgoogle', (req, done) => this.handleAuthGoogle(req, done))
+	constructor() {
+		ipcMain.on('auth-google', (evt, body) => {
+			this.handleAuthGoogle(evt, body)
+		})
 	}
 
 	/*****************************************************************************/
@@ -24,10 +21,10 @@ class GoogleAuthServer {
 
 	/**
 	* Handles the oauth request
-	* @param req: the incoming request
-	* @param done: the function to call on completion
+	* @param evt: the incoming event
+	* @param body: the body sent to us
 	*/
-	handleAuthGoogle(req, done) {
+	handleAuthGoogle(evt, body) {
 		electronGoogleOauth(undefined, {
         useContentSize  					: true,
         center 										: true,
@@ -38,7 +35,7 @@ class GoogleAuthServer {
         autoHideMenuBar 					: true,
         webPreferences						: {
           nodeIntegration 					: false,
-          partition 								: "persist:" + req.body.id
+          partition 								: "persist:" + body.id
         }
     }).getAccessToken(
 			[
@@ -50,9 +47,12 @@ class GoogleAuthServer {
 			credentials.GOOGLE_CLIENT_ID,
 			credentials.GOOGLE_CLIENT_SECRET
 		).then(auth => {
-			done(null, auth)
+			evt.sender.send('auth-google-complete', {
+				id : body.id,
+				auth : auth
+			})
 		})
 	}
 }
 
-module.exports = GoogleAuthServer
+module.exports = new GoogleAuth()
