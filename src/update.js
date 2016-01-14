@@ -15,7 +15,9 @@ class Update {
 		fetch(constants.UPDATE_CHECK_URL).then((res) => {
 			return res.json()
 		}).then((json) => {
-			if (compareVersion(json.version, pkg.version) >= 1) {
+			let latestTag = json[0].tag_name
+			latestTag = latestTag.indexOf('v' === 0) ? latestTag.substr(1) : latestTag
+			if (compareVersion(latestTag, pkg.version) >= 1) {
 				dialog.showMessageBox(window, {
 					type: 'question',
 					title:'Updates Available',

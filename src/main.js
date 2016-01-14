@@ -70,8 +70,8 @@ app.on('ready', function() {
 
   // Save some analytics
   update.checkNow(mailboxWindow)
-  analytics.appOpened()
+  analytics.appOpened(mailboxWindow)
   setInterval(() => {
-    analytics.appHeartbeat()
+    analytics.appHeartbeat(mailboxWindow)
   }, 1000 * 60 * 5) // 5 mins
 })
