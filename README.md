@@ -2,7 +2,9 @@
 
 A Mac app wrapper around Google Inbox and GMail. Multiple account support, unread notifications and more. Makes using Google Mailboxes feel that little more native on osx.
 
-[Download the latest version (1.1.2)](https://github.com/Thomas101/wmail/releases/download/v1.1.2/WMail_1_1_2.zip)
+[Download the latest version (1.1.3)](https://github.com/Thomas101/wmail/releases/download/v1.1.3/WMail_1_1_3.zip)
+
+[View all releases](https://github.com/Thomas101/wmail/releases)
 
 [Raise an issue or request a feature](https://github.com/Thomas101/wmail/issues)
 
