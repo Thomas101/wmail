@@ -48,7 +48,6 @@ class Analytics {
 			acc.push(k + '=' + encodeURIComponent(full_args[k]))
 			return acc
 		}, []).join('&')
-		console.log(qs)
 
 		const url = 'https://www.google-analytics.com/collect?' + qs
 		return fetch(url, { method: 'post' })
