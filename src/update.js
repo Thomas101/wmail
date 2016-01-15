@@ -33,7 +33,7 @@ class Update {
 					defaultId: 1,
 				}, (response) => {
 					if (response === 0) {
-						shell.openExternal(json.download_url)
+						shell.openExternal(constants.GITHUB_URL)
 					}
 				})
 			}
