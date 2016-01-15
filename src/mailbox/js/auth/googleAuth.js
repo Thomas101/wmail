@@ -10,7 +10,12 @@ class GoogleAuthClient {
 	constructor() {
 		this.requests = {}
 		ipcRenderer.on('auth-google-complete', (evt, body) => {
+			console.log('[AUTH SUCCESS]', body)
 			this.requests[body.id](evt, body)
+			delete this.requests[body.id]
+		})
+		ipcRenderer.on('auth-google-error', (evt, body) => {
+			console.log('[AUTH ERROR]', body)
 			delete this.requests[body.id]
 		})
 	}

@@ -39,18 +39,16 @@ class Analytics {
 			tid 			: credentials.GOOGLE_ANALYTICS_ID,
 			cid 			: this.id,
 			t 				: 'pageview',
-			ds 				: 'app',
 			vp 				: window.getSize().join('x'),
 			ul 				: osLanguage,
-			av 				: pkg.version,
-			aid 			: constants.APP_ID,
 			ua 				: window.webContents.getUserAgent()
 		}, args)
 
-		const qs = Object.keys(args).reduce((acc, k) => {
-			acc.push(k + '=' + encodeURIComponent(args[k]))
+		const qs = Object.keys(full_args).reduce((acc, k) => {
+			acc.push(k + '=' + encodeURIComponent(full_args[k]))
 			return acc
 		}, []).join('&')
+		console.log(qs)
 
 		const url = 'https://www.google-analytics.com/collect?' + qs
 		return fetch(url, { method: 'post' })
@@ -64,8 +62,7 @@ class Analytics {
 		if (!credentials.GOOGLE_ANALYTICS_ID) { return Promise.resolve() }
 		return this.send(window, {
 			dp 				: '/open/' + pkg.version,
-			dt 				: 'open',
-			sc 				: 'start'
+			dt 				: 'open'
 		})
 	}
 
