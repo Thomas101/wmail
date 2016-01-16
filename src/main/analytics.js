@@ -3,10 +3,10 @@
 const AppDirectory = require('appdirectory')
 const LocalStorage = require('node-localstorage').LocalStorage
 const pkg = require('../package.json')
-const uuid = require('./uuid')
+const uuid = require('../shared/uuid')
 const fetch = require('node-fetch')
-const credentials = require('./credentials')
-const constants = require('./constants')
+const credentials = require('../shared/credentials')
+const constants = require('../shared/constants')
 
 const appDirectory = new AppDirectory(pkg.name)
 const localStorage = new LocalStorage(appDirectory.userData())

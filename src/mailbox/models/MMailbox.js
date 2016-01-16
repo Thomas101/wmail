@@ -1,7 +1,7 @@
 "use strict"
 
 const storage = require('./storage')
-const uuid = require('../../../uuid')
+const uuid = require('shared/uuid')
 
 var databaseKey = function(id) { return 'Mailbox_' + id }
 

@@ -42,7 +42,9 @@ app.on('ready', function() {
       nodeIntegration : true
     }
   })
-  mailboxWindow.loadURL('file://' + __dirname + '/mailbox/index.html')
+  //mailboxWindow.loadURL('file://' + __dirname + '/mailbox/index.html')
+  console.log('badbad')
+  mailboxWindow.loadURL('http://localhost:8080/bin/mailbox.html')
 
   // Setup the menu & Shortcuts
   const appMenuSelectors = {

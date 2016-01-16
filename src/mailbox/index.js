@@ -1,15 +1,15 @@
 "use strict"
 
-const MailboxList = require('./js/MailboxList')
-const Mailboxes = require('./js/Mailboxes')
-const MMailbox = require('./js/models/MMailbox')
-const GoogleMailboxSyncManger = require('./js/sync/GoogleMailboxSyncManager')
-const credentials = require('../credentials')
-const ipcRenderer = require('electron').ipcRenderer;
+const MailboxList = require('./MailboxList')
+const Mailboxes = require('./Mailboxes')
+const MMailbox = require('./models/MMailbox')
+const GoogleMailboxSyncManger = require('./sync/GoogleMailboxSyncManager')
+const credentials = require('shared/credentials')
+const ipcRenderer = require('electron').ipcRenderer
 
 
 const remote = require('remote');
-const app = remote.require('app');
+const app = remote.require('app')
 
 class App {
 	/***************************************************************************/

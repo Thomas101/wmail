@@ -2,7 +2,7 @@
 
 const ipcMain = require('electron').ipcMain;
 const electronGoogleOauth = require('electron-google-oauth')  
-const credentials = require('../credentials')
+const credentials = require('../../shared/credentials')
 
 class GoogleAuth {
 	/*****************************************************************************/

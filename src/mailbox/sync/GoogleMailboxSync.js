@@ -1,11 +1,11 @@
 "use strict"
 
 const MMailbox = require('../models/MMailbox')
-const google = require('googleapis');
-const OAuth2 = google.auth.OAuth2;
-const gPlus = google.plus('v1');
-const gmail = google.gmail('v1');
-const credentials = require('../../../credentials')
+const google = require('googleapis')
+const OAuth2 = google.auth.OAuth2
+const gPlus = google.plus('v1')
+const gmail = google.gmail('v1')
+const credentials = require('shared/credentials')
 
 class GoogleMailboxSync {
 	/***************************************************************************/
