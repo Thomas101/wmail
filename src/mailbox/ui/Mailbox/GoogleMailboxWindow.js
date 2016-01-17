@@ -5,8 +5,11 @@ const flux = {
 	mailbox : require('../../stores/mailbox'),
 	google : require('../../stores/google')
 }
-const remote = nativeRequire('remote');
+const remote = nativeRequire('remote')
+const url = nativeRequire('url')
 const shell = remote.require('shell')
+const app = remote.require('app');
+const session = remote.require('session')
 
 module.exports = React.createClass({
 	displayName:'GoogleMailboxWindow',
@@ -65,11 +68,12 @@ module.exports = React.createClass({
 	* @param webview: the webview element the event came from
 	*/
 	handleOpenNewWindow: function(evt, webview) {
+		const host = url.parse(event.url).host;
 		const whitelist = [
-			'https://inbox.google.com',
-			'https://mail.google.com'
+			'inbox.google.com',
+			'mail.google.com'
 		]
-		if (whitelist.findIndex(w => event.url.indexOf(w) === 0) === -1) {
+		if (whitelist.findIndex(w => host === w) === -1) {
 			shell.openExternal(event.url)
 		} else {
 			webview.src = event.url
@@ -86,29 +90,36 @@ module.exports = React.createClass({
 	* the ref to the node for binding electron events we sink down to normal html
 	*/
 	renderWebviewDOMNode: function() {
+		// Setup the session that will be used
+		const partition = 'persist:' + this.state.mailbox.id
+		var ses = session.fromPartition(partition);
+		ses.setDownloadPath(app.getPath('downloads'))
+
 		// Build the dom
 		const webview = document.createElement('webview')
   	webview.setAttribute('preload', './native/clickReportInjection')
-  	webview.setAttribute('partition', 'persist:' + this.state.mailbox.id)
+  	webview.setAttribute('partition', partition)
   	webview.setAttribute('src', this.state.mailbox.url)
   	webview.setAttribute('data-mailbox', this.state.mailbox.id)
   	webview.classList.add('mailbox-window')
   	if (this.state.isActive) {
   		webview.classList.add('active')
   	}
+  	
 
   	// Bind events
 		webview.addEventListener('dom-ready', () => {
 			webview.insertCSS('.gb_9a { visibility: hidden !important; }')
 		})
-		webview.addEventListener('ipc-message', (event) => {
-			if (event.channel.type === 'page-click') {
+		webview.addEventListener('ipc-message', (evt) => {
+			if (evt.channel.type === 'page-click') {
 				flux.google.A.syncUnreadCounts([this.state.mailbox])
 			}
-		});
-		webview.addEventListener('new-window', (event) => {
-			this.handleOpenNewWindow(event, webview)
 		})
+		webview.addEventListener('new-window', (evt) => {
+			this.handleOpenNewWindow(evt, webview)
+		})
+
   	
 		return webview
 	},

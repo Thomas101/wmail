@@ -66,7 +66,7 @@ class WMail {
 
 	  //Bind to window events
 	  this.mailboxWindow.on('close', (evt) => {
-	    if (thismailboxWindow.isFocused() && !this.fullQuit) {
+	    if (this.mailboxWindow.isFocused() && !this.fullQuit) {
 	      evt.preventDefault()
 	      this.mailboxWindow.hide()
 	    }

@@ -93,7 +93,9 @@ module.exports = React.createClass({
 	/**
 	* Stops an event propagating
 	*/
-	killEvent: function(evt) { evt.preventDefault(); },
+	killEvent: function(evt) {
+		evt.preventDefault()
+	},
 
 	/**
 	* Receives a change mailbox event
