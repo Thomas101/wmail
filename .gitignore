@@ -2,3 +2,4 @@ credentials.js
 node_modules
 bin
 WMail-darwin-x64
+*.log
