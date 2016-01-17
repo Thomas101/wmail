@@ -1,28 +1,24 @@
 "use strict"
 
-const AppDirectory = require('appdirectory')
-const LocalStorage = require('node-localstorage').LocalStorage
-const pkg = require('../package.json')
 const uuid = require('../shared/uuid')
 const fetch = require('node-fetch')
 const credentials = require('../shared/credentials')
 const constants = require('../shared/constants')
-
-const appDirectory = new AppDirectory(pkg.name)
-const localStorage = new LocalStorage(appDirectory.userData())
 const osLanguage = require('os-locale').sync()
-console.log(appDirectory.userData())
+const pkg = require('../package.json')
 
 
-class Analytics {
+class AppAnalytics {
 	/*****************************************************************************/
 	// Lifecycle
 	/*****************************************************************************/
-	constructor() {
-		if (!localStorage.getItem('ga-id')) {
-			localStorage.setItem('ga-id', uuid.uuid4())
+	constructor(localStorage) {
+		this.localStorage = localStorage
+
+		if (!this.localStorage.getItem('ga-id')) {
+			this.localStorage.setItem('ga-id', uuid.uuid4())
 		}
-		this.id = localStorage.getItem('ga-id')
+		this.id = this.localStorage.getItem('ga-id')
 	}
 
 	/*****************************************************************************/
@@ -95,4 +91,4 @@ class Analytics {
 	}
 }
 
-module.exports = new Analytics()
+module.exports = AppAnalytics

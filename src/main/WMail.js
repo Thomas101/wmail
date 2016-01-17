@@ -7,7 +7,6 @@ const shell = require('shell')
 const googleAuth = require('./googleAuth')
 const constants = require('../shared/constants')
 const update = require('./update')
-const analytics = require('./analytics')
 const appMenu = require('./appMenu')
 const ipcMain = require('electron').ipcMain
 
@@ -17,12 +16,20 @@ class WMail {
 	// Lifecycle
 	/*****************************************************************************/
 
-  constructor() {
+	/**
+	* @param injected items
+	*/
+  constructor(injection) {
+  	this.analytics = injection.analytics
+  	this.localStorage = injection.localStorage
     this.mailboxWindow = null
     this.fullQuit = null
+    this.mailboxWindowSaver = null
     this.appMenuSelectors = {
 	    fullQuit : () => { this.fullQuit = true; app.quit() },
-	    fullscreenToggle : () => { this.mailboxWindow.setFullScreen(!this.mailboxWindow.isFullScreen()) },
+	    fullscreenToggle : () => {
+	    	this.mailboxWindow.setFullScreen(!this.mailboxWindow.isFullScreen())
+	    },
 	    reload : () => { this.mailboxWindow.webContents.reload() },
 	    devTools : () => { this.mailboxWindow.webContents.openDevTools() },
 	    learnMore : () => { shell.openExternal(constants.GITHUB_URL) },
@@ -52,9 +59,7 @@ class WMail {
 	* Creates and shows the mailbox window
 	*/
   createMailboxWindow() {
-  	this.mailboxWindow = new BrowserWindow({
-	    width             : 1024,
-	    height            : 600,
+  	this.mailboxWindow = new BrowserWindow(Object.assign({
 	    minWidth          : 955,
 	    minHeight         : 400,
 	    titleBarStyle     : 'hidden',
@@ -62,7 +67,7 @@ class WMail {
 	    webPreferences: {
 	      nodeIntegration : true
 	    }
-	  })
+	  }, this.loadWindowState()))
 	  this.mailboxWindow.loadURL('file://' + __dirname + '/../mailbox.html')
 
 	  //Bind to window events
@@ -76,6 +81,50 @@ class WMail {
 	    this.mailboxWindow = null
 	    app.quit()
 	  })
+	  this.mailboxWindow.on('resize', (evt) => {
+	  	this.saveWindowState()
+	  })
+	  this.mailboxWindow.on('move', (evt) => {
+	  	this.saveWindowState()
+	  })
+  }
+
+  /**
+  * Saves the window state to disk
+  */
+  saveWindowState() {
+  	clearTimeout(this.mailboxWindowSaver)
+  	this.mailboxWindowSaver = setTimeout(() => {
+  		const state = {
+  			fullscreen : this.mailboxWindow.isMaximized()
+  		}
+  		if (!this.mailboxWindow.isMaximized() && !this.mailboxWindow.isMinimized()) {
+	  		const position = this.mailboxWindow.getPosition()
+	  		const size = this.mailboxWindow.getSize();
+	  		state.x = position[0]
+	  		state.y = position[1]
+	  		state.width = size[0]
+	  		state.height = size[1]
+	  	}
+
+	  	this.localStorage.setItem('mailbox_window_state', JSON.stringify(state))
+  	}, 2000)
+  }
+
+  /**
+  * Loads the window state
+  * @return the state
+  */
+  loadWindowState() {
+  	if (this.localStorage.getItem('mailbox_window_state')) {
+  		return JSON.parse(this.localStorage.getItem('mailbox_window_state'))
+  	} else {
+  		return {
+  			width: 1024,
+  			height: 600,
+  			fullscreen: false
+  		}
+  	}
   }
 
   /*****************************************************************************/
@@ -114,9 +163,9 @@ class WMail {
 	*/
   startUpdatesAnalytics() {
 	  update.checkNow(this.mailboxWindow)
-	  analytics.appOpened(this.mailboxWindow)
+	  this.analytics.appOpened(this.mailboxWindow)
 	  setInterval(() => {
-	    analytics.appHeartbeat(this.mailboxWindow)
+	    this.analytics.appHeartbeat(this.mailboxWindow)
 	  }, 1000 * 60 * 5) // 5 mins
   }
 }

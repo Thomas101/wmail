@@ -37,23 +37,6 @@ class Update {
 					}
 				})
 			}
-
-			//prerelease
-			/*let latestTag = json[0].tag_name
-			latestTag = latestTag.indexOf('v' === 0) ? latestTag.substr(1) : latestTag
-			if (compareVersion(latestTag, pkg.version) >= 1) {
-				dialog.showMessageBox(window, {
-					type: 'question',
-					title:'Updates Available',
-					message:'Version ' + latestTag + ' is now available. Do you want to download it now?',
-					buttons: ['Download Now', 'Download Later'],
-					defaultId: 1,
-				}, (response) => {
-					if (response === 0) {
-						shell.openExternal(json.download_url)
-					}
-				})
-			}*/
 		})
 	}
 }

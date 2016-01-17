@@ -1,11 +1,21 @@
 "use strict"
 
 const app = require('app')
-const analytics = require('./analytics')
+const AppAnalytics = require('./AppAnalytics')
+const AppDirectory = require('appdirectory')
+const LocalStorage = require('node-localstorage').LocalStorage
 const WMail = require('./WMail')
+const pkg = require('../package.json')
+
+const appDirectory = new AppDirectory(pkg.name)
+const localStorage = new LocalStorage(appDirectory.userData())
+const analytics = new AppAnalytics(localStorage)
+const wmail = new WMail({
+	localStorage:localStorage,
+	analytics:analytics
+})
 
 
-const wmail = new WMail()
 app.on('ready', () => {
   wmail.start()
 })
