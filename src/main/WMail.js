@@ -27,6 +27,7 @@ class WMail {
 	    devTools : () => { this.mailboxWindow.webContents.openDevTools() },
 	    learnMore : () => { shell.openExternal(constants.GITHUB_URL) },
 	    bugReport : () => { shell.openExternal(constants.GITHUB_ISSUE_URL) },
+	    hide : () => { this.mailboxWindow.hide() },
 	    mailbox : (mailboxId) => {
 	      this.mailboxWindow.webContents.send('switch-mailbox', {mailboxId:mailboxId })
 	    }

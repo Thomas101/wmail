@@ -16,6 +16,7 @@ module.exports = {
 	      submenu: [
 	        { label: "About", selector: "orderFrontStandardAboutPanel:" },
 	        { type: "separator" },
+	        { label: "Hide Window", accelerator: "Command+W", click: selectors.hide },
 	        { label: "Quit", accelerator: "Command+Q", click: selectors.fullQuit }
 	      ]
 	    },
