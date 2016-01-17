@@ -1,0 +1,37 @@
+#app {
+  .master, .detail {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+
+    &.master {
+      width: 70px;
+      right: auto;
+      background-color: black;
+    }
+
+    &.detail {
+      left: 70px;
+    }
+  }
+
+  .mailboxes {
+  	position: absolute;
+  	top: 0px;
+  	bottom: 0px;
+  	left: 0px;
+  	right: 0px;
+  }
+
+  .mailbox-list {
+    width: 100%;
+    height: 100%;
+    padding-top: 30px;
+    background-color: rgb(33, 38, 41);
+    color: rgb(119, 122, 123);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}

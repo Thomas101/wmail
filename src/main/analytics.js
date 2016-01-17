@@ -11,6 +11,7 @@ const constants = require('../shared/constants')
 const appDirectory = new AppDirectory(pkg.name)
 const localStorage = new LocalStorage(appDirectory.userData())
 const osLanguage = require('os-locale').sync()
+console.log(appDirectory.userData())
 
 
 class Analytics {

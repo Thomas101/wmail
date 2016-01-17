@@ -5,7 +5,6 @@ var webpackTargetElectronRenderer = require('webpack-target-electron-renderer')
 
 var options = {
   devtool: 'source-map',
-  target: 'electron',
   entry: {
     mailbox       : [
       'src/shared/',
@@ -13,8 +12,7 @@ var options = {
     ],
     vendor        : [
       'appdirectory',
-      'compare-version',
-      'src/mailbox/vendor/sprint.js'
+      'compare-version'
     ]
   },
   plugins: [
@@ -30,6 +28,7 @@ var options = {
       { from:'src/shared/', to:'shared', force:true },
       { from:'package.json', to:'', force:true },
       { from:'src/mailbox/mailbox.html', to:'mailbox.html', force:true },
+      { from:'src/native', to:'native', force:true }
     ], {
       ignore: [ '.DS_Store' ]
     })
@@ -41,7 +40,7 @@ var options = {
   },
   resolve: {
     extensions: ["", ".js", ".jsx", ".less", ".css"],
-    modulesDirectories: ["web_modules", "node_modules", __dirname, "src"]
+    modulesDirectories: ["web_modules", "node_modules", __dirname, "vendor", "src"]
   },
   module: {
     loaders: [
@@ -51,7 +50,8 @@ var options = {
         exclude: /node_modules/,
         include: __dirname,
         query: {
-          cacheDirectory: true
+          cacheDirectory: true,
+          presets: ['react', 'stage-0', 'es2015'],
         }
       },
       {

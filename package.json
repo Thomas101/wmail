@@ -1,13 +1,13 @@
 {
   "name": "wmail",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "OSX app wrapper for Google Inbox and Google Mail",
   "main": "bin/main/main.js",
   "scripts": {
-    "dev-serve": "node node_modules/webpack-dev-server/bin/webpack-dev-server.js",
     "dev-build": "node node_modules/webpack/bin/webpack.js",
     "build": "node node_modules/webpack/bin/webpack.js -p",
-    "start": "node node_modules/webpack/bin/webpack.js; electron bin/main/main.js"
+    "start": "node node_modules/webpack/bin/webpack.js; electron bin/main/main.js",
+    "package": "node packager.js"
   },
   "keywords": [],
   "author": "Thomas Beverley",
@@ -17,14 +17,22 @@
     "babel": "^6.3.26",
     "babel-core": "^6.4.0",
     "babel-loader": "^6.2.1",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
     "copy-webpack-plugin": "^0.3.3",
+    "css-loader": "^0.23.1",
     "electron-packager": "^5.2.0",
-    "electron-prebuilt": "^0.36.2",
+    "electron-prebuilt": ">=0.36.4",
+    "fs-extra": "^0.26.4",
+    "less": "^2.5.3",
+    "less-loader": "^2.2.2",
+    "style-loader": "^0.13.0",
     "webpack": "^1.12.11",
-    "webpack-dev-server": "^1.14.1",
     "webpack-target-electron-renderer": "^0.4.0"
   },
   "dependencies": {
+    "alt": "^0.18.1",
     "appdirectory": "^0.1.0",
     "compare-version": "^0.1.2",
     "electron-google-oauth": "^1.1.4",
@@ -32,6 +40,8 @@
     "googleapis": "^2.1.7",
     "node-fetch": "^1.3.3",
     "node-localstorage": "^1.1.2",
-    "os-locale": "^1.4.0"
+    "os-locale": "^1.4.0",
+    "react": "^0.14.6",
+    "react-dom": "^0.14.6"
   }
 }

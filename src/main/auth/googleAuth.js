@@ -49,11 +49,13 @@ class GoogleAuth {
 		).then(auth => {
 			evt.sender.send('auth-google-complete', {
 				id : body.id,
+				type: body.type,
 				auth : auth
 			})
 		}, err => {
 			evt.sender.send('auth-google-error', {
 				id : body.id,
+				type: body.type,
 				error : err
 			})
 		})

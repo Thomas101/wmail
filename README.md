@@ -15,7 +15,7 @@ Feeling brave and want to build from source? Here's what you need to do
 
 Firstly you need to get a client id and secret from Google. Visit https://console.developers.google.com to get started. You'll need to setup your OAuth Client ID and enable the Gmail, Google+ and Identity Toolkit APIs.
 
-Next create `src/credentials.js` with your google client id and secret like so...
+Next create `src/shared/credentials.js` with your google client id and secret like so...
 
 ```js
 module.exports = Object.freeze({

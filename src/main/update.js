@@ -1,7 +1,7 @@
 "use strict"
 
 const fetch = require('node-fetch')
-const constants = require('./constants')
+const constants = require('../shared/constants')
 const pkg = require('../package.json')
 const dialog = require('electron').dialog;
 const shell = require('shell')

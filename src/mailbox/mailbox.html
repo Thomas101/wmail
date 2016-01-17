@@ -2,22 +2,13 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Google Mailbox</title>
+    <title>WMail</title>
 
-    <script type="text/javascript" src="vendor.bundle.js"></script>
-
-    <script type="text/javascript" src="mailbox.js"></script>
-    <link rel="stylesheet" href="css/index.css">
   </head>
   <body>
-    <div id="master">
-      <div id="mailbox-list"></div>
-    </div>
-    <div id="detail">
-      <div id="mailboxes"></div>
-    </div>
-    <script type="text/javascript">
-      window.app.load()
-    </script>
+    <div id="app"></div>
+    <script type="text/javascript" src="native/nativeRequire.js"></script>
+    <script type="text/javascript" src="vendor.bundle.js"></script>
+    <script type="text/javascript" src="mailbox.js"></script>
   </body>
 </html>

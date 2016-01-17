@@ -5,7 +5,7 @@ const BrowserWindow = require('browser-window')
 const Menu = require('menu')
 const shell = require('shell')
 const googleAuth = require('./auth/googleAuth')
-const CONSTANTS = require('./constants')
+const constants = require('../shared/constants')
 const update = require('./update')
 const analytics = require('./analytics')
 const appMenu = require('./appMenu')
@@ -42,9 +42,7 @@ app.on('ready', function() {
       nodeIntegration : true
     }
   })
-  //mailboxWindow.loadURL('file://' + __dirname + '/mailbox/index.html')
-  console.log('badbad')
-  mailboxWindow.loadURL('http://localhost:8080/bin/mailbox.html')
+  mailboxWindow.loadURL('file://' + __dirname + '/../mailbox.html')
 
   // Setup the menu & Shortcuts
   const appMenuSelectors = {
@@ -52,8 +50,8 @@ app.on('ready', function() {
     fullscreenToggle : () => { mailboxWindow.setFullScreen(!mailboxWindow.isFullScreen()) },
     reload : () => { mailboxWindow.webContents.reload() },
     devTools : () => { mailboxWindow.webContents.openDevTools() },
-    learnMore : () => { shell.openExternal(CONSTANTS.GITHUB_URL) },
-    bugReport : () => { shell.openExternal(CONSTANTS.GITHUB_ISSUE_URL) },
+    learnMore : () => { shell.openExternal(constants.GITHUB_URL) },
+    bugReport : () => { shell.openExternal(constants.GITHUB_ISSUE_URL) },
     mailbox : (mailboxId) => {
       mailboxWindow.webContents.send('switch-mailbox', {mailboxId:mailboxId })
     }

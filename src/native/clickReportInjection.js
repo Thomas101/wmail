@@ -1,8 +1,8 @@
-"use strict"
-
-const ipcRenderer = require('electron').ipcRenderer
-
 ;(function() {
+	"use strict"
+	
+	const ipcRenderer = require('electron').ipcRenderer
+	
 	let timeout = null
 	let loadInterval = setInterval(function() {
 		if (document.body) {

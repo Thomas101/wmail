@@ -1,0 +1,106 @@
+@INBOX_PRIM_COL: rgb(66, 133, 244);
+@INBOX_SEC_COL: rgb(42, 117, 243);
+@GMAIL_PRIM_COL: rgb(220, 75, 75);
+@GMAIL_SEC_COL: rgb(216, 54, 54);
+
+@ITEM_SIZE: 50px;
+@ITEM_BORDER_SIZE: 4px;
+
+.mailbox-list {
+
+	.list-item {
+		position: relative;
+		margin: 10px auto;
+		width: @ITEM_SIZE;
+		height: @ITEM_SIZE;
+
+		&, * {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			user-select: none;
+		}
+
+		/******************************************************
+		* Mailbox icon
+		******************************************************/
+
+		.mailbox {
+			margin: 10px auto;
+			width: @ITEM_SIZE;
+			height: @ITEM_SIZE;
+			overflow: hidden;
+			cursor: pointer;
+			border-radius: 50%;
+			border: @ITEM_BORDER_SIZE solid white;
+
+			&:hover {
+				box-shadow: 0px 0px 5px 0px rgba(255, 255, 255, 0.5);
+			}
+
+			/******************************************************
+			* Mailbox : avatar
+			******************************************************/
+
+			.avatar {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+
+			/******************************************************
+			* Mailbox : index
+			******************************************************/
+
+			.index {
+				display: block;
+				width: @ITEM_SIZE - @ITEM_BORDER_SIZE - @ITEM_BORDER_SIZE;
+				height: @ITEM_SIZE - @ITEM_BORDER_SIZE - @ITEM_BORDER_SIZE;
+				text-align: center;
+				font-size: 20px;
+				line-height: @ITEM_SIZE - @ITEM_BORDER_SIZE - @ITEM_BORDER_SIZE;
+				color: white;
+			}
+
+			/******************************************************
+			* Mailbox types
+			******************************************************/
+			&[data-type="ginbox"] {
+				&.active, &:hover { border-color: @INBOX_PRIM_COL; }
+				&.avatar { background-color: white; }
+				&.index {
+					background-color: @INBOX_PRIM_COL;
+					&.active, &:hover { border-color: @INBOX_SEC_COL; }
+				}
+			}
+
+			&[data-type="gmail"] {
+				&.active, &:hover { border-color: @GMAIL_PRIM_COL; }
+				&.avatar { background-color: white; }
+				&.index {
+					background-color: @GMAIL_PRIM_COL;
+					&.active, &:hover { border-color: @GMAIL_SEC_COL; }
+				}
+			}
+		}
+
+		/******************************************************
+		* Unread Count
+		******************************************************/
+		.unread {
+			position: absolute;
+			top: 0px;
+			right: -8px;
+			display: block;
+			background-color: rgba(238, 54, 55, 0.95);
+			color: white;
+			height: 22px;
+			min-width: 22px;
+			text-align: center;
+			line-height: 22px;
+			font-size: 11px;
+			border-radius: 11px;
+			padding: 0px 5px;
+			box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5);
+		}
+	}
+}
