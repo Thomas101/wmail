@@ -111,10 +111,7 @@ class GoogleActions {
 			})
 
 			const promise = Promise.all(requests).then(
-				(responses) => {
-					console.log(1)
-					this.syncProfilesComplete(responses)
-				},
+				(responses) => { this.syncProfilesComplete(responses) },
 				(err) => { console.warn('[SYNC ERR]', err) }
 			)
 			return { promise:promise }

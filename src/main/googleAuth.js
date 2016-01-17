@@ -2,7 +2,7 @@
 
 const ipcMain = require('electron').ipcMain;
 const electronGoogleOauth = require('electron-google-oauth')  
-const credentials = require('../../shared/credentials')
+const credentials = require('../shared/credentials')
 
 class GoogleAuth {
 	/*****************************************************************************/
@@ -33,6 +33,7 @@ class GoogleAuth {
         alwaysOnTop 							: true,
         standardWindow 						: true,
         autoHideMenuBar 					: true,
+        title 										: 'Google',
         webPreferences						: {
           nodeIntegration 					: false,
           partition 								: "persist:" + body.id
