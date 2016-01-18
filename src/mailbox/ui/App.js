@@ -31,6 +31,9 @@ module.exports = React.createClass({
 		ipc.on('switch-mailbox', this.ipcChangeActiveMailbox)
 		ipc.on('auth-google-complete', this.ipcAuthMailboxSuccess)
 		ipc.on('auth-google-error', this.ipcAuthMailboxFailure)
+		ipc.on('mailbox-zoom-in', this.ipcZoomIn)
+		ipc.on('mailbox-zoom-out', this.ipcZoomOut)
+		ipc.on('mailbox-zoom-reset', this.ipcZoomReset)
   },
 
   componentWillUnmount: function() {
@@ -43,6 +46,9 @@ module.exports = React.createClass({
 		ipc.off('switch-mailbox', this.ipcChangeActiveMailbox)
 		ipc.off('auth-google-complete', this.ipcAuthMailboxSuccess)
 		ipc.off('auth-google-error', this.ipcAuthMailboxFailure)
+		ipc.off('mailbox-zoom-in', this.ipcZoomIn)
+		ipc.off('mailbox-zoom-out', this.ipcZoomOut)
+		ipc.off('mailbox-zoom-reset', this.ipcZoomReset)
   },
 
 	/***************************************************************************/
@@ -122,6 +128,48 @@ module.exports = React.createClass({
 	*/
 	ipcAuthMailboxFailure: function(evt, req) {
 		flux.google.A.authMailboxFailure(req)
+	},
+
+	/**
+	* Zooms the active mailbox in
+	* @param evt: the event that fired
+	* @param req: the request that came through
+	*/
+	ipcZoomIn: function(evt, req) {
+		const store = flux.mailbox.S.getState()
+		const mailboxId = store.activeId()
+		if (mailboxId) {
+			flux.mailbox.A.update(mailboxId, {
+				zoomFactor:Math.min(1.5, store.get(mailboxId).zoomFactor + 0.1)
+			})
+		}
+	},
+
+	/**
+	* Zooms the active mailbox out
+	* @param evt: the event that fired
+	* @param req: the request that came through
+	*/
+	ipcZoomOut: function(evt, req) {
+		const store = flux.mailbox.S.getState()
+		const mailboxId = store.activeId()
+		if (mailboxId) {
+			flux.mailbox.A.update(mailboxId, {
+				zoomFactor:Math.max(0.5, store.get(mailboxId).zoomFactor - 0.1)
+			})
+		}
+	},
+
+	/**
+	* Resets the zoom on the active mailbox
+	* @param evt: the event that fired
+	* @param req: the request that came through
+	*/
+	ipcZoomReset: function(evt, req) {
+		const mailboxId = flux.mailbox.S.getState().activeId()
+		if (mailboxId) {
+			flux.mailbox.A.update(mailboxId, { zoomFactor:1.0 })
+		}
 	},
 
 

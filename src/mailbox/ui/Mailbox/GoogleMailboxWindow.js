@@ -34,7 +34,8 @@ module.exports = React.createClass({
 		const mailboxStore = flux.mailbox.S.getState()
 		return {
 			mailbox : mailboxStore.get(this.props.mailbox_id),
-			isActive : mailboxStore.activeId() === this.props.mailbox_id
+			isActive : mailboxStore.activeId() === this.props.mailbox_id,
+			zoomFactor : 1.0
 		}
   },
 
@@ -49,9 +50,15 @@ module.exports = React.createClass({
   	if (this.state.isActive !== nextState.isActive) {
   		// To prevent react re-rendering the webview and losing state, handle
   		// active manually
-  		const elements = ReactDOM.findDOMNode(this).getElementsByTagName('webview') 
-  		if (elements.length) {
-  			elements[0].classList[nextState.isActive ? 'add' : 'remove']('active')
+  		const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
+  		webview.classList[nextState.isActive ? 'add' : 'remove']('active')
+  	}
+  	if (this.state.mailbox !== nextState.mailbox) {
+  		// Set the zoom factor
+  		const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
+			if (nextState.zoomFactor !== nextState.mailbox.zoomFactor) {
+  			webview.send('zoom-factor-set', { value:nextState.mailbox.zoomFactor })
+  			this.setState({ zoomFactor:nextState.mailbox.zoomFactor })
   		}
   	}
 
@@ -97,7 +104,7 @@ module.exports = React.createClass({
 
 		// Build the dom
 		const webview = document.createElement('webview')
-  	webview.setAttribute('preload', './native/clickReportInjection')
+  	webview.setAttribute('preload', './native/injection/google')
   	webview.setAttribute('partition', partition)
   	webview.setAttribute('src', this.state.mailbox.url)
   	webview.setAttribute('data-mailbox', this.state.mailbox.id)

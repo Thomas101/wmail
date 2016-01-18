@@ -27,14 +27,15 @@ class WMail {
     this.mailboxWindowSaver = null
     this.appMenuSelectors = {
 	    fullQuit : () => { this.fullQuit = true; app.quit() },
-	    fullscreenToggle : () => {
-	    	this.mailboxWindow.setFullScreen(!this.mailboxWindow.isFullScreen())
-	    },
+	    fullscreenToggle : () => { this.mailboxWindow.setFullScreen(!this.mailboxWindow.isFullScreen()) },
 	    reload : () => { this.mailboxWindow.webContents.reload() },
 	    devTools : () => { this.mailboxWindow.webContents.openDevTools() },
 	    learnMore : () => { shell.openExternal(constants.GITHUB_URL) },
 	    bugReport : () => { shell.openExternal(constants.GITHUB_ISSUE_URL) },
 	    hide : () => { this.mailboxWindow.hide() },
+	    zoomIn : () => { this.mailboxWindow.webContents.send('mailbox-zoom-in', { }) },
+	    zoomOut : () => { this.mailboxWindow.webContents.send('mailbox-zoom-out', { }) },
+	    zoomReset : () => { this.mailboxWindow.webContents.send('mailbox-zoom-reset', { }) },
 	    mailbox : (mailboxId) => {
 	      this.mailboxWindow.webContents.send('switch-mailbox', {mailboxId:mailboxId })
 	    }

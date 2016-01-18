@@ -38,6 +38,10 @@ module.exports = {
 	      submenu: [
 	        { label: 'Toggle Full Screen', accelerator: 'Ctrl+Command+F', click: selectors.fullscreenToggle },
 	        { type: "separator" },
+	        { label: 'Zoom In', accelerator: 'CmdOrCtrl+Plus', click: selectors.zoomIn },
+	        { label: 'Zoom Out', accelerator: 'CmdOrCtrl+-', click: selectors.zoomOut },
+	        { label: 'Reset Zoom', click: selectors.zoomReset },
+	        { type: "separator" },
 	        { label: "Reload", accelerator: "CmdOrCtrl+R", click: selectors.reload },
 	        { label: "Developer Tools", accelerator: "Alt+CmdOrCtrl+J", click: selectors.devTools }
 	      ]
@@ -46,11 +50,11 @@ module.exports = {
 	      label: 'Window',
 	      role: 'window',
 	      submenu: [
-	        { label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize' }
+	        { label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize' },
 	      ]
 	      .concat(mailboxes.length ? [{ type: "separator" }] : [])
 	      .concat(mailboxes.map((mailbox, index) => {
-	      	return { label: mailbox.name || 'Untitled', accelerator: 'CmdOrCtrl+' + (index + 1), click: () => { selectors.mailbox(mailbox.id); } }
+	      	return { label: mailbox.email || 'Untitled', accelerator: 'CmdOrCtrl+' + (index + 1), click: () => { selectors.mailbox(mailbox.id); } }
 	      }))
 	    },
 	    {

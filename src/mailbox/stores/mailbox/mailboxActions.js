@@ -43,6 +43,7 @@ class MailboxActions {
 	* Changes the active mailbox
 	*/
 	changeActive(id) { return { id:id } }
+
 }
 
 module.exports = alt.createActions(MailboxActions);
