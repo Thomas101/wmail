@@ -73,7 +73,7 @@ module.exports = {
 	* @param selectors: the selectors for the non-standard actions
 	*/
 	bindHiddenShortcuts : function(selectors) {
-		electronLocalshortcut.register('Cmd+H', () => {
+		electronLocalshortcut.register('CmdOrCtrl+H', () => {
 			selectors.hide()
 	  });
 	}
