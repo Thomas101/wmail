@@ -4,9 +4,9 @@
   "description": "OSX app wrapper for Google Inbox and Google Mail",
   "main": "bin/main/main.js",
   "scripts": {
-    "dev-build": "node node_modules/webpack/bin/webpack.js",
-    "build": "node node_modules/webpack/bin/webpack.js -p",
-    "start": "node node_modules/webpack/bin/webpack.js; electron bin/main/main.js",
+    "dev-build": "webpack",
+    "build": "webpack -p",
+    "start": "webpack; electron bin/main/main.js",
     "package": "node packager.js"
   },
   "keywords": [],
