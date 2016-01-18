@@ -38,9 +38,9 @@ module.exports = {
 	      submenu: [
 	        { label: 'Toggle Full Screen', accelerator: 'Ctrl+Command+F', click: selectors.fullscreenToggle },
 	        { type: "separator" },
-	        { label: 'Zoom In', accelerator: 'CmdOrCtrl+Plus', click: selectors.zoomIn },
-	        { label: 'Zoom Out', accelerator: 'CmdOrCtrl+-', click: selectors.zoomOut },
-	        { label: 'Reset Zoom', click: selectors.zoomReset },
+	        { label: 'Zoom Mailbox In', accelerator: 'CmdOrCtrl+Plus', click: selectors.zoomIn },
+	        { label: 'Zoom Mailbox Out', accelerator: 'CmdOrCtrl+-', click: selectors.zoomOut },
+	        { label: 'Reset Mailbox Zoom', click: selectors.zoomReset },
 	        { type: "separator" },
 	        { label: "Reload", accelerator: "CmdOrCtrl+R", click: selectors.reload },
 	        { label: "Developer Tools", accelerator: "Alt+CmdOrCtrl+J", click: selectors.devTools }
