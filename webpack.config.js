@@ -2,6 +2,7 @@ var webpack = require("webpack")
 var path = require('path')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 var webpackTargetElectronRenderer = require('webpack-target-electron-renderer')
+var CleanWebpackPlugin = require('clean-webpack-plugin')
 
 var options = {
   devtool: 'source-map',
@@ -16,6 +17,12 @@ var options = {
     ]
   },
   plugins: [
+    // Clean out our bin dir
+    new CleanWebpackPlugin(['bin'], {
+      verbose: true, 
+      dry: false
+    }),
+    
     // Optimize files for productions
     new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.bundle.js"),
 
