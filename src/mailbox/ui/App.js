@@ -143,6 +143,7 @@ module.exports = React.createClass({
 	* @param req: the request that came through
 	*/
 	ipcAuthMailboxFailure: function(evt, req) {
+		alert('Failed to add mailbox')
 		flux.google.A.authMailboxFailure(req)
 	},
 

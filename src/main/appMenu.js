@@ -16,7 +16,7 @@ module.exports = {
 	      submenu: [
 	        { label: "About", selector: "orderFrontStandardAboutPanel:" },
 	        { type: "separator" },
-	        { label: "Hide Window", accelerator: "Command+W", click: selectors.hide },
+	        { label: "Hide Window", accelerator: "Command+W", role: 'hide' },
 	        { label: "Quit", accelerator: "Command+Q", click: selectors.fullQuit }
 	      ]
 	    },
@@ -51,6 +51,7 @@ module.exports = {
 	      role: 'window',
 	      submenu: [
 	        { label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize' },
+	        { label: 'Hide', accelerator: 'CmdOrCtrl+H', role: 'hide' },
 	      ]
 	      .concat(mailboxes.length ? [{ type: "separator" }] : [])
 	      .concat(mailboxes.map((mailbox, index) => {
@@ -73,8 +74,9 @@ module.exports = {
 	* @param selectors: the selectors for the non-standard actions
 	*/
 	bindHiddenShortcuts : function(selectors) {
-		electronLocalshortcut.register('CmdOrCtrl+H', () => {
+		return
+		/*electronLocalshortcut.register('CmdOrCtrl+H', () => {
 			selectors.hide()
-	  });
+	  });*/
 	}
 }
