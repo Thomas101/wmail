@@ -32,9 +32,6 @@ class WMail {
 	    devTools : () => { this.mailboxWindow.webContents.openDevTools() },
 	    learnMore : () => { shell.openExternal(constants.GITHUB_URL) },
 	    bugReport : () => { shell.openExternal(constants.GITHUB_ISSUE_URL) },
-	    hide : () => {
-        this.mailboxWindow.hide()
-      },
 	    zoomIn : () => { this.mailboxWindow.webContents.send('mailbox-zoom-in', { }) },
 	    zoomOut : () => { this.mailboxWindow.webContents.send('mailbox-zoom-out', { }) },
 	    zoomReset : () => { this.mailboxWindow.webContents.send('mailbox-zoom-reset', { }) },
