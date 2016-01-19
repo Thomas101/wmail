@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 const app = require('app')
 const AppAnalytics = require('./AppAnalytics')
@@ -11,19 +11,21 @@ const appDirectory = new AppDirectory(pkg.name)
 const localStorage = new LocalStorage(appDirectory.userData())
 const analytics = new AppAnalytics(localStorage)
 const wmail = new WMail({
-	localStorage:localStorage,
-	analytics:analytics
+  localStorage: localStorage,
+  analytics: analytics
 })
-
 
 app.on('ready', () => {
   wmail.start()
 })
-app.on('window-all-closed', function() {
-  if(process.platform != 'darwin') { app.quit() }
+
+app.on('window-all-closed', function () {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
 })
 
-app.on('activate', function(){
+app.on('activate', function () {
   if (wmail.mailboxWindow) { wmail.mailboxWindow.show() }
 })
 

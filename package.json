@@ -8,7 +8,7 @@
     "build": "webpack -p",
     "start": "webpack; electron bin/main/main.js",
     "package": "node packager.js",
-    "test": "standard src"
+    "test": "standard src/**/*.js"
   },
   "keywords": [],
   "author": "Thomas Beverley",
