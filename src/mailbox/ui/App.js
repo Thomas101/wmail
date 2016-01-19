@@ -1,3 +1,5 @@
+'use strict';
+
 import "./app.less"
 
 const React = require('react')
@@ -9,9 +11,13 @@ const GoogleMailboxWindow = require('./Mailbox/GoogleMailboxWindow')
 const MailboxListItem = require('./Sidelist/MailboxListItem')
 const MailboxListItemAdd = require('./Sidelist/MailboxListItemAdd')
 const Welcome = require('./Welcome/Welcome')
+const path = require('path');
 const ipc = nativeRequire('electron').ipcRenderer;
 const remote = nativeRequire('remote');
 const app = remote.require('app');
+const Tray = remote.require('tray');
+const Menu = remote.require('menu');
+let appTray = null;
 
 module.exports = React.createClass({
 	displayName:'App',
@@ -70,7 +76,17 @@ module.exports = React.createClass({
 
 		// Tell the app about our unread count
 		const unread = store.totalUnreadCount()
-		app.dock.setBadge(unread ? unread.toString() : '')
+		if(process.platform === 'darwin') {
+			app.dock.setBadge(unread ? unread.toString() : '')
+		} else {
+			const unreadText = unread ? unread + ' unread mail' : 'No unread mail';
+			const appIcon = appTray || (appTray = new Tray(path.resolve('icons/app.png')));
+			const contextMenu = Menu.buildFromTemplate([
+				{ label: unreadText}
+			]);
+			appIcon.setToolTip(unreadText);
+			appIcon.setContextMenu(contextMenu);
+		}
 
 		// Return the state update
   	return { mailbox_ids:store.ids() }
