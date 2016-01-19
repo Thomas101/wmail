@@ -7,7 +7,8 @@
     "dev-build": "webpack",
     "build": "webpack -p",
     "start": "webpack; electron bin/main/main.js",
-    "package": "node packager.js"
+    "package": "node packager.js",
+    "test": "standard src"
   },
   "keywords": [],
   "author": "Thomas Beverley",
@@ -28,6 +29,7 @@
     "fs-extra": "^0.26.4",
     "less": "^2.5.3",
     "less-loader": "^2.2.2",
+    "standard": "^5.4.1",
     "style-loader": "^0.13.0",
     "webpack": "^1.12.11",
     "webpack-target-electron-renderer": "^0.4.0"
