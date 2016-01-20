@@ -128,6 +128,13 @@ module.exports = React.createClass({
     webview.addEventListener('new-window', (evt) => {
       this.handleOpenNewWindow(evt, webview)
     })
+    webview.addEventListener('will-navigate', (evt) => {
+      // the lamest protection again dragging files into the window
+      // but this is the only thing I could find that leaves file drag working
+      if (evt.url.indexOf('file://') === 0) {
+        webview.setAttribute('src', this.state.mailbox.url)
+      }
+    })
 
     return webview
   },

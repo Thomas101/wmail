@@ -80,7 +80,7 @@ module.exports = React.createClass({
         label: 'Reload',
         click: () => {
           // This isn't strictly the react way to do things
-          const mailbox = document.querySelector('webview[data-mailbox=' + this.props.mailbox_id + ']')
+          const mailbox = document.querySelector('webview[data-mailbox="' + this.props.mailbox_id + '"]')
           mailbox.setAttribute('src', mailbox.getAttribute('src'))
           flux.google.A.syncMailbox(this.state.mailbox)
         }
@@ -89,7 +89,7 @@ module.exports = React.createClass({
         label: 'Inspect',
         click: () => {
           // This isn't strictly the react way to do things
-          document.querySelector('webview[data-mailbox=' + this.props.mailbox_id + ']').openDevTools()
+          document.querySelector('webview[data-mailbox="' + this.props.mailbox_id + '"]').openDevTools()
         }
       }
     ]).popup(remote.getCurrentWindow())

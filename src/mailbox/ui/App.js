@@ -32,9 +32,6 @@ module.exports = React.createClass({
     flux.google.A.syncAllProfiles()
     flux.google.A.syncAllUnreadCounts()
 
-    document.addEventListener('drop', this.killEvent, false)
-    document.addEventListener('dragover', this.killEvent, false)
-    document.addEventListener('dragover', this.killEvent, false)
     ipc.on('switch-mailbox', this.ipcChangeActiveMailbox)
     ipc.on('auth-google-complete', this.ipcAuthMailboxSuccess)
     ipc.on('auth-google-error', this.ipcAuthMailboxFailure)
@@ -47,9 +44,6 @@ module.exports = React.createClass({
     flux.mailbox.S.unlisten(this.mailboxesChanged)
     flux.google.A.stopPollSync()
 
-    document.removeEventListener('drop', this.killEvent)
-    document.removeEventListener('dragover', this.killEvent)
-    document.removeEventListener('dragover', this.killEvent)
     ipc.off('switch-mailbox', this.ipcChangeActiveMailbox)
     ipc.off('auth-google-complete', this.ipcAuthMailboxSuccess)
     ipc.off('auth-google-error', this.ipcAuthMailboxFailure)

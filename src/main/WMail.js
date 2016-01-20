@@ -89,6 +89,10 @@ class WMail {
     this.mailboxWindow.on('move', (evt) => {
       this.saveWindowState()
     })
+    this.mailboxWindow.webContents.on('will-navigate', (evt) => {
+      // We're locking on to our window. This stops file drags redirecting the page
+      evt.preventDefault()
+    })
   }
 
   /**
