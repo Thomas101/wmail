@@ -58,8 +58,8 @@ class GoogleAuth {
         id: body.id,
         type: body.type,
         error: err,
-        errorString: (err || {}).toString ? (err || {}).toString() || undefined,
-        errorStack: (err || {}).stack ? (err || {}).stack || undefined
+        errorString: (err || {}).toString ? (err || {}).toString() : undefined,
+        errorStack: (err || {}).stack ? (err || {}).stack : undefined
       })
     })
   }
