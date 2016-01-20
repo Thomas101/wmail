@@ -18,7 +18,7 @@ class Update {
       const newRelease = json.find(release => {
         let tag = release.tag_name
         tag = tag.indexOf('v' === 0) ? tag.substr(1) : tag
-        return pkg.prerelease === release.prerelease && compareVersion(tag, pkg.version) >= 1
+        return (pkg.prerelease === true || release.prerelease === false) && compareVersion(tag, pkg.version) >= 1
       })
 
       if (newRelease) {
