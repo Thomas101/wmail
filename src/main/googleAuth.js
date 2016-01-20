@@ -57,7 +57,9 @@ class GoogleAuth {
       evt.sender.send('auth-google-error', {
         id: body.id,
         type: body.type,
-        error: err
+        error: err,
+        errorString: (err || {}).toString ? (err || {}).toString() || undefined,
+        errorStack: (err || {}).stack ? (err || {}).stack || undefined
       })
     })
   }

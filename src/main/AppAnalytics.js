@@ -3,7 +3,6 @@
 const uuid = require('../shared/uuid')
 const fetch = require('node-fetch')
 const credentials = require('../shared/credentials')
-// const constants = require('../shared/constants')
 const osLanguage = require('os-locale').sync()
 const pkg = require('../package.json')
 
@@ -35,9 +34,9 @@ class AppAnalytics {
       tid: credentials.GOOGLE_ANALYTICS_ID,
       cid: this.id,
       t: 'pageview',
-      vp: window.getSize().join('x'),
+      vp: window && window.getSize ? window.getSize().join('x') : undefined,
       ul: osLanguage,
-      ua: window.webContents.getUserAgent()
+      ua: window && window.webContents && window.webContents.getUserAgent ? window.webContents.getUserAgent() : undefined
     }, args)
 
     const qs = Object.keys(full_args).reduce((acc, k) => {

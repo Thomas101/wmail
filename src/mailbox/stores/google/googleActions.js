@@ -8,6 +8,7 @@ const mailboxStore = require('../mailbox/mailboxStore')
 const mailboxActions = require('../mailbox/mailboxActions')
 const Mailbox = require('../mailbox/Mailbox')
 const ipc = window.nativeRequire('electron').ipcRenderer
+const reporter = require('../../reporter')
 
 // This is bad. We shouldn't be storing state in actions
 const cachedAuths = new Map()
@@ -165,7 +166,10 @@ class GoogleActions {
 
       const promise = Promise.all(requests).then(
         (responses) => { this.syncUnreadCountsComplete(responses) },
-        (err) => { console.warn('[SYNC ERR]', err) }
+        (err) => {
+          console.warn('[SYNC ERR]', err)
+          reporter.reportError('[SYNC ERR]' + err)
+        }
       )
       return { promise: promise }
     } else {
@@ -229,7 +233,15 @@ class GoogleActions {
   * @param data: the data that came across the ipc
   */
   authMailboxFailure (data) {
-    console.error('[AUTH ERROR]', data)
+    // Really log wha we're getting here to try and resolve issue #2
+    console.error('[AUTH ERR]', data)
+    if (data.error) {
+      console.log('[ERROR]', data.error.toString())
+      console.log('[STACK]', data.error.stack)
+      reporter.reportError('[AUTH ERR]' + data.error.toString())
+    } else {
+      reporter.reportError('[AUTH ERR] Unknown')
+    }
     return { data: data }
   }
 }

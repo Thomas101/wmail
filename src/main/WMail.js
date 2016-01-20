@@ -152,6 +152,9 @@ class WMail {
     ipcMain.on('mailboxes-changed', (evt, body) => {
       Menu.setApplicationMenu(appMenu.build(this.appMenuSelectors, body.mailboxes))
     })
+    ipcMain.on('report-error', (evt, body) => {
+      this.analytics.appException(this.mailboxWindow, 'renderer', body.error)
+    })
   }
 
   /* ****************************************************************************/
