@@ -4,7 +4,7 @@ const app = require('app')
 const BrowserWindow = require('browser-window')
 const Menu = require('menu')
 const shell = require('shell')
-// const googleAuth = require('./googleAuth')
+const AuthGoogle = require('./AuthGoogle')
 const constants = require('../shared/constants')
 const update = require('./update')
 const appMenu = require('./appMenu')
@@ -20,6 +20,7 @@ class WMail {
   * @param injected items
   */
   constructor (injection) {
+    this.authGoogle = new AuthGoogle()
     this.analytics = injection.analytics
     this.localStorage = injection.localStorage
     this.mailboxWindow = null

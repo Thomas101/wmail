@@ -4,7 +4,7 @@ const ipcMain = require('electron').ipcMain
 const electronGoogleOauth = require('electron-google-oauth')
 const credentials = require('../shared/credentials')
 
-class GoogleAuth {
+class AuthGoogle {
   /* ****************************************************************************/
   // Lifecycle
   /* ****************************************************************************/
@@ -65,4 +65,4 @@ class GoogleAuth {
   }
 }
 
-module.exports = new GoogleAuth()
+module.exports = AuthGoogle
