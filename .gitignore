@@ -2,4 +2,6 @@ credentials.js
 node_modules
 bin
 WMail-darwin-x64
+WMail-linux-ia32/
+WMail-linux-x64/
 *.log
