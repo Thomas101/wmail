@@ -1,34 +1,33 @@
 const alt = require('../alt')
 const actions = require('./googleActions')
-const mailboxActions = require('../mailbox/mailboxActions')
-const mailboxStore = require('../mailbox/mailboxStore')
+// const mailboxActions = require('../mailbox/mailboxActions')
+// const mailboxStore = require('../mailbox/mailboxStore')
 
 class GoogleStore {
-	/***************************************************************************/
-	// Lifecycle
-	/***************************************************************************/
+  /* **************************************************************************/
+  // Lifecycle
+  /* **************************************************************************/
 
-  constructor() {
-  	this.profileSync = null
+  constructor () {
+    this.profileSync = null
     this.unreadSync = null
 
-
     this.bindListeners({
-      handleStartPollSync             : actions.START_POLL_SYNC,
-      handleStopPollSync              : actions.STOP_POLL_SYNC
+      handleStartPollSync: actions.START_POLL_SYNC,
+      handleStopPollSync: actions.STOP_POLL_SYNC
     })
   }
 
-  /***************************************************************************/
-	// Handlers
-	/***************************************************************************/
+  /* **************************************************************************/
+  // Handlers
+  /* **************************************************************************/
 
   /**
   * Saves the intervals so they can be cancelled later
   * @profiles: the profiles interval
   * @param unread: the unread interval
   */
-  handleStartPollSync({profiles, unread}) {
+  handleStartPollSync ({profiles, unread}) {
     clearInterval(this.profileSync)
     this.profileSync = profiles
     clearInterval(this.unreadSync)
@@ -38,7 +37,7 @@ class GoogleStore {
   /**
   * Stops any running intervals
   */
-  handleStopPollSync({}) {
+  handleStopPollSync () {
     clearInterval(this.profileSync)
     this.profileSync = null
     clearInterval(this.unreadSync)
@@ -46,4 +45,4 @@ class GoogleStore {
   }
 }
 
-module.exports = alt.createStore(GoogleStore, 'GoogleStore');
+module.exports = alt.createStore(GoogleStore, 'GoogleStore')

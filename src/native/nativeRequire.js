@@ -1,1 +1,1 @@
-window.nativeRequire = function(name) { return require(name) }
+window.nativeRequire = function (name) { return require(name) }
