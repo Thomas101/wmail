@@ -8,7 +8,9 @@
     "dev-build": "webpack",
     "build": "webpack -p",
     "start": "webpack; electron bin/main/main.js",
-    "package": "node packager.js",
+    "package:darwin": "node packager.js darwin",
+    "package:linux": "node packager.js linux",
+    "package": "node packager.js darwin; node packager.js linux;",
     "test": "standard src/**/*.js"
   },
   "keywords": [],

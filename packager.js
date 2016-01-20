@@ -4,7 +4,9 @@ const path = require('path')
 const fs = require('fs-extra')
 const licenseNames = ['license', 'LICENSE', 'license.md', 'LICENSE.md', 'copying', 'COPYING']
 const child_process = require('child_process')
+const platform = process.argv[2] || 'darwin'
 
+console.log("[START] Packing for " + platform)
 console.log("[START] Webpack")
 child_process.exec('node node_modules/webpack/bin/webpack.js -p', function(error, stdout, stderr) {
 	if (stdout) { console.log(`stdout: ${stdout}`) }
@@ -15,7 +17,7 @@ child_process.exec('node node_modules/webpack/bin/webpack.js -p', function(error
 	packager({
 		dir 				: '.',
 		name 				: 'WMail',
-		platform		: 'darwin',
+		platform		: platform,
 		arch 				: 'all',
 		version 		: '0.36.4',
 		'app-bundle-id' : 'tombeverley.wmail',
