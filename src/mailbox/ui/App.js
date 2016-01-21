@@ -8,8 +8,7 @@ const flux = {
   google: require('../stores/google')
 }
 const GoogleMailboxWindow = require('./Mailbox/GoogleMailboxWindow')
-const MailboxListItem = require('./Sidelist/MailboxListItem')
-const MailboxListItemAdd = require('./Sidelist/MailboxListItemAdd')
+const MailboxList = require('./Sidelist/MailboxList')
 const Welcome = require('./Welcome/Welcome')
 const path = require('path')
 const ipc = window.nativeRequire('electron').ipcRenderer
@@ -191,22 +190,6 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   /**
-  * Renders the mailbox list
-  * @return jsx elements
-  */
-  renderMailboxList: function () {
-    let mailboxItems = []
-    if (this.state.mailbox_ids.length) {
-      mailboxItems = this.state.mailbox_ids.map((id, index) => {
-        return <MailboxListItem mailbox_id={id} key={id} index={index} />
-      })
-    }
-
-    mailboxItems.push(<MailboxListItemAdd key='__add__' />)
-    return mailboxItems
-  },
-
-  /**
   * Renders the mailboxes
   * @return jsx elements
   */
@@ -225,11 +208,9 @@ module.exports = React.createClass({
   */
   render: function () {
     return (
-    <div>
+      <div>
         <div className='master'>
-          <div className='mailbox-list'>
-            {this.renderMailboxList()}
-          </div>
+          <MailboxList />
         </div>
         <div className='detail'>
           <div className='mailboxes'>

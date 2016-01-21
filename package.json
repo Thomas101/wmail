@@ -1,6 +1,6 @@
 {
   "name": "wmail",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "prerelease": true,
   "description": "OSX app wrapper for Google Inbox and Google Mail",
   "main": "bin/main/main.js",
@@ -29,11 +29,15 @@
     "css-loader": "^0.23.1",
     "electron-packager": "^5.2.0",
     "electron-prebuilt": ">=0.36.4",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.8.5",
     "fs-extra": "^0.26.4",
+    "jsx-loader": "^0.13.2",
     "less": "^2.5.3",
     "less-loader": "^2.2.2",
     "standard": "^5.4.1",
     "style-loader": "^0.13.0",
+    "url-loader": "^0.5.7",
     "webpack": "^1.12.11",
     "webpack-target-electron-renderer": "^0.4.0"
   },

@@ -1,21 +1,29 @@
-.mailbox-list {
+.add-mailbox-control {
+	@ITEM_SIZE: 50px;
 
-	.add-mailbox {
-		margin: 20px auto 10px auto;
-		width: 50px;
-		height: 50px;
-		line-height: 40px;
-		overflow: hidden;
-		cursor: pointer;
-		border-radius: 50%;
-		border: 2px solid rgb(119, 122, 123);
-		font-size: 25px;
-		vertical-align: middle;
-		text-align:center;
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	margin-left: -@ITEM_SIZE /2;
+	width: @ITEM_SIZE;
+	height: @ITEM_SIZE;
+	cursor: pointer;;
+	line-height: 40px;
+	border-radius: 50%;
+	color: rgb(119, 122, 123);
+	border: 2px solid rgb(119, 122, 123);
+	font-size: 25px;
+	vertical-align: middle;
+	text-align:center;
 
-		&:hover {
-			color: #CCC;
-			border-color: #CCC;
-		}
+	&:hover {
+		color: #CCC;
+		border-color: #CCC;
+	}
+
+	&, * {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		user-select: none;
 	}
 }

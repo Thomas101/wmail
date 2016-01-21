@@ -44,9 +44,7 @@ module.exports = React.createClass({
   */
   render: function () {
     return (
-    <div {...this.props} className='list-item' onClick={this.handleClick}>
-        <div className='add-mailbox' title='Add Mailbox'>+</div>
-      </div>
+      <div {...this.props} className='add-mailbox-control' title='Add Mailbox' onClick={this.handleClick}>+</div>
     )
   }
 })
