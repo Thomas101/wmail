@@ -138,6 +138,8 @@ module.exports = React.createClass({
   * @param req: the request that came through
   */
   ipcAuthMailboxFailure: function (evt, req) {
+    // Check to see if the user intentially did this
+    if (req.errorMessage.toLowerCase().indexOf('user') === 0) { return; }
     window.alert('Failed to add mailbox')
     flux.google.A.authMailboxFailure(req)
   },

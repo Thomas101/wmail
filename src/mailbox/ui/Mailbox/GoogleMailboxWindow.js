@@ -21,11 +21,15 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   componentDidMount: function () {
+    this.lastSetZoomFactor = 1.0
+    this.isMounted = true
+
     flux.mailbox.S.listen(this.mailboxesChanged)
     ReactDOM.findDOMNode(this).appendChild(this.renderWebviewDOMNode())
   },
 
   componentWillUnmount: function () {
+    this.isMounted = false
     flux.mailbox.S.unlisten(this.mailboxesChanged)
   },
 
@@ -37,12 +41,12 @@ module.exports = React.createClass({
     const mailboxStore = flux.mailbox.S.getState()
     return {
       mailbox: mailboxStore.get(this.props.mailbox_id),
-      isActive: mailboxStore.activeId() === this.props.mailbox_id,
-      zoomFactor: 1.0
+      isActive: mailboxStore.activeId() === this.props.mailbox_id
     }
   },
 
   mailboxesChanged: function (store) {
+    if (this.isMounted === false) { return }
     this.setState({
       mailbox: store.get(this.props.mailbox_id),
       isActive: store.activeId() === this.props.mailbox_id
@@ -50,21 +54,7 @@ module.exports = React.createClass({
   },
 
   shouldComponentUpdate: function (nextProps, nextState) {
-    if (this.state.isActive !== nextState.isActive) {
-      // To prevent react re-rendering the webview and losing state, handle
-      // active manually
-      const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
-      webview.classList[nextState.isActive ? 'add' : 'remove']('active')
-    }
-    if (this.state.mailbox !== nextState.mailbox) {
-      // Set the zoom factor
-      const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
-      if (nextState.zoomFactor !== nextState.mailbox.zoomFactor) {
-        webview.send('zoom-factor-set', { value: nextState.mailbox.zoomFactor })
-        this.setState({ zoomFactor: nextState.mailbox.zoomFactor })
-      }
-    }
-
+    this.updateWebviewDOMNode(nextProps, nextState)
     return false // we never update this element
   },
 
@@ -112,14 +102,24 @@ module.exports = React.createClass({
     webview.setAttribute('src', this.state.mailbox.url)
     webview.setAttribute('data-mailbox', this.state.mailbox.id)
     webview.classList.add('mailbox-window')
+
+    // Active state
     if (this.state.isActive) {
       webview.classList.add('active')
     }
 
     // Bind events
     webview.addEventListener('dom-ready', () => {
+      // Cut out some google stuff we don't want
       webview.insertCSS('.gb_9a { visibility: hidden !important; }')
+
+      // Set the zoom factor
+      webview.send('zoom-factor-set', { value: this.state.mailbox.zoomFactor })
+      this.lastSetZoomFactor = this.state.mailbox.zoomFactor
     })
+
+
+    // Handle messages from the page
     webview.addEventListener('ipc-message', (evt) => {
       if (evt.channel.type === 'page-click') {
         flux.google.A.syncUnreadCounts([this.state.mailbox])
@@ -137,6 +137,31 @@ module.exports = React.createClass({
     })
 
     return webview
+  },
+
+  /**
+  * Update the dom node manually so that react doesn't keep re-loading our
+  * webview element when it decides that it wants to re-render
+  * @param nextProps: the next props
+  * @param nextState: the next state
+  */
+  updateWebviewDOMNode: function(nextProps, nextState) {
+    if (!nextState.mailbox) { return }
+    
+    const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
+
+    // Change the active state
+    if (this.state.isActive !== nextState.isActive) {
+      webview.classList[nextState.isActive ? 'add' : 'remove']('active')
+    }
+
+    if (this.state.mailbox !== nextState.mailbox) {
+      // Set the zoom factor
+      if (nextState.mailbox.zoomFactor !== this.lastSetZoomFactor) {
+        webview.send('zoom-factor-set', { value: nextState.mailbox.zoomFactor })
+        this.lastSetZoomFactor = nextState.mailbox.zoomFactor
+      }
+    }
   },
 
   /**

@@ -59,6 +59,7 @@ class AuthGoogle {
         type: body.type,
         error: err,
         errorString: (err || {}).toString ? (err || {}).toString() : undefined,
+        errorMessage: (err || {}).message ? (err || {}).message : undefined,
         errorStack: (err || {}).stack ? (err || {}).stack : undefined
       })
     })

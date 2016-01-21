@@ -235,13 +235,9 @@ class GoogleActions {
   authMailboxFailure (data) {
     // Really log wha we're getting here to try and resolve issue #2
     console.error('[AUTH ERR]', data)
-    if (data.error) {
-      console.log('[ERROR]', data.error.toString())
-      console.log('[STACK]', data.error.stack)
-      reporter.reportError('[AUTH ERR]' + data.error.toString())
-    } else {
-      reporter.reportError('[AUTH ERR] Unknown')
-    }
+    console.error(data.errorString)
+    console.error(data.errorStack)
+    reporter.reportError('[AUTH ERR]' + data.errorString)
     return { data: data }
   }
 }

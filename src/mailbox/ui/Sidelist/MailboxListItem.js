@@ -16,10 +16,12 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   componentDidMount: function () {
+    this.isMounted = true
     flux.mailbox.S.listen(this.mailboxesChanged)
   },
 
   componentWillUnmount: function () {
+    this.isMounted = false
     flux.mailbox.S.unlisten(this.mailboxesChanged)
   },
 
@@ -36,6 +38,7 @@ module.exports = React.createClass({
   },
 
   mailboxesChanged: function (store) {
+    if (this.isMounted === false) { return }
     this.setState({
       mailbox: store.get(this.props.mailbox_id),
       isActive: store.activeId() === this.props.mailbox_id
@@ -59,7 +62,7 @@ module.exports = React.createClass({
   */
   handleClick: function (evt) {
     evt.preventDefault()
-    flux.mailbox.A.changeActive(this.state.mailbox.id)
+    flux.mailbox.A.changeActive(this.props.mailbox_id)
   },
 
   /**
@@ -72,7 +75,7 @@ module.exports = React.createClass({
       {
         label: 'Delete',
         click: () => {
-          flux.mailbox.A.remove(this.state.mailbox.id)
+          flux.mailbox.A.remove(this.props.mailbox_id)
         }
       },
       { type: 'separator' },
@@ -107,8 +110,10 @@ module.exports = React.createClass({
 
     const containerProps = {
       'className': 'mailbox' + (this.state.isActive ? ' active' : ''),
-      'data-type': this.state.mailbox.type,
-      'title': [
+      'data-type': this.state.mailbox.type
+    }
+    if (this.state.mailbox.email || this.state.mailbox.name) {
+      containerProps.title = [
         this.state.mailbox.email || '',
         (this.state.mailbox.name ? '(' + this.state.mailbox.name + ')' : '')
       ].join(' ')
@@ -125,7 +130,7 @@ module.exports = React.createClass({
     }
 
     return (
-    <div {...this.props} className='list-item' onClick={this.handleClick} onContextMenu={this.handleRightClick}>
+      <div {...this.props} className='list-item' onClick={this.handleClick} onContextMenu={this.handleRightClick}>
         <div {...containerProps}>
           {innerElement}
         </div>
