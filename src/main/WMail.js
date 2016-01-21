@@ -62,6 +62,7 @@ class WMail {
   * Creates and shows the mailbox window
   */
   createMailboxWindow () {
+    const lastWindowState = this.loadWindowState()
     this.mailboxWindow = new BrowserWindow(Object.assign({
       minWidth: 955,
       minHeight: 400,
@@ -70,7 +71,11 @@ class WMail {
       webPreferences: {
         nodeIntegration: true
       }
-    }, this.loadWindowState()))
+    }, lastWindowState))
+    if (lastWindowState.maximized) {
+      this.mailboxWindow.maximize()
+    }
+
     this.mailboxWindow.loadURL('file://' + __dirname + '/../mailbox.html')
 
     // Bind to window events
@@ -84,12 +89,10 @@ class WMail {
       this.mailboxWindow = null
       app.quit()
     })
-    this.mailboxWindow.on('resize', (evt) => {
-      this.saveWindowState()
-    })
-    this.mailboxWindow.on('move', (evt) => {
-      this.saveWindowState()
-    })
+    this.mailboxWindow.on('resize', (evt) => { this.saveWindowState() })
+    this.mailboxWindow.on('move', (evt) => { this.saveWindowState() })
+    this.mailboxWindow.on('maximize', (evt) => { this.saveWindowState() })
+    this.mailboxWindow.on('unmaximize', (evt) => { this.saveWindowState() })
     this.mailboxWindow.webContents.on('will-navigate', (evt) => {
       // We're locking on to our window. This stops file drags redirecting the page
       evt.preventDefault()
@@ -103,7 +106,8 @@ class WMail {
     clearTimeout(this.mailboxWindowSaver)
     this.mailboxWindowSaver = setTimeout(() => {
       const state = {
-        fullscreen: this.mailboxWindow.isMaximized()
+        fullscreen: this.mailboxWindow.isFullScreen(),
+        maximized: this.mailboxWindow.isMaximized()
       }
       if (!this.mailboxWindow.isMaximized() && !this.mailboxWindow.isMinimized()) {
         const position = this.mailboxWindow.getPosition()
