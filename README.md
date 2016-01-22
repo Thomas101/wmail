@@ -42,6 +42,7 @@ A few more screenshots to tickle your tastebuds
 
 
 ### Building from source
+
 Feeling brave and want to build from source? Here's what you need to do
 
 Firstly you need to get a client id and secret from Google. Visit https://console.developers.google.com to get started. You'll need to setup your OAuth Client ID and enable the Gmail, Google+ and Identity Toolkit APIs.
@@ -61,6 +62,10 @@ Then run the following...
 npm install
 npm start
 ```
+
+
+[![Travis Build Status](https://img.shields.io/travis/Thomas101/wmail.svg)](http://travis-ci.org/Thomas101/wmail)
+
 
 
 
