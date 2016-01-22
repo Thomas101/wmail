@@ -118,7 +118,6 @@ module.exports = React.createClass({
       this.lastSetZoomFactor = this.state.mailbox.zoomFactor
     })
 
-
     // Handle messages from the page
     webview.addEventListener('ipc-message', (evt) => {
       if (evt.channel.type === 'page-click') {
@@ -145,9 +144,9 @@ module.exports = React.createClass({
   * @param nextProps: the next props
   * @param nextState: the next state
   */
-  updateWebviewDOMNode: function(nextProps, nextState) {
+  updateWebviewDOMNode: function (nextProps, nextState) {
     if (!nextState.mailbox) { return }
-    
+
     const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
 
     // Change the active state

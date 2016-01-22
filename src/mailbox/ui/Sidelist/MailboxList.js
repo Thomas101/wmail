@@ -1,6 +1,6 @@
 'use strict'
 
-import "./mailboxList.less"
+import './mailboxList.less'
 
 const React = require('react')
 const flux = {
@@ -8,6 +8,8 @@ const flux = {
 }
 const MailboxListItem = require('./MailboxListItem')
 const MailboxListItemAdd = require('./MailboxListItemAdd')
+const GoogleMailboxWindow = require('../Mailbox/GoogleMailboxWindow')
+const Welcome = require('../Welcome/Welcome')
 
 module.exports = React.createClass({
   displayName: 'MailboxList',
@@ -82,13 +84,13 @@ module.exports = React.createClass({
   render: function () {
     return (
       <div {...this.props}>
-        <div className="mailbox-list-shadow-top"></div>
+        <div className='mailbox-list-shadow-top'></div>
         <div className='mailbox-list'>
           {this.state.mailbox_ids.map((id, index) => {
             return <MailboxListItem mailbox_id={id} key={id} index={index} />
           })}
         </div>
-        <div className="mailbox-list-shadow-bottom"></div>
+        <div className='mailbox-list-shadow-bottom'></div>
         <MailboxListItemAdd />
       </div>
     )
