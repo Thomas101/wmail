@@ -84,7 +84,7 @@ module.exports = React.createClass({
         click: () => {
           // This isn't strictly the react way to do things
           const mailbox = document.querySelector('webview[data-mailbox="' + this.props.mailbox_id + '"]')
-          mailbox.setAttribute('src', mailbox.getAttribute('src'))
+          mailbox.setAttribute('src', this.state.mailbox.url)
           flux.google.A.syncMailbox(this.state.mailbox)
         }
       },

@@ -4,19 +4,75 @@ const app = require('app')
 const AppAnalytics = require('./AppAnalytics')
 const AppDirectory = require('appdirectory')
 const LocalStorage = require('node-localstorage').LocalStorage
-const WMail = require('./WMail')
+const MailboxesWindow = require('./MailboxesWindow')
+const ContentWindow = require('./ContentWindow')
 const pkg = require('../package.json')
+const ipcMain = require('electron').ipcMain
+const appMenu = require('./appMenu')
+const Menu = require('menu')
+const shell = require('shell')
+const WindowManager = require('./WindowManager')
+const constants = require('../shared/constants')
 
+/* ****************************************************************************/
+// Global objects
+/* ****************************************************************************/
 const appDirectory = new AppDirectory(pkg.name)
 const localStorage = new LocalStorage(appDirectory.userData())
 const analytics = new AppAnalytics(localStorage)
-const wmail = new WMail({
-  localStorage: localStorage,
-  analytics: analytics
+const windowManager = new WindowManager(new MailboxesWindow(analytics, localStorage))
+
+const appMenuSelectors = {
+  fullQuit: () => { windowManager.quit() },
+  closeWindow: () => {
+    const focused = windowManager.focused()
+    focused ? focused.close() : undefined
+  },
+  fullscreenToggle: () => {
+    const focused = windowManager.focused()
+    focused ? focused.toggleFullscreen() : undefined
+  },
+  reload: () => {
+    const focused = windowManager.focused()
+    focused ? focused.reload() : undefined
+  },
+  devTools: () => {
+    const focused = windowManager.focused()
+    focused ? focused.openDevTools() : undefined
+  },
+  learnMore: () => { shell.openExternal(constants.GITHUB_URL) },
+  bugReport: () => { shell.openExternal(constants.GITHUB_ISSUE_URL) },
+  zoomIn: () => { windowManager.mailboxesWindow.mailboxZoomIn() },
+  zoomOut: () => { windowManager.mailboxesWindow.mailboxZoomOut() },
+  zoomReset: () => { windowManager.mailboxesWindow.mailboxZoomReset() },
+  mailbox: (mailboxId) => { windowManager.mailboxesWindow.switchMailbox(mailboxId) }
+}
+
+/* ****************************************************************************/
+// IPC Events
+/* ****************************************************************************/
+
+ipcMain.on('mailboxes-changed', (evt, body) => {
+  Menu.setApplicationMenu(appMenu.build(appMenuSelectors, body.mailboxes))
 })
 
+ipcMain.on('report-error', (evt, body) => {
+  analytics.appException(windowManager.mailboxesWindow.window, 'renderer', body.error)
+})
+
+ipcMain.on('new-window', (evt, body) => {
+  const window = new ContentWindow(analytics, localStorage)
+  window.start(body.url, body.partition)
+  windowManager.addContentWindow(window)
+})
+
+/* ****************************************************************************/
+// App Events
+/* ****************************************************************************/
+
 app.on('ready', () => {
-  wmail.start()
+  Menu.setApplicationMenu(appMenu.build(appMenuSelectors, []))
+  windowManager.mailboxesWindow.start()
 })
 
 app.on('window-all-closed', function () {
@@ -26,11 +82,16 @@ app.on('window-all-closed', function () {
 })
 
 app.on('activate', function () {
-  if (wmail.mailboxWindow) { wmail.mailboxWindow.show() }
+  windowManager.mailboxesWindow.show()
 })
+
+/* ****************************************************************************/
+// Exceptions
+/* ****************************************************************************/
 
 // Send crash reports
 process.on('uncaughtException', err => {
-  analytics.appException(wmail.mailboxWindow, 'main', err)
+  analytics.appException(windowManager.mailboxesWindow.window, 'main', err)
   console.error(err)
+  console.error(err.stack)
 })

@@ -6,10 +6,11 @@ const flux = {
   google: require('../../stores/google')
 }
 const remote = window.nativeRequire('remote')
-const url = window.nativeRequire('url')
+const URL = window.nativeRequire('url')
 const shell = remote.require('shell')
 const app = remote.require('app')
 const session = remote.require('session')
+const ipc = window.nativeRequire('electron').ipcRenderer
 
 /* eslint-disable react/prop-types */
 
@@ -68,15 +69,28 @@ module.exports = React.createClass({
   * @param webview: the webview element the event came from
   */
   handleOpenNewWindow: function (evt, webview) {
-    const host = url.parse(evt.url).host
-    const whitelist = [
-      'inbox.google.com',
-      'mail.google.com'
-    ]
-    if (whitelist.findIndex(w => host === w) === -1) {
-      shell.openExternal(evt.url)
-    } else {
-      webview.src = evt.url
+    const url = URL.parse(evt.url, true)
+    let mode = 'external'
+    if (url.host === 'inbox.google.com') {
+      mode = 'source'
+    } else if (url.host === 'mail.google.com') {
+      if (url.query.ui === '2') {
+        mode = 'tab'
+      } else {
+        mode = 'source'
+      }
+    }
+
+    switch (mode) {
+      case 'external':
+        shell.openExternal(evt.url)
+        break
+      case 'source':
+        webview.src = evt.url
+        break
+      case 'tab':
+        ipc.send('new-window', { partition: webview.partition, url: evt.url })
+        break
     }
   },
 

@@ -1,7 +1,6 @@
 'use strict'
 
 const Menu = require('menu')
-// const electronLocalshortcut = require('electron-localshortcut')
 
 module.exports = {
   /**
@@ -16,7 +15,7 @@ module.exports = {
         submenu: [
           { label: 'About', selector: 'orderFrontStandardAboutPanel:' },
           { type: 'separator' },
-          { label: 'Hide Window', accelerator: 'Command+W', role: 'hide' },
+          { label: 'Hide Window', accelerator: 'Command+W', click: selectors.closeWindow },
           { label: 'Quit', accelerator: 'Command+Q', click: selectors.fullQuit }
         ]
       },
@@ -67,16 +66,5 @@ module.exports = {
         ]
       }
     ])
-  },
-
-  /**
-  * Binds the hidden shortcuts that don't appear in the menu to a window
-  * @param selectors: the selectors for the non-standard actions
-  */
-  bindHiddenShortcuts: function (selectors) {
-    return
-    /* electronLocalshortcut.register('CmdOrCtrl+H', () => {
-      selectors.hide()
-    }); */
   }
 }

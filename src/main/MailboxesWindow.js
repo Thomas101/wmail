@@ -1,0 +1,95 @@
+'use strict'
+
+const WMailWindow = require('./WMailWindow')
+const AuthGoogle = require('./AuthGoogle')
+const update = require('./update')
+
+class MailboxesWindow extends WMailWindow {
+
+  /* ****************************************************************************/
+  // Lifecycle
+  /* ****************************************************************************/
+
+  constructor (analytics, localStorage) {
+    super(analytics, localStorage, {
+      screenLocationNS: 'mailbox_window_state'
+    })
+    this.heartbeatInterval = null
+    this.authGoogle = new AuthGoogle()
+  }
+
+  start (url) {
+    super.start('file://' + __dirname + '/../mailbox.html')
+  }
+
+  /* ****************************************************************************/
+  // Creation
+  /* ****************************************************************************/
+
+  defaultWindowPreferences () {
+    return {
+      minWidth: 955,
+      minHeight: 400,
+      titleBarStyle: 'hidden',
+      title: 'WMail',
+      webPreferences: {
+        nodeIntegration: true
+      }
+    }
+  }
+
+  createWindow () {
+    super.createWindow.apply(this, Array.from(arguments))
+
+    // We're locking on to our window. This stops file drags redirecting the page
+    this.window.webContents.on('will-navigate', (evt) => {
+      evt.preventDefault()
+    })
+
+    update.checkNow(this.window)
+    this.analytics.appOpened(this.window)
+    this.heartbeatInterval = setInterval(() => {
+      this.analytics.appHeartbeat(this.window)
+    }, 1000 * 60 * 5) // 5 mins
+
+    this.window.on('closed', (evt) => {
+      clearInterval(this.heartbeatInterval)
+    })
+  }
+
+  /* ****************************************************************************/
+  // Mailbox Actions
+  /* ****************************************************************************/
+
+  /**
+  * Zooms the current mailbox in
+  */
+  mailboxZoomIn () {
+    this.window.webContents.send('mailbox-zoom-in', { })
+  }
+
+  /**
+  * Zooms the current mailbox out
+  */
+  mailboxZoomOut () {
+    this.window.webContents.send('mailbox-zoom-out', { })
+  }
+
+  /**
+  * Resets the zoom on the current mailbox
+  */
+  mailboxZoomReset () {
+    this.window.webContents.send('mailbox-zoom-reset', { })
+  }
+
+  /**
+  * Switches mailbox
+  * @param mailboxId: the id of the mailbox to switch to
+  */
+  switchMailbox (mailboxId) {
+    this.window.webContents.send('switch-mailbox', { mailboxId: mailboxId })
+  }
+
+}
+
+module.exports = MailboxesWindow
