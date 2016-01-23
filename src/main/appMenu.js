@@ -50,7 +50,8 @@ module.exports = {
         role: 'window',
         submenu: [
           { label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize' },
-          { label: 'Hide', accelerator: 'CmdOrCtrl+H', role: 'hide' }
+          { label: 'Hide', accelerator: 'CmdOrCtrl+H', role: 'hide' },
+          { label: 'Cycle Windows', accelerator: 'CmdOrCtrl+`', click: selectors.cycleWindows }
         ]
         .concat(mailboxes.length ? [{ type: 'separator' }] : [])
         .concat(mailboxes.map((mailbox, index) => {

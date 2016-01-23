@@ -140,6 +140,13 @@ class WMailWindow extends EventEmitter {
   }
 
   /**
+  * Focuses a window
+  */
+  focus () {
+    this.window.focus()
+  }
+
+  /**
   * Toggles fullscreen mode
   */
   toggleFullscreen () {

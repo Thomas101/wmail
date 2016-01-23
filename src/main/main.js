@@ -45,7 +45,8 @@ const appMenuSelectors = {
   zoomIn: () => { windowManager.mailboxesWindow.mailboxZoomIn() },
   zoomOut: () => { windowManager.mailboxesWindow.mailboxZoomOut() },
   zoomReset: () => { windowManager.mailboxesWindow.mailboxZoomReset() },
-  mailbox: (mailboxId) => { windowManager.mailboxesWindow.switchMailbox(mailboxId) }
+  mailbox: (mailboxId) => { windowManager.mailboxesWindow.switchMailbox(mailboxId) },
+  cycleWindows: () => { windowManager.focusNextWindow() }
 }
 
 /* ****************************************************************************/

@@ -66,6 +66,24 @@ class WindowManager {
     this.mailboxesWindow.close()
   }
 
+  /**
+  * Focuses the next available window
+  */
+  focusNextWindow () {
+    if (this.mailboxesWindow.isFocused()) {
+      if (this.contentWindows.length) {
+        this.contentWindows[0].focus()
+      }
+    } else {
+      const focusedIndex = this.contentWindows.findIndex(w => w.isFocused())
+      if (focusedIndex === -1 || focusedIndex + 1 >= this.contentWindows.length) {
+        this.mailboxesWindow.focus()
+      } else {
+        this.mailboxesWindow[focusedIndex + 1].focus()
+      }
+    }
+  }
+
   /* ****************************************************************************/
   // Querying
   /* ****************************************************************************/
