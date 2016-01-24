@@ -77,7 +77,7 @@ module.exports = React.createClass({
         <br />
         <Toggle
           defaultToggled={this.state.selected.showUnreadBadge}
-          label="Show unread badge"
+          label='Show unread badge'
           onToggle={this.handleShowUnreadBadgeChange} />
       </div>
     )

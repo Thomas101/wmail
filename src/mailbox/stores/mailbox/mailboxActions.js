@@ -52,13 +52,13 @@ class MailboxActions {
   * Moves a mailbox up in the index
   * @param id: the id of the mailbox
   */
-  moveUp (id) { return { id: id} }
+  moveUp (id) { return { id: id } }
 
   /**
   * Moves a mailbox down in the index
   * @param id: the id of the mailbox
   */
-  moveDown (id) { return { id: id} }
+  moveDown (id) { return { id: id } }
 
 }
 

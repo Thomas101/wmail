@@ -148,37 +148,37 @@ module.exports = React.createClass({
     const menuItems = []
     if (!this.state.isFirst) {
       menuItems.push(<MenuItem
-        key="moveup"
+        key='moveup'
         primaryText='Move Up'
         onClick={this.handleMoveUp}
         leftIcon={<FontIcon className='material-icons'>arrow_upward</FontIcon>} />)
     }
     if (!this.state.isLast) {
       menuItems.push(<MenuItem
-        key="movedown"
+        key='movedown'
         primaryText='Move Down'
         onClick={this.handleMoveDown}
         leftIcon={<FontIcon className='material-icons'>arrow_downward</FontIcon>} />)
     }
     if (!this.state.isFirst || !this.state.isLast) {
-      menuItems.push(<Divider key="div-0" />)
+      menuItems.push(<Divider key='div-0' />)
     }
     menuItems.push(
       <MenuItem
-        key="delete"
+        key='delete'
         primaryText='Delete'
         onClick={this.handleDelete}
         leftIcon={<FontIcon className='material-icons'>delete</FontIcon>} />)
-    menuItems.push(<Divider key="div-1" />)
+    menuItems.push(<Divider key='div-1' />)
     menuItems.push(
       <MenuItem
-        key="reload"
+        key='reload'
         primaryText='Reload'
         onClick={this.handleReload}
         leftIcon={<FontIcon className='material-icons'>refresh</FontIcon>} />)
     menuItems.push(
       <MenuItem
-        key="insepct"
+        key='insepct'
         primaryText='Inspect'
         onClick={this.handleInspect}
         leftIcon={<FontIcon className='material-icons'>bug_report</FontIcon>} />)
@@ -225,7 +225,6 @@ module.exports = React.createClass({
           }}/>
       )
     }
-
 
     return (
       <div {...this.props} className='list-item' onClick={this.handleClick} onContextMenu={this.handleOpenPopover}>

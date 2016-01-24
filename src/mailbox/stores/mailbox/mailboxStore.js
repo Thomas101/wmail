@@ -48,7 +48,7 @@ class MailboxStore {
     /**
     * @return true if it is the last mailbox
     */
-    this.isLast = (id) => { return this.indexOf(id) === this.index.length - 1}
+    this.isLast = (id) => { return this.indexOf(id) === this.index.length - 1 }
 
     /**
     * @return true if the store has this item
@@ -168,7 +168,7 @@ class MailboxStore {
   handleMoveUp ({id}) {
     const mailboxIndex = this.index.findIndex(i => i === id)
     if (mailboxIndex !== -1 && mailboxIndex !== 0) {
-      this.index.splice(mailboxIndex - 1, 0, this.index.splice(mailboxIndex, 1)[0]);
+      this.index.splice(mailboxIndex - 1, 0, this.index.splice(mailboxIndex, 1)[0])
       storage.set(INDEX_KEY, this.index)
     }
   }
@@ -179,7 +179,7 @@ class MailboxStore {
   handleMoveDown ({id}) {
     const mailboxIndex = this.index.findIndex(i => i === id)
     if (mailboxIndex !== -1 && mailboxIndex < this.index.length) {
-      this.index.splice(mailboxIndex + 1, 0, this.index.splice(mailboxIndex, 1)[0]);
+      this.index.splice(mailboxIndex + 1, 0, this.index.splice(mailboxIndex, 1)[0])
       storage.set(INDEX_KEY, this.index)
     }
   }
