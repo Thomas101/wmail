@@ -1,15 +1,11 @@
 'use strict'
 
-import './app.less'
-
 const React = require('react')
 const flux = {
   mailbox: require('../stores/mailbox'),
   google: require('../stores/google')
 }
-const GoogleMailboxWindow = require('./Mailbox/GoogleMailboxWindow')
-const Sidelist = require('./Sidelist')
-const Welcome = require('./Welcome/Welcome')
+const AppContent = require('./AppContent')
 const path = require('path')
 const ipc = window.nativeRequire('electron').ipcRenderer
 const remote = window.nativeRequire('remote')
@@ -184,35 +180,7 @@ module.exports = React.createClass({
   // Rendering
   /* **************************************************************************/
 
-  /**
-  * Renders the mailboxes
-  * @return jsx elements
-  */
-  renderMailboxWindows: function () {
-    if (this.state.mailbox_ids.length) {
-      return this.state.mailbox_ids.map(id => {
-        return <GoogleMailboxWindow mailbox_id={id} key={id} />
-      })
-    } else {
-      return <Welcome />
-    }
-  },
-
-  /**
-  * Renders the app
-  */
-  render: function () {    
-    return (
-      <div>
-        <div className='master'>
-          <Sidelist />
-        </div>
-        <div className='detail'>
-          <div className='mailboxes'>
-            {this.renderMailboxWindows()}
-          </div>
-        </div>
-      </div>
-    )
+  render: function () {
+    return <AppContent />
   }
 })
