@@ -4,8 +4,7 @@ const flux = {
   mailbox: require('../../stores/mailbox'),
   google: require('../../stores/google')
 }
-const remote = window.nativeRequire('remote')
-const Menu = remote.require('menu')
+const { Badge, Styles, Popover, Menu, MenuItem, Divider, FontIcon } = require('material-ui')
 
 /* eslint-disable react/prop-types */
 
@@ -33,7 +32,9 @@ module.exports = React.createClass({
     const mailboxStore = flux.mailbox.S.getState()
     return {
       mailbox: mailboxStore.get(this.props.mailbox_id),
-      isActive: mailboxStore.activeId() === this.props.mailbox_id
+      isActive: mailboxStore.activeId() === this.props.mailbox_id,
+      popover: false,
+      popoverAnchor: null
     }
   },
 
@@ -48,6 +49,7 @@ module.exports = React.createClass({
   shouldComponentUpdate: function (nextProps, nextState) {
     if (this.state.mailbox !== nextState.mailbox) { return true }
     if (this.state.isActive !== nextState.isActive) { return true }
+    if (this.state.popover !== nextState.popover) { return true }
 
     return false
   },
@@ -66,36 +68,48 @@ module.exports = React.createClass({
   },
 
   /**
-  * Handles the item being right clicked on
-  * @param evt: the event that fired
+  * Opens the popover
   */
-  handleRightClick: function (evt) {
+  handleOpenPopover: function (evt) {
     evt.preventDefault()
-    Menu.buildFromTemplate([
-      {
-        label: 'Delete',
-        click: () => {
-          flux.mailbox.A.remove(this.props.mailbox_id)
-        }
-      },
-      { type: 'separator' },
-      {
-        label: 'Reload',
-        click: () => {
-          // This isn't strictly the react way to do things
-          const mailbox = document.querySelector('webview[data-mailbox="' + this.props.mailbox_id + '"]')
-          mailbox.setAttribute('src', this.state.mailbox.url)
-          flux.google.A.syncMailbox(this.state.mailbox)
-        }
-      },
-      {
-        label: 'Inspect',
-        click: () => {
-          // This isn't strictly the react way to do things
-          document.querySelector('webview[data-mailbox="' + this.props.mailbox_id + '"]').openDevTools()
-        }
-      }
-    ]).popup(remote.getCurrentWindow())
+    this.setState({ popover: true, popoverAnchor: evt.currentTarget })
+  },
+
+  /**
+  * Closes the popover
+  */
+  handleClosePopover: function () {
+    this.setState({ popover: false })
+  },
+
+  /**
+  * Deletes this mailbox
+  */
+  handleDelete: function() {
+    flux.mailbox.A.remove(this.props.mailbox_id)
+    this.setState({ popover: false })
+  },
+
+  /**
+  * Opens the inspector window for this mailbox
+  */
+  handleInspect: function() {
+    // This isn't strictly the react way to do things
+    document.querySelector('webview[data-mailbox="' + this.props.mailbox_id + '"]').openDevTools()
+
+    this.setState({ popover: false })
+  },
+
+  /**
+  * Reloads this mailbox
+  */
+  handleReload: function() {
+    // This isn't strictly the react way to do things
+    const mailbox = document.querySelector('webview[data-mailbox="' + this.props.mailbox_id + '"]')
+    mailbox.setAttribute('src', this.state.mailbox.url)
+    flux.google.A.syncMailbox(this.state.mailbox)
+
+    this.setState({ popover: false })
   },
 
   /* **************************************************************************/
@@ -129,13 +143,49 @@ module.exports = React.createClass({
       containerProps.className += ' index'
     }
 
+    // Generate badge
+    let badgeElement
+    if (this.state.mailbox.unread) {
+      badgeElement = (
+        <Badge
+          badgeContent={this.state.mailbox.unread}
+          className="unread-badge"
+          badgeStyle={{
+            backgroundColor: 'rgba(238, 54, 55, 0.95)',
+            color: Styles.Colors.red50
+          }}/>
+      )
+    }
+
     return (
-      <div {...this.props} className='list-item' onClick={this.handleClick} onContextMenu={this.handleRightClick}>
+      <div {...this.props} className='list-item' onClick={this.handleClick} onContextMenu={this.handleOpenPopover}>
         <div {...containerProps}>
           {innerElement}
         </div>
-        {this.state.mailbox.unread ? <span className='unread'>{this.state.mailbox.unread}</span> : undefined}
+        {badgeElement}
+        <Popover open={this.state.popover}
+          anchorEl={this.state.popoverAnchor}
+          anchorOrigin={{horizontal: 'middle', vertical: 'center' }}
+          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          onRequestClose={this.handleClosePopover}>
+          <Menu desktop={true} onEscKeyDown={this.handleClosePopover}>
+            <MenuItem
+              primaryText="Delete"
+              onClick={this.handleDelete}
+              leftIcon={<FontIcon className="material-icons">delete</FontIcon>} />
+            <Divider />
+            <MenuItem
+              primaryText="Reload"
+              onClick={this.handleReload}
+              leftIcon={<FontIcon className="material-icons">refresh</FontIcon>} />
+            <MenuItem
+              primaryText="Inspect"
+              onClick={this.handleInspect}
+              leftIcon={<FontIcon className="material-icons">bug_report</FontIcon>} />
+          </Menu>
+        </Popover>
       </div>
     )
+
   }
 })

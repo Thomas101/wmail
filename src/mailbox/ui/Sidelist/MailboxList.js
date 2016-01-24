@@ -7,9 +7,6 @@ const flux = {
   mailbox: require('../../stores/mailbox')
 }
 const MailboxListItem = require('./MailboxListItem')
-const MailboxListItemAdd = require('./MailboxListItemAdd')
-const GoogleMailboxWindow = require('../Mailbox/GoogleMailboxWindow')
-const Welcome = require('../Welcome/Welcome')
 
 module.exports = React.createClass({
   displayName: 'MailboxList',
@@ -51,47 +48,14 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   /**
-  * Renders the mailbox list
-  * @return jsx elements
-  */
-  renderMailboxList: function () {
-    let mailboxItems = []
-    if (this.state.mailbox_ids.length) {
-      mailboxItems = this.state.mailbox_ids.map((id, index) => {
-        return <MailboxListItem mailbox_id={id} key={id} index={index} />
-      })
-    }
-    return mailboxItems
-  },
-
-  /**
-  * Renders the mailboxes
-  * @return jsx elements
-  */
-  renderMailboxWindows: function () {
-    if (this.state.mailbox_ids.length) {
-      return this.state.mailbox_ids.map(id => {
-        return <GoogleMailboxWindow mailbox_id={id} key={id} />
-      })
-    } else {
-      return <Welcome />
-    }
-  },
-
-  /**
   * Renders the app
   */
   render: function () {
     return (
-      <div {...this.props}>
-        <div className='mailbox-list-shadow-top'></div>
-        <div className='mailbox-list'>
-          {this.state.mailbox_ids.map((id, index) => {
-            return <MailboxListItem mailbox_id={id} key={id} index={index} />
-          })}
-        </div>
-        <div className='mailbox-list-shadow-bottom'></div>
-        <MailboxListItemAdd />
+      <div {...this.props} className='mailbox-list'>
+        {this.state.mailbox_ids.map((id, index) => {
+          return <MailboxListItem mailbox_id={id} key={id} index={index} />
+        })}
       </div>
     )
   }

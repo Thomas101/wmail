@@ -6,6 +6,7 @@
   "main": "bin/main/main.js",
   "scripts": {
     "dev-build": "webpack",
+    "dev-watch-client": "webpack --clientfast --watch",
     "build": "webpack -p",
     "start": "webpack; electron bin/main/main.js",
     "package:darwin": "node packager.js darwin",
@@ -48,10 +49,12 @@
     "electron-google-oauth": "^1.1.4",
     "electron-localshortcut": "^0.6.0",
     "googleapis": "^2.1.7",
+    "material-ui": "^0.14.2",
     "node-fetch": "^1.3.3",
     "node-localstorage": "^1.1.2",
     "os-locale": "^1.4.0",
     "react": "^0.14.6",
-    "react-dom": "^0.14.6"
+    "react-dom": "^0.14.6",
+    "react-tap-event-plugin": "^0.2.1"
   }
 }

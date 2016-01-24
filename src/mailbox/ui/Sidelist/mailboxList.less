@@ -12,21 +12,3 @@
 
   &::-webkit-scrollbar {  display: none;  }
 }
-
-.mailbox-list-shadow-top, .mailbox-list-shadow-bottom {
-  display:none;
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  height: 20px;
-  z-index: 2;
-
-  &.mailbox-list-shadow-top {
-    top: @HEAD_HEIGHT;
-    box-shadow: 0px 10px 10px -10px #2F2F2F inset;
-  }
-  &.mailbox-list-shadow-bottom {
-    bottom: @FOOT_HEIGHT;
-    box-shadow: 0px -10px 10px -10px #2F2F2F inset;
-  }
-}

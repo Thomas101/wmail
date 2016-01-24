@@ -8,7 +8,7 @@ const flux = {
   google: require('../stores/google')
 }
 const GoogleMailboxWindow = require('./Mailbox/GoogleMailboxWindow')
-const MailboxList = require('./Sidelist/MailboxList')
+const Sidelist = require('./Sidelist')
 const Welcome = require('./Welcome/Welcome')
 const path = require('path')
 const ipc = window.nativeRequire('electron').ipcRenderer
@@ -107,13 +107,6 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   /**
-  * Stops an event propagating
-  */
-  killEvent: function (evt) {
-    evt.preventDefault()
-  },
-
-  /**
   * Receives a change mailbox event
   * @param evt: the event that fired
   * @param req: the request that came through
@@ -208,11 +201,11 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render: function () {    
     return (
       <div>
         <div className='master'>
-          <MailboxList />
+          <Sidelist />
         </div>
         <div className='detail'>
           <div className='mailboxes'>

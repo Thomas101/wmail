@@ -1,10 +1,14 @@
-var webpack = require('webpack')
-var CopyWebpackPlugin = require('copy-webpack-plugin')
-var webpackTargetElectronRenderer = require('webpack-target-electron-renderer')
-var CleanWebpackPlugin = require('clean-webpack-plugin')
+'use strict'
 
-var options = {
-  devtool: 'source-map',
+const webpack = require('webpack')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const webpackTargetElectronRenderer = require('webpack-target-electron-renderer')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+
+const clientFast = process.argv.findIndex(a => a === '--clientFast') === -1
+
+const options = {
+  devtool: clientFast ? 'eval-cheap-module-source-map' : 'source-map',
   entry: {
     mailbox: [
       'src/shared/',
@@ -17,7 +21,7 @@ var options = {
   },
   plugins: [
     // Clean out our bin dir
-    new CleanWebpackPlugin(['bin'], {
+    new CleanWebpackPlugin(clientFast ? [] : ['bin'], {
       verbose: true,
       dry: false
     }),
@@ -29,12 +33,16 @@ var options = {
     new webpack.IgnorePlugin(new RegExp('^(googleapis|electron)$')),
 
     // Copy our static assets
-    new CopyWebpackPlugin([
+    new CopyWebpackPlugin(
+      clientFast ? [
+        { from: 'src/mailbox/mailbox.html', to: 'mailbox.html', force: true }
+      ] : [
       { from: 'src/main/', to: 'main', force: true },
       { from: 'src/shared/', to: 'shared', force: true },
-      { from: 'package.json', to: '', force: true },
+      { from: 'package.json', to: '', force: !isDev },
       { from: 'src/mailbox/mailbox.html', to: 'mailbox.html', force: true },
-      { from: 'src/native', to: 'native', force: true }
+      { from: 'src/native', to: 'native', force: true },
+      { from: 'src/fonts/', to: 'fonts', force: !isDev }
     ], {
       ignore: [ '.DS_Store' ]
     })
@@ -46,7 +54,8 @@ var options = {
   },
   resolve: {
     extensions: ['', '.js', '.jsx', '.less', '.css'],
-    modulesDirectories: ['web_modules', 'node_modules', __dirname, 'vendor', 'src']
+    root: [__dirname, 'vendor', 'src'],
+    modulesDirectories: ['node_modules']
   },
   module: {
     loaders: [
