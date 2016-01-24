@@ -5,9 +5,25 @@ import './appContent.less'
 const React = require('react')
 const MailboxWindows = require('./Mailbox/MailboxWindows')
 const Sidelist = require('./Sidelist')
+const { Styles } = require('material-ui')
+const appTheme = require('./appTheme')
 
 module.exports = React.createClass({
   displayName: 'AppContent',
+
+  /* **************************************************************************/
+  // Lifecycle
+  /* **************************************************************************/
+
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext () {
+    return {
+      muiTheme: Styles.ThemeManager.getMuiTheme(appTheme)
+    }
+  },
 
   /* **************************************************************************/
   // Rendering
