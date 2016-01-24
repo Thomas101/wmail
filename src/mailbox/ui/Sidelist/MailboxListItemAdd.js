@@ -5,6 +5,8 @@ const flux = {
   google: require('../../stores/google')
 }
 
+/* eslint-disable react/prop-types */
+
 module.exports = React.createClass({
   displayName: 'mailboxListItemAdd',
 
@@ -59,23 +61,23 @@ module.exports = React.createClass({
   */
   render: function () {
     return (
-      <div className="add-mailbox-control">
+      <div className='add-mailbox-control'>
         <IconButton
-          iconClassName="material-icons"
-          tooltip="Add Mailbox"
-          tooltipPosition="top-center"
+          iconClassName='material-icons'
+          tooltip='Add Mailbox'
+          tooltipPosition='top-center'
           onClick={this.handleOpenPopover}
-          iconStyle={{color:Styles.Colors.blueGrey400}}>
+          iconStyle={{ color: Styles.Colors.blueGrey400 }}>
           add_circle
         </IconButton>
         <Popover open={this.state.popover}
           anchorEl={this.state.popoverAnchor}
-          anchorOrigin={{horizontal: 'middle', vertical: 'center' }}
-          targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+          anchorOrigin={{ horizontal: 'middle', vertical: 'center' }}
+          targetOrigin={{ horizontal: 'left', vertical: 'bottom' }}
           onRequestClose={this.handleClosePopover}>
           <Menu desktop={true} onEscKeyDown={this.handleClosePopover}>
-            <MenuItem primaryText="Add Inbox" onClick={this.handleAddInbox} />
-            <MenuItem primaryText="Add Gmail" onClick={this.handleAddGmail} />
+            <MenuItem primaryText='Add Inbox' onClick={this.handleAddInbox} />
+            <MenuItem primaryText='Add Gmail' onClick={this.handleAddGmail} />
           </Menu>
         </Popover>
       </div>

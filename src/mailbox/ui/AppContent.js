@@ -35,7 +35,7 @@ module.exports = React.createClass({
   },
 
   mailboxesChanged: function (store) {
-    this.setState({ mailbox_ids: store.ids()})
+    this.setState({ mailbox_ids: store.ids() })
   },
 
   shouldComponentUpdate: function (nextProps, nextState) {
@@ -67,7 +67,7 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {    
+  render: function () {
     return (
       <div>
         <div className='master'>

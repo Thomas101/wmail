@@ -5,6 +5,8 @@ const { Styles } = require('material-ui')
 const MailboxList = require('./MailboxList')
 const MailboxListItemAdd = require('./MailboxListItemAdd')
 
+/* eslint-disable react/prop-types */
+
 module.exports = React.createClass({
   displayName: 'Sidelist',
 
@@ -16,12 +18,12 @@ module.exports = React.createClass({
   * Renders the app
   */
   render: function () {
-    const { style, className, ...passProps} = this.props
+    const { style, className, ...passProps } = this.props
     return (
       <div
         {...passProps}
         style={Object.assign({ backgroundColor: Styles.Colors.blueGrey900 }, style)}
-        className={'absfill '+ (className || '')}>
+        className={'absfill ' + (className || '')}>
         <MailboxList />
         <MailboxListItemAdd />
       </div>

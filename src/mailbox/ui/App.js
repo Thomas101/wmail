@@ -91,10 +91,7 @@ module.exports = React.createClass({
   },
 
   shouldComponentUpdate: function (nextProps, nextState) {
-    if (!this.state || !nextState) { return true }
-    if (this.state.mailbox_ids.length !== nextState.mailbox_ids.length) { return true }
-    if (this.state.mailbox_ids.find((id, i) => id !== nextState.mailbox_ids[i].id)) { return true }
-
+    // Nothing to ever update here. We're basically using this element as an event manager
     return false
   },
 

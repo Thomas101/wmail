@@ -39,13 +39,13 @@ const options = {
       ] : [
       { from: 'src/main/', to: 'main', force: true },
       { from: 'src/shared/', to: 'shared', force: true },
-      { from: 'package.json', to: '', force: !isDev },
+      { from: 'package.json', to: '', force: true },
       { from: 'src/mailbox/mailbox.html', to: 'mailbox.html', force: true },
       { from: 'src/native', to: 'native', force: true },
-      { from: 'src/fonts/', to: 'fonts', force: !isDev }
-    ], {
-      ignore: [ '.DS_Store' ]
-    })
+      { from: 'src/fonts/', to: 'fonts', force: true }
+      ], {
+        ignore: [ '.DS_Store' ]
+      })
   ],
   output: {
     path: './bin',

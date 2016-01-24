@@ -85,7 +85,7 @@ module.exports = React.createClass({
   /**
   * Deletes this mailbox
   */
-  handleDelete: function() {
+  handleDelete: function () {
     flux.mailbox.A.remove(this.props.mailbox_id)
     this.setState({ popover: false })
   },
@@ -93,7 +93,7 @@ module.exports = React.createClass({
   /**
   * Opens the inspector window for this mailbox
   */
-  handleInspect: function() {
+  handleInspect: function () {
     // This isn't strictly the react way to do things
     document.querySelector('webview[data-mailbox="' + this.props.mailbox_id + '"]').openDevTools()
 
@@ -103,7 +103,7 @@ module.exports = React.createClass({
   /**
   * Reloads this mailbox
   */
-  handleReload: function() {
+  handleReload: function () {
     // This isn't strictly the react way to do things
     const mailbox = document.querySelector('webview[data-mailbox="' + this.props.mailbox_id + '"]')
     mailbox.setAttribute('src', this.state.mailbox.url)
@@ -149,7 +149,7 @@ module.exports = React.createClass({
       badgeElement = (
         <Badge
           badgeContent={this.state.mailbox.unread}
-          className="unread-badge"
+          className='unread-badge'
           badgeStyle={{
             backgroundColor: 'rgba(238, 54, 55, 0.95)',
             color: Styles.Colors.red50
@@ -165,27 +165,26 @@ module.exports = React.createClass({
         {badgeElement}
         <Popover open={this.state.popover}
           anchorEl={this.state.popoverAnchor}
-          anchorOrigin={{horizontal: 'middle', vertical: 'center' }}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          anchorOrigin={{ horizontal: 'middle', vertical: 'center' }}
+          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
           onRequestClose={this.handleClosePopover}>
           <Menu desktop={true} onEscKeyDown={this.handleClosePopover}>
             <MenuItem
-              primaryText="Delete"
+              primaryText='Delete'
               onClick={this.handleDelete}
-              leftIcon={<FontIcon className="material-icons">delete</FontIcon>} />
+              leftIcon={<FontIcon className='material-icons'>delete</FontIcon>} />
             <Divider />
             <MenuItem
-              primaryText="Reload"
+              primaryText='Reload'
               onClick={this.handleReload}
-              leftIcon={<FontIcon className="material-icons">refresh</FontIcon>} />
+              leftIcon={<FontIcon className='material-icons'>refresh</FontIcon>} />
             <MenuItem
-              primaryText="Inspect"
+              primaryText='Inspect'
               onClick={this.handleInspect}
-              leftIcon={<FontIcon className="material-icons">bug_report</FontIcon>} />
+              leftIcon={<FontIcon className='material-icons'>bug_report</FontIcon>} />
           </Menu>
         </Popover>
       </div>
     )
-
   }
 })
