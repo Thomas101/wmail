@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const webpackTargetElectronRenderer = require('webpack-target-electron-renderer')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 
-const clientFast = process.argv.findIndex(a => a === '--clientFast') !== -1
+const clientFast = process.argv.findIndex(a => a.toLowerCase() === '--clientfast') !== -1
 
 const options = {
   devtool: clientFast ? 'eval-cheap-module-source-map' : 'source-map',

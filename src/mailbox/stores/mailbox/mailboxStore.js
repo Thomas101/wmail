@@ -35,6 +35,21 @@ class MailboxStore {
     */
     this.get = (id) => { return this.mailboxes.get(id) || null }
 
+    /**
+    * @return the index of the given mailbox id
+    */
+    this.indexOf = (id) => { return this.index.findIndex(i => i === id) }
+
+    /**
+    * @return true if it is the first mailbox
+    */
+    this.isFirst = (id) => { return this.indexOf(id) === 0 }
+
+    /**
+    * @return true if it is the last mailbox
+    */
+    this.isLast = (id) => { return this.indexOf(id) === this.index.length - 1}
+
     /* ****************************************/
     // Active
     /* ****************************************/
@@ -70,7 +85,9 @@ class MailboxStore {
       handleCreate: actions.CREATE,
       handleRemove: actions.REMOVE,
       handleUpdate: actions.UPDATE,
-      handleChangeActive: actions.CHANGE_ACTIVE
+      handleChangeActive: actions.CHANGE_ACTIVE,
+      handleMoveUp: actions.MOVE_UP,
+      handleMoveDown: actions.MOVE_DOWN
     })
   }
 
@@ -138,6 +155,28 @@ class MailboxStore {
   */
   handleChangeActive ({id}) {
     this.active = id
+  }
+
+  /**
+  * Handles moving the given mailbox id up
+  */
+  handleMoveUp ({id}) {
+    const mailboxIndex = this.index.findIndex(i => i === id)
+    if (mailboxIndex !== -1 && mailboxIndex !== 0) {
+      this.index.splice(mailboxIndex - 1, 0, this.index.splice(mailboxIndex, 1)[0]);
+      storage.set(INDEX_KEY, this.index)
+    }
+  }
+
+  /**
+  * Handles moving the given mailbox id down
+  */
+  handleMoveDown ({id}) {
+    const mailboxIndex = this.index.findIndex(i => i === id)
+    if (mailboxIndex !== -1 && mailboxIndex < this.index.length) {
+      this.index.splice(mailboxIndex + 1, 0, this.index.splice(mailboxIndex, 1)[0]);
+      storage.set(INDEX_KEY, this.index)
+    }
   }
 }
 

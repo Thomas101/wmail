@@ -44,6 +44,22 @@ class MailboxActions {
   */
   changeActive (id) { return { id: id } }
 
+  /* **************************************************************************/
+  // Ordering
+  /* **************************************************************************/
+
+  /**
+  * Moves a mailbox up in the index
+  * @param id: the id of the mailbox
+  */
+  moveUp (id) { return { id: id} }
+
+  /**
+  * Moves a mailbox down in the index
+  * @param id: the id of the mailbox
+  */
+  moveDown (id) { return { id: id} }
+
 }
 
 module.exports = alt.createActions(MailboxActions)

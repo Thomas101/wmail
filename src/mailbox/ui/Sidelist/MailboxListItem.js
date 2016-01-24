@@ -33,6 +33,8 @@ module.exports = React.createClass({
     return {
       mailbox: mailboxStore.get(this.props.mailbox_id),
       isActive: mailboxStore.activeId() === this.props.mailbox_id,
+      isFirst: mailboxStore.isFirst(this.props.mailbox_id),
+      isLast: mailboxStore.isLast(this.props.mailbox_id),
       popover: false,
       popoverAnchor: null
     }
@@ -42,7 +44,9 @@ module.exports = React.createClass({
     if (this.isMounted === false) { return }
     this.setState({
       mailbox: store.get(this.props.mailbox_id),
-      isActive: store.activeId() === this.props.mailbox_id
+      isActive: store.activeId() === this.props.mailbox_id,
+      isFirst: store.isFirst(this.props.mailbox_id),
+      isLast: store.isLast(this.props.mailbox_id)
     })
   },
 
@@ -50,6 +54,8 @@ module.exports = React.createClass({
     if (this.state.mailbox !== nextState.mailbox) { return true }
     if (this.state.isActive !== nextState.isActive) { return true }
     if (this.state.popover !== nextState.popover) { return true }
+    if (this.state.isFirst !== nextState.isFirst) { return true }
+    if (this.state.isLast !== nextState.isLast) { return true }
 
     return false
   },
@@ -112,9 +118,72 @@ module.exports = React.createClass({
     this.setState({ popover: false })
   },
 
+  /**
+  * Moves this item up
+  */
+  handleMoveUp: function () {
+    flux.mailbox.A.moveUp(this.props.mailbox_id)
+
+    this.setState({ popover: false })
+  },
+
+  /**
+  * Moves this item down
+  */
+  handleMoveDown: function () {
+    flux.mailbox.A.moveDown(this.props.mailbox_id)
+
+    this.setState({ popover: false })
+  },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
+
+  /**
+  * Renders the menu items
+  * @return array of jsx elements
+  */
+  renderMenuItems: function () {
+    const menuItems = []
+    if (!this.state.isFirst) {
+      menuItems.push(<MenuItem
+        key="moveup"
+        primaryText='Move Up'
+        onClick={this.handleMoveUp}
+        leftIcon={<FontIcon className='material-icons'>arrow_upward</FontIcon>} />)
+    }
+    if (!this.state.isLast) {
+      menuItems.push(<MenuItem
+        key="movedown"
+        primaryText='Move Down'
+        onClick={this.handleMoveDown}
+        leftIcon={<FontIcon className='material-icons'>arrow_downward</FontIcon>} />)
+    }
+    if (!this.state.isFirst || !this.state.isLast) {
+      menuItems.push(<Divider key="div-0" />)
+    }
+    menuItems.push(
+      <MenuItem
+        key="delete"
+        primaryText='Delete'
+        onClick={this.handleDelete}
+        leftIcon={<FontIcon className='material-icons'>delete</FontIcon>} />)
+    menuItems.push(<Divider key="div-1" />)
+    menuItems.push(
+      <MenuItem
+        key="reload"
+        primaryText='Reload'
+        onClick={this.handleReload}
+        leftIcon={<FontIcon className='material-icons'>refresh</FontIcon>} />)
+    menuItems.push(
+      <MenuItem
+        key="insepct"
+        primaryText='Inspect'
+        onClick={this.handleInspect}
+        leftIcon={<FontIcon className='material-icons'>bug_report</FontIcon>} />)
+    return menuItems
+  },
 
   /**
   * Renders the app
@@ -157,6 +226,7 @@ module.exports = React.createClass({
       )
     }
 
+
     return (
       <div {...this.props} className='list-item' onClick={this.handleClick} onContextMenu={this.handleOpenPopover}>
         <div {...containerProps}>
@@ -169,19 +239,7 @@ module.exports = React.createClass({
           targetOrigin={{ horizontal: 'left', vertical: 'top' }}
           onRequestClose={this.handleClosePopover}>
           <Menu desktop onEscKeyDown={this.handleClosePopover}>
-            <MenuItem
-              primaryText='Delete'
-              onClick={this.handleDelete}
-              leftIcon={<FontIcon className='material-icons'>delete</FontIcon>} />
-            <Divider />
-            <MenuItem
-              primaryText='Reload'
-              onClick={this.handleReload}
-              leftIcon={<FontIcon className='material-icons'>refresh</FontIcon>} />
-            <MenuItem
-              primaryText='Inspect'
-              onClick={this.handleInspect}
-              leftIcon={<FontIcon className='material-icons'>bug_report</FontIcon>} />
+            {this.renderMenuItems()}
           </Menu>
         </Popover>
       </div>
