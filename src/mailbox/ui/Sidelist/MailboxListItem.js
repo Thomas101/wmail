@@ -214,7 +214,7 @@ module.exports = React.createClass({
 
     // Generate badge
     let badgeElement
-    if (this.state.mailbox.unread) {
+    if (this.state.mailbox.showUnreadBadge && this.state.mailbox.unread) {
       badgeElement = (
         <Badge
           badgeContent={this.state.mailbox.unread}

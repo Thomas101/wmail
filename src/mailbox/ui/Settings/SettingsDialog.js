@@ -1,6 +1,7 @@
 const React = require('react')
 const { Dialog, Tabs, Tab, RaisedButton, Divider } = require('material-ui')
 const GeneralSettings = require('./GeneralSettings')
+const AccountSettings = require('./AccountSettings')
 const AdvancedSettings = require('./AdvancedSettings')
 const ipc = window.nativeRequire('electron').ipcRenderer
 const flux = {
@@ -113,10 +114,10 @@ module.exports = React.createClass({
             <GeneralSettings />
           </Tab>
           <Tab label='Accounts' value='accounts'>
-            Accounts
+            <AccountSettings />
           </Tab>
           <Tab label='Advanced' value='advanced'>
-            <AdvancedSettings onRequestClose={this.props.onRequestClose} />
+            <AdvancedSettings />
           </Tab>
         </Tabs>
         <Divider />

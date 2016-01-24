@@ -30,6 +30,7 @@ class Mailbox {
   /* **************************************************************************/
 
   get zoomFactor () { return this.__data__.zoomFactor === undefined ? 1.0 : this.__data__.zoomFactor }
+  get showUnreadBadge () { return this.__data__.showUnreadBadge === undefined ? true : this.__data__.showUnreadBadge }
 
   /* **************************************************************************/
   // Properties : Account Details

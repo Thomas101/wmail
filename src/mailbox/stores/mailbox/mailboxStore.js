@@ -50,6 +50,11 @@ class MailboxStore {
     */
     this.isLast = (id) => { return this.indexOf(id) === this.index.length - 1}
 
+    /**
+    * @return true if the store has this item
+    */
+    this.has = (id) => { return this.indexOf(id) !== -1 }
+
     /* ****************************************/
     // Active
     /* ****************************************/
