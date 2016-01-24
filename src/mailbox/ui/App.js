@@ -3,7 +3,8 @@
 const React = require('react')
 const flux = {
   mailbox: require('../stores/mailbox'),
-  google: require('../stores/google')
+  google: require('../stores/google'),
+  settings: require('../stores/settings')
 }
 const AppContent = require('./AppContent')
 const path = require('path')
@@ -12,7 +13,10 @@ const remote = window.nativeRequire('remote')
 const app = remote.require('app')
 const Tray = remote.require('tray')
 const Menu = remote.require('menu')
+const injectTapEventPlugin = require('react-tap-event-plugin')
 let appTray = null
+
+injectTapEventPlugin()
 
 module.exports = React.createClass({
   displayName: 'App',
@@ -23,6 +27,7 @@ module.exports = React.createClass({
 
   componentDidMount: function () {
     flux.mailbox.S.listen(this.mailboxesChanged)
+    flux.settings.S.listen(this.settingsChanged)
     flux.google.A.startPollSync()
     flux.google.A.syncAllProfiles()
     flux.google.A.syncAllUnreadCounts()
@@ -37,6 +42,7 @@ module.exports = React.createClass({
 
   componentWillUnmount: function () {
     flux.mailbox.S.unlisten(this.mailboxesChanged)
+    flux.settings.S.unlisten(this.settingsChanged)
     flux.google.A.stopPollSync()
 
     ipc.off('switch-mailbox', this.ipcChangeActiveMailbox)
@@ -51,23 +57,43 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  /**
-  * Generates the mailbox info for the state and also pipes
-  * the mailboxes up to the main thread
-  * @param store=mailbox store: the mailbox store to use
-  */
-  generateMailboxInfo: function (store = flux.mailbox.S.getState()) {
-    // Tell main thread about our mailboxes
-    ipc.send('mailboxes-changed', {
-      mailboxes: store.all().map(mailbox => {
-        return { id: mailbox.id, name: mailbox.name, email: mailbox.email }
-      })
-    })
+  getInitialState: function () {
+    return { mailbox_ids: flux.mailbox.S.getState().ids() }
+  },
 
-    // Tell the app about our unread count
-    const unread = store.totalUnreadCount()
+  mailboxesChanged: function (store) {
+    this.setState({ mailbox_ids: store.ids() })
+    this.updateAppBadge(store)
+    this.pushDataToMainThread(store)
+  },
+
+  settingsChanged: function (store) {
+    this.updateAppBadge(undefined, store)
+    this.pushDataToMainThread()
+  },
+
+  shouldComponentUpdate: function (nextProps, nextState) {
+    // Nothing to ever update here. We're basically using this element as an event manager
+    return false
+  },
+
+  /* **************************************************************************/
+  // App
+  /* **************************************************************************/
+
+  /**
+  * Updates the app badge
+  * @param mailboxStore=mailbox store: the mailbox store to use
+  * @param settingsStore=settings store: the settings store to use
+  */
+  updateAppBadge: function (mailboxStore = flux.mailbox.S.getState(), settingsStore = flux.settings.S.getState()) {
+    const unread = mailboxStore.totalUnreadCount()
     if (process.platform === 'darwin') {
-      app.dock.setBadge(unread ? unread.toString() : '')
+      if (settingsStore.showAppBadge()) {
+        app.dock.setBadge(unread ? unread.toString() : '')
+      } else {
+        app.dock.setBadge('')
+      }
     } else {
       const unreadText = unread ? unread + ' unread mail' : 'No unread mail'
       const appIcon = appTray || (appTray = new Tray(path.resolve('icons/app.png')))
@@ -77,22 +103,18 @@ module.exports = React.createClass({
       appIcon.setToolTip(unreadText)
       appIcon.setContextMenu(contextMenu)
     }
-
-    // Return the state update
-    return { mailbox_ids: store.ids() }
   },
 
-  getInitialState: function () {
-    return this.generateMailboxInfo()
-  },
-
-  mailboxesChanged: function (store) {
-    this.setState(this.generateMailboxInfo(store))
-  },
-
-  shouldComponentUpdate: function (nextProps, nextState) {
-    // Nothing to ever update here. We're basically using this element as an event manager
-    return false
+  /**
+  * Pushes updates to the main thread
+  * @param store=mailbox store: the mailbox store to use
+  */
+  pushDataToMainThread: function (store = flux.mailbox.S.getState()) {
+    ipc.send('mailboxes-changed', {
+      mailboxes: store.all().map(mailbox => {
+        return { id: mailbox.id, name: mailbox.name, email: mailbox.email }
+      })
+    })
   },
 
   /* **************************************************************************/

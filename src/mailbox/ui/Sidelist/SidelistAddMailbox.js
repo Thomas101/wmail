@@ -1,4 +1,3 @@
-import './mailboxListItemAdd.less'
 const React = require('react')
 const { IconButton, Styles, Popover, MenuItem, Menu } = require('material-ui')
 const flux = {
@@ -8,7 +7,7 @@ const flux = {
 /* eslint-disable react/prop-types */
 
 module.exports = React.createClass({
-  displayName: 'mailboxListItemAdd',
+  displayName: 'SidelistAddMailbox',
 
   /* **************************************************************************/
   // Data lifecycle
@@ -75,7 +74,7 @@ module.exports = React.createClass({
           anchorOrigin={{ horizontal: 'middle', vertical: 'center' }}
           targetOrigin={{ horizontal: 'left', vertical: 'bottom' }}
           onRequestClose={this.handleClosePopover}>
-          <Menu desktop={true} onEscKeyDown={this.handleClosePopover}>
+          <Menu desktop onEscKeyDown={this.handleClosePopover}>
             <MenuItem primaryText='Add Inbox' onClick={this.handleAddInbox} />
             <MenuItem primaryText='Add Gmail' onClick={this.handleAddGmail} />
           </Menu>

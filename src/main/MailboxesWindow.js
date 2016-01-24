@@ -10,12 +10,18 @@ class MailboxesWindow extends WMailWindow {
   // Lifecycle
   /* ****************************************************************************/
 
-  constructor (analytics, localStorage) {
+  /**
+  * @param analytics: the analytics object
+  * @param localStorage: the localStorage object
+  * @param appSettings: the app settings
+  */
+  constructor (analytics, localStorage, appSettings) {
     super(analytics, localStorage, {
       screenLocationNS: 'mailbox_window_state'
     })
     this.heartbeatInterval = null
     this.authGoogle = new AuthGoogle()
+    this.appSettings = appSettings
   }
 
   start (url) {
@@ -30,7 +36,7 @@ class MailboxesWindow extends WMailWindow {
     return {
       minWidth: 955,
       minHeight: 400,
-      titleBarStyle: 'hidden',
+      titleBarStyle: this.appSettings.hasTitlebar ? 'default' : 'hidden',
       title: 'WMail',
       webPreferences: {
         nodeIntegration: true

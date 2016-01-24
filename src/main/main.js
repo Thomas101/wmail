@@ -13,6 +13,8 @@ const Menu = require('menu')
 const shell = require('shell')
 const WindowManager = require('./WindowManager')
 const constants = require('../shared/constants')
+const exec = require('child_process').exec
+const AppSettings = require('./AppSettings')
 
 /* ****************************************************************************/
 // Global objects
@@ -20,7 +22,8 @@ const constants = require('../shared/constants')
 const appDirectory = new AppDirectory(pkg.name)
 const localStorage = new LocalStorage(appDirectory.userData())
 const analytics = new AppAnalytics(localStorage)
-const windowManager = new WindowManager(new MailboxesWindow(analytics, localStorage))
+const appSettings = new AppSettings(localStorage)
+const windowManager = new WindowManager(new MailboxesWindow(analytics, localStorage, appSettings))
 
 const appMenuSelectors = {
   fullQuit: () => { windowManager.quit() },
@@ -65,6 +68,15 @@ ipcMain.on('new-window', (evt, body) => {
   const window = new ContentWindow(analytics, localStorage)
   window.start(body.url, body.partition)
   windowManager.addContentWindow(window)
+})
+
+ipcMain.on('restart-app', (evt, body) => {
+  exec('"' + process.execPath.replace(/\"/g, '\\"') + '"')
+  windowManager.quit()
+})
+
+ipcMain.on('settings-update', (evt, settings) => {
+  appSettings.update(settings)
 })
 
 /* ****************************************************************************/

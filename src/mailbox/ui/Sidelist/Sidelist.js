@@ -1,14 +1,25 @@
 'use strict'
 
+import './sidelist.less'
+
 const React = require('react')
 const { Styles } = require('material-ui')
 const MailboxList = require('./MailboxList')
-const MailboxListItemAdd = require('./MailboxListItemAdd')
+const SidelistAddMailbox = require('./SidelistAddMailbox')
+const SidelistSettings = require('./SidelistSettings')
 
 /* eslint-disable react/prop-types */
 
 module.exports = React.createClass({
   displayName: 'Sidelist',
+
+  /* **************************************************************************/
+  // Data lifecyle
+  /* **************************************************************************/
+
+  shouldComponentUpdate: function (nextProps, nextState) {
+    return false
+  },
 
   /* **************************************************************************/
   // Rendering
@@ -25,7 +36,8 @@ module.exports = React.createClass({
         style={Object.assign({ backgroundColor: Styles.Colors.blueGrey900 }, style)}
         className={'absfill ' + (className || '')}>
         <MailboxList />
-        <MailboxListItemAdd />
+        <SidelistAddMailbox />
+        <SidelistSettings />
       </div>
     )
   }

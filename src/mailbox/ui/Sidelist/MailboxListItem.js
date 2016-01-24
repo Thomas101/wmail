@@ -168,7 +168,7 @@ module.exports = React.createClass({
           anchorOrigin={{ horizontal: 'middle', vertical: 'center' }}
           targetOrigin={{ horizontal: 'left', vertical: 'top' }}
           onRequestClose={this.handleClosePopover}>
-          <Menu desktop={true} onEscKeyDown={this.handleClosePopover}>
+          <Menu desktop onEscKeyDown={this.handleClosePopover}>
             <MenuItem
               primaryText='Delete'
               onClick={this.handleDelete}

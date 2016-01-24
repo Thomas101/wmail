@@ -31,7 +31,8 @@ child_process.exec('node node_modules/webpack/bin/webpack.js -p', function (erro
       '/webpack.config.js',
       '/screenshot.png',
       '/README.md',
-      '/src'
+      '/src',
+      '/github_images'
     ]
     .concat(Object.keys(pkg.devDependencies).map(d => '/node_modules/' + d))
     .join('|') + ')'
