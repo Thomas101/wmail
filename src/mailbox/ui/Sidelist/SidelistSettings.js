@@ -12,7 +12,7 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState: function () {
-    return { settings: true }
+    return { settings: false }
   },
 
   /* **************************************************************************/

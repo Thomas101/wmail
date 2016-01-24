@@ -51,9 +51,9 @@ class SettingsStore {
     this.getProxyServer = () => {
       return this.__value__('proxyServer', { enabled: false })
     }
-    this.proxyServerValid = () => {
+    this.proxyServerUrl = () => {
       const proxy = this.getProxyServer()
-      return proxy.enabled && proxy.host && proxy.port
+      return proxy.host + ':' + proxy.port
     }
 
     /* ****************************************/

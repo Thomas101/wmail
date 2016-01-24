@@ -50,6 +50,10 @@ class AppSettings {
   /* ****************************************************************************/
 
   get hasTitlebar () { return this.loadValue('showTitlebar', false) }
+  get proxyEnabled () { return this.loadValue('proxyServer', { enabled: false }).enabled }
+  get proxyHost () { return this.loadValue('proxyServer', { enabled: false }).host }
+  get proxyPort () { return this.loadValue('proxyServer', { enabled: false }).port }
+  get proxyUrl () { return this.proxyHost + ':' + this.proxyPort }
 }
 
 module.exports = AppSettings

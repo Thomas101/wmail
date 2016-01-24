@@ -20,7 +20,7 @@ class MailboxesWindow extends WMailWindow {
       screenLocationNS: 'mailbox_window_state'
     })
     this.heartbeatInterval = null
-    this.authGoogle = new AuthGoogle()
+    this.authGoogle = new AuthGoogle(appSettings)
     this.appSettings = appSettings
   }
 

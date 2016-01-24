@@ -36,7 +36,7 @@ module.exports = React.createClass({
 
   mailboxesChanged: function (store) {
     const all = store.all()
-    if (store.has(this.state.selected.id)) {
+    if (this.state.selected && store.has(this.state.selected.id)) {
       this.setState({ mailboxes: all })
     } else {
       this.setState({ mailboxes: all, selected: all[0] })
@@ -65,20 +65,33 @@ module.exports = React.createClass({
   * Renders the app
   */
   render: function () {
+    let content
+    if (this.state.selected) {
+      content = (
+        <div>
+          <br />
+          <Toggle
+            defaultToggled={this.state.selected.showUnreadBadge}
+            label='Show unread badge'
+            onToggle={this.handleShowUnreadBadgeChange} />
+        </div>
+      )
+    } else {
+      content = (<div><small>No accounts available</small></div>)
+    }
+
     return (
       <div {...this.props}>
-        <SelectField value={this.state.selected.id} onChange={this.handleAccountChange}>
+        <SelectField
+          value={this.state.selected ? this.state.selected.id : undefined}
+          onChange={this.handleAccountChange}>
           {
             this.state.mailboxes.map(m => {
               return <MenuItem value={m.id} key={m.id} primaryText={m.email || m.name || m.id} />
             })
           }
         </SelectField>
-        <br />
-        <Toggle
-          defaultToggled={this.state.selected.showUnreadBadge}
-          label='Show unread badge'
-          onToggle={this.handleShowUnreadBadgeChange} />
+        {content}
       </div>
     )
   }

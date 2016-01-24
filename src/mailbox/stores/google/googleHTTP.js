@@ -1,8 +1,23 @@
 const google = window.nativeRequire('googleapis')
 const gPlus = google.plus('v1')
 const gmail = google.gmail('v1')
+const flux = {
+  settings: require('../settings')
+}
 
-module.exports = {
+class GoogleHTTP {
+  /**
+  * @return the proxy information
+  */
+  proxyInformation () {
+    const store = flux.settings.S.getState()
+    if (store.getProxyServer().enabled) {
+      return store.proxyServerUrl()
+    } else {
+      return undefined
+    }
+  }
+
   /**
   * Syncs a profile for a mailbox
   * @param mailbox: the mailbox to sync the profile for
@@ -12,7 +27,11 @@ module.exports = {
   syncProfile (mailbox, auth) {
     if (auth) {
       return new Promise((resolve, reject) => {
-        gPlus.people.get({ userId: 'me', auth: auth }, (err, response) => {
+        gPlus.people.get({
+          userId: 'me',
+          auth: auth,
+          proxy: this.proxyInformation()
+        }, (err, response) => {
           if (err) {
             reject({ mailboxId: mailbox.id, err: err })
           } else {
@@ -26,7 +45,7 @@ module.exports = {
         err: 'Local - Mailbox missing authentication information'
       })
     }
-  },
+  }
 
   /**
   * Syncs the unread for an account
@@ -50,7 +69,8 @@ module.exports = {
         gmail.users.threads.list({
           userId: mailbox.email,
           q: 'label:inbox label:unread',
-          auth: auth
+          auth: auth,
+          proxy: this.proxyInformation()
         }, (err, response) => {
           if (err) {
             reject({ mailboxId: mailbox.id, err: err })
@@ -62,3 +82,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = new GoogleHTTP()

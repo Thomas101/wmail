@@ -3,13 +3,19 @@
 const ipcMain = require('electron').ipcMain
 const electronGoogleOauth = require('electron-google-oauth')
 const credentials = require('../shared/credentials')
+const HttpsProxyAgent = require('https-proxy-agent')
 
 class AuthGoogle {
   /* ****************************************************************************/
   // Lifecycle
   /* ****************************************************************************/
 
-  constructor () {
+  /**
+  * @param appSettings: the settings for the app
+  */
+  constructor (appSettings) {
+    this.appSettings = appSettings
+
     ipcMain.on('auth-google', (evt, body) => {
       this.handleAuthGoogle(evt, body)
     })
@@ -25,6 +31,11 @@ class AuthGoogle {
   * @param body: the body sent to us
   */
   handleAuthGoogle (evt, body) {
+    let proxyAgent
+    if (this.appSettings.proxyEnabled) {
+      proxyAgent = new HttpsProxyAgent(this.appSettings.proxyUrl)
+    }
+
     electronGoogleOauth(undefined, {
       useContentSize: true,
       center: true,
@@ -38,7 +49,7 @@ class AuthGoogle {
         nodeIntegration: false,
         partition: 'persist:' + body.id
       }
-    }).getAccessToken(
+    }, proxyAgent).getAccessToken(
       [
         'https://www.googleapis.com/auth/plus.me',
         'profile',

@@ -84,7 +84,7 @@ module.exports = React.createClass({
           <ColXS size='6'>
             <TextField
               ref='proxy_host'
-              hintText='192.168.1.1'
+              hintText='http://192.168.1.1'
               floatingLabelText='Proxy Server Host'
               defaultValue={this.state.proxyHost}
               onChange={this.handleProxyValueChanged}

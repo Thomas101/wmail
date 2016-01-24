@@ -20,6 +20,14 @@ class SettingsActions {
   * @param port: the port
   */
   enableProxyServer (host, port) {
+    if (host) {
+      if (host.indexOf('://') === -1) {
+        host = 'http://' + host
+      }
+    }
+    if (port) {
+      port = port.replace(/[^0-9\\.]+/g, '')
+    }
     this.setProxyServer({ host: host, port: port, enabled: true })
     return {}
   }
