@@ -52,7 +52,10 @@ class PackageBuilder {
           '/screenshot.png',
           '/README.md',
           '/src',
-          '/github_images'
+          '/github_images',
+          '/WMail-linux-ia32',
+          '/WMail-linux-x64',
+          '/WMail-darwin-x64'
         ]
         .concat(Object.keys(pkg.devDependencies).map(d => '/node_modules/' + d))
         .join('|') + ')'
