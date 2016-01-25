@@ -33,7 +33,7 @@ class MailboxesWindow extends WMailWindow {
   /* ****************************************************************************/
 
   defaultWindowPreferences () {
-    return {
+    return Object.assign(super.defaultWindowPreferences(), {
       minWidth: 955,
       minHeight: 400,
       titleBarStyle: this.appSettings.hasTitlebar ? 'default' : 'hidden',
@@ -41,7 +41,7 @@ class MailboxesWindow extends WMailWindow {
       webPreferences: {
         nodeIntegration: true
       }
-    }
+    })
   }
 
   createWindow () {

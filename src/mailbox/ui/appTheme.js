@@ -11,7 +11,7 @@ module.exports = Object.freeze({
   palette: {
     primary1Color: Colors.lightBlue600,
     primary2Color: Colors.lightBlue500,
-    primary3Color: Colors.lightBlue100,
+    primary3Color: Colors.blueGrey100,
     accent1Color: Colors.redA200,
     accent2Color: Colors.grey100,
     accent3Color: Colors.grey600,

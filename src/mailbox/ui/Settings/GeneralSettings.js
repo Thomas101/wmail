@@ -66,10 +66,14 @@ module.exports = React.createClass({
   render: function () {
     return (
       <div {...this.props}>
-        <Toggle
-          defaultToggled={this.state.showTitlebar}
-          label={<span><span>Show titlebar</span> <small>(Changes applied after restart)</small></span>}
-          onToggle={this.handleToggleTitlebar} />
+        {
+          process.platform !== 'darwin' ? undefined : (
+            <Toggle
+              defaultToggled={this.state.showTitlebar}
+              label={<span><span>Show titlebar</span> <small>(Changes applied after restart)</small></span>}
+              onToggle={this.handleToggleTitlebar} />
+          )
+        }
         <Toggle
           defaultToggled={this.state.showAppBadge}
           label='Show app unread badge'

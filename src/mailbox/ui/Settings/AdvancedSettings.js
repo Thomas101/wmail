@@ -80,7 +80,7 @@ module.exports = React.createClass({
           defaultToggled={this.state.proxyEnabled}
           label='Enable Proxy Server'
           onToggle={this.handleProxyToggle} />
-        <small>You need to set the proxy settings here as well as on your OS to ensure all requests use your proxy server</small>
+        <small>You also need to set the proxy settings on your OS to ensure all requests use the server</small>
         <Row>
           <ColXS size='6'>
             <TextField

@@ -7,14 +7,13 @@ const flux = {
   settings: require('../stores/settings')
 }
 const AppContent = require('./AppContent')
-const path = require('path')
+const path = window.nativeRequire('path')
 const ipc = window.nativeRequire('electron').ipcRenderer
 const remote = window.nativeRequire('remote')
 const app = remote.require('app')
 const Tray = remote.require('tray')
 const Menu = remote.require('menu')
 const injectTapEventPlugin = require('react-tap-event-plugin')
-let appTray = null
 
 injectTapEventPlugin()
 
@@ -95,13 +94,18 @@ module.exports = React.createClass({
         app.dock.setBadge('')
       }
     } else {
+      if (!this.appTray) {
+        const currentPath = decodeURIComponent(window.location.href.replace('file://', ''))
+        const iconPath = path.join(path.dirname(currentPath), 'icons/app.png')
+        this.appTray = new Tray(iconPath)
+      }
+
       const unreadText = unread ? unread + ' unread mail' : 'No unread mail'
-      const appIcon = appTray || (appTray = new Tray(path.resolve('icons/app.png')))
       const contextMenu = Menu.buildFromTemplate([
         { label: unreadText }
       ])
-      appIcon.setToolTip(unreadText)
-      appIcon.setContextMenu(contextMenu)
+      this.appTray.setToolTip(unreadText)
+      this.appTray.setContextMenu(contextMenu)
     }
   },
 
