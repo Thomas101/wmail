@@ -6,11 +6,9 @@ A Mac app wrapper around Google Inbox and GMail. Multiple account support, unrea
 
 Download the latest pre-release for your platform (1.1.5) 
 
-[OSX](https://github.com/Thomas101/wmail/releases/download/v1.1.5/WMail_1_1_5_osx_prerelease.zip)
-
-[linux 32-bit](https://github.com/Thomas101/wmail/releases/download/v1.1.5/WMail_1_1_5_linux32_prerelease.zip)
-
-[linux 64-bit](https://github.com/Thomas101/wmail/releases/download/v1.1.5/WMail_1_1_5_linux64_prerelease.zip.zip)
+* [OSX](https://github.com/Thomas101/wmail/releases/download/v1.1.5/WMail_1_1_5_osx_prerelease.zip)
+* [linux 32-bit](https://github.com/Thomas101/wmail/releases/download/v1.1.5/WMail_1_1_5_linux32_prerelease.zip)
+* [linux 64-bit](https://github.com/Thomas101/wmail/releases/download/v1.1.5/WMail_1_1_5_linux64_prerelease.zip.zip)
 
 [View all releases](https://github.com/Thomas101/wmail/releases)
 
