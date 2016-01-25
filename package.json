@@ -46,7 +46,7 @@
     "alt": "^0.18.1",
     "appdirectory": "^0.1.0",
     "compare-version": "^0.1.2",
-    "electron-google-oauth": "^1.1.4",
+    "electron-google-oauth": "^1.2.0",
     "electron-localshortcut": "^0.6.0",
     "flexboxgrid": "^6.3.0",
     "googleapis": "^2.1.7",
