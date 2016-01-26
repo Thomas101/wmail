@@ -21,8 +21,8 @@ const AppSettings = require('./AppSettings')
 /* ****************************************************************************/
 const appDirectory = new AppDirectory(pkg.name)
 const localStorage = new LocalStorage(appDirectory.userData())
-const analytics = new AppAnalytics(localStorage)
 const appSettings = new AppSettings(localStorage)
+const analytics = new AppAnalytics(localStorage, appSettings)
 const windowManager = new WindowManager(new MailboxesWindow(analytics, localStorage, appSettings))
 
 const appMenuSelectors = {

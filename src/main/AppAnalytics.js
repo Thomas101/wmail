@@ -5,13 +5,15 @@ const fetch = require('node-fetch')
 const credentials = require('../shared/credentials')
 const osLanguage = require('os-locale').sync()
 const pkg = require('../package.json')
+const HttpsProxyAgent = require('https-proxy-agent')
 
 class AppAnalytics {
   /* ****************************************************************************/
   // Lifecycle
   /* ****************************************************************************/
-  constructor (localStorage) {
+  constructor (localStorage, appSettings) {
     this.localStorage = localStorage
+    this.appSettings = appSettings
 
     if (!this.localStorage.getItem('ga-id')) {
       this.localStorage.setItem('ga-id', uuid.uuid4())
@@ -29,14 +31,17 @@ class AppAnalytics {
   * @return the querystring with all arguments setup
   */
   send (window, args) {
+    // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
+
     const full_args = Object.assign({
       v: 1,
       tid: credentials.GOOGLE_ANALYTICS_ID,
       cid: this.id,
-      t: 'pageview',
+      t: 'screenview',
       vp: window && window.getSize ? window.getSize().join('x') : undefined,
       ul: osLanguage,
-      ua: window && window.webContents && window.webContents.getUserAgent ? window.webContents.getUserAgent() : undefined
+      an: pkg.name,
+      av: process.platform + '-' + pkg.version
     }, args)
 
     const qs = Object.keys(full_args).reduce((acc, k) => {
@@ -45,7 +50,10 @@ class AppAnalytics {
     }, []).join('&')
 
     const url = 'https://www.google-analytics.com/collect?' + qs
-    return fetch(url, { method: 'post' })
+    return fetch(url, {
+      method: 'post',
+      agent: this.appSettings.proxyEnabled ? new HttpsProxyAgent(this.appSettings.proxyUrl) : undefined
+    })
   }
 
   /**
@@ -55,8 +63,7 @@ class AppAnalytics {
   appOpened (window) {
     if (!credentials.GOOGLE_ANALYTICS_ID) { return Promise.resolve() }
     return this.send(window, {
-      dp: '/open/' + pkg.version,
-      dt: 'open'
+      cd: 'mailboxes'
     })
   }
 
@@ -67,8 +74,7 @@ class AppAnalytics {
   appHeartbeat (window) {
     if (!credentials.GOOGLE_ANALYTICS_ID) { return Promise.resolve() }
     return this.send(window, {
-      dp: '/heartbeat/' + pkg.version,
-      dt: 'heartbeat'
+      cd: 'mailboxes'
     })
   }
 
