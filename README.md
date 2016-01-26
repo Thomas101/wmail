@@ -25,19 +25,15 @@ WMail should work just by running it like any other app. If you have Gatekeeper 
 
 <a href="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup1.png" target="_blank"><img src="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup1.png" height="250" /></a>
 
-3.) Double click on the app to launch it. Depending on your configuration you may see a warning dialog from Gatekeeper that the app is from an unidentified developer
+3.) Depending on your configuration Gatekeeper may prevent you from opening the app by just double clicking on it the first time. This is because it will be from an unidentifier developer. Instead, right click on the app and select open
 
 <a href="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup2.png" target="_blank"><img src="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup2.png" height="250" /></a>
 
-4.) Dismiss this warning and open System Preferences. In here select the "Security & Privacy option
+4.) You'll see a warning explaining this to you. If you press open the app will open.
 
 <a href="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup3.png" target="_blank"><img src="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup3.png" height="250" /></a>
 
-5.) You'll notice at the bottom of the window it informs you that WMail wasn't opened because it's from an unidentified developer. Press open anyway to launch the app
-
-<a href="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup4.png" target="_blank"><img src="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup4.png" height="250" /></a>
-
-6.) Once you've done this the first time you'll be able to launch the app from applications at any time
+5.) Once you've done this the first time you'll be able to launch the app from applications at any time by double clicking on it
 
 ### Screenshots
 A few more screenshots to tickle your tastebuds
