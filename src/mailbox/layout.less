@@ -9,6 +9,10 @@ html, body {
 
 * {
    box-sizing: border-box;
+   
+   // Push everything onto the gpu to make it feel more snappy
+   -webkit-backface-visibility:hidden;
+   backface-visibility:hidden;
 }
 
 .absfill {
