@@ -1,4 +1,4 @@
-module.exports = function(callback) {
+module.exports = function (callback) {
   'use strict'
 
   const electron = require('electron')
