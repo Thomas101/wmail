@@ -11,11 +11,17 @@ const shell = remote.require('shell')
 const app = remote.require('app')
 const session = remote.require('session')
 const ipc = window.nativeRequire('electron').ipcRenderer
+const mailboxDispatch = require('../Dispatch/mailboxDispatch')
+const TimerMixin = require('react-timer-mixin')
 
 /* eslint-disable react/prop-types */
 
 module.exports = React.createClass({
   displayName: 'GoogleMailboxWindow',
+  mixins: [TimerMixin],
+  propTypes: {
+    mailbox_id: React.PropTypes.string.isRequired
+  },
 
   /* **************************************************************************/
   // Lifecycle
@@ -26,11 +32,17 @@ module.exports = React.createClass({
     this.isMounted = true
 
     flux.mailbox.S.listen(this.mailboxesChanged)
+    mailboxDispatch.on('reload', this.reload)
+    mailboxDispatch.on('devtools', this.openDevTools)
+    mailboxDispatch.on('refocus', this.refocus)
     ReactDOM.findDOMNode(this).appendChild(this.renderWebviewDOMNode())
   },
 
   componentWillUnmount: function () {
     this.isMounted = false
+    mailboxDispatch.off('reload', this.reload)
+    mailboxDispatch.off('devtools', this.openDevTools)
+    mailboxDispatch.off('refocus', this.refocus)
     flux.mailbox.S.unlisten(this.mailboxesChanged)
   },
 
@@ -60,7 +72,41 @@ module.exports = React.createClass({
   },
 
   /* **************************************************************************/
-  // Events
+  // Dispatcher Events
+  /* **************************************************************************/
+
+  /**
+  * Handles a reload dispatch event
+  * @param evt: the event that fired
+  */
+  reload: function (evt) {
+    if (evt.mailboxId === this.props.mailbox_id) {
+      const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
+      webview.setAttribute('src', this.state.mailbox.url)
+      flux.google.A.syncMailbox(this.state.mailbox)
+    }
+  },
+
+  /**
+  * Handles the inspector dispatch event
+  * @param evt: the event that fired
+  */
+  openDevTools: function (evt) {
+    if (evt.mailboxId === this.props.mailbox_id) {
+      const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
+      webview.openDevTools()
+    }
+  },
+
+  refocus: function (evt) {
+    if (evt.mailboxId === this.props.mailbox_id || (!evt.mailboxId && this.state.isActive)) {
+      const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
+      webview.focus()
+    }
+  },
+
+  /* **************************************************************************/
+  // UI Events
   /* **************************************************************************/
 
   /**
@@ -120,6 +166,9 @@ module.exports = React.createClass({
     // Active state
     if (this.state.isActive) {
       webview.classList.add('active')
+      setTimeout(() => {
+        webview.focus()
+      })
     }
 
     // Bind events
@@ -148,6 +197,12 @@ module.exports = React.createClass({
         webview.setAttribute('src', this.state.mailbox.url)
       }
     })
+    webview.addEventListener('focus', (evt) => {
+      mailboxDispatch.focused(this.props.mailbox_id)
+    })
+    webview.addEventListener('blur', (evt) => {
+      mailboxDispatch.blurred(this.props.mailbox_id)
+    })
 
     return webview
   },
@@ -165,7 +220,12 @@ module.exports = React.createClass({
 
     // Change the active state
     if (this.state.isActive !== nextState.isActive) {
-      webview.classList[nextState.isActive ? 'add' : 'remove']('active')
+      if (nextState.isActive) {
+        webview.classList.add('active')
+        webview.focus()
+      } else {
+        webview.classList.remove('active')
+      }
     }
 
     if (this.state.mailbox !== nextState.mailbox) {

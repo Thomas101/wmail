@@ -13,23 +13,31 @@ const remote = window.nativeRequire('remote')
 const app = remote.require('app')
 const Tray = remote.require('tray')
 const Menu = remote.require('menu')
-const injectTapEventPlugin = require('react-tap-event-plugin')
+const mailboxDispatch = require('./Dispatch/mailboxDispatch')
+const TimerMixin = require('react-timer-mixin')
+const constants = require('shared/constants')
 
+const injectTapEventPlugin = require('react-tap-event-plugin')
 injectTapEventPlugin()
 
 module.exports = React.createClass({
   displayName: 'App',
+  mixins: [TimerMixin],
 
   /* **************************************************************************/
   // Lifecycle
   /* **************************************************************************/
 
   componentDidMount: function () {
+    this.forceFocusTO = null
+
     flux.mailbox.S.listen(this.mailboxesChanged)
     flux.settings.S.listen(this.settingsChanged)
     flux.google.A.startPollSync()
     flux.google.A.syncAllProfiles()
     flux.google.A.syncAllUnreadCounts()
+
+    mailboxDispatch.on('blurred', this.mailboxBlurred)
 
     ipc.on('switch-mailbox', this.ipcChangeActiveMailbox)
     ipc.on('auth-google-complete', this.ipcAuthMailboxSuccess)
@@ -50,6 +58,8 @@ module.exports = React.createClass({
     ipc.off('mailbox-zoom-in', this.ipcZoomIn)
     ipc.off('mailbox-zoom-out', this.ipcZoomOut)
     ipc.off('mailbox-zoom-reset', this.ipcZoomReset)
+
+    mailboxDispatch.off('blurred', this.mailboxBlurred)
   },
 
   /* **************************************************************************/
@@ -197,6 +207,33 @@ module.exports = React.createClass({
     if (mailboxId) {
       flux.mailbox.A.update(mailboxId, { zoomFactor: 1.0 })
     }
+  },
+
+  /**
+  * Handles a mailbox bluring by trying to refocus the mailbox
+  * @param evt: the event that fired
+  */
+  mailboxBlurred: function (evt) {
+    // Requeue the event to run on the end of the render cycle
+    this.setTimeout(() => {
+      const active = document.activeElement
+      if (active.tagName === 'WEBVIEW') {
+        // Nothing to do, already focused on mailbox
+        this.clearInterval(this.forceFocusTO)
+      } else if (active.tagName === 'BODY') {
+        // Focused on body, just dip focus onto the webview
+        this.clearInterval(this.forceFocusTO)
+        mailboxDispatch.refocus()
+      } else {
+        // focused on some element in the ui, poll until we move back to body
+        this.forceFocusTO = this.setInterval(() => {
+          if (document.activeElement.tagName === 'BODY') {
+            this.clearInterval(this.forceFocusTO)
+            mailboxDispatch.refocus()
+          }
+        }, constants.REFOCUS_MAILBOX_INTERVAL_MS)
+      }
+    }, constants.REFOCUS_MAILBOX_INTERVAL_MS)
   },
 
   /* **************************************************************************/

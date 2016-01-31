@@ -1,6 +1,6 @@
 const React = require('react')
 const { Toggle, TextField } = require('material-ui')
-const { Row, ColXS } = require('../Flexbox')
+const { Row, Col } = require('../Flexbox')
 const flux = {
   settings: require('../../stores/settings')
 }
@@ -82,7 +82,7 @@ module.exports = React.createClass({
           onToggle={this.handleProxyToggle} />
         <small>You also need to set the proxy settings on your OS to ensure all requests use the server</small>
         <Row>
-          <ColXS size='6'>
+          <Col xs={6}>
             <TextField
               ref='proxy_host'
               hintText='http://192.168.1.1'
@@ -90,8 +90,8 @@ module.exports = React.createClass({
               defaultValue={this.state.proxyHost}
               onChange={this.handleProxyValueChanged}
               disabled={!this.state.proxyEnabled} />
-          </ColXS>
-          <ColXS size='6'>
+          </Col>
+          <Col xs={6}>
             <TextField
               ref='proxy_port'
               hintText='8080'
@@ -99,7 +99,7 @@ module.exports = React.createClass({
               defaultValue={this.state.proxyPort}
               onChange={this.handleProxyValueChanged}
               disabled={!this.state.proxyEnabled} />
-          </ColXS>
+          </Col>
         </Row>
       </div>
     )

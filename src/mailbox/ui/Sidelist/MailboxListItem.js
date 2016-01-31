@@ -5,11 +5,17 @@ const flux = {
   google: require('../../stores/google')
 }
 const { Badge, Styles, Popover, Menu, MenuItem, Divider, FontIcon } = require('material-ui')
+const mailboxDispatch = require('../Dispatch/mailboxDispatch')
 
 /* eslint-disable react/prop-types */
 
 module.exports = React.createClass({
   displayName: 'MailboxListItem',
+
+  propTypes: {
+    mailbox_id: React.PropTypes.string.isRequired
+  },
+
   /* **************************************************************************/
   // Lifecycle
   /* **************************************************************************/
@@ -100,9 +106,7 @@ module.exports = React.createClass({
   * Opens the inspector window for this mailbox
   */
   handleInspect: function () {
-    // This isn't strictly the react way to do things
-    document.querySelector('webview[data-mailbox="' + this.props.mailbox_id + '"]').openDevTools()
-
+    mailboxDispatch.openDevTools(this.props.mailbox_id)
     this.setState({ popover: false })
   },
 
@@ -110,11 +114,7 @@ module.exports = React.createClass({
   * Reloads this mailbox
   */
   handleReload: function () {
-    // This isn't strictly the react way to do things
-    const mailbox = document.querySelector('webview[data-mailbox="' + this.props.mailbox_id + '"]')
-    mailbox.setAttribute('src', this.state.mailbox.url)
-    flux.google.A.syncMailbox(this.state.mailbox)
-
+    mailboxDispatch.reload(this.props.mailbox_id)
     this.setState({ popover: false })
   },
 
@@ -123,7 +123,6 @@ module.exports = React.createClass({
   */
   handleMoveUp: function () {
     flux.mailbox.A.moveUp(this.props.mailbox_id)
-
     this.setState({ popover: false })
   },
 
@@ -132,7 +131,6 @@ module.exports = React.createClass({
   */
   handleMoveDown: function () {
     flux.mailbox.A.moveDown(this.props.mailbox_id)
-
     this.setState({ popover: false })
   },
 
@@ -230,8 +228,8 @@ module.exports = React.createClass({
       <div {...this.props} className='list-item' onClick={this.handleClick} onContextMenu={this.handleOpenPopover}>
         <div {...containerProps}>
           {innerElement}
+          {badgeElement}
         </div>
-        {badgeElement}
         <Popover open={this.state.popover}
           anchorEl={this.state.popoverAnchor}
           anchorOrigin={{ horizontal: 'middle', vertical: 'center' }}
