@@ -1,5 +1,7 @@
 const React = require('react')
 const { SelectField, MenuItem, Toggle } = require('material-ui')
+const GoogleInboxAccountSettings = require('./Accounts/GoogleInboxAccountSettings')
+const GoogleMailAccountSettings = require('./Accounts/GoogleMailAccountSettings')
 const flux = {
   mailbox: require('../../stores/mailbox')
 }
@@ -36,8 +38,8 @@ module.exports = React.createClass({
 
   mailboxesChanged: function (store) {
     const all = store.all()
-    if (this.state.selected && store.has(this.state.selected.id)) {
-      this.setState({ mailboxes: all })
+    if (this.state.selected) {
+      this.setState({ mailboxes: all, selected: store.get(this.state.selected.id) })
     } else {
       this.setState({ mailboxes: all, selected: all[0] })
     }
@@ -67,30 +69,34 @@ module.exports = React.createClass({
   render: function () {
     let content
     if (this.state.selected) {
-      content = (
-        <div>
-          <br />
-          <Toggle
-            defaultToggled={this.state.selected.showUnreadBadge}
-            label='Show unread badge'
-            onToggle={this.handleShowUnreadBadgeChange} />
-        </div>
-      )
+      if (this.state.selected.type === flux.mailbox.M.TYPE_GINBOX) {
+        content = <GoogleInboxAccountSettings mailbox={this.state.selected} />
+      } else if (this.state.selected.type === flux.mailbox.M.TYPE_GMAIL) {
+        content = <GoogleMailAccountSettings mailbox={this.state.selected} />
+      }
     } else {
       content = (<div><small>No accounts available</small></div>)
     }
-
+    
     return (
       <div {...this.props}>
         <SelectField
           value={this.state.selected ? this.state.selected.id : undefined}
+          style={{ width: '100%' }}
           onChange={this.handleAccountChange}>
           {
             this.state.mailboxes.map(m => {
-              return <MenuItem value={m.id} key={m.id} primaryText={m.email || m.name || m.id} />
+              return (
+                <MenuItem
+                  value={m.id}
+                  key={m.id}
+                  primaryText={(m.email || m.name || m.id) + ' (' + m.typeName + ')' } />
+                )
             })
           }
         </SelectField>
+        <br />
+        <br />
         {content}
       </div>
     )

@@ -19,6 +19,7 @@ const AppSettings = require('./AppSettings')
 /* ****************************************************************************/
 // Global objects
 /* ****************************************************************************/
+
 const appDirectory = new AppDirectory(pkg.name)
 const localStorage = new LocalStorage(appDirectory.userData())
 const appSettings = new AppSettings(localStorage)

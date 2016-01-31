@@ -86,7 +86,8 @@ module.exports = React.createClass({
     let buttons
     if (this.state.requiresRestart) {
       buttons = (
-        <div style={{ padding: 24, textAlign: 'right' }}>
+        <div style={{ textAlign: 'right' }}>
+          <Divider style={{ marginBottom: 6 }} />
           <RaisedButton label='Close' secondary onClick={this.handleClose} />
           <span>&nbsp;</span>
           <RaisedButton label='Restart' primary onClick={this.handleRestart} />
@@ -94,7 +95,8 @@ module.exports = React.createClass({
       )
     } else {
       buttons = (
-        <div style={{ padding: 24, textAlign: 'right' }}>
+        <div style={{ textAlign: 'right' }}>
+          <Divider style={{ marginBottom: 6 }} />
           <RaisedButton label='Close' primary onClick={this.handleClose} />
         </div>
       )
@@ -103,6 +105,7 @@ module.exports = React.createClass({
     return (
       <Dialog
         modal={false}
+        actions={buttons}
         open={this.props.open}
         bodyStyle={{ padding: 0 }}
         onRequestClose={this.props.onRequestClose}>
@@ -120,8 +123,6 @@ module.exports = React.createClass({
             <AdvancedSettings />
           </Tab>
         </Tabs>
-        <Divider />
-        { buttons }
       </Dialog>
     )
   }

@@ -1,5 +1,5 @@
 const React = require('react')
-const { Toggle, TextField } = require('material-ui')
+const { Toggle, TextField, Paper } = require('material-ui')
 const { Row, Col } = require('../Flexbox')
 const flux = {
   settings: require('../../stores/settings')
@@ -75,32 +75,34 @@ module.exports = React.createClass({
   render: function () {
     return (
       <div {...this.props}>
-        <Toggle
-          name='proxyEnabled'
-          defaultToggled={this.state.proxyEnabled}
-          label='Enable Proxy Server'
-          onToggle={this.handleProxyToggle} />
-        <small>You also need to set the proxy settings on your OS to ensure all requests use the server</small>
-        <Row>
-          <Col xs={6}>
-            <TextField
-              ref='proxy_host'
-              hintText='http://192.168.1.1'
-              floatingLabelText='Proxy Server Host'
-              defaultValue={this.state.proxyHost}
-              onChange={this.handleProxyValueChanged}
-              disabled={!this.state.proxyEnabled} />
-          </Col>
-          <Col xs={6}>
-            <TextField
-              ref='proxy_port'
-              hintText='8080'
-              floatingLabelText='Proxy Server Port'
-              defaultValue={this.state.proxyPort}
-              onChange={this.handleProxyValueChanged}
-              disabled={!this.state.proxyEnabled} />
-          </Col>
-        </Row>
+        <Paper zDepth={1} style={{ padding: 15 }}>
+          <Toggle
+            name='proxyEnabled'
+            defaultToggled={this.state.proxyEnabled}
+            label='Enable Proxy Server'
+            onToggle={this.handleProxyToggle} />
+          <small>You also need to set the proxy settings on your OS to ensure all requests use the server</small>
+          <Row>
+            <Col xs={6}>
+              <TextField
+                ref='proxy_host'
+                hintText='http://192.168.1.1'
+                floatingLabelText='Proxy Server Host'
+                defaultValue={this.state.proxyHost}
+                onChange={this.handleProxyValueChanged}
+                disabled={!this.state.proxyEnabled} />
+            </Col>
+            <Col xs={6}>
+              <TextField
+                ref='proxy_port'
+                hintText='8080'
+                floatingLabelText='Proxy Server Port'
+                defaultValue={this.state.proxyPort}
+                onChange={this.handleProxyValueChanged}
+                disabled={!this.state.proxyEnabled} />
+            </Col>
+          </Row>
+        </Paper>
       </div>
     )
   }

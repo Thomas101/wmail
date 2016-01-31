@@ -90,6 +90,7 @@ class MailboxStore {
       handleCreate: actions.CREATE,
       handleRemove: actions.REMOVE,
       handleUpdate: actions.UPDATE,
+      handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
       handleChangeActive: actions.CHANGE_ACTIVE,
       handleMoveUp: actions.MOVE_UP,
       handleMoveDown: actions.MOVE_DOWN
@@ -150,6 +151,19 @@ class MailboxStore {
   handleUpdate ({id, updates}) {
     const mailbox = this.mailboxes.get(id)
     const data = Object.assign({}, mailbox.__data__, updates)
+    storage.set(MAILBOX_KEY(id), data)
+    this.mailboxes.set(id, new Mailbox(id, data))
+  }
+
+  /**
+  * Handles the google config updating
+  * @param id: the id of the tem
+  * @param updates: the updates to merge in
+  */
+  handleUpdateGoogleConfig ({id, updates}) {
+    const mailbox = this.mailboxes.get(id)
+    const data = Object.assign({ googleConf: {} }, mailbox.__data__)
+    data.googleConf = Object.assign({}, data.googleConf, updates)
     storage.set(MAILBOX_KEY(id), data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }
