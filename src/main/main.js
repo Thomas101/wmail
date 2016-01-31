@@ -67,8 +67,8 @@ ipcMain.on('report-error', (evt, body) => {
 
 ipcMain.on('new-window', (evt, body) => {
   const window = new ContentWindow(analytics, localStorage)
-  window.start(body.url, body.partition)
   windowManager.addContentWindow(window)
+  window.start(body.url, body.partition)
 })
 
 ipcMain.on('restart-app', (evt, body) => {

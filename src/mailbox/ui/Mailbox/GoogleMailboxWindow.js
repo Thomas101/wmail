@@ -185,6 +185,8 @@ module.exports = React.createClass({
     webview.addEventListener('ipc-message', (evt) => {
       if (evt.channel.type === 'page-click') {
         flux.google.A.syncUnreadCounts([this.state.mailbox])
+      } else if (evt.channel.type === 'js-new-window') {
+        shell.openExternal(evt.channel.url)
       }
     })
     webview.addEventListener('new-window', (evt) => {
