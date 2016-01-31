@@ -1,5 +1,5 @@
 const React = require('react')
-const { SelectField, MenuItem, Toggle } = require('material-ui')
+const { SelectField, MenuItem } = require('material-ui')
 const GoogleInboxAccountSettings = require('./Accounts/GoogleInboxAccountSettings')
 const GoogleMailAccountSettings = require('./Accounts/GoogleMailAccountSettings')
 const flux = {
@@ -77,7 +77,7 @@ module.exports = React.createClass({
     } else {
       content = (<div><small>No accounts available</small></div>)
     }
-    
+
     return (
       <div {...this.props}>
         <SelectField

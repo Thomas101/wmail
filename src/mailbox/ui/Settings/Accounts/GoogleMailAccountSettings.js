@@ -9,7 +9,7 @@ const flux = {
 module.exports = React.createClass({
   displayName: 'GoogleMailAccountSettings',
 
-  propTypes : {
+  propTypes: {
     mailbox: React.PropTypes.object.isRequired
   },
 
@@ -23,8 +23,8 @@ module.exports = React.createClass({
     })
   },
 
-  handleUnreadQueryChange: function(evt, index, searchQuery) {
-    flux.mailbox.A.updateGoogleConfig(this.props.mailbox.id, { unreadQuery:searchQuery })
+  handleUnreadQueryChange: function (evt, index, searchQuery) {
+    flux.mailbox.A.updateGoogleConfig(this.props.mailbox.id, { unreadQuery: searchQuery })
   },
 
   /* **************************************************************************/
@@ -44,15 +44,15 @@ module.exports = React.createClass({
         <SelectField
           value={this.props.mailbox.googleUnreadQuery}
           onChange={this.handleUnreadQueryChange}
-          floatingLabelText="Unread Query">
+          floatingLabelText='Unread Query'>
           <MenuItem
             key={flux.mailbox.M.GOOGLE_UNREAD_QUERY}
             value={flux.mailbox.M.GOOGLE_UNREAD_QUERY}
-            primaryText="Unread Messages"/>
+            primaryText='Unread Messages' />
           <MenuItem
             key={flux.mailbox.M.GOOGLE_PRIMARY_UNREAD_QUERY}
             value={flux.mailbox.M.GOOGLE_PRIMARY_UNREAD_QUERY}
-            primaryText="Unread Primary Messages"/>
+            primaryText='Unread Primary Messages' />
         </SelectField>
       </Paper>
     )

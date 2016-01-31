@@ -71,8 +71,8 @@ class Mailbox {
   // Properties : Google Config
   /* **************************************************************************/
 
-  static get GOOGLE_UNREAD_QUERY() { return 'label:inbox label:unread' }
-  static get GOOGLE_PRIMARY_UNREAD_QUERY() { return 'label:inbox label:unread category:primary' }
+  static get GOOGLE_UNREAD_QUERY () { return 'label:inbox label:unread' }
+  static get GOOGLE_PRIMARY_UNREAD_QUERY () { return 'label:inbox label:unread category:primary' }
 
   get googleConf () { return this.__data__.googleConf || {} }
   get googleUnreadQuery () { return this.googleConf.unreadQuery || Mailbox.GOOGLE_UNREAD_QUERY }

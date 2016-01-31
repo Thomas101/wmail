@@ -40,7 +40,7 @@ class MailboxActions {
   * @param id: the id of the mailbox
   * @param updates: the updates to apply
   */
-  updateGoogleConfig(id, updates) { return { id: id, updates: updates } }
+  updateGoogleConfig (id, updates) { return { id: id, updates: updates } }
 
   /* **************************************************************************/
   // Active

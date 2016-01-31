@@ -1,5 +1,5 @@
 const React = require('react')
-const { SelectField, MenuItem, Toggle, Paper } = require('material-ui')
+const { Toggle, Paper } = require('material-ui')
 const flux = {
   mailbox: require('../../../stores/mailbox')
 }
@@ -9,7 +9,7 @@ const flux = {
 module.exports = React.createClass({
   displayName: 'GoogleInboxAccountSettings',
 
-  propTypes : {
+  propTypes: {
     mailbox: React.PropTypes.object.isRequired
   },
 
