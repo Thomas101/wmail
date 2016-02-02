@@ -72,6 +72,13 @@ class SettingsActions {
     return this.mergeUpdates({ showAppBadge: show })
   }
 
+  /**
+  * @param show: true to show the tray icon, false otherwise
+  */
+  setShowTrayIcon (show) {
+    return this.mergeUpdates({ showTrayIcon: show })
+  }
+
   /* **************************************************************************/
   // Spell checker
   /* **************************************************************************/

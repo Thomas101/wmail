@@ -69,6 +69,9 @@ class SettingsStore {
     this.showAppBadge = () => {
       return this.__value__('showAppBadge', true)
     }
+    this.showTrayIcon = () => {
+      return this.__value__('showTrayIcon', true)
+    }
 
     /* ****************************************/
     // Spell checker

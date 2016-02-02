@@ -33,6 +33,7 @@ module.exports = React.createClass({
     return {
       showTitlebar: store.showTitlebar(),
       showAppBadge: store.showAppBadge(),
+      showTrayIcon: store.showTrayIcon(),
       spellcheckerEnabled: store.spellcheckerEnabled()
     }
   },
@@ -55,6 +56,10 @@ module.exports = React.createClass({
 
   handleToggleUnreadBadge: function (evt, toggled) {
     flux.settings.A.setShowAppBadge(toggled)
+  },
+
+  handleToggleShowTrayIcon: function (evt, toggled) {
+    flux.settings.A.setShowTrayIcon(toggled)
   },
 
   handleToggleSpellchecker: function (evt, toggled) {
@@ -85,9 +90,15 @@ module.exports = React.createClass({
             label='Show app unread badge'
             onToggle={this.handleToggleUnreadBadge} />
           <Toggle
+            toggled={this.state.showTrayIcon}
+            label='Show tray icon'
+            onToggle={this.handleToggleShowTrayIcon} />
+          <Toggle
             toggled={this.state.spellcheckerEnabled}
             label={(<span><span>Spell-checker</span> <small>(Experimental, requires restart)</small></span>)}
             onToggle={this.handleToggleSpellchecker} />
+
+
         </Paper>
       </div>
     )
