@@ -76,7 +76,7 @@ module.exports = React.createClass({
   render: function () {
     return (
       <div {...this.props}>
-        <Paper zDepth={1} style={{ padding: 15 }}>
+        <Paper zDepth={1} style={{ padding: 15, marginBottom: 5 }}>
           {
             process.platform !== 'darwin' ? undefined : [
               (<Toggle
@@ -96,7 +96,8 @@ module.exports = React.createClass({
             toggled={this.state.showTrayIcon}
             label='Show tray icon'
             onToggle={this.handleToggleShowTrayIcon} />
-          <br />
+        </Paper>
+        <Paper zDepth={1} style={{ padding: 15, marginTop: 5 }}>
           <Toggle
             toggled={this.state.spellcheckerEnabled}
             label={(<span><span>Spell-checker</span> <small>(Experimental, requires restart)</small></span>)}
