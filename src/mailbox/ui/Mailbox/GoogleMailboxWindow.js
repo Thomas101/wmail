@@ -155,6 +155,17 @@ module.exports = React.createClass({
     const partition = 'persist:' + this.state.mailbox.id
     var ses = session.fromPartition(partition)
     ses.setDownloadPath(app.getPath('downloads'))
+    /*ses.on('will-download', (evt, item) => {
+      const totalBytes = item.getTotalBytes()
+      item.setSavePath(path.join(app.getPath('downloads'), item.getFilename())
+
+      item.on('updated', () => {
+        win.setProgressBar(item.getReceivedBytes() / totalBytes);
+      })
+      item.on('done', (e, state) => {
+        win.setProgressBar(-1)
+      })
+    })*/
 
     // Build the dom
     const webview = document.createElement('webview')
