@@ -98,7 +98,6 @@ module.exports = React.createClass({
             label={(<span><span>Spell-checker</span> <small>(Experimental, requires restart)</small></span>)}
             onToggle={this.handleToggleSpellchecker} />
 
-
         </Paper>
       </div>
     )
