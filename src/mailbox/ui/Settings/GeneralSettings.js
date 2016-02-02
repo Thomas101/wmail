@@ -80,11 +80,11 @@ module.exports = React.createClass({
           {
             process.platform !== 'darwin' ? undefined : [
               (<Toggle
-                key="0"
+                key='0'
                 toggled={this.state.showTitlebar}
                 label={<span><span>Show titlebar</span> <small>(Changes applied after restart)</small></span>}
                 onToggle={this.handleToggleTitlebar} />),
-              (<br key="1" />)
+              (<br key='1' />)
             ]
           }
           <Toggle

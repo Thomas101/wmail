@@ -155,7 +155,7 @@ module.exports = React.createClass({
     const partition = 'persist:' + this.state.mailbox.id
     var ses = session.fromPartition(partition)
     ses.setDownloadPath(app.getPath('downloads'))
-    /*ses.on('will-download', (evt, item) => {
+    /* ses.on('will-download', (evt, item) => {
       const totalBytes = item.getTotalBytes()
       item.setSavePath(path.join(app.getPath('downloads'), item.getFilename())
 
