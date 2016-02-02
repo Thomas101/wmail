@@ -108,14 +108,10 @@ module.exports = React.createClass({
     if (settingsStore.showTrayIcon()) {
       const currentPath = decodeURIComponent(window.location.href.replace('file://', ''))
       let iconName
-      if (process.platform === 'darwin') {
-        if (unread) {
-          iconName = 'tray_darwin_active.png'
-        } else {
-          iconName = 'tray_darwin.png'
-        }
+      if (unread) {
+        iconName = 'tray_darwin_active.png'
       } else {
-        iconName = 'app.png'
+        iconName = 'tray_darwin.png'
       }
       const iconPath = path.join(path.dirname(currentPath), 'icons', iconName)
 
