@@ -103,7 +103,9 @@ module.exports = React.createClass({
       } else {
         app.dock.setBadge('')
       }
-    } else {
+    }
+
+    if (settingsStore.showTrayIcon()) {
       if (!this.appTray) {
         const currentPath = decodeURIComponent(window.location.href.replace('file://', ''))
         const iconPath = path.join(path.dirname(currentPath), 'icons/app.png')
