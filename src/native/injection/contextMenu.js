@@ -60,8 +60,7 @@
 
         // Misc
         menu.push({ label: 'Select all', role: 'selectall' })
-
-        Menu.buildFromTemplate(menu).popup(null, x, y)
+        Menu.buildFromTemplate(menu).popup(remote.getCurrentWindow(), x, y)
       }, false)
     }
 

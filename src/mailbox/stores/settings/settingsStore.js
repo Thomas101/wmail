@@ -71,6 +71,17 @@ class SettingsStore {
     }
 
     /* ****************************************/
+    // Spell checker
+    /* ****************************************/
+
+    this.spellcheckerEnabled = () => {
+      return this.__value__('spellcheckerEnabled', true)
+    }
+    this.spellcheckerChanged = () => {
+      return this.__valuediff__('spellcheckerEnabled', true)
+    }
+
+    /* ****************************************/
     // Higher order
     /* ****************************************/
 
@@ -78,14 +89,13 @@ class SettingsStore {
     * @return true if the app needs to be restarted to apply the settings
     */
     this.requiresRestart = () => {
-      return this.showTitlebarChanged()
+      return this.showTitlebarChanged() || this.spellcheckerChanged()
     }
 
     this.bindListeners({
       handleLoad: actions.LOAD,
       handleSetProxyServer: actions.SET_PROXY_SERVER,
-      handleSetShowTitlebar: actions.SET_SHOW_TITLEBAR,
-      handleSetShowAppBadge: actions.SET_SHOW_APP_BADGE
+      handleMergeUpdates: actions.MERGE_UPDATES
     })
   }
 
@@ -123,13 +133,12 @@ class SettingsStore {
     this.persist()
   }
 
-  handleSetShowTitlebar ({ show }) {
-    this.__settings__.showTitlebar = show
-    this.persist()
-  }
-
-  handleSetShowAppBadge ({ show }) {
-    this.__settings__.showAppBadge = show
+  /**
+  * Merges the updates
+  * @param updates: the dictionary to merge in
+  */
+  handleMergeUpdates ({ updates }) {
+    this.__settings__ = Object.assign(this.__settings__, updates)
     this.persist()
   }
 }

@@ -108,6 +108,7 @@ module.exports = React.createClass({
         actions={buttons}
         open={this.props.open}
         bodyStyle={{ padding: 0 }}
+        autoScrollBodyContent
         onRequestClose={this.props.onRequestClose}>
         <Tabs
           value={this.state.currentTab}

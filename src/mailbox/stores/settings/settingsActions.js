@@ -11,6 +11,18 @@ class SettingsActions {
   load () { return {} }
 
   /* **************************************************************************/
+  // Updates
+  /* **************************************************************************/
+
+  /**
+  * Merges the updates in
+  * @param updates: an object oto merge into settings
+  */
+  mergeUpdates (updates) {
+    return { updates: updates }
+  }
+
+  /* **************************************************************************/
   // Proxy Server
   /* **************************************************************************/
 
@@ -49,12 +61,27 @@ class SettingsActions {
   /**
   * @param show: true to show the titlebar, false otherwise
   */
-  setShowTitlebar (show) { return { show: show } }
+  setShowTitlebar (show) {
+    return this.mergeUpdates({ showTitlebar: show })
+  }
 
   /**
   * @param show: true to show the badge, false otherwise
   */
-  setShowAppBadge (show) { return { show: show } }
+  setShowAppBadge (show) {
+    return this.mergeUpdates({ showAppBadge: show })
+  }
+
+  /* **************************************************************************/
+  // Spell checker
+  /* **************************************************************************/
+
+  /**
+  * @param enabled: true to enable the spell checker, false otherwise
+  */
+  setEnableSpellchecker (enabled) {
+    return this.mergeUpdates({ spellcheckerEnabled: enabled })
+  }
 
 }
 

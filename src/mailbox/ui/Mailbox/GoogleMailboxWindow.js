@@ -3,7 +3,8 @@ const React = require('react')
 const ReactDOM = require('react-dom')
 const flux = {
   mailbox: require('../../stores/mailbox'),
-  google: require('../../stores/google')
+  google: require('../../stores/google'),
+  settings: require('../../stores/settings')
 }
 const remote = window.nativeRequire('remote')
 const URL = window.nativeRequire('url')
@@ -176,9 +177,12 @@ module.exports = React.createClass({
       // Cut out some google stuff we don't want
       webview.insertCSS('.gb_9a { visibility: hidden !important; }')
 
-      // Set the zoom factor
+      // Push the settings across
       webview.send('zoom-factor-set', { value: this.state.mailbox.zoomFactor })
       this.lastSetZoomFactor = this.state.mailbox.zoomFactor
+      webview.send('start-spellcheck', {
+        enabled: flux.settings.S.getState().spellcheckerEnabled()
+      })
     })
 
     // Handle messages from the page

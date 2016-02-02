@@ -1,5 +1,5 @@
 const React = require('react')
-const { Toggle } = require('material-ui')
+const { Toggle, Paper } = require('material-ui')
 const flux = {
   settings: require('../../stores/settings')
 }
@@ -32,7 +32,8 @@ module.exports = React.createClass({
   generateState: function (store = flux.settings.S.getState()) {
     return {
       showTitlebar: store.showTitlebar(),
-      showAppBadge: store.showAppBadge()
+      showAppBadge: store.showAppBadge(),
+      spellcheckerEnabled: store.spellcheckerEnabled()
     }
   },
 
@@ -56,6 +57,10 @@ module.exports = React.createClass({
     flux.settings.A.setShowAppBadge(toggled)
   },
 
+  handleToggleSpellchecker: function (evt, toggled) {
+    flux.settings.A.setEnableSpellchecker(toggled)
+  },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
@@ -66,18 +71,24 @@ module.exports = React.createClass({
   render: function () {
     return (
       <div {...this.props}>
-        {
-          process.platform !== 'darwin' ? undefined : (
-            <Toggle
-              defaultToggled={this.state.showTitlebar}
-              label={<span><span>Show titlebar</span> <small>(Changes applied after restart)</small></span>}
-              onToggle={this.handleToggleTitlebar} />
-          )
-        }
-        <Toggle
-          defaultToggled={this.state.showAppBadge}
-          label='Show app unread badge'
-          onToggle={this.handleToggleUnreadBadge} />
+        <Paper zDepth={1} style={{ padding: 15 }}>
+          {
+            process.platform !== 'darwin' ? undefined : (
+              <Toggle
+                toggled={this.state.showTitlebar}
+                label={<span><span>Show titlebar</span> <small>(Changes applied after restart)</small></span>}
+                onToggle={this.handleToggleTitlebar} />
+            )
+          }
+          <Toggle
+            toggled={this.state.showAppBadge}
+            label='Show app unread badge'
+            onToggle={this.handleToggleUnreadBadge} />
+          <Toggle
+            toggled={this.state.spellcheckerEnabled}
+            label={(<span><span>Spell-checker</span> <small>(Experimental, requires restart)</small></span>)}
+            onToggle={this.handleToggleSpellchecker} />
+        </Paper>
       </div>
     )
   }
