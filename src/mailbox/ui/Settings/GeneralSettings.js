@@ -78,27 +78,29 @@ module.exports = React.createClass({
       <div {...this.props}>
         <Paper zDepth={1} style={{ padding: 15 }}>
           {
-            process.platform !== 'darwin' ? undefined : (
-              <Toggle
+            process.platform !== 'darwin' ? undefined : [
+              (<Toggle
+                key="0"
                 toggled={this.state.showTitlebar}
                 label={<span><span>Show titlebar</span> <small>(Changes applied after restart)</small></span>}
-                onToggle={this.handleToggleTitlebar} />
-            )
+                onToggle={this.handleToggleTitlebar} />),
+              (<br key="1" />)
+            ]
           }
           <Toggle
             toggled={this.state.showAppBadge}
             label='Show app unread badge'
             onToggle={this.handleToggleUnreadBadge} />
+          <br />
           <Toggle
             toggled={this.state.showTrayIcon}
             label='Show tray icon'
             onToggle={this.handleToggleShowTrayIcon} />
+          <br />
           <Toggle
             toggled={this.state.spellcheckerEnabled}
             label={(<span><span>Spell-checker</span> <small>(Experimental, requires restart)</small></span>)}
             onToggle={this.handleToggleSpellchecker} />
-
-
         </Paper>
       </div>
     )
