@@ -33,9 +33,10 @@ class WindowManager {
   handleClose (evt) {
     if (this.focused() && !this.forceQuit) {
       this.contentWindows.forEach(w => w.close())
-      this.mailboxesWindow.hide()
-      evt.preventDefault()
-      this.forceQuit = false
+      if (process.platform === 'darwin') {
+        this.mailboxesWindow.hide()
+        evt.preventDefault()
+      }
     }
   }
 
