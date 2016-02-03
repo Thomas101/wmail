@@ -103,7 +103,9 @@ module.exports = React.createClass({
   refocus: function (evt) {
     if (evt.mailboxId === this.props.mailbox_id || (!evt.mailboxId && this.state.isActive)) {
       const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
-      webview.focus()
+      setTimeout(() => {
+        webview.focus()
+      })
     }
   },
 
@@ -250,7 +252,9 @@ module.exports = React.createClass({
     if (this.state.isActive !== nextState.isActive) {
       if (nextState.isActive) {
         webview.classList.add('active')
-        webview.focus()
+        setTimeout(() => {
+          webview.focus()
+        })
       } else {
         webview.classList.remove('active')
       }
