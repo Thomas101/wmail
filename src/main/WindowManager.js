@@ -36,6 +36,7 @@ class WindowManager {
       if (process.platform === 'darwin') {
         this.mailboxesWindow.hide()
         evt.preventDefault()
+        this.forceQuit = false
       }
     }
   }
