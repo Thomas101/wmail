@@ -68,6 +68,4 @@ npm start
 
 
 
-Made with ♥ by Thomas Beverley
-
-Enjoying using Wmail? [Buy me a beer &#127866;](https://www.paypal.me/ThomasBeverley)
+Made with ♥ by Thomas Beverley. [Buy me a beer &#127866;](https://www.paypal.me/ThomasBeverley)
