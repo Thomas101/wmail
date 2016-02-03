@@ -14,6 +14,7 @@ const session = remote.require('session')
 const ipc = window.nativeRequire('electron').ipcRenderer
 const mailboxDispatch = require('../Dispatch/mailboxDispatch')
 const TimerMixin = require('react-timer-mixin')
+const uuid = require('uuid')
 
 /* eslint-disable react/prop-types */
 
@@ -142,6 +143,26 @@ module.exports = React.createClass({
   },
 
   /* **************************************************************************/
+  // Webview events
+  /* **************************************************************************/
+
+  /**
+  * Handles the download
+  * @param evt: the event that fired
+  * @param item: the item that's downloading
+  */
+  handleDownload: function (evt, item) {
+    const totalBytes = item.getTotalBytes()
+    const id = uuid.v4()
+    item.on('updated', () => {
+      ipc.send('download-progress', { id: id, received: item.getReceivedBytes(), total: totalBytes })
+    })
+    item.on('done', (e, state) => {
+      ipc.send('download-complete', { id: id })
+    })
+  },
+
+  /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
 
@@ -153,19 +174,9 @@ module.exports = React.createClass({
   renderWebviewDOMNode: function () {
     // Setup the session that will be used
     const partition = 'persist:' + this.state.mailbox.id
-    var ses = session.fromPartition(partition)
+    const ses = session.fromPartition(partition)
     ses.setDownloadPath(app.getPath('downloads'))
-    /* ses.on('will-download', (evt, item) => {
-      const totalBytes = item.getTotalBytes()
-      item.setSavePath(path.join(app.getPath('downloads'), item.getFilename())
-
-      item.on('updated', () => {
-        win.setProgressBar(item.getReceivedBytes() / totalBytes);
-      })
-      item.on('done', (e, state) => {
-        win.setProgressBar(-1)
-      })
-    })*/
+    ses.on('will-download', this.handleDownload)
 
     // Build the dom
     const webview = document.createElement('webview')

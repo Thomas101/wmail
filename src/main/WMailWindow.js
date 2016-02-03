@@ -176,6 +176,14 @@ class WMailWindow extends EventEmitter {
   isFocused () {
     return this.window.isFocused()
   }
+
+  /**
+  * Sets the download progress
+  * @param v: the download progress to set
+  */
+  setProgressBar (v) {
+    this.window.setProgressBar(v)
+  }
 }
 
 module.exports = WMailWindow

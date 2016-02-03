@@ -97,12 +97,11 @@ module.exports = React.createClass({
             label='Show tray icon'
             onToggle={this.handleToggleShowTrayIcon} />
         </Paper>
-        <Paper zDepth={1} style={{ padding: 15, marginTop: 5 }}>
+        <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
           <Toggle
             toggled={this.state.spellcheckerEnabled}
             label={(<span><span>Spell-checker</span> <small>(Experimental, requires restart)</small></span>)}
             onToggle={this.handleToggleSpellchecker} />
-
         </Paper>
       </div>
     )

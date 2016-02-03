@@ -85,6 +85,17 @@ class SettingsStore {
     }
 
     /* ****************************************/
+    // Downloads
+    /* ****************************************/
+
+    this.alwaysAskDownloadLocation = () => {
+      return this.__value__('alwaysAskDownloadLocation', true)
+    }
+    this.defaultDownloadLocation = () => {
+      return this.__value__('defaultDownloadLocation', undefined)
+    }
+
+    /* ****************************************/
     // Higher order
     /* ****************************************/
 

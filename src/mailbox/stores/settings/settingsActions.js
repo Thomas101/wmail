@@ -90,6 +90,24 @@ class SettingsActions {
     return this.mergeUpdates({ spellcheckerEnabled: enabled })
   }
 
+  /* **************************************************************************/
+  // Downloads
+  /* **************************************************************************/
+
+  /**
+  * @param ask: true to always ask, false otherwise
+  */
+  setAlwaysAskDownloadLocation (ask) {
+    return this.mergeUpdates({ alwaysAskDownloadLocation: ask })
+  }
+
+  /**
+  * @param path: the path to download files to automatically
+  */
+  setDefaultDownloadLocation (path) {
+    return this.mergeUpdates({ defaultDownloadLocation: path })
+  }
+
 }
 
 module.exports = alt.createActions(SettingsActions)

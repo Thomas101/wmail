@@ -15,6 +15,7 @@ const WindowManager = require('./WindowManager')
 const constants = require('../shared/constants')
 const exec = require('child_process').exec
 const AppSettings = require('./AppSettings')
+const MailboxesDownloadManager = require('./MailboxesDownloadManager')
 
 /* ****************************************************************************/
 // Global objects
@@ -24,7 +25,9 @@ const appDirectory = new AppDirectory(pkg.name)
 const localStorage = new LocalStorage(appDirectory.userData())
 const appSettings = new AppSettings(localStorage)
 const analytics = new AppAnalytics(localStorage, appSettings)
-const windowManager = new WindowManager(new MailboxesWindow(analytics, localStorage, appSettings))
+const mailboxesWindow = new MailboxesWindow(analytics, localStorage, appSettings)
+const mailboxesDownloadManager = new MailboxesDownloadManager(mailboxesWindow)
+const windowManager = new WindowManager(mailboxesWindow)
 
 const appMenuSelectors = {
   fullQuit: () => { windowManager.quit() },
@@ -78,6 +81,14 @@ ipcMain.on('restart-app', (evt, body) => {
 
 ipcMain.on('settings-update', (evt, settings) => {
   appSettings.update(settings)
+})
+
+ipcMain.on('download-progress', (evt, data) => {
+  mailboxesDownloadManager.updateProgress(data.id, data.received, data.total)
+})
+
+ipcMain.on('download-complete', (evt, data) => {
+  mailboxesDownloadManager.downloadFinished(data.id)
 })
 
 /* ****************************************************************************/
