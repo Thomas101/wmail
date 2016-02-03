@@ -14,8 +14,6 @@ Download the latest pre-release for your platform (1.1.6)
 
 [Raise an issue or request a feature](https://github.com/Thomas101/wmail/issues)
 
-Enjoying using Wmail? [Buy me a beer!](https://www.paypal.me/ThomasBeverley)
-
 ![Screenshot](https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/screenshot1.png "Screenshot")
 
 ### Installing
@@ -72,4 +70,4 @@ npm start
 
 Made with ♥ by Thomas Beverley
 
-Enjoying using Wmail? [Buy me a beer!](https://www.paypal.me/ThomasBeverley)
+Enjoying using Wmail? [Buy me a beer &#127866;](https://www.paypal.me/ThomasBeverley)
