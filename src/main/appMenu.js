@@ -16,6 +16,10 @@ module.exports = {
           { label: 'About', selector: 'orderFrontStandardAboutPanel:' },
           { type: 'separator' },
           { label: 'Hide Window', accelerator: 'Command+W', click: selectors.closeWindow },
+          { label: 'Hide', accelerator: 'CmdOrCtrl+H', role: 'hide' },
+          { label: 'Hide Others', accelerator: 'Alt+CmdOrCtrl+H', role: 'hideothers' },
+          { label: 'Show All', role: 'unhide' },
+          { type: 'separator' },
           { label: 'Quit', accelerator: 'Command+Q', click: selectors.fullQuit }
         ]
       },
@@ -50,7 +54,6 @@ module.exports = {
         role: 'window',
         submenu: [
           { label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize' },
-          { label: 'Hide', accelerator: 'CmdOrCtrl+H', role: 'hide' },
           { label: 'Cycle Windows', accelerator: 'CmdOrCtrl+`', click: selectors.cycleWindows }
         ]
         .concat(mailboxes.length ? [{ type: 'separator' }] : [])
