@@ -1,6 +1,6 @@
 {
   "name": "wmail",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "prerelease": true,
   "description": "OSX app wrapper for Google Inbox and Google Mail",
   "main": "bin/main/main.js",
