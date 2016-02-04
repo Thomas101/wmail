@@ -68,7 +68,7 @@ class GoogleHTTP {
       return new Promise((resolve, reject) => {
         gmail.users.threads.list({
           userId: mailbox.email,
-          q: mailbox.googleUnreadQuery,
+          q: mailbox.google.unreadQuery,
           auth: auth,
           proxy: this.proxyInformation()
         }, (err, response) => {

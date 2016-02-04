@@ -35,12 +35,30 @@ class MailboxActions {
   */
   update (id, updates) { return { id: id, updates: updates } }
 
+  /* **************************************************************************/
+  // Google
+  /* **************************************************************************/
+
   /**
   * Updates the google config inside a mailbox
   * @param id: the id of the mailbox
   * @param updates: the updates to apply
   */
   updateGoogleConfig (id, updates) { return { id: id, updates: updates } }
+
+  /**
+  * Updates the google unread threads
+  * @param id: the id of the mailbox
+  * @param threads: the threads that came from google
+  */
+  addGoogleUnread (id, threads) { return { id: id, threads: threads } }
+
+  /**
+  * Sets that a thread has sent a notification
+  * @param id: the id of the mailbox
+  * @param threadIds: the ids of the threads that were shown
+  */
+  setGoogleUnreadNotified (id, threadIds) { return { id: id, threadIds: threadIds } }
 
   /* **************************************************************************/
   // Active

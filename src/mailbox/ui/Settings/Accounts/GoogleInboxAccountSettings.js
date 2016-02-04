@@ -23,6 +23,12 @@ module.exports = React.createClass({
     })
   },
 
+  handleShowNotificationsChange: function (evt, toggled) {
+    flux.mailbox.A.update(this.props.mailbox.id, {
+      showNotifications: toggled
+    })
+  },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
@@ -37,6 +43,11 @@ module.exports = React.createClass({
           defaultToggled={this.props.mailbox.showUnreadBadge}
           label='Show unread badge'
           onToggle={this.handleShowUnreadBadgeChange} />
+        <br />
+        <Toggle
+          defaultToggled={this.props.mailbox.showNotifications}
+          label='Show notifications'
+          onToggle={this.handleShowNotificationsChange} />
       </Paper>
     )
   }

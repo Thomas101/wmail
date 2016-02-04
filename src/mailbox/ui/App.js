@@ -16,6 +16,7 @@ const Menu = remote.require('menu')
 const mailboxDispatch = require('./Dispatch/mailboxDispatch')
 const TimerMixin = require('react-timer-mixin')
 const constants = require('shared/constants')
+const UnreadNotifications = require('../daemons/UnreadNotifications')
 
 const injectTapEventPlugin = require('react-tap-event-plugin')
 injectTapEventPlugin()
@@ -30,6 +31,9 @@ module.exports = React.createClass({
 
   componentDidMount: function () {
     this.forceFocusTO = null
+
+    this.unreadNotifications = new UnreadNotifications()
+    this.unreadNotifications.start()
 
     flux.mailbox.S.listen(this.mailboxesChanged)
     flux.settings.S.listen(this.settingsChanged)
@@ -48,6 +52,8 @@ module.exports = React.createClass({
   },
 
   componentWillUnmount: function () {
+    this.unreadNotifications.stop()
+
     flux.mailbox.S.unlisten(this.mailboxesChanged)
     flux.settings.S.unlisten(this.settingsChanged)
     flux.google.A.stopPollSync()
@@ -60,6 +66,11 @@ module.exports = React.createClass({
     ipc.off('mailbox-zoom-reset', this.ipcZoomReset)
 
     mailboxDispatch.off('blurred', this.mailboxBlurred)
+
+    if (this.appTray) {
+      this.appTray.destroy()
+      this.appTray = null
+    }
   },
 
   /* **************************************************************************/

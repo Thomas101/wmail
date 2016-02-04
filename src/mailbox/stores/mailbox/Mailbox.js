@@ -1,6 +1,14 @@
 const uuid = require('shared/uuid')
+const Google = require('./Google')
 
 class Mailbox {
+
+  /* **************************************************************************/
+  // Class
+  /* **************************************************************************/
+
+  static provisionId () { return uuid.uuid4() }
+
   /* **************************************************************************/
   // Lifecycle
   /* **************************************************************************/
@@ -8,9 +16,17 @@ class Mailbox {
   constructor (id, data) {
     this.__id__ = id
     this.__data__ = data
+
+    this.__google__ = new Google(this.__data__.googleAuth, this.__data__.googleConf, this.__data__.googleUnread)
   }
 
-  static provisionId () { return uuid.uuid4() }
+  /**
+  * Clones a copy of the data
+  * @return a new copy of the data copied deeply.
+  */
+  cloneData () {
+    return JSON.parse(JSON.stringify(this.__data__))
+  }
 
   /* **************************************************************************/
   // Constants
@@ -46,6 +62,7 @@ class Mailbox {
 
   get zoomFactor () { return this.__data__.zoomFactor === undefined ? 1.0 : this.__data__.zoomFactor }
   get showUnreadBadge () { return this.__data__.showUnreadBadge === undefined ? true : this.__data__.showUnreadBadge }
+  get showNotifications () { return this.__data__.showNotifications === undefined ? true : this.__data__.showNotifications }
 
   /* **************************************************************************/
   // Properties : Account Details
@@ -57,25 +74,10 @@ class Mailbox {
   get unread () { return this.__data__.unread }
 
   /* **************************************************************************/
-  // Properties : GoogleAuth
+  // Properties : Auth types
   /* **************************************************************************/
 
-  get googleAuth () { return this.__data__.googleAuth }
-  get googleAuthTime () { return (this.googleAuth || {}).date }
-  get hasGoogleAuth () { return this.googleAuth !== undefined }
-  get googleAccessToken () { return (this.googleAuth || {}).access_token }
-  get googleRefreshToken () { return (this.googleAuth || {}).refresh_token }
-  get googleAuthExpiryTime () { return ((this.googleAuth || {}).date || 0) + ((this.googleAuth || {}).expires_in || 0) }
-
-  /* **************************************************************************/
-  // Properties : Google Config
-  /* **************************************************************************/
-
-  static get GOOGLE_UNREAD_QUERY () { return 'label:inbox label:unread' }
-  static get GOOGLE_PRIMARY_UNREAD_QUERY () { return 'label:inbox label:unread category:primary' }
-
-  get googleConf () { return this.__data__.googleConf || {} }
-  get googleUnreadQuery () { return this.googleConf.unreadQuery || Mailbox.GOOGLE_UNREAD_QUERY }
+  get google () { return this.__google__ }
 }
 
 module.exports = Mailbox

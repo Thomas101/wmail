@@ -90,16 +90,33 @@ class MailboxStore {
       handleCreate: actions.CREATE,
       handleRemove: actions.REMOVE,
       handleUpdate: actions.UPDATE,
-      handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
       handleChangeActive: actions.CHANGE_ACTIVE,
       handleMoveUp: actions.MOVE_UP,
-      handleMoveDown: actions.MOVE_DOWN
+      handleMoveDown: actions.MOVE_DOWN,
+      handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
+      handleAddGoogleUnread: actions.ADD_GOOGLE_UNREAD,
+      handleSetGoogleUnreadNotified: actions.SET_GOOGLE_UNREAD_NOTIFIED
     })
   }
 
   /* **************************************************************************/
-  // Handlers
+  // Utils
   /* **************************************************************************/
+
+  /**
+  * Saves a mailbox
+  * @param id: the id of the mailbox
+  * @param data: the mailbox data
+  */
+  saveMailbox (id, data) {
+    storage.set(MAILBOX_KEY(id), data)
+    this.mailboxes.set(id, new Mailbox(id, data))
+  }
+
+  /* **************************************************************************/
+  // Handlers CRUD
+  /* **************************************************************************/
+
   /**
   * Loads the storage from disk
   */
@@ -117,13 +134,9 @@ class MailboxStore {
   * @param data: the data to seed the mailbox with
   */
   handleCreate ({id, data}) {
-    const mailbox = new Mailbox(id, data)
-    storage.set(MAILBOX_KEY(id), data)
-    this.mailboxes.set(id, mailbox)
-
+    this.saveMailbox(id, data)
     this.index.push(id)
     storage.set(INDEX_KEY, this.index)
-
     this.active = id
   }
 
@@ -150,23 +163,13 @@ class MailboxStore {
   */
   handleUpdate ({id, updates}) {
     const mailbox = this.mailboxes.get(id)
-    const data = Object.assign({}, mailbox.__data__, updates)
-    storage.set(MAILBOX_KEY(id), data)
-    this.mailboxes.set(id, new Mailbox(id, data))
+    const data = Object.assign(mailbox.cloneData(), updates)
+    this.saveMailbox(id, data)
   }
 
-  /**
-  * Handles the google config updating
-  * @param id: the id of the tem
-  * @param updates: the updates to merge in
-  */
-  handleUpdateGoogleConfig ({id, updates}) {
-    const mailbox = this.mailboxes.get(id)
-    const data = Object.assign({ googleConf: {} }, mailbox.__data__)
-    data.googleConf = Object.assign({}, data.googleConf, updates)
-    storage.set(MAILBOX_KEY(id), data)
-    this.mailboxes.set(id, new Mailbox(id, data))
-  }
+  /* **************************************************************************/
+  // Handlers : Active & Ordering
+  /* **************************************************************************/
 
   /**
   * Handles the active mailbox changing
@@ -197,6 +200,61 @@ class MailboxStore {
       storage.set(INDEX_KEY, this.index)
     }
   }
+
+  /* **************************************************************************/
+  // Handlers : Google
+  /* **************************************************************************/
+
+  /**
+  * Handles the google config updating
+  * @param id: the id of the tem
+  * @param updates: the updates to merge in
+  */
+  handleUpdateGoogleConfig ({id, updates}) {
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleConf = Object.assign(data.googleConf || {}, updates)
+    this.saveMailbox(id, data)
+  }
+
+  /**
+  * Merges the google unread items and removes any flags for updated ites
+  * @param id: the id of the mailbox
+  * @param threads: the thread info from google
+  */
+  handleAddGoogleUnread ({id, threads}) {
+    const data = this.mailboxes.get(id).cloneData()
+    const oldUnread = data.googleUnread || {}
+    const updatedUnread = {}
+
+    // If the id and history are the same, copy the existing thread with flags across
+    // otherwise create a new entry
+    threads.forEach(thread => {
+      if (oldUnread[thread.id] && oldUnread[thread.id].historyId === thread.historyId) {
+        updatedUnread[thread.id] = oldUnread[thread.id]
+      } else {
+        updatedUnread[thread.id] = thread
+      }
+    })
+    data.googleUnread = updatedUnread
+    this.saveMailbox(id, data)
+  }
+
+  /**
+  * Sets that the given thread ids have sent notifications
+  * @param id: the id of the mailbox
+  * @param threadIds: the ids of the threads to set
+  */
+  handleSetGoogleUnreadNotified ({id, threadIds}) {
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleUnread = data.googleUnread || {}
+    threadIds.forEach(threadId => {
+      if (data.googleUnread[threadId]) {
+        data.googleUnread[threadId].notified = true
+      }
+    })
+    this.saveMailbox(id, data)
+  }
+
 }
 
 module.exports = alt.createStore(MailboxStore, 'MailboxStore')

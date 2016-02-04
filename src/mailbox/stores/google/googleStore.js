@@ -1,7 +1,5 @@
 const alt = require('../alt')
 const actions = require('./googleActions')
-// const mailboxActions = require('../mailbox/mailboxActions')
-// const mailboxStore = require('../mailbox/mailboxStore')
 
 class GoogleStore {
   /* **************************************************************************/

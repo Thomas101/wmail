@@ -23,6 +23,12 @@ module.exports = React.createClass({
     })
   },
 
+  handleShowNotificationsChange: function (evt, toggled) {
+    flux.mailbox.A.update(this.props.mailbox.id, {
+      showNotifications: toggled
+    })
+  },
+
   handleUnreadQueryChange: function (evt, index, searchQuery) {
     flux.mailbox.A.updateGoogleConfig(this.props.mailbox.id, { unreadQuery: searchQuery })
   },
@@ -41,17 +47,22 @@ module.exports = React.createClass({
           defaultToggled={this.props.mailbox.showUnreadBadge}
           label='Show unread badge'
           onToggle={this.handleShowUnreadBadgeChange} />
+        <br />
+        <Toggle
+          defaultToggled={this.props.mailbox.showNotifications}
+          label='Show notifications'
+          onToggle={this.handleShowNotificationsChange} />
         <SelectField
-          value={this.props.mailbox.googleUnreadQuery}
+          value={this.props.mailbox.google.unreadQuery}
           onChange={this.handleUnreadQueryChange}
           floatingLabelText='Unread Query'>
           <MenuItem
-            key={flux.mailbox.M.GOOGLE_UNREAD_QUERY}
-            value={flux.mailbox.M.GOOGLE_UNREAD_QUERY}
+            key={flux.mailbox.Google.UNREAD_QUERY}
+            value={flux.mailbox.Google.UNREAD_QUERY}
             primaryText='Unread Messages' />
           <MenuItem
-            key={flux.mailbox.M.GOOGLE_PRIMARY_UNREAD_QUERY}
-            value={flux.mailbox.M.GOOGLE_PRIMARY_UNREAD_QUERY}
+            key={flux.mailbox.Google.PRIMARY_UNREAD_QUERY}
+            value={flux.mailbox.Google.PRIMARY_UNREAD_QUERY}
             primaryText='Unread Primary Messages' />
         </SelectField>
       </Paper>

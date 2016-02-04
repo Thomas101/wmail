@@ -24,22 +24,22 @@ class GoogleActions {
   setupAuth (mailbox) {
     let generate = false
     if (cachedAuths.has(mailbox.id)) {
-      if (cachedAuths.get(mailbox.id).time !== mailbox.googleAuthTime) {
+      if (cachedAuths.get(mailbox.id).time !== mailbox.google.authTime) {
         generate = true
       }
     } else {
       generate = true
     }
 
-    if (generate && mailbox.hasGoogleAuth) {
+    if (generate && mailbox.google.hasAuth) {
       const auth = new OAuth2(credentials.GOOGLE_CLIENT_ID, credentials.GOOGLE_CLIENT_SECRET)
       auth.setCredentials({
-        access_token: mailbox.googleAccessToken,
-        refresh_token: mailbox.googleRefreshToken,
-        expiry_date: mailbox.googleAuthExpiryTime
+        access_token: mailbox.google.accessToken,
+        refresh_token: mailbox.google.refreshToken,
+        expiry_date: mailbox.google.authExpiryTime
       })
       cachedAuths.set(mailbox.id, {
-        time: mailbox.googleAuthTime,
+        time: mailbox.google.authTime,
         auth: auth
       })
 
@@ -187,13 +187,14 @@ class GoogleActions {
         mailboxActions.update(response.mailboxId, {
           unread: response.response.resultSizeEstimate
         })
+        mailboxActions.addGoogleUnread(response.mailboxId, response.response.threads)
       }
     })
     return { responses: responses }
   }
 
   /* **************************************************************************/
-  // Authentication
+  // authentication
   /* **************************************************************************/
 
   /**
