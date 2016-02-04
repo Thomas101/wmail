@@ -6,6 +6,8 @@
 @ITEM_SIZE: 50px;
 @ITEM_BORDER_SIZE: 4px;
 
+@INDICATOR_SIZE: 8px;
+
 .mailbox-list {
 
 	.list-item {
@@ -35,6 +37,19 @@
 
 			&:hover {
 				box-shadow: 0px 0px 5px 0px rgba(255, 255, 255, 0.5);
+			}
+
+			&.active:before, &:hover:before {
+				content: '';
+				position: absolute;
+				left: -10px + (-@INDICATOR_SIZE/4);
+				top: 50%;
+				background-color: rgba(255, 255, 255, 0.4);
+				opacity: 0.8;
+				width: @INDICATOR_SIZE;
+				height: @INDICATOR_SIZE;
+				margin-top: -@INDICATOR_SIZE/2;
+				border-radius: 50%;
 			}
 
 			/******************************************************
@@ -71,6 +86,7 @@
 					background-color: @INBOX_PRIM_COL;
 					&.active, &:hover { border-color: @INBOX_SEC_COL; }
 				}
+				&.active:before { background-color: @INBOX_PRIM_COL; }
 			}
 
 			&[data-type="gmail"] {
@@ -80,6 +96,7 @@
 					background-color: @GMAIL_PRIM_COL;
 					&.active, &:hover { border-color: @GMAIL_SEC_COL; }
 				}
+				&.active:before { background-color: @GMAIL_PRIM_COL; }
 			}
 		}
 
