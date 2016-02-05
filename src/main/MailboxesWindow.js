@@ -68,6 +68,16 @@ class MailboxesWindow extends WMailWindow {
   /* ****************************************************************************/
 
   /**
+  * Reloads the webview
+  */
+  reload () {
+    this.window.webContents.send('prepare-reload', {})
+    setTimeout(() => {
+      this.window.webContents.reload()
+    }, 250)
+  }
+
+  /**
   * Zooms the current mailbox in
   */
   mailboxZoomIn () {

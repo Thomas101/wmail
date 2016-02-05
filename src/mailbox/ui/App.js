@@ -58,18 +58,18 @@ module.exports = React.createClass({
     flux.settings.S.unlisten(this.settingsChanged)
     flux.google.A.stopPollSync()
 
-    ipc.off('switch-mailbox', this.ipcChangeActiveMailbox)
-    ipc.off('auth-google-complete', this.ipcAuthMailboxSuccess)
-    ipc.off('auth-google-error', this.ipcAuthMailboxFailure)
-    ipc.off('mailbox-zoom-in', this.ipcZoomIn)
-    ipc.off('mailbox-zoom-out', this.ipcZoomOut)
-    ipc.off('mailbox-zoom-reset', this.ipcZoomReset)
+    ipc.removeListener('switch-mailbox', this.ipcChangeActiveMailbox)
+    ipc.removeListener('auth-google-complete', this.ipcAuthMailboxSuccess)
+    ipc.removeListener('auth-google-error', this.ipcAuthMailboxFailure)
+    ipc.removeListener('mailbox-zoom-in', this.ipcZoomIn)
+    ipc.removeListener('mailbox-zoom-out', this.ipcZoomOut)
+    ipc.removeListener('mailbox-zoom-reset', this.ipcZoomReset)
 
     mailboxDispatch.off('blurred', this.mailboxBlurred)
 
     if (this.appTray) {
       this.appTray.destroy()
-      this.appTray = null
+      delete this.appTray
     }
   },
 
@@ -133,6 +133,11 @@ module.exports = React.createClass({
       ])
       this.appTray.setToolTip(unreadText)
       this.appTray.setContextMenu(contextMenu)
+    } else {
+      if (this.appTray) {
+        this.appTray.destroy()
+        delete this.appTray
+      }
     }
   },
 
