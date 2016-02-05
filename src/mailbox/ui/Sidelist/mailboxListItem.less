@@ -6,7 +6,7 @@
 @ITEM_SIZE: 50px;
 @ITEM_BORDER_SIZE: 4px;
 
-@INDICATOR_SIZE: 8px;
+@INDICATOR_SIZE: 6px;
 
 .mailbox-list {
 
@@ -42,10 +42,9 @@
 			&.active:before, &:hover:before {
 				content: '';
 				position: absolute;
-				left: -10px + (-@INDICATOR_SIZE/4);
+				left: -8px;
 				top: 50%;
 				background-color: rgba(255, 255, 255, 0.4);
-				opacity: 0.8;
 				width: @INDICATOR_SIZE;
 				height: @INDICATOR_SIZE;
 				margin-top: -@INDICATOR_SIZE/2;
