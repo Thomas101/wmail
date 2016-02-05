@@ -161,6 +161,12 @@ module.exports = React.createClass({
     })
     item.on('done', (e, state) => {
       ipc.send('download-complete', { id: id })
+      const notification = new window.Notification('Download Completed', {
+        body: item.getFilename()
+      })
+      notification.onclick = function () {
+        shell.showItemInFolder(app.getPath('downloads'))
+      }
     })
   },
 
