@@ -56,9 +56,9 @@ class MailboxActions {
   /**
   * Sets that a thread has sent a notification
   * @param id: the id of the mailbox
-  * @param threadIds: the ids of the threads that were shown
+  * @param items: a list of dicts containing id, historyId, time
   */
-  setGoogleUnreadNotified (id, threadIds) { return { id: id, threadIds: threadIds } }
+  setGoogleUnreadNotified (id, items) { return { id: id, items: items } }
 
   /* **************************************************************************/
   // Active

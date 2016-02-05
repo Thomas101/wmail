@@ -40,20 +40,17 @@ class UnreadNotifications {
       const threads = mailbox.google.unotifiedUnread
       if (threads.length) {
         // We're in a dispatch cycle, so requeue this in it's own context
+        const notifiedData = threads.map(thread => {
+          return { id: thread.id, historyId: thread.historyId, time: new Date().getTime() }
+        })
         setTimeout(function () {
-          flux.mailbox.A.setGoogleUnreadNotified(mailbox.id, threads.map(thread => thread.id))
+          flux.mailbox.A.setGoogleUnreadNotified(mailbox.id, notifiedData)
         })
 
+        //Prep the notification content
         if (mailbox.showNotifications) {
           return acc.concat(threads.map(thread => {
-            return {
-              title: 'New Message',
-              body: [
-                'Account: ' + mailbox.email,
-                thread.snippet || 'No Body'
-              ].join('\n'),
-              data: { mailbox: mailbox.id, thread: thread.id }
-            }
+            return { mailbox: mailbox, thread: thread }
           }))
         }
       }
@@ -61,8 +58,20 @@ class UnreadNotifications {
       return acc
     }, [])
 
-    notifications.forEach(data => {
-      const notification = new window.Notification(data.title, data)
+    notifications.forEach(({ mailbox, thread }) => {
+      // Decode the snippet
+      let snippet = 'No Body'
+      if (thread.snippet) {
+        const decoder = document.createElement('div')
+        decoder.innerHTML = thread.snippet
+        snippet = decoder.textContent
+      }
+
+      // Build the notification
+      const notification = new window.Notification('New Message', {
+        body: [ mailbox.email, snippet ].join('\n'),
+        data: { mailbox: mailbox.id, thread: thread.id }
+      })
       notification.onclick = this.handleNotificationClicked
     })
   }

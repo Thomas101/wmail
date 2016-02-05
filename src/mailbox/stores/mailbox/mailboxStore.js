@@ -4,6 +4,7 @@ const storage = require('../storage')
 const Mailbox = require('./Mailbox')
 
 const INDEX_KEY = 'Mailbox_index'
+const UNREAD_VALIDITY_MS = 60000 // 1 min
 const MAILBOX_KEY = function (id) { return 'Mailbox_' + id }
 
 class MailboxStore {
@@ -222,36 +223,49 @@ class MailboxStore {
   * @param threads: the thread info from google
   */
   handleAddGoogleUnread ({id, threads}) {
-    const data = this.mailboxes.get(id).cloneData()
-    const oldUnread = data.googleUnread || {}
-    const updatedUnread = {}
+    if (!threads) { return }
 
-    // If the id and history are the same, copy the existing thread with flags across
-    // otherwise create a new entry
+    const now = new Date().getTime()
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleUnread = data.googleUnread || {}
+
+    // Merge the new threads in
     threads.forEach(thread => {
-      if (oldUnread[thread.id] && oldUnread[thread.id].historyId === thread.historyId) {
-        updatedUnread[thread.id] = oldUnread[thread.id]
+      if (data.googleUnread[thread.id]) {
+        data.googleUnread[thread.id] = Object.assign(data.googleUnread[thread.id], thread, { lastSeen: now })
       } else {
-        updatedUnread[thread.id] = thread
+        data.googleUnread[thread.id] = Object.assign(thread, { lastSeen: now })
       }
     })
-    data.googleUnread = updatedUnread
+
+    // Remove and update any threads that are no longer active
+    data.googleUnread = Object.keys(data.googleUnread).reduce((acc, threadId) => {
+      if (now - data.googleUnread[threadId].lastSeen < UNREAD_VALIDITY_MS) {
+        acc[threadId] = data.googleUnread[threadId]
+      }
+      return acc
+    }, {})
+
     this.saveMailbox(id, data)
   }
 
   /**
   * Sets that the given thread ids have sent notifications
   * @param id: the id of the mailbox
-  * @param threadIds: the ids of the threads to set
+  * @param items: the items to mark
   */
-  handleSetGoogleUnreadNotified ({id, threadIds}) {
+  handleSetGoogleUnreadNotified ({id, items}) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleUnread = data.googleUnread || {}
-    threadIds.forEach(threadId => {
-      if (data.googleUnread[threadId]) {
-        data.googleUnread[threadId].notified = true
+
+    items.forEach(item => {
+      if (data.googleUnread[item.id]) {
+        data.googleUnread[item.id].lastNotified = {
+          time: item.time, historyId: item.historyId
+        }
       }
     })
+
     this.saveMailbox(id, data)
   }
 
