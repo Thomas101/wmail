@@ -1,5 +1,3 @@
-const UNREAD_NOTIFICATION_SUPRESSION = 60000 // 1 min
-
 class Google {
 
   /* **************************************************************************/
@@ -40,8 +38,6 @@ class Google {
   /* **************************************************************************/
 
   get unotifiedUnread () {
-    const now = new Date().getTime()
-
     return Object.keys(this.__unread__ || {})
     .map(threadId => this.__unread__[threadId])
     .filter(thread => {

@@ -47,7 +47,7 @@ class UnreadNotifications {
           flux.mailbox.A.setGoogleUnreadNotified(mailbox.id, notifiedData)
         })
 
-        //Prep the notification content
+        // Prep the notification content
         if (mailbox.showNotifications) {
           return acc.concat(threads.map(thread => {
             return { mailbox: mailbox, thread: thread }
