@@ -77,7 +77,6 @@ class PackageBuilder {
       const J = path.join
 
       fs.mkdirsSync(J(outputPath, 'vendor-licenses'))
-      fs.copySync('./LICENSE', J(outputPath, 'LICENSE'))
       fs.unlinkSync(J(outputPath, 'version'))
       fs.move(J(outputPath, 'LICENSES.chromium.html'), J(outputPath, 'vendor-licenses/LICENSES.chromium.html'), function () {
         fs.move(J(outputPath, 'LICENSE'), J(outputPath, 'vendor-licenses/LICENSE.electron'), function () {
@@ -93,6 +92,7 @@ class PackageBuilder {
                 }
               })
 
+              fs.copySync('./LICENSE', J(outputPath, 'LICENSE'))
               console.log('[FINISH] License Copy')
               resolve()
             }
