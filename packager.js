@@ -62,7 +62,6 @@ class PackageBuilder {
         .join('|') + ')'
       }, function (err, appPath) {
         if (err) {
-          console.error(err)
           reject()
         } else {
           console.log('[FINISH] Package')
@@ -87,7 +86,6 @@ class PackageBuilder {
               reject(err)
             } else {
               data.map(item => {
-                console.log(item)
                 const name = item.name
                 if (item.licenseSources.license.sources.length) {
                   const path = item.licenseSources.license.sources[0].filePath
