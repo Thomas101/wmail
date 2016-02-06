@@ -59,7 +59,6 @@ class PackageBuilder {
           '/WMail-linux-x64',
           '/WMail-darwin-x64'
         ]
-        //.concat(Object.keys(pkg.devDependencies).map(d => '/node_modules/' + d))
         .join('|') + ')'
       }, function (err, appPath) {
         if (err) {
