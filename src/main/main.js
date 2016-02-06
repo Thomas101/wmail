@@ -7,7 +7,9 @@ const LocalStorage = require('node-localstorage').LocalStorage
 const MailboxesWindow = require('./MailboxesWindow')
 const ContentWindow = require('./ContentWindow')
 const pkg = require('../package.json')
-const ipcMain = require('electron').ipcMain
+const electron = require('electron')
+const ipcMain = electron.ipcMain
+const dialog = electron.dialog
 const appMenu = require('./appMenu')
 const Menu = require('menu')
 const shell = require('shell')
@@ -53,7 +55,22 @@ const appMenuSelectors = {
   zoomOut: () => { windowManager.mailboxesWindow.mailboxZoomOut() },
   zoomReset: () => { windowManager.mailboxesWindow.mailboxZoomReset() },
   mailbox: (mailboxId) => { windowManager.mailboxesWindow.switchMailbox(mailboxId) },
-  cycleWindows: () => { windowManager.focusNextWindow() }
+  cycleWindows: () => { windowManager.focusNextWindow() },
+  aboutDialog: () => {
+    dialog.showMessageBox({
+      title: pkg.name,
+      message: pkg.name,
+      detail: [
+        'Version: ' + pkg.version + (pkg.prerelease ? ' prerelease' : ''),
+        'Made with ♥ by Thomas Beverley.'
+      ].join('\n'),
+      buttons: [ 'Done', 'Website' ]
+    }, (index) => {
+      if (index === 1) {
+        shell.openExternal(constants.GITHUB_URL)
+      }
+    })
+  }
 }
 
 /* ****************************************************************************/

@@ -13,7 +13,7 @@ module.exports = {
       {
         label: 'Application',
         submenu: [
-          { label: 'About', selector: 'orderFrontStandardAboutPanel:' },
+          { label: 'About', click: selectors.aboutDialog },
           { type: 'separator' },
           { label: 'Hide Window', accelerator: 'Command+W', click: selectors.closeWindow },
           { label: 'Hide', accelerator: 'CmdOrCtrl+H', role: 'hide' },
