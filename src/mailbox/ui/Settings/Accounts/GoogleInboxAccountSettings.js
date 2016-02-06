@@ -1,5 +1,5 @@
 const React = require('react')
-const { Toggle, Paper } = require('material-ui')
+const { Toggle, Paper, SelectField, MenuItem } = require('material-ui')
 const flux = {
   mailbox: require('../../../stores/mailbox')
 }
@@ -29,6 +29,10 @@ module.exports = React.createClass({
     })
   },
 
+  handleUnreadQueryChange: function (evt, index, searchQuery) {
+    flux.mailbox.A.updateGoogleConfig(this.props.mailbox.id, { unreadQuery: searchQuery })
+  },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
@@ -48,6 +52,20 @@ module.exports = React.createClass({
           defaultToggled={this.props.mailbox.showNotifications}
           label='Show notifications'
           onToggle={this.handleShowNotificationsChange} />
+        <br />
+        <SelectField
+          value={this.props.mailbox.google.unreadQuery}
+          onChange={this.handleUnreadQueryChange}
+          floatingLabelText='Unread Query'>
+          <MenuItem
+            key={flux.mailbox.Google.UNREAD_QUERY}
+            value={flux.mailbox.Google.UNREAD_QUERY}
+            primaryText='Unread Messages' />
+          <MenuItem
+            key={flux.mailbox.Google.INBOX_QUERY}
+            value={flux.mailbox.Google.INBOX_QUERY}
+            primaryText='Messages in inbox' />
+        </SelectField>
       </Paper>
     )
   }

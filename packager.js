@@ -5,6 +5,7 @@ const pkg = require('./package.json')
 const fs = require('fs-extra')
 const licenseNames = ['license', 'LICENSE', 'license.md', 'LICENSE.md', 'copying', 'COPYING']
 const child_process = require('child_process')
+const path = require('path')
 const platform = process.argv[2] || 'darwin'
 
 class PackageBuilder {
@@ -21,7 +22,7 @@ class PackageBuilder {
         if (stdout) { console.log(`stdout: ${stdout}`) }
         if (stderr) { console.log(`stderr: ${stderr}`) }
 
-        if (error || stderr) {
+        if (error) {
           reject()
         } else {
           console.log('[FINISH] Webpack')
@@ -74,19 +75,22 @@ class PackageBuilder {
   moveLicenses (outputPath) {
     return new Promise((resolve, reject) => {
       console.log('[START] License Copy')
+      const J = path.join
 
-      fs.mkdirsSync(outputPath + 'vendor-licenses')
-      fs.move(outputPath + 'LICENSES.chromium.html', outputPath + 'vendor-licenses/LICENSES.chromium.html', function () {
-        fs.move(outputPath + 'LICENSE', outputPath + 'vendor-licenses/LICENSE.electron', function () {
+      fs.mkdirsSync(J(outputPath, 'vendor-licenses'))
+      fs.move(J(outputPath, 'LICENSES.chromium.html'), J(outputPath, 'vendor-licenses/LICENSES.chromium.html'), function () {
+        fs.move(J(outputPath, 'LICENSE'), J(outputPath, 'vendor-licenses/LICENSE.electron'), function () {
           Object.keys(pkg.dependencies).forEach(function (pName) {
             licenseNames.forEach(function (lName) {
               try {
-                fs.statSync('./node_modules/' + pName + '/' + lName)
-                fs.copySync('./node_modules/' + pName + '/' + lName, outputPath + 'vendor-licenses/LICENSE.' + pName)
+                fs.statSync(J('./node_modules', pName, lName))
+                fs.copySync(J('./node_modules', pName, lName), J(outputPath, 'vendor-licenses/LICENSE.' + pName))
               } catch (ex) { }
             })
           })
-          fs.copySync('./LICENSE', outputPath + 'LICENSE')
+          fs.copySync('./LICENSE', J(outputPath, 'LICENSE'))
+          fs.unlinkSync(J(outputPath, 'version'))
+
           console.log('[FINISH] License Copy')
 
           resolve()

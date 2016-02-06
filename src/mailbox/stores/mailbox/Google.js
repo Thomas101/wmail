@@ -4,6 +4,7 @@ class Google {
   // Class
   /* **************************************************************************/
 
+  static get INBOX_QUERY () { return 'label:inbox' }
   static get UNREAD_QUERY () { return 'label:inbox label:unread' }
   static get PRIMARY_UNREAD_QUERY () { return 'label:inbox label:unread category:primary' }
 

@@ -52,6 +52,7 @@ module.exports = React.createClass({
           defaultToggled={this.props.mailbox.showNotifications}
           label='Show notifications'
           onToggle={this.handleShowNotificationsChange} />
+        <br />
         <SelectField
           value={this.props.mailbox.google.unreadQuery}
           onChange={this.handleUnreadQueryChange}
@@ -64,6 +65,10 @@ module.exports = React.createClass({
             key={flux.mailbox.Google.PRIMARY_UNREAD_QUERY}
             value={flux.mailbox.Google.PRIMARY_UNREAD_QUERY}
             primaryText='Unread Primary Messages' />
+          <MenuItem
+            key={flux.mailbox.Google.INBOX_QUERY}
+            value={flux.mailbox.Google.INBOX_QUERY}
+            primaryText='Messages in inbox' />
         </SelectField>
       </Paper>
     )

@@ -6,9 +6,9 @@ const webpackTargetElectronRenderer = require('webpack-target-electron-renderer'
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 const clientFast = process.argv.findIndex(a => a.toLowerCase() === '--clientfast') !== -1
+const production = process.argv.findIndex(a => a.toLowerCase() === '-p') !== -1
 
 const options = {
-  devtool: clientFast ? 'eval-cheap-module-source-map' : 'source-map',
   entry: {
     mailbox: [
       'src/shared/',
@@ -91,6 +91,14 @@ const options = {
       }*/
     ]
   }
+}
+
+if (production) {
+  options.plugins.push(new webpack.optimize.UglifyJsPlugin({
+    compress: { warnings: false }
+  }))
+} else {
+  options.devtool = clientFast ? 'eval-cheap-module-source-map' : 'source-map'
 }
 
 options.target = webpackTargetElectronRenderer(options)
