@@ -36,6 +36,7 @@
     "jsx-loader": "^0.13.2",
     "less": "^2.6.0",
     "less-loader": "^2.2.2",
+    "nlf": "^1.4.0",
     "standard": "^5.4.1",
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",

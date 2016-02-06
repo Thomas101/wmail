@@ -3,9 +3,9 @@
 const packager = require('electron-packager')
 const pkg = require('./package.json')
 const fs = require('fs-extra')
-const licenseNames = ['license', 'LICENSE', 'license.md', 'LICENSE.md', 'copying', 'COPYING']
 const child_process = require('child_process')
 const path = require('path')
+const nlf = require('nlf')
 const platform = process.argv[2] || 'darwin'
 
 class PackageBuilder {
@@ -78,22 +78,27 @@ class PackageBuilder {
       const J = path.join
 
       fs.mkdirsSync(J(outputPath, 'vendor-licenses'))
+      fs.copySync('./LICENSE', J(outputPath, 'LICENSE'))
+      fs.unlinkSync(J(outputPath, 'version'))
       fs.move(J(outputPath, 'LICENSES.chromium.html'), J(outputPath, 'vendor-licenses/LICENSES.chromium.html'), function () {
         fs.move(J(outputPath, 'LICENSE'), J(outputPath, 'vendor-licenses/LICENSE.electron'), function () {
-          Object.keys(pkg.dependencies).forEach(function (pName) {
-            licenseNames.forEach(function (lName) {
-              try {
-                fs.statSync(J('./node_modules', pName, lName))
-                fs.copySync(J('./node_modules', pName, lName), J(outputPath, 'vendor-licenses/LICENSE.' + pName))
-              } catch (ex) { }
-            })
+          nlf.find({ directory: '.', production: true }, function (err, data) {
+            if (err) {
+              reject(err)
+            } else {
+              data.map(item => {
+                console.log(item)
+                const name = item.name
+                if (item.licenseSources.license.sources.length) {
+                  const path = item.licenseSources.license.sources[0].filePath
+                  fs.copySync(path, J(outputPath, 'vendor-licenses/LICENSE.' + name))
+                }
+              })
+
+              console.log('[FINISH] License Copy')
+              resolve()
+            }
           })
-          fs.copySync('./LICENSE', J(outputPath, 'LICENSE'))
-          fs.unlinkSync(J(outputPath, 'version'))
-
-          console.log('[FINISH] License Copy')
-
-          resolve()
         })
       })
     })
