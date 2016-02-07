@@ -1,3 +1,9 @@
 _site
 .sass-cache
 .jekyll-metadata
+
+/WMail-darwin-x64
+/WMail-linux-ia32
+/WMail-linux-x64
+/bin
+/node_modules
