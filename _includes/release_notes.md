@@ -1,0 +1,1 @@
+This version addresses some issues with logging and updating

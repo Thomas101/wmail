@@ -1,0 +1,90 @@
+---
+layout: default
+release_v: "v1.1.3"
+release_s: "1_1_3"
+prerelease_v: "v1.1.8"
+prerelease_s: "1_1_8"
+---
+{% capture release_notes %}{% include release_notes.md %}{% endcapture %}
+{% capture prerelease_notes %}{% include prerelease_notes.md %}{% endcapture %}
+
+<section class="bg-red-600 color-red-50 page-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h1>Wmail</h1>
+        <p class="lead">The missing desktop client for Gmail & Google Inbox</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-body text-center">
+            <a href="https://github.com/Thomas101/wmail/releases" target="_blank">View all releases</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <h2>{{ page.release_v }}</h2>
+            <p><span class="label label-success">Latest Release</span></p>
+            <p>
+              <a href="https://github.com/Thomas101/wmail/releases/download/v1.1.3/WMail_1_1_3.zip" class="btn btn-default">
+                <span class="fa fa-apple"></span> Download OSX
+              </a>
+            </p>
+            
+            <p>
+              <a href="" class="btn btn-default" disabled>
+                <span class="fa fa-linux"></span> Download Linux 32-bit
+              </a>
+            </p>
+
+            <p>
+              <a href="" class="btn btn-default" disabled>
+                <span class="fa fa-linux"></span> Download Linux 64-bit
+              </a>
+            </p>
+            <br />
+            {{ release_notes | markdownify }}
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <h2>{{ page.prerelease_v }}</h2>
+            <p><span class="label label-danger">Latest Pre-Release</span></p>
+            <p>
+              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_osx_prerelease.zip" class="btn btn-default">
+                <span class="fa fa-apple"></span> Download OSX
+              </a>
+            </p>
+            
+            <p>
+              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_linux32_prerelease.zip" class="btn btn-default">
+                <span class="fa fa-linux"></span> Download Linux 32-bit
+              </a>
+            </p>
+
+            <p>
+              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_linux64_prerelease.zip" class="btn btn-default">
+                <span class="fa fa-linux"></span> Download Linux 64-bit
+              </a>
+            </p>
+            <br />
+            {{ prerelease_notes | markdownify }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
