@@ -2,13 +2,11 @@
 
 The missing desktop client for Gmail & Google Inbox. Bringing the Gmail & Google Inbox experience to your desktop in a neatly packaged app
 
-[Download the latest version (1.1.3)](https://github.com/Thomas101/wmail/releases/download/v1.1.3/WMail_1_1_3.zip)
+Download the latest release for your platform (1.2.0) 
 
-Download the latest pre-release for your platform (1.1.8) 
-
-* [Download for OSX](https://github.com/Thomas101/wmail/releases/download/v1.1.8/WMail_1_1_8_osx_prerelease.zip)
-* [Download for linux 32-bit](https://github.com/Thomas101/wmail/releases/download/v1.1.8/WMail_1_1_8_linux32_prerelease.zip)
-* [Download for linux 64-bit](https://github.com/Thomas101/wmail/releases/download/v1.1.8/WMail_1_1_8_linux64_prerelease.zip.zip)
+* [Download for OSX](https://github.com/Thomas101/wmail/releases/download/v1.2.0/WMail_1_2_0_osx.zip)
+* [Download for linux 32-bit](https://github.com/Thomas101/wmail/releases/download/v1.2.0/WMail_1_2_0_linux32.zip)
+* [Download for linux 64-bit](https://github.com/Thomas101/wmail/releases/download/v1.2.0/WMail_1_2_0_linux64.zip)
 
 [View all releases](https://github.com/Thomas101/wmail/releases)
 
