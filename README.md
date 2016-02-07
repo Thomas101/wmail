@@ -14,31 +14,9 @@ Download the latest pre-release for your platform (1.1.8)
 
 [Raise an issue or request a feature](https://github.com/Thomas101/wmail/issues)
 
+[Find out how you can contribute](https://github.com/Thomas101/wmail/wiki/Contributing)
+
 ![Screenshot](https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/screenshot1.png "Screenshot")
-
-### Installing
-WMail should work just by running it like any other app. If you have Gatekeeper enabled on your mac you will need to make an exception to run the WMail app the first time. Here are some instructions if you're unsure how to get started
-
-1.) After downloading the app, unzip it if your browser hasn't already done it automatically.
-
-2.) Drag WMail into your applications folder
-
-<a href="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup1.png" target="_blank"><img src="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup1.png" height="250" /></a>
-
-3.) Depending on your configuration Gatekeeper may prevent you from opening the app by just double clicking on it the first time. This is because it will be from an unidentifier developer. Instead, right click on the app and select open
-
-<a href="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup2.png" target="_blank"><img src="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup2.png" height="250" /></a>
-
-4.) You'll see a warning explaining this to you. If you press open the app will open.
-
-<a href="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup3.png" target="_blank"><img src="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/setup3.png" height="250" /></a>
-
-5.) Once you've done this the first time you'll be able to launch the app from applications at any time by double clicking on it
-
-### Screenshots
-A few more screenshots to tickle your tastebuds
-
-<a href="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/screenshot1.png" target="_blank"><img src="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/screenshot1.png" height="250" /></a><a href="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/screenshot2.png" target="_blank"><img src="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/screenshot2.png" height="250" /></a><a href="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/screenshot3.png" target="_blank"><img src="https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/screenshot3.png" height="250" /></a>
 
 
 ### Building from source
@@ -68,4 +46,4 @@ npm start
 
 
 
-Made with ♥ by Thomas Beverley. [Buy me a beer &#127866;](https://www.paypal.me/ThomasBeverley)
+Made with ♥ by Thomas Beverley. [Buy me a beer](https://www.paypal.me/ThomasBeverley) &#127866;
