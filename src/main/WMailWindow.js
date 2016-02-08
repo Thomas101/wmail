@@ -163,8 +163,8 @@ class WMailWindow extends EventEmitter {
   * Toggles the sidebar
   */
   toggleSidebar () {
-    flux.A.setEnableSidebar(!flux.S.sidebarEnabled);
-    flux.S.persist();
+    flux.A.setEnableSidebar(!flux.S.sidebarEnabled)
+    flux.S.persist()
   }
 
   /**
