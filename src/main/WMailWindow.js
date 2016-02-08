@@ -2,6 +2,9 @@
 
 const BrowserWindow = require('browser-window')
 const EventEmitter = require('events')
+const flux = {
+  settings: require('../mailbox/stores/settings')
+}
 
 class WMailWindow extends EventEmitter {
 
@@ -154,6 +157,14 @@ class WMailWindow extends EventEmitter {
   */
   toggleFullscreen () {
     this.window.setFullScreen(!this.window.isFullScreen())
+  }
+
+  /**
+  * Toggles the sidebar
+  */
+  toggleSidebar () {
+    flux.A.setEnableSidebar(!flux.S.sidebarEnabled);
+    flux.S.persist();
   }
 
   /**

@@ -40,6 +40,7 @@ module.exports = {
         label: 'View',
         submenu: [
           { label: 'Toggle Full Screen', accelerator: 'Ctrl+Command+F', click: selectors.fullscreenToggle },
+          { label: 'Toggle Sidebar', accelerator: 'Ctrl+Command+S', click: selectors.sidebarToggle },
           { type: 'separator' },
           { label: 'Zoom Mailbox In', accelerator: 'CmdOrCtrl+Plus', click: selectors.zoomIn },
           { label: 'Zoom Mailbox Out', accelerator: 'CmdOrCtrl+-', click: selectors.zoomOut },
