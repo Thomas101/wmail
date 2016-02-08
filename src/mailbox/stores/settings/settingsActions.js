@@ -108,6 +108,17 @@ class SettingsActions {
     return this.mergeUpdates({ defaultDownloadLocation: path })
   }
 
+  /* **************************************************************************/
+  // Sidebar
+  /* **************************************************************************/
+
+  /**
+  * @param enabled: true to enable the sidebar, false otherwise
+  */
+  setEnableSidebar (enabled) {
+    return this.mergeUpdates({ sidebarEnabled: enabled })
+  }
+
 }
 
 module.exports = alt.createActions(SettingsActions)
