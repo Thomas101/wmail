@@ -34,7 +34,8 @@ module.exports = React.createClass({
       showTitlebar: store.showTitlebar(),
       showAppBadge: store.showAppBadge(),
       showTrayIcon: store.showTrayIcon(),
-      spellcheckerEnabled: store.spellcheckerEnabled()
+      spellcheckerEnabled: store.spellcheckerEnabled(),
+      sidebarEnabled: store.sidebarEnabled()
     }
   },
 
@@ -64,6 +65,10 @@ module.exports = React.createClass({
 
   handleToggleSpellchecker: function (evt, toggled) {
     flux.settings.A.setEnableSpellchecker(toggled)
+  },
+
+  handleToggleSidebar: function (evt, toggled) {
+    flux.settings.A.setEnableSidebar(toggled)
   },
 
   /* **************************************************************************/
@@ -96,6 +101,11 @@ module.exports = React.createClass({
             toggled={this.state.showTrayIcon}
             label='Show tray icon'
             onToggle={this.handleToggleShowTrayIcon} />
+          <br />
+          <Toggle
+            toggled={this.state.sidebarEnabled}
+            label='Show sidebar'
+            onToggle={this.handleToggleSidebar()} />
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
           <Toggle
