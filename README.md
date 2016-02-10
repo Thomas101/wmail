@@ -1,4 +1,4 @@
-#Wmail
+# Wmail
 
 The missing desktop client for Gmail & Google Inbox. Bringing the Gmail & Google Inbox experience to your desktop in a neatly packaged app
 
@@ -20,9 +20,17 @@ The missing desktop client for Gmail & Google Inbox. Bringing the Gmail & Google
 
 Feeling brave and want to build from source? Here's what you need to do
 
-Firstly you need to get a client id and secret from Google. Visit https://console.developers.google.com to get started. You'll need to setup your OAuth Client ID and enable the Gmail, Google+ and Identity Toolkit APIs.
+Firstly you need to get an OAuth client ID and secret from Google.
+Visit https://console.developers.google.com to get started.
+You'll need to [setup your OAuth Client ID](https://console.developers.google.com/apis/credentials) and enable the [Gmail](https://console.developers.google.com/apis/api/gmail/overview), [Google+](https://console.developers.google.com/apis/api/plus/overview) and [Identity Toolkit](https://console.developers.google.com/apis/api/identitytoolkit/overview) APIs.
 
-Next create `src/shared/credentials.js` with your google client id and secret like so...
+To create OAuth client ID & secret, under "API Manager", choose "Create Credentials", then "OAuth client ID".
+For "Application type", select "Other", and choose some name for the application, as described in these screenshots:
+
+![Create credentials](https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/gdc-create-credentials.png "Create Credentials")
+![Create OAuth client ID](https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/gdc-oauth-client-id-creation.png "Create OAuth Client ID")
+
+Next create `src/shared/credentials.js` with your Google client ID and secret like so...
 
 ```js
 module.exports = Object.freeze({
@@ -37,7 +45,6 @@ Then run the following...
 npm install
 npm start
 ```
-
 
 
 Made with ♥ by Thomas Beverley. [Buy me a beer](https://www.paypal.me/ThomasBeverley) &#127866;
