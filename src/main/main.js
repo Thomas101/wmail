@@ -41,6 +41,10 @@ const appMenuSelectors = {
     const focused = windowManager.focused()
     focused ? focused.toggleFullscreen() : undefined
   },
+  sidebarToggle: () => {
+    const focused = windowManager.focused()
+    focused ? focused.toggleSidebar() : undefined
+  },
   reload: () => {
     const focused = windowManager.focused()
     focused ? focused.reload() : undefined
