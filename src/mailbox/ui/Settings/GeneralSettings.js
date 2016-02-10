@@ -105,7 +105,7 @@ module.exports = React.createClass({
           <Toggle
             toggled={this.state.sidebarEnabled}
             label='Show sidebar'
-            onToggle={this.handleToggleSidebar()} />
+            onToggle={this.handleToggleSidebar} />
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
           <Toggle

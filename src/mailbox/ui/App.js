@@ -14,6 +14,7 @@ const app = remote.require('app')
 const Tray = remote.require('tray')
 const Menu = remote.require('menu')
 const mailboxDispatch = require('./Dispatch/mailboxDispatch')
+const navigationDispatch = require('./Dispatch/navigationDispatch')
 const TimerMixin = require('react-timer-mixin')
 const constants = require('shared/constants')
 const UnreadNotifications = require('../daemons/UnreadNotifications')
@@ -49,6 +50,8 @@ module.exports = React.createClass({
     ipc.on('mailbox-zoom-in', this.ipcZoomIn)
     ipc.on('mailbox-zoom-out', this.ipcZoomOut)
     ipc.on('mailbox-zoom-reset', this.ipcZoomReset)
+    ipc.on('toggle-sidebar', this.toggleSidebar)
+    ipc.on('launch-settings', this.launchSettings)
   },
 
   componentWillUnmount: function () {
@@ -64,6 +67,8 @@ module.exports = React.createClass({
     ipc.removeListener('mailbox-zoom-in', this.ipcZoomIn)
     ipc.removeListener('mailbox-zoom-out', this.ipcZoomOut)
     ipc.removeListener('mailbox-zoom-reset', this.ipcZoomReset)
+    ipc.removeListener('toggle-sidebar', this.toggleSidebar)
+    ipc.removeListener('launch-settings', this.launchSettings)
 
     mailboxDispatch.off('blurred', this.mailboxBlurred)
 
@@ -154,7 +159,7 @@ module.exports = React.createClass({
   },
 
   /* **************************************************************************/
-  // Events
+  // IPC Events
   /* **************************************************************************/
 
   /**
@@ -230,6 +235,26 @@ module.exports = React.createClass({
       flux.mailbox.A.update(mailboxId, { zoomFactor: 1.0 })
     }
   },
+
+  /**
+  * Toggles the sidebar
+  * @param evt: the event that fired
+  */
+  toggleSidebar: function (evt) {
+    flux.settings.A.toggleSidebar()
+  },
+
+  /**
+  * Launches the settings
+  * @param evt: the event that fired
+  */
+  launchSettings: function (evt) {
+    navigationDispatch.openSettings()
+  },
+
+  /* **************************************************************************/
+  // Rendering Events
+  /* **************************************************************************/
 
   /**
   * Handles a mailbox bluring by trying to refocus the mailbox

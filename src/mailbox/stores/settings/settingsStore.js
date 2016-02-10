@@ -117,7 +117,8 @@ class SettingsStore {
     this.bindListeners({
       handleLoad: actions.LOAD,
       handleSetProxyServer: actions.SET_PROXY_SERVER,
-      handleMergeUpdates: actions.MERGE_UPDATES
+      handleMergeUpdates: actions.MERGE_UPDATES,
+      handleToggleSidebar: actions.TOGGLE_SIDEBAR
     })
   }
 
@@ -160,8 +161,17 @@ class SettingsStore {
   * @param updates: the dictionary to merge in
   */
   handleMergeUpdates ({ updates }) {
+    console.log(updates)
     this.__settings__ = Object.assign(this.__settings__, updates)
+    console.log(this.__settings__)
     this.persist()
+  }
+
+  /**
+  * Toggles the sidebar
+  */
+  handleToggleSidebar () {
+    this.handleMergeUpdates({ updates: { sidebarEnabled: !this.sidebarEnabled() } })
   }
 }
 

@@ -119,6 +119,11 @@ class SettingsActions {
     return this.mergeUpdates({ sidebarEnabled: enabled })
   }
 
+  /**
+  * Toggles the sidebar
+  */
+  toggleSidebar () { return {} }
+
 }
 
 module.exports = alt.createActions(SettingsActions)

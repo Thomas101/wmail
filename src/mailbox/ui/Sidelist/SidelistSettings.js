@@ -1,34 +1,11 @@
 const React = require('react')
 const { IconButton, Styles } = require('material-ui')
-const SettingsDialog = require('../Settings/SettingsDialog')
+const navigationDispatch = require('../Dispatch/navigationDispatch')
 
 /* eslint-disable react/prop-types */
 
 module.exports = React.createClass({
   displayName: 'SidelistSettings',
-
-  /* **************************************************************************/
-  // Data lifecycle
-  /* **************************************************************************/
-
-  getInitialState: function () {
-    return { settings: false }
-  },
-
-  /* **************************************************************************/
-  // User Interaction
-  /* **************************************************************************/
-
-  /**
-  * Opens the settings dialog
-  */
-  handleOpenSettings: function () {
-    this.setState({ settings: true })
-  },
-
-  handleCloseSettings: function () {
-    this.setState({ settings: false })
-  },
 
   /* **************************************************************************/
   // Rendering
@@ -44,11 +21,10 @@ module.exports = React.createClass({
           iconClassName='material-icons'
           tooltip='Settings'
           tooltipPosition='top-center'
-          onClick={this.handleOpenSettings}
+          onClick={() => navigationDispatch.openSettings()}
           iconStyle={{ color: Styles.Colors.blueGrey400 }}>
           settings
         </IconButton>
-        <SettingsDialog open={this.state.settings} onRequestClose={this.handleCloseSettings} />
       </div>
     )
   }

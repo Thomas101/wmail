@@ -106,6 +106,20 @@ class MailboxesWindow extends WMailWindow {
     this.window.webContents.send('switch-mailbox', { mailboxId: mailboxId })
   }
 
+  /**
+  * Launches the preferences modal
+  */
+  launchPreferences () {
+    this.window.webContents.send('launch-settings', { })
+  }
+
+  /**
+  * Toggles the sidebar
+  */
+  toggleSidebar () {
+    this.window.webContents.send('toggle-sidebar', { })
+  }
+
 }
 
 module.exports = MailboxesWindow
