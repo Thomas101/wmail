@@ -9,8 +9,9 @@
     timeout = setTimeout(function () {
       ipcRenderer.sendToHost({
         type: 'page-click',
-        throttled: true
+        throttled: true,
+        throttle: 5000
       })
-    }, 2500)
+    }, 5000)
   })
 })()
