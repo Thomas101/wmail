@@ -10,21 +10,48 @@ const Mailbox = require('../mailbox/Mailbox')
 const ipc = window.nativeRequire('electron').ipcRenderer
 const reporter = require('../../reporter')
 
-// This is bad. We shouldn't be storing state in actions
 const cachedAuths = new Map()
 
 class GoogleActions {
+
   /* **************************************************************************/
-  // Auth
+  // Pollers
+  /* **************************************************************************/
+
+  startPollingUpdates () {
+    return {
+      profiles: setInterval(() => {
+        this.syncAllMailboxProfiles()
+      }, constants.GMAIL_PROFILE_SYNC_MS),
+
+      unread: setInterval(() => {
+        this.syncAllMailboxUnreadCounts()
+      }, constants.GMAIL_UNREAD_SYNC_MS),
+
+      notification: setInterval(() => {
+        this.syncAllMailboxUnreadMessages()
+      }, constants.GMAIL_NOTIFICATION_SYNC_MS)
+    }
+  }
+
+  stopPollingUpdates () {
+    return {}
+  }
+
+  /* **************************************************************************/
+  // API Auth
   /* **************************************************************************/
 
   /**
   * Sets up the auth for a mailbox
+  * @param mailboxId: the id of the mailbox to setup for
+  * @return { auth, mailboxId } the mailbox auth and the mailbox id
   */
-  setupAuth (mailbox) {
+  getAPIAuth (mailboxId) {
+    const mailbox = mailboxStore.getState().get(mailboxId)
     let generate = false
-    if (cachedAuths.has(mailbox.id)) {
-      if (cachedAuths.get(mailbox.id).time !== mailbox.google.authTime) {
+    if (cachedAuths.has(mailboxId)) {
+      if (cachedAuths.get(mailboxId).time !== mailbox.google.authTime) {
         generate = true
       }
     } else {
@@ -42,159 +69,13 @@ class GoogleActions {
         time: mailbox.google.authTime,
         auth: auth
       })
-
-      return { mailboxId: mailbox.id, auth: cachedAuths.get(mailbox.id) }
-    } else {
-      return {}
     }
+
+    return cachedAuths.get(mailboxId)
   }
 
   /* **************************************************************************/
-  // Pollers
-  /* **************************************************************************/
-
-  /**
-  * Starts polling google with sync events
-  */
-  startPollSync () {
-    return {
-      profiles: setInterval(() => {
-        this.syncAllProfiles()
-      }, constants.GMAIL_PROFILE_SYNC_MS),
-
-      unread: setInterval(() => {
-        this.syncAllUnreadCounts()
-      }, constants.GMAIL_UNREAD_SYNC_MS)
-    }
-  }
-
-  /**
-  * Stops polling google with sync events
-  */
-  stopPollSync () { return {} }
-
-  /* **************************************************************************/
-  // Sync
-  /* **************************************************************************/
-
-  /**
-  * Syncs a mailbox by grabbing the profile then unread count
-  * @param mailbox: the mailbox to sync
-  * @return promise
-  */
-  syncMailbox (mailbox) {
-    const promise = Promise.resolve()
-      .then(() => this.syncProfiles([mailbox]).promise)
-      .then(() => Promise.resolve(mailboxStore.getState().get(mailbox.id))) // we have to refetch the mailbox because it will have been updated
-      .then((mailbox) => this.syncUnreadCounts([mailbox]).promise)
-    return { promise: promise }
-  }
-
-  /* **************************************************************************/
-  // Profile Sync
-  /* **************************************************************************/
-
-  /**
-  * Syncs all profiles
-  */
-  syncAllProfiles () {
-    this.syncProfiles(mailboxStore.getState().all())
-    return {}
-  }
-
-  /**
-  * Syncs the profiles for a set of mailboxes
-  * @param mailboxes: the mailboxes to sync
-  */
-  syncProfiles (mailboxes) {
-    if (mailboxes.length) {
-      const requests = mailboxes.map(mailbox => {
-        this.setupAuth(mailbox)
-        return googleHTTP.syncProfile(mailbox, (cachedAuths.get(mailbox.id) || {}).auth)
-      })
-
-      const promise = Promise.all(requests).then(
-        (responses) => { this.syncProfilesComplete(responses) },
-        (err) => { console.warn('[SYNC ERR]', err) }
-      )
-      return { promise: promise }
-    } else {
-      return { promise: Promise.resolve() }
-    }
-  }
-
-  /**
-  * Handles profile sync completing
-  * @param responses: the array of responses
-  */
-  syncProfilesComplete (responses) {
-    responses.forEach(response => {
-      if (response.response) {
-        mailboxActions.update(response.mailboxId, {
-          avatar: response.response.image.url,
-          email: (response.response.emails.find(a => a.type === 'account') || {}).value,
-          name: response.response.displayName
-        })
-      }
-    })
-
-    return { responses: responses }
-  }
-
-  /* **************************************************************************/
-  // Unread Sync
-  /* **************************************************************************/
-
-  /**
-  * Syncs all profiles
-  */
-  syncAllUnreadCounts () {
-    this.syncUnreadCounts(mailboxStore.getState().all())
-    return {}
-  }
-
-  /**
-  * Syncs the unread count for a set of mailboxes
-  * @param mailboxes: the mailboxes to sync the count for
-  */
-  syncUnreadCounts (mailboxes) {
-    if (mailboxes.length) {
-      const requests = mailboxes.map(mailbox => {
-        this.setupAuth(mailbox)
-        return googleHTTP.syncUnread(mailbox, (cachedAuths.get(mailbox.id) || {}).auth)
-      })
-
-      const promise = Promise.all(requests).then(
-        (responses) => { this.syncUnreadCountsComplete(responses) },
-        (err) => {
-          console.warn('[SYNC ERR]', err)
-          reporter.reportError('[SYNC ERR]' + err)
-        }
-      )
-      return { promise: promise }
-    } else {
-      return { promise: Promise.resolve() }
-    }
-  }
-
-  /**
-  * Handles unread sync completing
-  * @param responses: the array of responses
-  */
-  syncUnreadCountsComplete (responses) {
-    responses.forEach(response => {
-      if (response.response) {
-        mailboxActions.update(response.mailboxId, {
-          unread: response.response.resultSizeEstimate
-        })
-        mailboxActions.addGoogleUnread(response.mailboxId, response.response.threads)
-      }
-    })
-    return { responses: responses }
-  }
-
-  /* **************************************************************************/
-  // authentication
+  // User Auth
   /* **************************************************************************/
 
   /**
@@ -223,9 +104,8 @@ class GoogleActions {
       googleAuth: data.auth
     })
     // Run the first sync
-
     const mailbox = mailboxStore.getState().get(data.id)
-    const firstSync = this.syncMailbox(mailbox)
+    const firstSync = this.syncMailbox(data.id)
     return { mailbox: mailbox, firstSync: firstSync }
   }
 
@@ -241,6 +121,301 @@ class GoogleActions {
     reporter.reportError('[AUTH ERR]' + data.errorString)
     return { data: data }
   }
+
+  /* **************************************************************************/
+  // Mailbox
+  /* **************************************************************************/
+
+  /**
+  * Syncs all mailboxes
+  */
+  syncAllMailboxes () {
+    const mailboxIds = mailboxStore.getState().ids()
+    if (mailboxIds.length === 0) { return { promises: Promise.resolve() } }
+
+    const promises = mailboxIds.map(mailboxId => {
+      return this.syncMailbox(mailboxId).promise
+    })
+
+    Promise.all(promises).then(
+      () => { this.syncAllMailboxesCompeted() },
+      (e) => { this.syncAllMailboxesCompeted() })
+    return { promises: promises }
+  }
+
+  /**
+  * Indicates that all profiles have been synced
+  */
+  syncAllMailboxesCompeted () {
+    return {}
+  }
+
+  /**
+  * Syncs all aspects of a mailbox
+  * @param mailboxId: the id of the mailbox to sync
+  */
+  syncMailbox (mailboxId) {
+    const promise = Promise.resolve()
+      .then(() => this.syncMailboxProfile(mailboxId).promise)
+      .then(() => this.syncMailboxUnreadCount(mailboxId).promise)
+      .then(
+        () => { this.syncMailboxSuccess(mailboxId) },
+        (err) => { this.syncMailboxFailure(mailboxId, err) })
+    return { promise: promise }
+  }
+
+  /**
+  * Indicates the mailbox synced successfully
+  * @param mailboxId: the id of the mailbox that synced
+  */
+  syncMailboxSuccess (mailboxId) {
+    return { mailboxId: mailboxId }
+  }
+
+  /**
+  * Indicates the mailbox synced successfully
+  * @param mailboxId: the id of the mailbox that synced
+  * @param err: the error that occured
+  */
+  syncMailboxFailure (mailboxId, err) {
+    return { mailboxId: mailboxId, err: err }
+  }
+
+  /* **************************************************************************/
+  // Profiles
+  /* **************************************************************************/
+
+  /**
+  * Syncs all profiles
+  */
+  syncAllMailboxProfiles () {
+    const mailboxIds = mailboxStore.getState().ids()
+    if (mailboxIds.length === 0) { return { promises: Promise.resolve() } }
+
+    const promises = mailboxIds.map(mailboxId => {
+      return this.syncMailboxProfile(mailboxId).promise
+    })
+
+    Promise.all(promises).then(
+      () => { this.syncAllMailboxProfilesCompeted() },
+      () => { this.syncAllMailboxProfilesCompeted() })
+    return { promises: promises }
+  }
+
+  /**
+  * Indicates that all profiles have been synced
+  */
+  syncAllMailboxProfilesCompeted () {
+    return {}
+  }
+
+  /**
+  * Syncs a mailbox profile
+  * @param mailboxId: the id of the mailbox
+  */
+  syncMailboxProfile (mailboxId) {
+    const { auth } = this.getAPIAuth(mailboxId)
+
+    const promise = googleHTTP.fetchMailboxProfile(auth).then(response => {
+      this.syncMailboxProfileSuccess(mailboxId, response)
+    }, err => {
+      this.syncMailboxProfileFailure(mailboxId, err)
+    })
+
+    return { mailboxId: mailboxId, promise: promise }
+  }
+
+  /**
+  * Deals with a mailbox sync completing
+  * @param mailboxId: the id of the mailbox
+  * @param response: the response from the api
+  */
+  syncMailboxProfileSuccess (mailboxId, response) {
+    mailboxActions.update(mailboxId, {
+      avatar: response.response.image.url,
+      email: (response.response.emails.find(a => a.type === 'account') || {}).value,
+      name: response.response.displayName
+    })
+    return { mailboxId: mailboxId }
+  }
+
+  /**
+  * Deals with a mailbox sync completing
+  * @param mailboxId: the id of the mailbox
+  * @param err: the error from the api
+  */
+  syncMailboxProfileFailure (mailboxId, err) {
+    console.warn('[SYNC ERR] Mailbox Profile', err)
+    return { mailboxId: mailboxId }
+  }
+
+  /* **************************************************************************/
+  // Unread Counts
+  /* **************************************************************************/
+
+  /**
+  * Syncs all profiles
+  */
+  syncAllMailboxUnreadCounts () {
+    const mailboxIds = mailboxStore.getState().ids()
+    if (mailboxIds.length === 0) { return { promises: Promise.resolve() } }
+
+    const promises = mailboxIds.map(mailboxId => {
+      return this.syncMailboxUnreadCount(mailboxId).promise
+    })
+
+    Promise.all(promises).then(
+      () => { this.syncAllMailboxUnreadCountsCompleted() },
+      () => { this.syncAllMailboxUnreadCountsCompleted() })
+    return { promises: promises }
+  }
+
+  /**
+  * Indicates that all profiles have been synced
+  */
+  syncAllMailboxUnreadCountsCompleted () {
+    return {}
+  }
+
+  /**
+  * Syncs the unread count for a set of mailboxes
+  * @param mailboxId: the id of the mailbox
+  */
+  syncMailboxUnreadCount (mailboxId) {
+    const { auth } = this.getAPIAuth(mailboxId)
+    const mailbox = mailboxStore.getState().get(mailboxId)
+
+    const label = mailbox.google.unreadLabel
+    const labelField = mailbox.google.unreadLabelField
+    const promise = googleHTTP.fetchMailboxLabel(auth, mailbox.email, label).then(response => {
+      this.syncMailboxUnreadCountSuccess(mailboxId, response, label, labelField)
+    }, err => {
+      this.syncMailboxUnreadCountFailure(mailboxId, err)
+    })
+
+    return { mailboxId: mailboxId, promise: promise }
+  }
+
+  /**
+  * Deals with a mailbox unread count completing
+  * @param mailboxId: the id of the mailbox
+  * @param response: the response from the api
+  * @param label: the label that was searched
+  * @param labelField: the name of the field that should have the value taken from it
+  */
+  syncMailboxUnreadCountSuccess (mailboxId, response, label, labelField) {
+    mailboxActions.update(mailboxId, {
+      unread: response.response[labelField]
+    })
+    return { mailboxId: mailboxId }
+  }
+
+  /**
+  * Deals with a mailbox unread count erroring
+  * @param mailboxId: the id of the mailbox
+  * @param err: the error from the api
+  */
+  syncMailboxUnreadCountFailure (mailboxId, err) {
+    console.warn('[SYNC ERR] Mailbox Unread Count', err)
+    return { mailboxId: mailboxId }
+  }
+
+  /* **************************************************************************/
+  // Unread Messages
+  /* **************************************************************************/
+
+  /**
+  * Syncs all unread messages
+  */
+  syncAllMailboxUnreadMessages () {
+    const mailboxIds = mailboxStore.getState().ids()
+    if (mailboxIds.length === 0) { return { promises: Promise.resolve() } }
+
+    const promises = mailboxIds.map(mailboxId => {
+      return this.syncMailboxUnreadMessages(mailboxId).promise
+    })
+
+    Promise.all(promises).then(
+      () => { this.syncAllMailboxUnreadMessagesCompleted() },
+      () => { this.syncAllMailboxUnreadMessagesCompleted() })
+    return { promises: promises }
+  }
+
+  /**
+  * Indicates that all unread messages have been synced
+  */
+  syncAllMailboxUnreadMessagesCompleted () {
+    return {}
+  }
+
+  /**
+  * Syncs the unread messages for a mailbox
+  * @param mailboxId: the id of the mailbox
+  */
+  syncMailboxUnreadMessages (mailboxId) {
+    const mailbox = mailboxStore.getState().get(mailboxId)
+    if (mailbox.unread === 0) {
+      this.syncMailboxUnreadMessagesSuccess(mailboxId)
+      return { mailboxId: mailboxId, promise: Promise.resolve() }
+    }
+
+    const { auth } = this.getAPIAuth(mailboxId)
+    const promise = Promise.resolve()
+      .then(() => googleHTTP.fetchEmailSummaries(auth, mailbox.email, mailbox.google.unreadQuery))
+      .then(response => {
+        const mailbox = mailboxStore.getState().get(mailboxId)
+        const messageIds = response.response.messages
+          .map(data => data.id)
+          .filter(id => mailbox.google.unreadMessages[id] === undefined)
+        return Promise.resolve(messageIds)
+      })
+      .then(messageIds => {
+        if (messageIds.length === 0) { return Promise.resolve([]) }
+
+        const { auth } = this.getAPIAuth(mailboxId)
+        const mailbox = mailboxStore.getState().get(mailboxId)
+        return Promise.all(messageIds.map(messageId => {
+          return googleHTTP.fetchEmail(auth, mailbox.email, messageId).then(
+            (response) => Promise.resolve({ messageId: messageId, response: response }),
+            (error) => Promise.reject({ messageId: messageId, error: error })
+          )
+        }))
+      })
+      .then(items => {
+        if (items.length === 0) { return Promise.resolve() }
+
+        items.forEach(item => {
+          mailboxActions.updateGoogleUnread(mailboxId, item.messageId, { message: item.response.response })
+        })
+
+        this.syncMailboxUnreadMessagesSuccess(mailboxId)
+        return Promise.resolve()
+      }, (error) => {
+        this.syncMailboxUnreadMessagesFailure(mailboxId, error)
+        return Promise.reject()
+      })
+
+    return { mailboxId: mailboxId, promise: promise }
+  }
+
+  /**
+  * Deals with a mailbox unread messages completing
+  * @param mailboxId: the id of the mailbox
+  */
+  syncMailboxUnreadMessagesSuccess (mailboxId) {
+    return { mailboxId: mailboxId }
+  }
+
+  /**
+  * Deals with a mailbox unread messages erroring
+  * @param mailboxId: the id of the mailbox
+  * @param err: the error from the api
+  */
+  syncMailboxUnreadMessagesFailure (mailboxId, err) {
+    console.warn('[SYNC ERR] Mailbox Unread Messages', err)
+    return { mailboxId: mailboxId }
+  }
+
 }
 
 module.exports = alt.createActions(GoogleActions)

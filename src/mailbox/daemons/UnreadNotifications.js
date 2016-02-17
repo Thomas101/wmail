@@ -35,45 +35,44 @@ class UnreadNotifications {
   * Handles the mailboxes changing by dropping out any notifications
   */
   mailboxesUpdated (store) {
-    // Pull the pending notifications out from each one
-    const notifications = store.all().reduce((acc, mailbox) => {
-      const threads = mailbox.google.unotifiedUnread
-      if (threads.length) {
+    store.all().forEach(mailbox => {
+      if (!mailbox.showNotifications) { return }
+      const unread = mailbox.google.unreadUnotifiedMessages
+
+      for (var messageId in unread) {
+        this.showNotification(mailbox, unread[messageId].message)
         // We're in a dispatch cycle, so requeue this in it's own context
-        const notifiedData = threads.map(thread => {
-          return { id: thread.id, historyId: thread.historyId, time: new Date().getTime() }
-        })
         setTimeout(function () {
-          flux.mailbox.A.setGoogleUnreadNotified(mailbox.id, notifiedData)
+          flux.mailbox.A.setGoogleUnreadNotificationShown(mailbox.id, messageId)
         })
-
-        // Prep the notification content
-        if (mailbox.showNotifications) {
-          return acc.concat(threads.map(thread => {
-            return { mailbox: mailbox, thread: thread }
-          }))
-        }
       }
-
-      return acc
-    }, [])
-
-    notifications.forEach(({ mailbox, thread }) => {
-      // Decode the snippet
-      let snippet = 'No Body'
-      if (thread.snippet) {
-        const decoder = document.createElement('div')
-        decoder.innerHTML = thread.snippet
-        snippet = decoder.textContent
-      }
-
-      // Build the notification
-      const notification = new window.Notification('New Message', {
-        body: [ mailbox.email, snippet ].join('\n'),
-        data: { mailbox: mailbox.id, thread: thread.id }
-      })
-      notification.onclick = this.handleNotificationClicked
     })
+  }
+
+  /**
+  * Shows a notification
+  * @param mailbox: the mailbox to show it for
+  * @param message: the message notification to show
+  * @return the notification
+  */
+  showNotification (mailbox, message) {
+    const subject = (message.payload.headers.find(h => h.name === 'Subject') || {}).value || 'No Subject'
+    const fromEmail = (message.payload.headers.find(h => h.name === 'From') || {}).value || ''
+
+    // Extract the body
+    let snippet = 'No Body'
+    if (message.snippet) {
+      const decoder = document.createElement('div')
+      decoder.innerHTML = message.snippet
+      snippet = decoder.textContent
+    }
+
+    const notification = new window.Notification(subject, {
+      body: [fromEmail, snippet].join('\n'),
+      data: { mailbox: mailbox.id, messageId: message.id }
+    })
+    notification.onclick = this.handleNotificationClicked
+    return notification
   }
 
   /**

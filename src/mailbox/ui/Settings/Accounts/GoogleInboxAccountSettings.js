@@ -29,8 +29,8 @@ module.exports = React.createClass({
     })
   },
 
-  handleUnreadQueryChange: function (evt, index, searchQuery) {
-    flux.mailbox.A.updateGoogleConfig(this.props.mailbox.id, { unreadQuery: searchQuery })
+  handleUnreadModeChange: function (evt, index, unreadMode) {
+    flux.mailbox.A.updateGoogleConfig(this.props.mailbox.id, { unreadMode: unreadMode })
   },
 
   /* **************************************************************************/
@@ -54,16 +54,16 @@ module.exports = React.createClass({
           onToggle={this.handleShowNotificationsChange} />
         <br />
         <SelectField
-          value={this.props.mailbox.google.unreadQuery}
-          onChange={this.handleUnreadQueryChange}
-          floatingLabelText='Unread Query'>
+          value={this.props.mailbox.google.unreadMode}
+          onChange={this.handleUnreadModeChange}
+          floatingLabelText='Unread Mode'>
           <MenuItem
-            key={flux.mailbox.Google.UNREAD_QUERY}
-            value={flux.mailbox.Google.UNREAD_QUERY}
+            key={flux.mailbox.Google.UNREAD_MODES.INBOX_UNREAD}
+            value={flux.mailbox.Google.UNREAD_MODES.INBOX_UNREAD}
             primaryText='Unread Messages' />
           <MenuItem
-            key={flux.mailbox.Google.INBOX_QUERY}
-            value={flux.mailbox.Google.INBOX_QUERY}
+            key={flux.mailbox.Google.UNREAD_MODES.INBOX}
+            value={flux.mailbox.Google.UNREAD_MODES.INBOX}
             primaryText='Messages in inbox' />
         </SelectField>
       </Paper>

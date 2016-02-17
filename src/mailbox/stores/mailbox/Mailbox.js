@@ -17,7 +17,7 @@ class Mailbox {
     this.__id__ = id
     this.__data__ = data
 
-    this.__google__ = new Google(this.__data__.googleAuth, this.__data__.googleConf, this.__data__.googleUnread)
+    this.__google__ = new Google(this.__data__.googleAuth, this.__data__.googleConf, this.__data__.googleUnreadMessages)
   }
 
   /**

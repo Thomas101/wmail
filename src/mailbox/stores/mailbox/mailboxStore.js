@@ -4,7 +4,6 @@ const storage = require('../storage')
 const Mailbox = require('./Mailbox')
 
 const INDEX_KEY = 'Mailbox_index'
-const UNREAD_VALIDITY_MS = 60000 // 1 min
 const MAILBOX_KEY = function (id) { return 'Mailbox_' + id }
 
 class MailboxStore {
@@ -91,12 +90,15 @@ class MailboxStore {
       handleCreate: actions.CREATE,
       handleRemove: actions.REMOVE,
       handleUpdate: actions.UPDATE,
+
       handleChangeActive: actions.CHANGE_ACTIVE,
+
       handleMoveUp: actions.MOVE_UP,
       handleMoveDown: actions.MOVE_DOWN,
+
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
-      handleAddGoogleUnread: actions.ADD_GOOGLE_UNREAD,
-      handleSetGoogleUnreadNotified: actions.SET_GOOGLE_UNREAD_NOTIFIED
+      handleUpdateGoogleUnread: actions.UPDATE_GOOGLE_UNREAD,
+      handleSetGoogleUnreadNotificationShown: actions.SET_GOOGLE_UNREAD_NOTIFICATION_SHOWN
     })
   }
 
@@ -220,31 +222,23 @@ class MailboxStore {
   /**
   * Merges the google unread items and removes any flags for updated ites
   * @param id: the id of the mailbox
-  * @param threads: the thread info from google
+  * @param messageId: the id of the message
+  * @param updates: the updates to apply
   */
-  handleAddGoogleUnread ({id, threads}) {
-    if (!threads) { return }
-
-    const now = new Date().getTime()
+  handleUpdateGoogleUnread ({id, messageId, updates}) {
     const data = this.mailboxes.get(id).cloneData()
-    data.googleUnread = data.googleUnread || {}
+    data.googleUnreadMessages = data.googleUnreadMessages || {}
 
-    // Merge the new threads in
-    threads.forEach(thread => {
-      if (data.googleUnread[thread.id]) {
-        data.googleUnread[thread.id] = Object.assign(data.googleUnread[thread.id], thread, { lastSeen: now })
-      } else {
-        data.googleUnread[thread.id] = Object.assign(thread, { lastSeen: now })
-      }
-    })
+    // Add the update
+    if (data.googleUnreadMessages[messageId]) {
+      data.googleUnreadMessages[messageId] = Object.assign(data.googleUnreadMessages[messageId], updates)
+    } else {
+      data.googleUnreadMessages[messageId] = Object.assign({
+        recordCreated: new Date().getTime()
+      }, updates)
+    }
 
-    // Remove and update any threads that are no longer active
-    data.googleUnread = Object.keys(data.googleUnread).reduce((acc, threadId) => {
-      if (now - data.googleUnread[threadId].lastSeen < UNREAD_VALIDITY_MS) {
-        acc[threadId] = data.googleUnread[threadId]
-      }
-      return acc
-    }, {})
+    // twbtwb todo clean up old records
 
     this.saveMailbox(id, data)
   }
@@ -252,19 +246,17 @@ class MailboxStore {
   /**
   * Sets that the given thread ids have sent notifications
   * @param id: the id of the mailbox
-  * @param items: the items to mark
+  * @param messageId: the id of the message to mark
   */
-  handleSetGoogleUnreadNotified ({id, items}) {
+  handleSetGoogleUnreadNotificationShown ({id, messageId}) {
     const data = this.mailboxes.get(id).cloneData()
-    data.googleUnread = data.googleUnread || {}
+    data.googleUnreadMessages = data.googleUnreadMessages || {}
 
-    items.forEach(item => {
-      if (data.googleUnread[item.id]) {
-        data.googleUnread[item.id].lastNotified = {
-          time: item.time, historyId: item.historyId
-        }
-      }
-    })
+    if (data.googleUnreadMessages[messageId]) {
+      data.googleUnreadMessages[messageId].notified = new Date().getTime()
+    }
+
+    // twbtwb todo clean up old items
 
     this.saveMailbox(id, data)
   }

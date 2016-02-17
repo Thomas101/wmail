@@ -49,16 +49,17 @@ class MailboxActions {
   /**
   * Updates the google unread threads
   * @param id: the id of the mailbox
-  * @param threads: the threads that came from google
+  * @param messageId: the id of the message
+  * @param updates: the updates to merge in
   */
-  addGoogleUnread (id, threads) { return { id: id, threads: threads } }
+  updateGoogleUnread (id, messageId, updates) { return { id: id, messageId: messageId, updates: updates } }
 
   /**
   * Sets that a thread has sent a notification
   * @param id: the id of the mailbox
-  * @param items: a list of dicts containing id, historyId, time
+  * @param messageId: the id of the message
   */
-  setGoogleUnreadNotified (id, items) { return { id: id, items: items } }
+  setGoogleUnreadNotificationShown (id, messageId) { return { id: id, messageId: messageId } }
 
   /* **************************************************************************/
   // Active

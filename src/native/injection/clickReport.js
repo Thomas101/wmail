@@ -2,16 +2,26 @@
   'use strict'
 
   const ipcRenderer = require('electron').ipcRenderer
-  let timeout = null
-
-  document.addEventListener('click', function (evt) {
-    clearTimeout(timeout)
-    timeout = setTimeout(function () {
-      ipcRenderer.sendToHost({
-        type: 'page-click',
-        throttled: true,
-        throttle: 5000
-      })
-    }, 5000)
-  })
+  let throttle = null
+  let throttleCount = 1
+  const loader = setInterval(function () {
+    if (document.body) {
+      clearInterval(loader)
+      document.body.addEventListener('click', function (evt) {
+        if (throttle !== null) {
+          clearTimeout(throttle)
+          throttle = null
+          throttleCount += 0.5
+        }
+        throttle = setTimeout(function () {
+          ipcRenderer.sendToHost({
+            type: 'page-click',
+            throttled: true,
+            throttle: 1500 / throttleCount
+          })
+          throttleCount = 1
+        }, 1500 / throttleCount)
+      }, false)
+    }
+  }, 500)
 })()

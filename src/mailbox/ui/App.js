@@ -38,9 +38,9 @@ module.exports = React.createClass({
 
     flux.mailbox.S.listen(this.mailboxesChanged)
     flux.settings.S.listen(this.settingsChanged)
-    flux.google.A.startPollSync()
-    flux.google.A.syncAllProfiles()
-    flux.google.A.syncAllUnreadCounts()
+    flux.google.A.startPollingUpdates()
+    flux.google.A.syncAllMailboxes()
+    flux.google.A.syncAllMailboxUnreadMessages()
 
     mailboxDispatch.on('blurred', this.mailboxBlurred)
 
@@ -59,7 +59,7 @@ module.exports = React.createClass({
 
     flux.mailbox.S.unlisten(this.mailboxesChanged)
     flux.settings.S.unlisten(this.settingsChanged)
-    flux.google.A.stopPollSync()
+    flux.google.A.stopPollingUpdates()
 
     ipc.removeListener('switch-mailbox', this.ipcChangeActiveMailbox)
     ipc.removeListener('auth-google-complete', this.ipcAuthMailboxSuccess)

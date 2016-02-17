@@ -1,12 +1,18 @@
+const { GMAIL_NOTIFICATION_MAX_MESSAGE_AGE_MS } = require('shared/constants')
+
+const UNREAD_MODES = {
+  INBOX: 'inbox',
+  INBOX_UNREAD: 'inbox_unread',
+  PRIMARY_INBOX_UNREAD: 'primary_inbox_unread'
+}
+
 class Google {
 
   /* **************************************************************************/
   // Class
   /* **************************************************************************/
 
-  static get INBOX_QUERY () { return 'label:inbox' }
-  static get UNREAD_QUERY () { return 'label:inbox label:unread' }
-  static get PRIMARY_UNREAD_QUERY () { return 'label:inbox label:unread category:primary' }
+  static get UNREAD_MODES () { return UNREAD_MODES }
 
   /* **************************************************************************/
   // Lifecycle
@@ -32,21 +38,49 @@ class Google {
   // Properties : Google Config
   /* **************************************************************************/
 
-  get unreadQuery () { return (this.__config__ || {}).unreadQuery || Google.UNREAD_QUERY }
+  get unreadMode () { return (this.__config__ || {}).unreadMode || UNREAD_MODES.INBOX_UNREAD }
+  get unreadQuery () {
+    switch (this.unreadMode) {
+      case UNREAD_MODES.INBOX: return 'label:inbox'
+      case UNREAD_MODES.INBOX_UNREAD: return 'label:inbox label:unread'
+      case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return 'label:inbox label:unread category:primary'
+    }
+  }
+  get unreadLabel () {
+    switch (this.unreadMode) {
+      case UNREAD_MODES.INBOX: return 'INBOX'
+      case UNREAD_MODES.INBOX_UNREAD: return 'INBOX'
+      case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return 'PRIMARY'// twbtwb check
+    }
+  }
+  get unreadLabelField () {
+    switch (this.unreadMode) {
+      case UNREAD_MODES.INBOX: return 'threadsTotal'
+      case UNREAD_MODES.INBOX_UNREAD: return 'threadsUnread'
+      case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return 'threadsUnread'
+    }
+  }
 
   /* **************************************************************************/
   // Properties : Google Unread
   /* **************************************************************************/
 
-  get unotifiedUnread () {
-    return Object.keys(this.__unread__ || {})
-    .map(threadId => this.__unread__[threadId])
-    .filter(thread => {
-      if (!thread.lastNotified) { return true }
-      if (thread.lastNotified.historyId !== thread.historyId) { return true }
-      return false
-    })
-    .sort((a, b) => parseInt(a.historyId, 10) - parseInt(b.historyId, 10))
+  get unreadMessages () { return this.__unread__ || {} }
+
+  get unreadUnotifiedMessages () {
+    const unotified = {}
+    const now = new Date().getTime()
+
+    for (var k in this.unreadMessages) {
+      const info = this.unreadMessages[k]
+      if (info.notified === undefined && info.message) {
+        const messageDate = new Date(parseInt(info.message.internalDate, 10)).getTime()
+        if (now - messageDate < GMAIL_NOTIFICATION_MAX_MESSAGE_AGE_MS) {
+          unotified[k] = info
+        }
+      }
+    }
+    return unotified
   }
 }
 
