@@ -4,13 +4,31 @@
   const electron = require('electron')
   const remote = electron.remote
   const Menu = remote.Menu
+  const shell = remote.require('shell')
   const SpellChecker = require('spellchecker')
 
   const textOnlyRE = new RegExp(/[^a-z]+/gi)
 
+  /**
+  * @param evt: the event that triggered
+  * @return true if the target is in a text editor
+  */
   const isTexteditorTarget = function (evt) {
     if (evt.target.tagName === 'INPUT' || evt.target.tagName === 'TEXTAREA') { return true }
     if (evt.path.findIndex((e) => e.getAttribute && e.getAttribute('contentEditable') === 'true') !== -1) { return true }
+    return false
+  }
+
+  /**
+  * @param evt: the event that triggered
+  * @return the url if the event is in a link false otherwise
+  */
+  const isLinkTarget = function (evt) {
+    if (evt.target.tagName === 'A') { return evt.target.getAttribute('href') }
+    const parentLink = evt.path.find((e) => e.tagName === 'A')
+    if (parentLink) {
+      return parentLink.getAttribute('href')
+    }
     return false
   }
 
@@ -43,6 +61,18 @@
           menu.push({ type: 'separator' })
         }
       }
+    }
+
+    // Link
+    const linkTarget = isLinkTarget(evt)
+    if (linkTarget && linkTarget.indexOf('://') !== -1) {
+      menu.push({ label: 'Open Link', click: () => {
+        shell.openExternal(linkTarget)
+      }})
+      menu.push({ label: 'Open Link in Background', click: () => {
+        shell.openExternal(linkTarget, { activate: false })
+      }})
+      menu.push({ type: 'separator' })
     }
 
     // Undo / redo
