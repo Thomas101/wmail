@@ -112,7 +112,7 @@ module.exports = React.createClass({
   * @param settingsStore=settings store: the settings store to use
   */
   updateAppBadge: function (mailboxStore = flux.mailbox.S.getState(), settingsStore = flux.settings.S.getState()) {
-    const unread = mailboxStore.totalUnreadCount()
+    const unread = mailboxStore.totalUnreadCountForAppBadge()
     if (process.platform === 'darwin') {
       if (settingsStore.showAppBadge()) {
         app.dock.setBadge(unread ? unread.toString() : '')

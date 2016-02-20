@@ -1,5 +1,5 @@
 const React = require('react')
-const { SelectField, MenuItem } = require('material-ui')
+const { SelectField, MenuItem, Paper, Toggle, Styles } = require('material-ui')
 const GoogleInboxAccountSettings = require('./Accounts/GoogleInboxAccountSettings')
 const GoogleMailAccountSettings = require('./Accounts/GoogleMailAccountSettings')
 const flux = {
@@ -59,6 +59,18 @@ module.exports = React.createClass({
     })
   },
 
+  handleShowNotificationsChange: function (evt, toggled) {
+    flux.mailbox.A.update(this.state.selected.id, {
+      showNotifications: toggled
+    })
+  },
+
+  handleUnreadCountsTowardsAppUnread: function (evt, toggled) {
+    flux.mailbox.A.update(this.state.selected.id, {
+      unreadCountsTowardsAppUnread: toggled
+    })
+  },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
@@ -69,34 +81,60 @@ module.exports = React.createClass({
   render: function () {
     let content
     if (this.state.selected) {
+      let accountSpecific
       if (this.state.selected.type === flux.mailbox.M.TYPE_GINBOX) {
-        content = <GoogleInboxAccountSettings mailbox={this.state.selected} />
+        accountSpecific = <GoogleInboxAccountSettings mailbox={this.state.selected} />
       } else if (this.state.selected.type === flux.mailbox.M.TYPE_GMAIL) {
-        content = <GoogleMailAccountSettings mailbox={this.state.selected} />
+        accountSpecific = <GoogleMailAccountSettings mailbox={this.state.selected} />
       }
+      content = (
+        <div>
+          <Paper zDepth={1} style={{ padding: 15, marginBottom: 5 }}>
+            <Toggle
+              defaultToggled={this.state.selected.showUnreadBadge}
+              label='Show unread badge'
+              onToggle={this.handleShowUnreadBadgeChange} />
+            <br />
+            <Toggle
+              defaultToggled={this.state.selected.unreadCountsTowardsAppUnread}
+              label='Add unread messages to app unread count'
+              onToggle={this.handleUnreadCountsTowardsAppUnread} />
+            <br />
+            <Toggle
+              defaultToggled={this.state.selected.showNotifications}
+              label='Show notifications'
+              onToggle={this.handleShowNotificationsChange} />
+          </Paper>
+          {accountSpecific}
+        </div>
+      )
     } else {
-      content = (<div><small>No accounts available</small></div>)
+      content = (
+        <Paper zDepth={1} style={{ padding: 15, marginBottom: 5 }}>
+          <small>No accounts available</small>
+        </Paper>)
     }
 
     return (
       <div {...this.props}>
-        <SelectField
-          value={this.state.selected ? this.state.selected.id : undefined}
-          style={{ width: '100%' }}
-          onChange={this.handleAccountChange}>
-          {
-            this.state.mailboxes.map(m => {
-              return (
-                <MenuItem
-                  value={m.id}
-                  key={m.id}
-                  primaryText={(m.email || m.name || m.id) + ' (' + m.typeName + ')' } />
-                )
-            })
-          }
-        </SelectField>
-        <br />
-        <br />
+        <Paper zDepth={1} style={{ padding: 15, marginBottom: 10 }}>
+          <SelectField
+            value={this.state.selected ? this.state.selected.id : undefined}
+            style={{ width: '100%' }}
+            labelStyle={{ color: Styles.Colors.redA200 }}
+            onChange={this.handleAccountChange}>
+            {
+              this.state.mailboxes.map(m => {
+                return (
+                  <MenuItem
+                    value={m.id}
+                    key={m.id}
+                    primaryText={(m.email || m.name || m.id) + ' (' + m.typeName + ')' } />
+                  )
+              })
+            }
+          </SelectField>
+        </Paper>
         {content}
       </div>
     )

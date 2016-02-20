@@ -86,6 +86,18 @@ class MailboxStore {
       }, 0)
     }
 
+    /**
+    * @return the total amount of unread items taking mailbox settings into account
+    */
+    this.totalUnreadCountForAppBadge = () => {
+      return this.all().reduce((acc, mailbox) => {
+        if (mailbox && !isNaN(mailbox.unread) && mailbox.unreadCountsTowardsAppUnread) {
+          acc += mailbox.unread
+        }
+        return acc
+      }, 0)
+    }
+
     this.bindListeners({
       handleLoad: actions.LOAD,
       handleCreate: actions.CREATE,

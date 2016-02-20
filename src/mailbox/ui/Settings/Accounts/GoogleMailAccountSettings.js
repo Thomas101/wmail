@@ -1,5 +1,5 @@
 const React = require('react')
-const { SelectField, MenuItem, Toggle, Paper } = require('material-ui')
+const { SelectField, MenuItem, Paper } = require('material-ui')
 const flux = {
   mailbox: require('../../../stores/mailbox')
 }
@@ -17,18 +17,6 @@ module.exports = React.createClass({
   // User Interaction
   /* **************************************************************************/
 
-  handleShowUnreadBadgeChange: function (evt, toggled) {
-    flux.mailbox.A.update(this.props.mailbox.id, {
-      showUnreadBadge: toggled
-    })
-  },
-
-  handleShowNotificationsChange: function (evt, toggled) {
-    flux.mailbox.A.update(this.props.mailbox.id, {
-      showNotifications: toggled
-    })
-  },
-
   handleUnreadModeChange: function (evt, index, unreadMode) {
     flux.mailbox.A.updateGoogleConfig(this.props.mailbox.id, { unreadMode: unreadMode })
   },
@@ -43,16 +31,6 @@ module.exports = React.createClass({
   render: function () {
     return (
       <Paper zDepth={1} style={{ padding: 15 }}>
-        <Toggle
-          defaultToggled={this.props.mailbox.showUnreadBadge}
-          label='Show unread badge'
-          onToggle={this.handleShowUnreadBadgeChange} />
-        <br />
-        <Toggle
-          defaultToggled={this.props.mailbox.showNotifications}
-          label='Show notifications'
-          onToggle={this.handleShowNotificationsChange} />
-        <br />
         <SelectField
           value={this.props.mailbox.google.unreadMode}
           onChange={this.handleUnreadModeChange}
@@ -67,7 +45,7 @@ module.exports = React.createClass({
             primaryText='Unread Primary Messages' />
           <MenuItem
             key={flux.mailbox.Google.UNREAD_MODES.INBOX}
-            value={flux.mailbox.Google.UNREAD_MODES.INBOX}
+            value={flux.mailbox.Google.UNREAD_MODES}
             primaryText='Messages in inbox' />
         </SelectField>
       </Paper>

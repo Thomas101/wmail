@@ -29,6 +29,19 @@ class Mailbox {
   }
 
   /* **************************************************************************/
+  // Utils
+  /* **************************************************************************/
+
+  /**
+  * @param the key to get
+  * @param defaultValue: the value to return if undefined
+  * @return the value or defaultValue
+  */
+  _value_ (key, defaultValue) {
+    return this.__data__[key] === undefined ? defaultValue : this.__data__[key]
+  }
+
+  /* **************************************************************************/
   // Constants
   /* **************************************************************************/
 
@@ -40,7 +53,7 @@ class Mailbox {
   /* **************************************************************************/
 
   get id () { return this.__id__ }
-  get type () { return this.__data__.type || Mailbox.TYPE_GINBOX }
+  get type () { return this._value_('type', Mailbox.TYPE_GINBOX) }
   get typeName () {
     switch (this.type) {
       case Mailbox.TYPE_GINBOX: return 'Google Inbox'
@@ -60,9 +73,10 @@ class Mailbox {
   // Properties : Options
   /* **************************************************************************/
 
-  get zoomFactor () { return this.__data__.zoomFactor === undefined ? 1.0 : this.__data__.zoomFactor }
-  get showUnreadBadge () { return this.__data__.showUnreadBadge === undefined ? true : this.__data__.showUnreadBadge }
-  get showNotifications () { return this.__data__.showNotifications === undefined ? true : this.__data__.showNotifications }
+  get zoomFactor () { return this._value_('zoomFactor', 1.0) }
+  get showUnreadBadge () { return this._value_('showUnreadBadge', true) }
+  get unreadCountsTowardsAppUnread () { return this._value_('unreadCountsTowardsAppUnread', true) }
+  get showNotifications () { return this._value_('showNotifications', true) }
 
   /* **************************************************************************/
   // Properties : Account Details
