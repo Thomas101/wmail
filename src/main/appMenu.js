@@ -16,6 +16,7 @@ module.exports = {
           { label: 'Preferences', click: selectors.preferences, accelerator: 'CmdOrCtrl+,' },
           { label: 'About', click: selectors.aboutDialog },
           { type: 'separator' },
+          { label: 'Show Window', accelerator: 'Command+N', click: selectors.showWindow },
           { label: 'Hide Window', accelerator: 'Command+W', click: selectors.closeWindow },
           { label: 'Hide', accelerator: 'CmdOrCtrl+H', role: 'hide' },
           { label: 'Hide Others', accelerator: 'Alt+CmdOrCtrl+H', role: 'hideothers' },

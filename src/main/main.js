@@ -37,6 +37,10 @@ const appMenuSelectors = {
     const focused = windowManager.focused()
     focused ? focused.close() : undefined
   },
+  showWindow: () => {
+    windowManager.mailboxesWindow.show()
+    windowManager.mailboxesWindow.focus()
+  },
   fullscreenToggle: () => {
     const focused = windowManager.focused()
     focused ? focused.toggleFullscreen() : undefined
@@ -60,7 +64,11 @@ const appMenuSelectors = {
   zoomIn: () => { windowManager.mailboxesWindow.mailboxZoomIn() },
   zoomOut: () => { windowManager.mailboxesWindow.mailboxZoomOut() },
   zoomReset: () => { windowManager.mailboxesWindow.mailboxZoomReset() },
-  mailbox: (mailboxId) => { windowManager.mailboxesWindow.switchMailbox(mailboxId) },
+  mailbox: (mailboxId) => {
+    windowManager.mailboxesWindow.show()
+    windowManager.mailboxesWindow.focus()
+    windowManager.mailboxesWindow.switchMailbox(mailboxId)
+  },
   cycleWindows: () => { windowManager.focusNextWindow() },
   aboutDialog: () => {
     dialog.showMessageBox({
