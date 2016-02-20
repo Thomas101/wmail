@@ -62,6 +62,17 @@ class MailboxActions {
   setGoogleUnreadNotificationShown (id, messageId) { return { id: id, messageId: messageId } }
 
   /* **************************************************************************/
+  // Avatar
+  /* **************************************************************************/
+
+  /**
+  * Sets a custom avatar
+  * @param id: the id of the mailbox
+  * @param b64Image: the image to set
+  */
+  setCustomAvatar (id, b64Image) { return { id: id, b64Image: b64Image } }
+
+  /* **************************************************************************/
   // Active
   /* **************************************************************************/
 

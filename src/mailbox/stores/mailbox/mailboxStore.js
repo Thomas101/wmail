@@ -3,6 +3,7 @@ const actions = require('./mailboxActions')
 const storage = require('../storage')
 const Mailbox = require('./Mailbox')
 const { GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS } = require('shared/constants')
+const uuid = require('uuid')
 
 const INDEX_KEY = 'Mailbox_index'
 const MAILBOX_KEY = function (id) { return 'Mailbox_' + id }
@@ -103,6 +104,7 @@ class MailboxStore {
       handleCreate: actions.CREATE,
       handleRemove: actions.REMOVE,
       handleUpdate: actions.UPDATE,
+      handleSetCustomAvatar: actions.SET_CUSTOM_AVATAR,
 
       handleChangeActive: actions.CHANGE_ACTIVE,
 
@@ -180,6 +182,27 @@ class MailboxStore {
   handleUpdate ({id, updates}) {
     const mailbox = this.mailboxes.get(id)
     const data = Object.assign(mailbox.cloneData(), updates)
+    this.saveMailbox(id, data)
+  }
+
+  /**
+  * Handles setting a custom avatar
+  * @param: id the id of the mailbox
+  * @param b64Image: a base64 version of the image
+  */
+  handleSetCustomAvatar ({id, b64Image}) {
+    const mailbox = this.mailboxes.get(id)
+    let data = mailbox.cloneData()
+    if (b64Image) {
+      const imageId = 'Asset_' + uuid.v4()
+      window.localStorage[imageId] = b64Image
+      data.customAvatar = imageId
+    } else {
+      if (data.customAvatar) {
+        delete window.localStorage[data.customAvatar]
+        delete data.customAvatar
+      }
+    }
     this.saveMailbox(id, data)
   }
 

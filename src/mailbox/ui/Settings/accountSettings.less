@@ -1,0 +1,26 @@
+.settings-account-picker {
+  @HEIGHT: 56px;
+  @AVATAR_MARG: 3px;
+  position: relative;
+  height: @HEIGHT;
+
+  >.avatar {
+    position: absolute;
+    top: @AVATAR_MARG;
+    left: AVATAR_MARG;
+    height: @HEIGHT - @AVATAR_MARG - @AVATAR_MARG;
+    width: @HEIGHT - @AVATAR_MARG - @AVATAR_MARG;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    border: 1px solid #B0BEC5;
+  }
+  >.picker-container {
+    position: absolute;
+    top: 0px;
+    left: @HEIGHT + 10px;
+    height: @HEIGHT;
+    right: 0px;
+  }
+}

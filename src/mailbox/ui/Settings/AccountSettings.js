@@ -1,5 +1,7 @@
+import './accountSettings.less'
+
 const React = require('react')
-const { SelectField, MenuItem, Paper, Toggle, Styles } = require('material-ui')
+const { SelectField, MenuItem, Paper, Toggle, Styles, RaisedButton } = require('material-ui')
 const GoogleInboxAccountSettings = require('./Accounts/GoogleInboxAccountSettings')
 const GoogleMailAccountSettings = require('./Accounts/GoogleMailAccountSettings')
 const flux = {
@@ -71,6 +73,35 @@ module.exports = React.createClass({
     })
   },
 
+  handleCustomAvatarChange: function (evt) {
+    if (!evt.target.files[0]) { return }
+
+    // Load the image
+    const reader = new window.FileReader()
+    reader.addEventListener('load', () => {
+      // Get the image size
+      const image = new window.Image()
+      image.onload = () => {
+        // Scale the image down
+        const scale = 150 / (image.width > image.height ? image.width : image.height)
+        const width = image.width * scale
+        const height = image.height * scale
+
+        // Resize the image
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(image, 0, 0, width, height)
+
+        // Save it to disk
+        flux.mailbox.A.setCustomAvatar(this.state.selected.id, canvas.toDataURL())
+      }
+      image.src = reader.result
+    }, false)
+    reader.readAsDataURL(evt.target.files[0])
+  },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
@@ -79,35 +110,53 @@ module.exports = React.createClass({
   * Renders the app
   */
   render: function () {
+    const selected = this.state.selected
     let content
-    if (this.state.selected) {
+    let avatarSrc = ''
+    if (selected) {
       let accountSpecific
-      if (this.state.selected.type === flux.mailbox.M.TYPE_GINBOX) {
-        accountSpecific = <GoogleInboxAccountSettings mailbox={this.state.selected} />
-      } else if (this.state.selected.type === flux.mailbox.M.TYPE_GMAIL) {
-        accountSpecific = <GoogleMailAccountSettings mailbox={this.state.selected} />
+      if (selected.type === flux.mailbox.M.TYPE_GINBOX) {
+        accountSpecific = <GoogleInboxAccountSettings mailbox={selected} />
+      } else if (selected.type === flux.mailbox.M.TYPE_GMAIL) {
+        accountSpecific = <GoogleMailAccountSettings mailbox={selected} />
       }
       content = (
         <div>
           <Paper zDepth={1} style={{ padding: 15, marginBottom: 5 }}>
             <Toggle
-              defaultToggled={this.state.selected.showUnreadBadge}
+              defaultToggled={selected.showUnreadBadge}
               label='Show unread badge'
               onToggle={this.handleShowUnreadBadgeChange} />
             <br />
             <Toggle
-              defaultToggled={this.state.selected.unreadCountsTowardsAppUnread}
+              defaultToggled={selected.unreadCountsTowardsAppUnread}
               label='Add unread messages to app unread count'
               onToggle={this.handleUnreadCountsTowardsAppUnread} />
             <br />
             <Toggle
-              defaultToggled={this.state.selected.showNotifications}
+              defaultToggled={selected.showNotifications}
               label='Show notifications'
               onToggle={this.handleShowNotificationsChange} />
+            <br />
+            <RaisedButton
+              label='Change Account Icon'
+              className='file-button'
+              style={{ marginRight: 15 }}>
+              <input
+                type='file'
+                accept='image/*'
+                onChange={this.handleCustomAvatarChange}
+                defaultValue={selected.customAvatar} />
+            </RaisedButton>
           </Paper>
           {accountSpecific}
         </div>
       )
+      if (selected.hasCustomAvatar) {
+        avatarSrc = selected.customAvatar
+      } else if (selected.avatar) {
+        avatarSrc = selected.avatar
+      }
     } else {
       content = (
         <Paper zDepth={1} style={{ padding: 15, marginBottom: 5 }}>
@@ -118,22 +167,31 @@ module.exports = React.createClass({
     return (
       <div {...this.props}>
         <Paper zDepth={1} style={{ padding: 15, marginBottom: 10 }}>
-          <SelectField
-            value={this.state.selected ? this.state.selected.id : undefined}
-            style={{ width: '100%' }}
-            labelStyle={{ color: Styles.Colors.redA200 }}
-            onChange={this.handleAccountChange}>
-            {
-              this.state.mailboxes.map((m) => {
-                return (
-                  <MenuItem
-                    value={m.id}
-                    key={m.id}
-                    primaryText={(m.email || m.name || m.id) + ' (' + m.typeName + ')'} />
-                  )
-              })
-            }
-          </SelectField>
+          <div className='settings-account-picker'>
+            <div
+              className='avatar'
+              style={{ backgroundImage: 'url("' + avatarSrc + '")' }}>
+            </div>
+            <div className='picker-container'>
+              <SelectField
+                value={selected ? selected.id : undefined}
+                className='picker'
+                style={{ width: '100%' }}
+                labelStyle={{ color: Styles.Colors.redA200 }}
+                onChange={this.handleAccountChange}>
+                {
+                  this.state.mailboxes.map((m) => {
+                    return (
+                      <MenuItem
+                        value={m.id}
+                        key={m.id}
+                        primaryText={(m.email || m.name || m.id) + ' (' + m.typeName + ')'} />
+                      )
+                  })
+                }
+              </SelectField>
+            </div>
+          </div>
         </Paper>
         {content}
       </div>

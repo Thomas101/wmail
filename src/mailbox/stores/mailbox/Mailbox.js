@@ -83,6 +83,14 @@ class Mailbox {
   /* **************************************************************************/
 
   get avatar () { return this.__data__.avatar }
+  get hasCustomAvatar () { return this.__data__.customAvatar !== undefined }
+  get customAvatar () {
+    if (this.__data__.customAvatar) {
+      return window.localStorage[this.__data__.customAvatar]
+    } else {
+      return undefined
+    }
+  }
   get email () { return this.__data__.email }
   get name () { return this.__data__.name }
   get unread () { return this.__data__.unread }

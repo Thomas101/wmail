@@ -187,35 +187,40 @@ module.exports = React.createClass({
   * Renders the app
   */
   render: function () {
-    if (!this.state.mailbox) { return false }
+    const mailbox = this.state.mailbox
+    if (!mailbox) { return false }
 
     const containerProps = {
       'className': 'mailbox' + (this.state.isActive ? ' active' : ''),
-      'data-type': this.state.mailbox.type
+      'data-type': mailbox.type
     }
-    if (this.state.mailbox.email || this.state.mailbox.name) {
+    if (mailbox.email || mailbox.name) {
       containerProps.title = [
-        this.state.mailbox.email || '',
-        (this.state.mailbox.name ? '(' + this.state.mailbox.name + ')' : '')
+        mailbox.email || '',
+        (mailbox.name ? '(' + mailbox.name + ')' : '')
       ].join(' ')
     }
 
     // Generate avatar
     let innerElement
-    if (this.state.mailbox.avatar) {
-      innerElement = <img className='avatar' src={this.state.mailbox.avatar} />
+    if (mailbox.avatar || mailbox.hasCustomAvatar) {
       containerProps.className += ' avatar'
+      if (mailbox.hasCustomAvatar) {
+        innerElement = <img className='avatar' src={mailbox.customAvatar} />
+      } else {
+        innerElement = <img className='avatar' src={mailbox.avatar} />
+      }
     } else {
-      innerElement = <span className='index'>{this.props.index + 1}</span>
       containerProps.className += ' index'
+      innerElement = <span className='index'>{this.props.index + 1}</span>
     }
 
     // Generate badge
     let badgeElement
-    if (this.state.mailbox.showUnreadBadge && this.state.mailbox.unread) {
+    if (mailbox.showUnreadBadge && mailbox.unread) {
       badgeElement = (
         <Badge
-          badgeContent={this.state.mailbox.unread}
+          badgeContent={mailbox.unread}
           className='unread-badge'
           badgeStyle={{
             backgroundColor: 'rgba(238, 54, 55, 0.95)',
