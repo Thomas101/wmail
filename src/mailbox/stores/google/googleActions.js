@@ -354,7 +354,7 @@ class GoogleActions {
   */
   syncMailboxUnreadMessages (mailboxId) {
     const mailbox = mailboxStore.getState().get(mailboxId)
-    if (mailbox.unread === 0) {
+    if (mailbox.unread === 0 || !mailbox.showNotifications) {
       this.syncMailboxUnreadMessagesSuccess(mailboxId)
       return { mailboxId: mailboxId, promise: Promise.resolve() }
     }
@@ -364,13 +364,37 @@ class GoogleActions {
       .then(() => googleHTTP.fetchEmailSummaries(auth, mailbox.email, mailbox.google.unreadQuery))
       .then(response => {
         const mailbox = mailboxStore.getState().get(mailboxId)
-        const messageIds = response.response.messages
-          .map(data => data.id)
-          .filter(id => mailbox.google.unreadMessages[id] === undefined)
-        return Promise.resolve(messageIds)
+        const messageIds = response.response.messages.reduce((acc, data) => {
+          // Look to see if we've seen this message already
+          // Also look to see if this is one of multiple in a thread
+          if (acc.threads[data.threadId]) {
+            acc.autoread.push(data.id)
+          } else {
+            if (mailbox.google.unreadMessages[data.id]) {
+              acc.seen.push(data.id)
+            } else {
+              acc.unseen.push(data.id)
+            }
+            acc.threads[data.threadId] = true
+          }
+          return acc
+        }, { seen: [], unseen: [], threads: {}, autoread: [] })
+
+        // Report that we've seen previously known messages
+        const now = new Date().getTime()
+        messageIds.seen.forEach(messageId => {
+          mailboxActions.updateGoogleUnread(mailboxId, messageId, { seen: now })
+        })
+
+        // Mark auto-read thread items as seen and reported
+        messageIds.autoread.forEach(messageId => {
+          mailboxActions.setGoogleUnreadNotificationShown(mailboxId, messageId)
+        })
+
+        return Promise.resolve(messageIds.unseen)
       })
       .then(messageIds => {
-        if (messageIds.length === 0) { return Promise.resolve([]) }
+        if (!messageIds || messageIds.length === 0) { return Promise.resolve([]) }
 
         const { auth } = this.getAPIAuth(mailboxId)
         const mailbox = mailboxStore.getState().get(mailboxId)
@@ -388,6 +412,9 @@ class GoogleActions {
           mailboxActions.updateGoogleUnread(mailboxId, item.messageId, { message: item.response.response })
         })
 
+        return Promise.resolve()
+      })
+      .then(() => {
         this.syncMailboxUnreadMessagesSuccess(mailboxId)
         return Promise.resolve()
       }, (error) => {

@@ -2,6 +2,7 @@ const alt = require('../alt')
 const actions = require('./mailboxActions')
 const storage = require('../storage')
 const Mailbox = require('./Mailbox')
+const { GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS } = require('shared/constants')
 
 const INDEX_KEY = 'Mailbox_index'
 const MAILBOX_KEY = function (id) { return 'Mailbox_' + id }
@@ -230,15 +231,26 @@ class MailboxStore {
     data.googleUnreadMessages = data.googleUnreadMessages || {}
 
     // Add the update
+    const now = new Date().getTime()
     if (data.googleUnreadMessages[messageId]) {
-      data.googleUnreadMessages[messageId] = Object.assign(data.googleUnreadMessages[messageId], updates)
+      data.googleUnreadMessages[messageId] = Object.assign(
+        data.googleUnreadMessages[messageId],
+        { seen: now },
+        updates)
     } else {
       data.googleUnreadMessages[messageId] = Object.assign({
-        recordCreated: new Date().getTime()
+        recordCreated: now, seen: now
       }, updates)
     }
 
-    // twbtwb todo clean up old records
+    // Clean up old records
+    data.googleUnreadMessages = Object.keys(data.googleUnreadMessages).reduce((acc, messageId) => {
+      const rec = data.googleUnreadMessages[messageId]
+      if (now - rec.seen < GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS) {
+        acc[messageId] = rec
+      }
+      return acc
+    }, {})
 
     this.saveMailbox(id, data)
   }
@@ -252,11 +264,20 @@ class MailboxStore {
     const data = this.mailboxes.get(id).cloneData()
     data.googleUnreadMessages = data.googleUnreadMessages || {}
 
+    const now = new Date().getTime()
     if (data.googleUnreadMessages[messageId]) {
-      data.googleUnreadMessages[messageId].notified = new Date().getTime()
+      data.googleUnreadMessages[messageId].notified = now
+      data.googleUnreadMessages[messageId].seen = now
     }
 
-    // twbtwb todo clean up old items
+    // Clean up old records
+    data.googleUnreadMessages = Object.keys(data.googleUnreadMessages).reduce((acc, messageId) => {
+      const rec = data.googleUnreadMessages[messageId]
+      if (now - rec.seen < GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS) {
+        acc[messageId] = rec
+      }
+      return acc
+    }, {})
 
     this.saveMailbox(id, data)
   }

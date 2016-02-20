@@ -50,7 +50,7 @@ class Google {
     switch (this.unreadMode) {
       case UNREAD_MODES.INBOX: return 'INBOX'
       case UNREAD_MODES.INBOX_UNREAD: return 'INBOX'
-      case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return 'PRIMARY'// twbtwb check
+      case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return 'CATEGORY_PERSONAL' // actually primary
     }
   }
   get unreadLabelField () {

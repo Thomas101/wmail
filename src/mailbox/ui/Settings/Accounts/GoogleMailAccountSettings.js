@@ -63,7 +63,7 @@ module.exports = React.createClass({
             primaryText='Unread Messages' />
           <MenuItem
             key={flux.mailbox.Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD}
-            value={flux.mailbox.Google.UNREAD_MODES.PRMARY_INBOX_UNREAD}
+            value={flux.mailbox.Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD}
             primaryText='Unread Primary Messages' />
           <MenuItem
             key={flux.mailbox.Google.UNREAD_MODES.INBOX}
