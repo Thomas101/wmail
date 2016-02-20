@@ -37,8 +37,27 @@ class MailboxesSessionManager {
     const ses = electron.session.fromPartition(partition)
     ses.setDownloadPath(electron.app.getPath('downloads'))
     ses.on('will-download', (evt, item) => this.handleDownload(evt, item))
+    ses.setPermissionRequestHandler(this.handlePermissionRequest)
 
     this.__managed__.add(partition)
+  }
+
+  /* ****************************************************************************/
+  // Permissions
+  /* ****************************************************************************/
+
+  /**
+  * Handles a request for a permission from the client
+  * @param webContents: the webcontents the request came from
+  * @param permission: the permission name
+  * @param callback: execute with response
+  */
+  handlePermissionRequest (webContents, permission, callback) {
+    if (permission === 'notifications') {
+      callback(false)
+    } else {
+      callback(true)
+    }
   }
 
   /* ****************************************************************************/
