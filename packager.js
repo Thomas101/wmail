@@ -40,7 +40,7 @@ class PackageBuilder {
         name: 'WMail',
         platform: platform,
         arch: 'all',
-        version: '0.36.7',
+        version: '0.36.8',
         'app-bundle-id': 'tombeverley.wmail',
         'app-version': pkg.version,
         icon: 'icons/app.icns',
