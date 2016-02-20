@@ -3,6 +3,7 @@
 const WMailWindow = require('./WMailWindow')
 const AuthGoogle = require('./AuthGoogle')
 const update = require('./update')
+const path = require('path')
 
 class MailboxesWindow extends WMailWindow {
 
@@ -25,7 +26,7 @@ class MailboxesWindow extends WMailWindow {
   }
 
   start (url) {
-    super.start('file://' + __dirname + '/../mailbox.html')
+    super.start('file://' + path.join(__dirname, '/../mailbox.html'))
   }
 
   /* ****************************************************************************/

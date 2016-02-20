@@ -32,7 +32,7 @@ class WindowManager {
   */
   handleClose (evt) {
     if (this.focused() && !this.forceQuit) {
-      this.contentWindows.forEach(w => w.close())
+      this.contentWindows.forEach((w) => w.close())
       if (process.platform === 'darwin') {
         this.mailboxesWindow.hide()
         evt.preventDefault()
@@ -52,7 +52,7 @@ class WindowManager {
   addContentWindow (window) {
     this.contentWindows.push(window)
     window.on('closed', () => {
-      this.contentWindows = this.contentWindows.filter(w => w !== window)
+      this.contentWindows = this.contentWindows.filter((w) => w !== window)
     })
   }
 
@@ -77,7 +77,7 @@ class WindowManager {
         this.contentWindows[0].focus()
       }
     } else {
-      const focusedIndex = this.contentWindows.findIndex(w => w.isFocused())
+      const focusedIndex = this.contentWindows.findIndex((w) => w.isFocused())
       if (focusedIndex === -1 || focusedIndex + 1 >= this.contentWindows.length) {
         this.mailboxesWindow.focus()
       } else {
@@ -97,7 +97,7 @@ class WindowManager {
     if (this.mailboxesWindow.isFocused()) {
       return this.mailboxesWindow
     } else {
-      return this.contentWindows.find(w => w.isFocused())
+      return this.contentWindows.find((w) => w.isFocused())
     }
   }
 }

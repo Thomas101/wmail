@@ -161,7 +161,7 @@ module.exports = React.createClass({
   */
   pushDataToMainThread: function (store = flux.mailbox.S.getState()) {
     ipc.send('mailboxes-changed', {
-      mailboxes: store.all().map(mailbox => {
+      mailboxes: store.all().map((mailbox) => {
         return { id: mailbox.id, name: mailbox.name, email: mailbox.email }
       })
     })

@@ -1,5 +1,6 @@
 'use strict'
 
+const path = require('path')
 const ipcMain = require('electron').ipcMain
 const electronGoogleOauth = require('electron-google-oauth')
 const credentials = require('../shared/credentials')
@@ -45,7 +46,7 @@ class AuthGoogle {
       standardWindow: true,
       autoHideMenuBar: true,
       title: 'Google',
-      icon: __dirname + '/../icons/app.png',
+      icon: path.join(__dirname, '/../icons/app.png'),
       webPreferences: {
         nodeIntegration: false,
         partition: 'persist:' + body.id
@@ -59,13 +60,13 @@ class AuthGoogle {
       ],
       credentials.GOOGLE_CLIENT_ID,
       credentials.GOOGLE_CLIENT_SECRET
-    ).then(auth => {
+    ).then((auth) => {
       evt.sender.send('auth-google-complete', {
         id: body.id,
         type: body.type,
         auth: auth
       })
-    }, err => {
+    }, (err) => {
       evt.sender.send('auth-google-error', {
         id: body.id,
         type: body.type,

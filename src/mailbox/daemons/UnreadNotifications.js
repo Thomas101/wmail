@@ -37,7 +37,7 @@ class UnreadNotifications {
   */
   mailboxesUpdated (store) {
     if (flux.settings.S.getState().notificationsEnabled() === false) { return }
-    store.all().forEach(mailbox => {
+    store.all().forEach((mailbox) => {
       if (!mailbox.showNotifications) { return }
       const unread = mailbox.google.unreadUnotifiedMessages
 
@@ -58,8 +58,8 @@ class UnreadNotifications {
   * @return the notification
   */
   showNotification (mailbox, message) {
-    const subject = (message.payload.headers.find(h => h.name === 'Subject') || {}).value || 'No Subject'
-    const fromEmail = (message.payload.headers.find(h => h.name === 'From') || {}).value || ''
+    const subject = (message.payload.headers.find((h) => h.name === 'Subject') || {}).value || 'No Subject'
+    const fromEmail = (message.payload.headers.find((h) => h.name === 'From') || {}).value || ''
 
     // Extract the body
     let snippet = 'No Body'

@@ -26,7 +26,7 @@
             if (textOnlyRE.exec(textSelection.trim()) === null) {
               const suggestions = this.__spellcheckProvider__.suggest(textSelection.trim())
               if (suggestions.length) {
-                suggestions.forEach(s => {
+                suggestions.forEach((s) => {
                   menu.push({
                     label: s,
                     click: () => {
@@ -76,7 +76,7 @@
 
     isTexteditorTarget (evt) {
       if (evt.target.tagName === 'INPUT' || evt.target.tagName === 'TEXTAREA') { return true }
-      if (evt.path.findIndex(e => e.getAttribute && e.getAttribute('contentEditable') === 'true') !== -1) { return true }
+      if (evt.path.findIndex((e) => e.getAttribute && e.getAttribute('contentEditable') === 'true') !== -1) { return true }
       return false
     }
 

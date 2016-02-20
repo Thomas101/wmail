@@ -124,12 +124,12 @@ module.exports = React.createClass({
             labelStyle={{ color: Styles.Colors.redA200 }}
             onChange={this.handleAccountChange}>
             {
-              this.state.mailboxes.map(m => {
+              this.state.mailboxes.map((m) => {
                 return (
                   <MenuItem
                     value={m.id}
                     key={m.id}
-                    primaryText={(m.email || m.name || m.id) + ' (' + m.typeName + ')' } />
+                    primaryText={(m.email || m.name || m.id) + ' (' + m.typeName + ')'} />
                   )
               })
             }

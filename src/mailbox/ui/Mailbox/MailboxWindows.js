@@ -40,8 +40,8 @@ module.exports = React.createClass({
     if (!this.state || !nextState) { return true }
     if (this.state.mailbox_ids.length !== nextState.mailbox_ids.length) { return true }
 
-    const mismatch = this.state.mailbox_ids.findIndex(id => {
-      return nextState.mailbox_ids.findIndex(nId => nId === id) === -1
+    const mismatch = this.state.mailbox_ids.findIndex((id) => {
+      return nextState.mailbox_ids.findIndex((nId) => nId === id) === -1
     }) !== -1
     if (mismatch) { return true }
 
@@ -59,7 +59,7 @@ module.exports = React.createClass({
     if (this.state.mailbox_ids.length) {
       return (
         <div className='mailboxes'>
-          { this.state.mailbox_ids.map(id => {
+          {this.state.mailbox_ids.map((id) => {
             return <GoogleMailboxWindow mailbox_id={id} key={id} />
           })}
         </div>

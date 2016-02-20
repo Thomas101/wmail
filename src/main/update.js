@@ -15,7 +15,7 @@ class Update {
     fetch(constants.UPDATE_CHECK_URL).then((res) => {
       return res.json()
     }).then((json) => {
-      const newRelease = json.find(release => {
+      const newRelease = json.find((release) => {
         let tag = release.tag_name
         tag = tag.indexOf('v' === 0) ? tag.substr(1) : tag
         return (pkg.prerelease === true || release.prerelease === false) && compareVersion(tag, pkg.version) >= 1

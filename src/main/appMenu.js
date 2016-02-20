@@ -14,8 +14,11 @@ module.exports = {
         label: 'Application',
         submenu: [
           { label: 'Preferences', click: selectors.preferences, accelerator: 'CmdOrCtrl+,' },
+          { type: 'separator' },
           { label: 'About', click: selectors.aboutDialog },
           { type: 'separator' },
+          process.platform === 'darwin' ? { label: 'Services', role: 'services', submenu: [] } : undefined,
+          process.platform === 'darwin' ? { type: 'separator' } : undefined,
           { label: 'Show Window', accelerator: 'Command+N', click: selectors.showWindow },
           { label: 'Hide Window', accelerator: 'Command+W', click: selectors.closeWindow },
           { label: 'Hide', accelerator: 'CmdOrCtrl+H', role: 'hide' },
@@ -23,7 +26,7 @@ module.exports = {
           { label: 'Show All', role: 'unhide' },
           { type: 'separator' },
           { label: 'Quit', accelerator: 'Command+Q', click: selectors.fullQuit }
-        ]
+        ].filter((item) => item !== undefined)
       },
       {
         label: 'Edit',

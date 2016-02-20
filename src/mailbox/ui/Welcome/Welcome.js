@@ -30,7 +30,7 @@ module.exports = React.createClass({
   */
   render: function () {
     return (
-    <div className='welcome'>
+      <div className='welcome'>
         <h1>Add your first mailbox</h1>
         <p>
           To get started you need to add a mailbox. You can add your Gmail or Google Inbox account.

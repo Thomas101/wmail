@@ -5,8 +5,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const webpackTargetElectronRenderer = require('webpack-target-electron-renderer')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 
-const clientFast = process.argv.findIndex(a => a.toLowerCase() === '--clientfast') !== -1
-const production = process.argv.findIndex(a => a.toLowerCase() === '-p') !== -1
+const clientFast = process.argv.findIndex((a) => a.toLowerCase() === '--clientfast') !== -1
+const production = process.argv.findIndex((a) => a.toLowerCase() === '-p') !== -1
 
 const options = {
   entry: {

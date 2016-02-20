@@ -24,7 +24,7 @@ class MailboxStore {
     /**
     * @return all the mailboxes in order
     */
-    this.all = () => { return this.ids().map(id => this.mailboxes.get(id)) }
+    this.all = () => { return this.ids().map((id) => this.mailboxes.get(id)) }
 
     /**
     * @return the ids
@@ -39,7 +39,7 @@ class MailboxStore {
     /**
     * @return the index of the given mailbox id
     */
-    this.indexOf = (id) => { return this.index.findIndex(i => i === id) }
+    this.indexOf = (id) => { return this.index.findIndex((i) => i === id) }
 
     /**
     * @return true if it is the first mailbox
@@ -138,7 +138,7 @@ class MailboxStore {
   */
   handleLoad () {
     this.index = storage.get(INDEX_KEY, [])
-    this.index.forEach(k => {
+    this.index.forEach((k) => {
       this.mailboxes.set(k, new Mailbox(k, storage.get(MAILBOX_KEY(k), null)))
     })
     this.active = this.index[0] || null
@@ -162,7 +162,7 @@ class MailboxStore {
   */
   handleRemove ({id}) {
     const wasActive = this.active === id
-    this.index = this.index.filter(i => i !== id)
+    this.index = this.index.filter((i) => i !== id)
     storage.set(INDEX_KEY, this.index)
     this.mailboxes.delete(id)
     storage.remove(MAILBOX_KEY(id), id)
@@ -199,7 +199,7 @@ class MailboxStore {
   * Handles moving the given mailbox id up
   */
   handleMoveUp ({id}) {
-    const mailboxIndex = this.index.findIndex(i => i === id)
+    const mailboxIndex = this.index.findIndex((i) => i === id)
     if (mailboxIndex !== -1 && mailboxIndex !== 0) {
       this.index.splice(mailboxIndex - 1, 0, this.index.splice(mailboxIndex, 1)[0])
       storage.set(INDEX_KEY, this.index)
@@ -210,7 +210,7 @@ class MailboxStore {
   * Handles moving the given mailbox id down
   */
   handleMoveDown ({id}) {
-    const mailboxIndex = this.index.findIndex(i => i === id)
+    const mailboxIndex = this.index.findIndex((i) => i === id)
     if (mailboxIndex !== -1 && mailboxIndex < this.index.length) {
       this.index.splice(mailboxIndex + 1, 0, this.index.splice(mailboxIndex, 1)[0])
       storage.set(INDEX_KEY, this.index)

@@ -146,7 +146,7 @@ app.on('activate', function () {
 /* ****************************************************************************/
 
 // Send crash reports
-process.on('uncaughtException', err => {
+process.on('uncaughtException', (err) => {
   analytics.appException(windowManager.mailboxesWindow.window, 'main', err)
   console.error(err)
   console.error(err.stack)

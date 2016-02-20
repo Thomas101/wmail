@@ -7,7 +7,7 @@
   require('./googleWindowOpen')
   require('./googleNotifications')
   const contextMenu = require('./contextMenu')
-  require('./spellchecker')(provider => {
+  require('./spellchecker')((provider) => {
     contextMenu.spellcheckProvider = provider
   })
 })()

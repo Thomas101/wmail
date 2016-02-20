@@ -2,6 +2,7 @@
 
 const BrowserWindow = require('browser-window')
 const EventEmitter = require('events')
+const path = require('path')
 
 class WMailWindow extends EventEmitter {
 
@@ -43,7 +44,7 @@ class WMailWindow extends EventEmitter {
   defaultWindowPreferences () {
     return {
       title: 'WMail',
-      icon: __dirname + '/../icons/app.png'
+      icon: path.join(__dirname, '/../icons/app.png')
     }
   }
 

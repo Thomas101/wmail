@@ -84,7 +84,7 @@ class PackageBuilder {
             if (err) {
               reject(err)
             } else {
-              data.map(item => {
+              data.map((item) => {
                 const name = item.name
                 if (item.licenseSources.license.sources.length) {
                   const path = item.licenseSources.license.sources[0].filePath
