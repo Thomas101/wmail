@@ -3,7 +3,7 @@ module.exports = Object.freeze({
 
   GITHUB_URL: 'https://github.com/Thomas101/wmail/',
   GITHUB_ISSUE_URL: 'https://github.com/Thomas101/wmail/issues',
-  GITHUB_RELEASES_URL: 'https://github.com/Thomas101/wmail/releases',
+  GITHUB_RELEASES_URL: 'http://thomas101.github.io/wmail/download',
   UPDATE_CHECK_URL: 'https://api.github.com/repos/Thomas101/wmail/releases',
 
   GMAIL_PROFILE_SYNC_MS: 1000 * 60 * 60, // 60 mins

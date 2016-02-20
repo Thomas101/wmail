@@ -1,3 +1,4 @@
+sudo: required
 install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -qq 
@@ -8,4 +9,3 @@ install:
 language: node_js
 node_js:
   - "5.5.0"
-sudo: false
