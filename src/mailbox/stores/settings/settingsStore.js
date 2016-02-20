@@ -104,6 +104,17 @@ class SettingsStore {
     }
 
     /* ****************************************/
+    // Notifications
+    /* ****************************************/
+
+    this.notificationsEnabled = () => {
+      return this.__value__('notificationsEnabled', true)
+    }
+    this.notificationsSilent = () => {
+      return this.__value__('notificationsSilent', false)
+    }
+
+    /* ****************************************/
     // Higher order
     /* ****************************************/
 
@@ -161,9 +172,7 @@ class SettingsStore {
   * @param updates: the dictionary to merge in
   */
   handleMergeUpdates ({ updates }) {
-    console.log(updates)
     this.__settings__ = Object.assign(this.__settings__, updates)
-    console.log(this.__settings__)
     this.persist()
   }
 

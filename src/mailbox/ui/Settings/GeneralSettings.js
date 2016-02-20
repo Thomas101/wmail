@@ -35,7 +35,9 @@ module.exports = React.createClass({
       showAppBadge: store.showAppBadge(),
       showTrayIcon: store.showTrayIcon(),
       spellcheckerEnabled: store.spellcheckerEnabled(),
-      sidebarEnabled: store.sidebarEnabled()
+      sidebarEnabled: store.sidebarEnabled(),
+      notificationsEnabled: store.notificationsEnabled(),
+      notificationsSilent: store.notificationsSilent()
     }
   },
 
@@ -69,6 +71,14 @@ module.exports = React.createClass({
 
   handleToggleSidebar: function (evt, toggled) {
     flux.settings.A.setEnableSidebar(toggled)
+  },
+
+  handleToggleNotificationsEnabled: function (evt, toggled) {
+    flux.settings.A.setNotificationsEnabled(toggled)
+  },
+
+  handleToggleNotificationsSilent: function (evt, toggled) {
+    flux.settings.A.setNotificationsSilent(!toggled)
   },
 
   /* **************************************************************************/
@@ -112,6 +122,18 @@ module.exports = React.createClass({
             toggled={this.state.spellcheckerEnabled}
             label={(<span><span>Spell-checker</span> <small>(Experimental, requires restart)</small></span>)}
             onToggle={this.handleToggleSpellchecker} />
+        </Paper>
+        <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
+          <Toggle
+            toggled={this.state.notificationsEnabled}
+            label='Show new mail notifications'
+            onToggle={this.handleToggleNotificationsEnabled} />
+          <br />
+          <Toggle
+            toggled={!this.state.notificationsSilent}
+            label='Play notification sound'
+            disabled={!this.state.notificationsEnabled}
+            onToggle={this.handleToggleNotificationsSilent} />
         </Paper>
       </div>
     )

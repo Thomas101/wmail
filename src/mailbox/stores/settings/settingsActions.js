@@ -124,6 +124,24 @@ class SettingsActions {
   */
   toggleSidebar () { return {} }
 
+  /* **************************************************************************/
+  // Notifications
+  /* **************************************************************************/
+
+  /**
+  * @param enabled: true to enable notifications, false otherwise
+  */
+  setNotificationsEnabled (enabled) {
+    return this.mergeUpdates({ notificationsEnabled: enabled })
+  }
+
+  /**
+  * @param silent: true to make notifications silent, false otherwise
+  */
+  setNotificationsSilent (silent) {
+    return this.mergeUpdates({ notificationsSilent: silent })
+  }
+
 }
 
 module.exports = alt.createActions(SettingsActions)

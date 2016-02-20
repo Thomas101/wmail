@@ -1,5 +1,6 @@
 const flux = {
-  mailbox: require('../stores/mailbox')
+  mailbox: require('../stores/mailbox'),
+  settings: require('../stores/settings')
 }
 
 class UnreadNotifications {
@@ -35,6 +36,7 @@ class UnreadNotifications {
   * Handles the mailboxes changing by dropping out any notifications
   */
   mailboxesUpdated (store) {
+    if (flux.settings.S.getState().notificationsEnabled() === false) { return }
     store.all().forEach(mailbox => {
       if (!mailbox.showNotifications) { return }
       const unread = mailbox.google.unreadUnotifiedMessages
@@ -69,6 +71,7 @@ class UnreadNotifications {
 
     const notification = new window.Notification(subject, {
       body: [fromEmail, snippet].join('\n'),
+      silent: flux.settings.S.getState().notificationsSilent,
       data: { mailbox: mailbox.id, messageId: message.id }
     })
     notification.onclick = this.handleNotificationClicked

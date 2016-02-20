@@ -6,6 +6,7 @@ const credentials = require('shared/credentials')
 const googleHTTP = require('./googleHTTP')
 const mailboxStore = require('../mailbox/mailboxStore')
 const mailboxActions = require('../mailbox/mailboxActions')
+const settingsStore = require('../settings/settingsStore')
 const Mailbox = require('../mailbox/Mailbox')
 const ipc = window.nativeRequire('electron').ipcRenderer
 const reporter = require('../../reporter')
@@ -353,12 +354,20 @@ class GoogleActions {
   * @param mailboxId: the id of the mailbox
   */
   syncMailboxUnreadMessages (mailboxId) {
+    // Check not disabled globally
+    if (settingsStore.getState().notificationsEnabled() === false) {
+      this.syncMailboxUnreadMessagesSuccess(mailboxId)
+      return { mailboxId: mailboxId, promise: Promise.resolve() }
+    }
+
+    // Check not distabled for inbox / no unread messages
     const mailbox = mailboxStore.getState().get(mailboxId)
     if (mailbox.unread === 0 || !mailbox.showNotifications) {
       this.syncMailboxUnreadMessagesSuccess(mailboxId)
       return { mailboxId: mailboxId, promise: Promise.resolve() }
     }
 
+    // Start making calls to google
     const { auth } = this.getAPIAuth(mailboxId)
     const promise = Promise.resolve()
       .then(() => googleHTTP.fetchEmailSummaries(auth, mailbox.email, mailbox.google.unreadQuery))
