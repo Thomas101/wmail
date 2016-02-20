@@ -54,6 +54,8 @@ class AppSettings {
   get proxyHost () { return this.loadValue('proxyServer', { enabled: false }).host }
   get proxyPort () { return this.loadValue('proxyServer', { enabled: false }).port }
   get proxyUrl () { return this.proxyHost + ':' + this.proxyPort }
+  get alwaysAskDownloadLocation () { return this.loadValue('alwaysAskDownloadLocation', true) }
+  get defaultDownloadLocation () { return this.loadValue('defaultDownloadLocation') }
 }
 
 module.exports = AppSettings

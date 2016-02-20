@@ -4,6 +4,7 @@ const WMailWindow = require('./WMailWindow')
 const AuthGoogle = require('./AuthGoogle')
 const update = require('./update')
 const path = require('path')
+const MailboxesSessionManager = require('./MailboxesSessionManager')
 
 class MailboxesWindow extends WMailWindow {
 
@@ -23,6 +24,7 @@ class MailboxesWindow extends WMailWindow {
     this.heartbeatInterval = null
     this.authGoogle = new AuthGoogle(appSettings)
     this.appSettings = appSettings
+    this.sessionManager = new MailboxesSessionManager(this, appSettings)
   }
 
   start (url) {
@@ -119,6 +121,18 @@ class MailboxesWindow extends WMailWindow {
   */
   toggleSidebar () {
     this.window.webContents.send('toggle-sidebar', { })
+  }
+
+  /**
+  * Tells the frame a download is complete
+  * @param path: the path of the saved file
+  * @param filename: the name of the file
+  */
+  downloadCompleted (path, filename) {
+    this.window.webContents.send('download-completed', {
+      path: path,
+      filename: filename
+    })
   }
 
 }

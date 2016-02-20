@@ -1,5 +1,6 @@
 const React = require('react')
-const { Toggle, Paper } = require('material-ui')
+const ReactDOM = require('react-dom')
+const { Toggle, Paper, RaisedButton } = require('material-ui')
 const flux = {
   settings: require('../../stores/settings')
 }
@@ -15,10 +16,15 @@ module.exports = React.createClass({
 
   componentDidMount: function () {
     flux.settings.S.listen(this.settingsChanged)
+    ReactDOM.findDOMNode(this.refs.defaultDownloadInput).setAttribute('webkitdirectory', 'webkitdirectory')
   },
 
   componentWillUnmount: function () {
     flux.settings.S.unlisten(this.settingsChanged)
+  },
+
+  componentDidUpdate: function () {
+    ReactDOM.findDOMNode(this.refs.defaultDownloadInput).setAttribute('webkitdirectory', 'webkitdirectory')
   },
 
   /* **************************************************************************/
@@ -37,7 +43,9 @@ module.exports = React.createClass({
       spellcheckerEnabled: store.spellcheckerEnabled(),
       sidebarEnabled: store.sidebarEnabled(),
       notificationsEnabled: store.notificationsEnabled(),
-      notificationsSilent: store.notificationsSilent()
+      notificationsSilent: store.notificationsSilent(),
+      alwaysAskDownloadLocation: store.alwaysAskDownloadLocation(),
+      defaultDownloadLocation: store.defaultDownloadLocation()
     }
   },
 
@@ -79,6 +87,14 @@ module.exports = React.createClass({
 
   handleToggleNotificationsSilent: function (evt, toggled) {
     flux.settings.A.setNotificationsSilent(!toggled)
+  },
+
+  handleSetAlwaysAskDownloadLocation: function (evt, toggled) {
+    flux.settings.A.setAlwaysAskDownloadLocation(toggled)
+  },
+
+  handleDefaultDownloadLocationChanged: function (evt, d) {
+    flux.settings.A.setDefaultDownloadLocation(evt.target.files[0].path)
   },
 
   /* **************************************************************************/
@@ -134,6 +150,28 @@ module.exports = React.createClass({
             label='Play notification sound'
             disabled={!this.state.notificationsEnabled}
             onToggle={this.handleToggleNotificationsSilent} />
+        </Paper>
+        <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
+          <Toggle
+            toggled={this.state.alwaysAskDownloadLocation}
+            label='Always ask download location'
+            onToggle={this.handleSetAlwaysAskDownloadLocation} />
+          <br />
+          <div>
+            <RaisedButton
+              label='Select location'
+              className='file-button'
+              disabled={this.state.alwaysAskDownloadLocation}
+              style={{ marginRight: 15 }}>
+              <input
+                type='file'
+                ref='defaultDownloadInput'
+                disabled={this.state.alwaysAskDownloadLocation}
+                onChange={this.handleDefaultDownloadLocationChanged}
+                defaultValue={this.state.defaultDownloadLocation} />
+            </RaisedButton>
+            {this.state.alwaysAskDownloadLocation ? undefined : <small>{this.state.defaultDownloadLocation}</small>}
+          </div>
         </Paper>
       </div>
     )

@@ -17,7 +17,6 @@ const WindowManager = require('./WindowManager')
 const constants = require('../shared/constants')
 const exec = require('child_process').exec
 const AppSettings = require('./AppSettings')
-const MailboxesDownloadManager = require('./MailboxesDownloadManager')
 
 /* ****************************************************************************/
 // Global objects
@@ -28,7 +27,6 @@ const localStorage = new LocalStorage(appDirectory.userData())
 const appSettings = new AppSettings(localStorage)
 const analytics = new AppAnalytics(localStorage, appSettings)
 const mailboxesWindow = new MailboxesWindow(analytics, localStorage, appSettings)
-const mailboxesDownloadManager = new MailboxesDownloadManager(mailboxesWindow)
 const windowManager = new WindowManager(mailboxesWindow)
 
 const appMenuSelectors = {
@@ -114,12 +112,8 @@ ipcMain.on('settings-update', (evt, settings) => {
   appSettings.update(settings)
 })
 
-ipcMain.on('download-progress', (evt, data) => {
-  mailboxesDownloadManager.updateProgress(data.id, data.received, data.total)
-})
-
-ipcMain.on('download-complete', (evt, data) => {
-  mailboxesDownloadManager.downloadFinished(data.id)
+ipcMain.on('prepare-webview-session', (evt, data) => {
+  mailboxesWindow.sessionManager.startManagingSession(data.partition)
 })
 
 /* ****************************************************************************/

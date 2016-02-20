@@ -9,12 +9,9 @@ const flux = {
 const remote = window.nativeRequire('remote')
 const URL = window.nativeRequire('url')
 const shell = remote.require('shell')
-const app = remote.require('app')
-const session = remote.require('session')
 const ipc = window.nativeRequire('electron').ipcRenderer
 const mailboxDispatch = require('../Dispatch/mailboxDispatch')
 const TimerMixin = require('react-timer-mixin')
-const uuid = require('uuid')
 
 /* eslint-disable react/prop-types */
 
@@ -145,32 +142,6 @@ module.exports = React.createClass({
   },
 
   /* **************************************************************************/
-  // Webview events
-  /* **************************************************************************/
-
-  /**
-  * Handles the download
-  * @param evt: the event that fired
-  * @param item: the item that's downloading
-  */
-  handleDownload: function (evt, item) {
-    const totalBytes = item.getTotalBytes()
-    const id = uuid.v4()
-    item.on('updated', () => {
-      ipc.send('download-progress', { id: id, received: item.getReceivedBytes(), total: totalBytes })
-    })
-    item.on('done', (e, state) => {
-      ipc.send('download-complete', { id: id })
-      const notification = new window.Notification('Download Completed', {
-        body: item.getFilename()
-      })
-      notification.onclick = function () {
-        shell.showItemInFolder(app.getPath('downloads'))
-      }
-    })
-  },
-
-  /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
 
@@ -182,9 +153,7 @@ module.exports = React.createClass({
   renderWebviewDOMNode: function () {
     // Setup the session that will be used
     const partition = 'persist:' + this.state.mailbox.id
-    const ses = session.fromPartition(partition)
-    ses.setDownloadPath(app.getPath('downloads'))
-    ses.on('will-download', this.handleDownload)
+    ipc.send('prepare-webview-session', { partition: partition })
 
     // Build the dom
     const webview = document.createElement('webview')

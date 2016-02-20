@@ -18,6 +18,7 @@ const navigationDispatch = require('./Dispatch/navigationDispatch')
 const TimerMixin = require('react-timer-mixin')
 const constants = require('shared/constants')
 const UnreadNotifications = require('../daemons/UnreadNotifications')
+const shell = remote.require('shell')
 
 const injectTapEventPlugin = require('react-tap-event-plugin')
 injectTapEventPlugin()
@@ -52,6 +53,7 @@ module.exports = React.createClass({
     ipc.on('mailbox-zoom-reset', this.ipcZoomReset)
     ipc.on('toggle-sidebar', this.toggleSidebar)
     ipc.on('launch-settings', this.launchSettings)
+    ipc.on('download-completed', this.downloadCompleted)
   },
 
   componentWillUnmount: function () {
@@ -69,6 +71,7 @@ module.exports = React.createClass({
     ipc.removeListener('mailbox-zoom-reset', this.ipcZoomReset)
     ipc.removeListener('toggle-sidebar', this.toggleSidebar)
     ipc.removeListener('launch-settings', this.launchSettings)
+    ipc.removeListener('download-completed', this.downloadCompleted)
 
     mailboxDispatch.off('blurred', this.mailboxBlurred)
 
@@ -259,6 +262,20 @@ module.exports = React.createClass({
   */
   launchSettings: function (evt) {
     navigationDispatch.openSettings()
+  },
+
+  /**
+  * Shows a notification of a completed download
+  * @param evt: the event that fired
+  * @param req: the request that came through
+  */
+  downloadCompleted: function (evt, req) {
+    const notification = new window.Notification('Download Completed', {
+      body: req.filename
+    })
+    notification.onclick = function () {
+      shell.showItemInFolder(req.path)
+    }
   },
 
   /* **************************************************************************/

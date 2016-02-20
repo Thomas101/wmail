@@ -1,4 +1,5 @@
 import './layout.less'
+import './components.less'
 
 const React = require('react')
 const ReactDOM = require('react-dom')
