@@ -1,6 +1,7 @@
 'use strict'
 
 const app = require('app')
+const AppSettings = require('./AppSettings')
 
 class WindowManager {
 
@@ -11,9 +12,10 @@ class WindowManager {
   /**
   * @param mailboxesWindow: the main window
   */
-  constructor (mailboxesWindow) {
+  constructor (mailboxesWindow, appSettings) {
     this.contentWindows = []
     this.mailboxesWindow = mailboxesWindow
+    this.appSettings = appSettings
     this.forceQuit = false
     this.mailboxesWindow.on('close', (e) => this.handleClose(e))
     this.mailboxesWindow.on('closed', () => {
@@ -33,7 +35,7 @@ class WindowManager {
   handleClose (evt) {
     if (this.focused() && !this.forceQuit) {
       this.contentWindows.forEach((w) => w.close())
-      if (process.platform === 'darwin') {
+      if (process.platform === 'darwin' || this.appSettings.loadValue('showTrayIcon')) {
         this.mailboxesWindow.hide()
         evt.preventDefault()
         this.forceQuit = false

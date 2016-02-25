@@ -27,7 +27,7 @@ const localStorage = new LocalStorage(appDirectory.userData())
 const appSettings = new AppSettings(localStorage)
 const analytics = new AppAnalytics(localStorage, appSettings)
 const mailboxesWindow = new MailboxesWindow(analytics, localStorage, appSettings)
-const windowManager = new WindowManager(mailboxesWindow)
+const windowManager = new WindowManager(mailboxesWindow, appSettings)
 
 const appMenuSelectors = {
   fullQuit: () => { windowManager.quit() },
@@ -130,9 +130,7 @@ app.on('ready', () => {
 })
 
 app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  app.quit()
 })
 
 app.on('activate', function () {
