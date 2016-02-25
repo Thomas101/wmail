@@ -11,6 +11,7 @@ class WindowManager {
 
   /**
   * @param mailboxesWindow: the main window
+  * @param appSettings: the app settings
   */
   constructor (mailboxesWindow, appSettings) {
     this.contentWindows = []
