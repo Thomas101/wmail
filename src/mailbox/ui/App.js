@@ -54,6 +54,8 @@ module.exports = React.createClass({
     ipc.on('toggle-sidebar', this.toggleSidebar)
     ipc.on('launch-settings', this.launchSettings)
     ipc.on('download-completed', this.downloadCompleted)
+
+    this.settingsChanged()
   },
 
   componentWillUnmount: function () {
