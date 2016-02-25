@@ -179,6 +179,13 @@ class WMailWindow extends EventEmitter {
   }
 
   /**
+  * @return true if the window is visible
+  */
+  isVisible () {
+    return this.window.isVisible()
+  }
+
+  /**
   * Sets the download progress
   * @param v: the download progress to set
   */

@@ -103,6 +103,10 @@ ipcMain.on('new-window', (evt, body) => {
   window.start(body.url, body.partition)
 })
 
+ipcMain.on('focus-app', (evt, body) => {
+  windowManager.focusMailboxesWindow()
+})
+
 ipcMain.on('restart-app', (evt, body) => {
   exec('"' + process.execPath.replace(/\"/g, '\\"') + '"')
   windowManager.quit()
