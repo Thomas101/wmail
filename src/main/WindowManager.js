@@ -1,7 +1,6 @@
 'use strict'
 
 const app = require('app')
-const AppSettings = require('./AppSettings')
 
 class WindowManager {
 
