@@ -1,5 +1,6 @@
 'use strict'
 
+const Minivents = require('minivents')
 const DB_KEY = 'Settings_Shadow'
 
 class AppSettings {
@@ -13,6 +14,7 @@ class AppSettings {
   */
   constructor (localStorage) {
     this.localStorage = localStorage
+    Minivents(this)
   }
 
   /* ****************************************************************************/
@@ -24,6 +26,7 @@ class AppSettings {
   */
   update (settings) {
     this.localStorage.setItem(DB_KEY, JSON.stringify(settings))
+    this.emit('changed', { })
   }
 
   /**
@@ -50,12 +53,14 @@ class AppSettings {
   /* ****************************************************************************/
 
   get hasTitlebar () { return this.loadValue('showTitlebar', false) }
+  get hasAppMenu () { return this.loadValue('showAppMenu', true) }
   get proxyEnabled () { return this.loadValue('proxyServer', { enabled: false }).enabled }
   get proxyHost () { return this.loadValue('proxyServer', { enabled: false }).host }
   get proxyPort () { return this.loadValue('proxyServer', { enabled: false }).port }
   get proxyUrl () { return this.proxyHost + ':' + this.proxyPort }
   get alwaysAskDownloadLocation () { return this.loadValue('alwaysAskDownloadLocation', true) }
   get defaultDownloadLocation () { return this.loadValue('defaultDownloadLocation') }
+  get hasTrayIcon () { return this.loadValue('showTrayIcon', true) }
 }
 
 module.exports = AppSettings

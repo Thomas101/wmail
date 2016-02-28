@@ -46,7 +46,7 @@ module.exports = {
         submenu: [
           { label: 'Toggle Full Screen', accelerator: 'Ctrl+Command+F', click: selectors.fullscreenToggle },
           { label: 'Toggle Sidebar', accelerator: 'Ctrl+Command+S', click: selectors.sidebarToggle },
-          { label: 'Toggle Menu', accelerator: 'CmdOrCtrl+\\', click: selectors.menuToggle },
+          process.platform === 'darwin' ? undefined : { label: 'Toggle Menu', accelerator: 'CmdOrCtrl+\\', click: selectors.menuToggle },
           { type: 'separator' },
           { label: 'Zoom Mailbox In', accelerator: 'CmdOrCtrl+Plus', click: selectors.zoomIn },
           { label: 'Zoom Mailbox Out', accelerator: 'CmdOrCtrl+-', click: selectors.zoomOut },
@@ -54,7 +54,7 @@ module.exports = {
           { type: 'separator' },
           { label: 'Reload', accelerator: 'CmdOrCtrl+R', click: selectors.reload },
           { label: 'Developer Tools', accelerator: 'Alt+CmdOrCtrl+J', click: selectors.devTools }
-        ]
+        ].filter((item) => item !== undefined)
       },
       {
         label: 'Window',

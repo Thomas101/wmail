@@ -79,6 +79,18 @@ class SettingsActions {
     return this.mergeUpdates({ showTrayIcon: show })
   }
 
+  /**
+  * @param show: true to show the app menu, false otherwise
+  */
+  setShowAppMenu (show) {
+    return this.mergeUpdates({ showAppMenu: show })
+  }
+
+  /**
+  * Toggles the app menu
+  */
+  toggleAppMenu () { return {} }
+
   /* **************************************************************************/
   // Spell checker
   /* **************************************************************************/

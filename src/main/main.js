@@ -47,8 +47,7 @@ const appMenuSelectors = {
     windowManager.mailboxesWindow.toggleSidebar()
   },
   menuToggle: () => {
-    const focused = windowManager.focused()
-    focused ? focused.toggleMenu() : undefined
+    windowManager.mailboxesWindow.toggleAppMenu()
   },
   preferences: () => {
     windowManager.mailboxesWindow.launchPreferences()
@@ -102,7 +101,7 @@ ipcMain.on('report-error', (evt, body) => {
 })
 
 ipcMain.on('new-window', (evt, body) => {
-  const window = new ContentWindow(analytics, localStorage)
+  const window = new ContentWindow(analytics, localStorage, appSettings)
   windowManager.addContentWindow(window)
   window.start(body.url, body.partition)
 })

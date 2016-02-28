@@ -72,6 +72,9 @@ class SettingsStore {
     this.showTrayIcon = () => {
       return this.__value__('showTrayIcon', true)
     }
+    this.showAppMenu = () => {
+      return this.__value__('showAppMenu', true)
+    }
 
     /* ****************************************/
     // Spell checker
@@ -129,7 +132,8 @@ class SettingsStore {
       handleLoad: actions.LOAD,
       handleSetProxyServer: actions.SET_PROXY_SERVER,
       handleMergeUpdates: actions.MERGE_UPDATES,
-      handleToggleSidebar: actions.TOGGLE_SIDEBAR
+      handleToggleSidebar: actions.TOGGLE_SIDEBAR,
+      handleToggleAppMenu: actions.TOGGLE_APP_MENU
     })
   }
 
@@ -181,6 +185,13 @@ class SettingsStore {
   */
   handleToggleSidebar () {
     this.handleMergeUpdates({ updates: { sidebarEnabled: !this.sidebarEnabled() } })
+  }
+
+  /**
+  * Toggles the app menu
+  */
+  handleToggleAppMenu () {
+    this.handleMergeUpdates({ updates: { showAppMenu: !this.showAppMenu() } })
   }
 }
 

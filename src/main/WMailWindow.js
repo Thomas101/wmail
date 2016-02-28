@@ -13,13 +13,15 @@ class WMailWindow extends EventEmitter {
   /**
   * @param analytics: the analytics object
   * @param localStorage: the localStorage object
+  * @param appSettings: the app settings so window preferences can be siphoned
   * @param options: object containing the following
   *                   @param screenLocationNS: the namespace to save the window state under. If not set, will not persist
   */
-  constructor (analytics, localStorage, options) {
+  constructor (analytics, localStorage, appSettings, options) {
     super()
     this.analytics = analytics
     this.localStorage = localStorage
+    this.appSettings = appSettings
     this.window = null
     this.windowScreenLocationSaver = null
     this.options = Object.freeze(Object.assign({}, options))
@@ -55,6 +57,8 @@ class WMailWindow extends EventEmitter {
   */
   createWindow (settings, url) {
     const screenLocation = this.loadWindowScreenLocation()
+
+    // Load up the window location & last state
     this.window = new BrowserWindow(Object.assign(settings, screenLocation))
     if (screenLocation.maximized) {
       this.window.maximize()
@@ -65,16 +69,26 @@ class WMailWindow extends EventEmitter {
       this.window.on('maximize', (evt) => { this.saveWindowScreenLocation() })
       this.window.on('unmaximize', (evt) => { this.saveWindowScreenLocation() })
     }
+    this[this.appSettings.hasAppMenu ? 'showAppMenu' : 'hideAppMenu']()
 
-    this.window.on('close', (evt) => {
-      this.emit('close', evt)
-    })
-    this.window.on('closed', (evt) => {
-      this.window = null
-      this.emit('closed', evt)
-    })
+    // Bind to change events
+    this.window.on('close', (evt) => { this.emit('close', evt) })
+    this.appSettings.on('changed', this.updateWindowMenubar)
+    this.window.on('closed', (evt) => this.destroyWindow(evt) )
 
+    // Fire the whole thing off
     this.window.loadURL(url)
+  }
+
+  /**
+  * Destroys the window
+  * @param evt: the event that caused destroy
+  */
+  destroyWindow (evt) {
+    this.appSettings.off('changed', this.updateWindowMenubar)
+
+    this.window = null
+    this.emit('closed', evt)
   }
 
   /* ****************************************************************************/
@@ -116,6 +130,13 @@ class WMailWindow extends EventEmitter {
     }
 
     return {}
+  }
+
+  /**
+  * Updates the menubar
+  */
+  updateWindowMenubar (prev, next) {
+    this[this.appSettings.hasAppMenu ? 'showAppMenu' : 'hideAppMenu']()
   }
 
   /* ****************************************************************************/
@@ -172,10 +193,17 @@ class WMailWindow extends EventEmitter {
   }
 
 	/**
-	* Toggle the menu
+	* Show the app menu
 	*/
-  toggleMenu () {
-    this.window.setMenuBarVisibility(!this.window.isMenuBarVisible())
+  showAppMenu () {
+    this.window.setMenuBarVisibility(true)
+  }
+
+  /**
+  * Hide the app menu
+  */
+  hideAppMenu () {
+    this.window.setMenuBarVisibility(false)
   }
 
   /**

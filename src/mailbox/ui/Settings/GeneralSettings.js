@@ -40,6 +40,7 @@ module.exports = React.createClass({
       showTitlebar: store.showTitlebar(),
       showAppBadge: store.showAppBadge(),
       showTrayIcon: store.showTrayIcon(),
+      showAppMenu: store.showAppMenu(),
       spellcheckerEnabled: store.spellcheckerEnabled(),
       sidebarEnabled: store.sidebarEnabled(),
       notificationsEnabled: store.notificationsEnabled(),
@@ -63,6 +64,10 @@ module.exports = React.createClass({
 
   handleToggleTitlebar: function (evt, toggled) {
     flux.settings.A.setShowTitlebar(toggled)
+  },
+
+  handleToggleShowAppMenu: function (evt, toggled) {
+    flux.settings.A.setShowAppMenu(toggled)
   },
 
   handleToggleUnreadBadge: function (evt, toggled) {
@@ -116,6 +121,16 @@ module.exports = React.createClass({
                 label={<span><span>Show titlebar</span> <small>(Changes applied after restart)</small></span>}
                 onToggle={this.handleToggleTitlebar} />),
               (<br key='1' />)
+            ]
+          }
+          {
+            process.platform === 'darwin' ? undefined : [
+              (<Toggle
+                key='2'
+                toggled={this.state.showAppMenu}
+                label='Show App Menu'
+                onToggle={this.handleToggleShowAppMenu} />),
+              (<br key='3' />)
             ]
           }
           <Toggle

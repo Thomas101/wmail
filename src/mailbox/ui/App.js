@@ -52,6 +52,7 @@ module.exports = React.createClass({
     ipc.on('mailbox-zoom-out', this.ipcZoomOut)
     ipc.on('mailbox-zoom-reset', this.ipcZoomReset)
     ipc.on('toggle-sidebar', this.toggleSidebar)
+    ipc.on('toggle-app-menu', this.toggleAppMenu)
     ipc.on('launch-settings', this.launchSettings)
     ipc.on('download-completed', this.downloadCompleted)
 
@@ -72,6 +73,7 @@ module.exports = React.createClass({
     ipc.removeListener('mailbox-zoom-out', this.ipcZoomOut)
     ipc.removeListener('mailbox-zoom-reset', this.ipcZoomReset)
     ipc.removeListener('toggle-sidebar', this.toggleSidebar)
+    ipc.removeListener('toggle-app-menu', this.toggleAppMenu)
     ipc.removeListener('launch-settings', this.launchSettings)
     ipc.removeListener('download-completed', this.downloadCompleted)
 
@@ -259,6 +261,14 @@ module.exports = React.createClass({
   */
   toggleSidebar: function (evt) {
     flux.settings.A.toggleSidebar()
+  },
+
+  /**
+  * Toggles the app menu
+  * @param evt: the event that fired
+  */
+  toggleAppMenu: function (evt) {
+    flux.settings.A.toggleAppMenu()
   },
 
   /**

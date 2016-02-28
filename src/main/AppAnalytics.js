@@ -33,12 +33,18 @@ class AppAnalytics {
   send (window, args) {
     // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
 
+    // If we're in cleardown this could end up being a bit flakey. Wrap it up just in case
+    let windowSize = undefined
+    try {
+      windowSize = window && window.getSize ? window.getSize().join('x') : undefined
+    } catch (ex) { /* no-op */ }
+
     const full_args = Object.assign({
       v: 1,
       tid: credentials.GOOGLE_ANALYTICS_ID,
       cid: this.id,
       t: 'screenview',
-      vp: window && window.getSize ? window.getSize().join('x') : undefined,
+      vp: windowSize,
       ul: osLanguage,
       an: pkg.name,
       av: process.platform + '-' + pkg.version

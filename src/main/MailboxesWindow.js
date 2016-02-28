@@ -18,12 +18,11 @@ class MailboxesWindow extends WMailWindow {
   * @param appSettings: the app settings
   */
   constructor (analytics, localStorage, appSettings) {
-    super(analytics, localStorage, {
+    super(analytics, localStorage, appSettings, {
       screenLocationNS: 'mailbox_window_state'
     })
     this.heartbeatInterval = null
     this.authGoogle = new AuthGoogle(appSettings)
-    this.appSettings = appSettings
     this.sessionManager = new MailboxesSessionManager(this, appSettings)
   }
 
@@ -121,6 +120,13 @@ class MailboxesWindow extends WMailWindow {
   */
   toggleSidebar () {
     this.window.webContents.send('toggle-sidebar', { })
+  }
+
+  /**
+  * Toggles the app menu
+  */
+  toggleAppMenu () {
+    this.window.webContents.send('toggle-app-menu', { })
   }
 
   /**
