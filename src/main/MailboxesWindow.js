@@ -31,7 +31,7 @@ class MailboxesWindow extends WMailWindow {
   }
 
   /* ****************************************************************************/
-  // Creation
+  // Creation & Closing
   /* ****************************************************************************/
 
   defaultWindowPreferences () {
@@ -59,10 +59,11 @@ class MailboxesWindow extends WMailWindow {
     this.heartbeatInterval = setInterval(() => {
       this.analytics.appHeartbeat(this.window)
     }, 1000 * 60 * 5) // 5 mins
+  }
 
-    this.window.on('closed', (evt) => {
-      clearInterval(this.heartbeatInterval)
-    })
+  destroyWindow (evt) {
+    super.destroyWindow(evt)
+    clearInterval(this.heartbeatInterval)
   }
 
   /* ****************************************************************************/

@@ -35,7 +35,7 @@ class WindowManager {
   handleClose (evt) {
     if (this.focused() && !this.forceQuit) {
       this.contentWindows.forEach((w) => w.close())
-      if (process.platform === 'darwin' || this.appSettings.hasTrayIcon()) {
+      if (process.platform === 'darwin' || this.appSettings.hasTrayIcon) {
         this.mailboxesWindow.hide()
         evt.preventDefault()
         this.forceQuit = false
