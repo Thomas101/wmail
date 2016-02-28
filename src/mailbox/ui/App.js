@@ -54,6 +54,8 @@ module.exports = React.createClass({
     ipc.on('toggle-sidebar', this.toggleSidebar)
     ipc.on('launch-settings', this.launchSettings)
     ipc.on('download-completed', this.downloadCompleted)
+
+    this.settingsChanged()
   },
 
   componentWillUnmount: function () {
@@ -150,6 +152,9 @@ module.exports = React.createClass({
       ])
       this.appTray.setToolTip(unreadText)
       this.appTray.setContextMenu(contextMenu)
+      this.appTray.on('click', function (e) {
+        ipc.send('focus-app')
+      })
     } else {
       if (this.appTray) {
         this.appTray.destroy()

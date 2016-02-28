@@ -27,7 +27,7 @@ const localStorage = new LocalStorage(appDirectory.userData())
 const appSettings = new AppSettings(localStorage)
 const analytics = new AppAnalytics(localStorage, appSettings)
 const mailboxesWindow = new MailboxesWindow(analytics, localStorage, appSettings)
-const windowManager = new WindowManager(mailboxesWindow)
+const windowManager = new WindowManager(mailboxesWindow, appSettings)
 
 const appMenuSelectors = {
   fullQuit: () => { windowManager.quit() },
@@ -103,6 +103,10 @@ ipcMain.on('new-window', (evt, body) => {
   window.start(body.url, body.partition)
 })
 
+ipcMain.on('focus-app', (evt, body) => {
+  windowManager.focusMailboxesWindow()
+})
+
 ipcMain.on('restart-app', (evt, body) => {
   exec('"' + process.execPath.replace(/\"/g, '\\"') + '"')
   windowManager.quit()
@@ -126,9 +130,7 @@ app.on('ready', () => {
 })
 
 app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  app.quit()
 })
 
 app.on('activate', function () {

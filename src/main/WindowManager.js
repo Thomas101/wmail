@@ -10,10 +10,12 @@ class WindowManager {
 
   /**
   * @param mailboxesWindow: the main window
+  * @param appSettings: the app settings
   */
-  constructor (mailboxesWindow) {
+  constructor (mailboxesWindow, appSettings) {
     this.contentWindows = []
     this.mailboxesWindow = mailboxesWindow
+    this.appSettings = appSettings
     this.forceQuit = false
     this.mailboxesWindow.on('close', (e) => this.handleClose(e))
     this.mailboxesWindow.on('closed', () => {
@@ -33,7 +35,7 @@ class WindowManager {
   handleClose (evt) {
     if (this.focused() && !this.forceQuit) {
       this.contentWindows.forEach((w) => w.close())
-      if (process.platform === 'darwin') {
+      if (process.platform === 'darwin' || this.appSettings.loadValue('showTrayIcon')) {
         this.mailboxesWindow.hide()
         evt.preventDefault()
         this.forceQuit = false
@@ -84,6 +86,21 @@ class WindowManager {
         this.mailboxesWindow[focusedIndex + 1].focus()
       }
     }
+  }
+
+  /**
+  * Focuses the main mailboxes window and shows it if it's hidden
+  */
+  focusMailboxesWindow () {
+    if (this.focused()) {
+      // If there's already a focused window, do nothing
+      return
+    }
+
+    if (!this.mailboxesWindow.isVisible()) {
+      this.mailboxesWindow.show()
+    }
+    this.mailboxesWindow.focus()
   }
 
   /* ****************************************************************************/
