@@ -171,6 +171,13 @@ class WMailWindow extends EventEmitter {
     this.window.webContents.openDevTools()
   }
 
+	/**
+	* Toggle the menu
+	*/
+  toggleMenu () {
+    this.window.setMenuBarVisibility(!this.window.isMenuBarVisible())
+  }
+
   /**
   * @return true if the window is focused
   */

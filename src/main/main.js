@@ -46,6 +46,10 @@ const appMenuSelectors = {
   sidebarToggle: () => {
     windowManager.mailboxesWindow.toggleSidebar()
   },
+  menuToggle: () => {
+    const focused = windowManager.focused()
+    focused ? focused.toggleMenu() : undefined
+  },
   preferences: () => {
     windowManager.mailboxesWindow.launchPreferences()
   },
