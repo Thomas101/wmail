@@ -1,11 +1,10 @@
-;(function () {
+module.exports = function (spellChecker) {
   'use strict'
 
   const electron = require('electron')
   const remote = electron.remote
   const Menu = remote.Menu
   const shell = remote.require('shell')
-  const SpellChecker = require('spellchecker')
 
   const textOnlyRE = new RegExp(/[^a-z]+/gi)
 
@@ -40,25 +39,27 @@
     const menu = []
 
     // Spell check suggestions
-    if (isTexteditorTarget(evt)) {
-      if (textOnlyRE.exec(textSelection) === null) {
-        if (SpellChecker.isMisspelled(textSelection)) {
-          const suggestions = SpellChecker.getCorrectionsForMisspelling(textSelection)
-          if (suggestions.length) {
-            suggestions.forEach((s) => {
-              menu.push({
-                label: s,
-                click: () => {
-                  const range = selection.getRangeAt(0)
-                  range.deleteContents()
-                  range.insertNode(document.createTextNode(s))
-                }
+    if (spellChecker) {
+      if (isTexteditorTarget(evt)) {
+        if (textOnlyRE.exec(textSelection) === null) {
+          if (!spellChecker.isCorrectSync(textSelection)) {
+            const suggestions = spellChecker.spellSuggestionsSync(textSelection)
+            if (suggestions.length) {
+              suggestions.forEach((s) => {
+                menu.push({
+                  label: s,
+                  click: () => {
+                    const range = selection.getRangeAt(0)
+                    range.deleteContents()
+                    range.insertNode(document.createTextNode(s))
+                  }
+                })
               })
-            })
-          } else {
-            menu.push({ label: 'No Spelling Suggestions', enabled: false })
+            } else {
+              menu.push({ label: 'No Spelling Suggestions', enabled: false })
+            }
+            menu.push({ type: 'separator' })
           }
-          menu.push({ type: 'separator' })
         }
       }
     }
@@ -95,4 +96,4 @@
     menu.push({ label: 'Select all', role: 'selectall' })
     Menu.buildFromTemplate(menu).popup(remote.getCurrentWindow(), x, y)
   }, false)
-})()
+}
