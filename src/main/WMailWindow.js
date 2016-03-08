@@ -73,7 +73,7 @@ class WMailWindow extends EventEmitter {
 
     // Bind to change events
     this.window.on('close', (evt) => { this.emit('close', evt) })
-    this.appSettings.on('changed', this.updateWindowMenubar)
+    this.appSettings.on('changed', this.updateWindowMenubar, this)
     this.window.on('closed', (evt) => this.destroyWindow(evt))
 
     // Fire the whole thing off
