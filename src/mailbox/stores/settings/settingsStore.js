@@ -118,6 +118,14 @@ class SettingsStore {
     }
 
     /* ****************************************/
+    // Interactions
+    /* ****************************************/
+
+    this.openLinksInBackground = () => {
+      return this.__value__('openLinksInBackground', false)
+    }
+
+    /* ****************************************/
     // Higher order
     /* ****************************************/
 

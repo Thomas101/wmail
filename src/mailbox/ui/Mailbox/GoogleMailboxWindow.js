@@ -130,7 +130,7 @@ module.exports = React.createClass({
 
     switch (mode) {
       case 'external':
-        shell.openExternal(evt.url)
+        shell.openExternal(evt.url, { activate: !flux.settings.S.getState().openLinksInBackground() })
         break
       case 'source':
         webview.src = evt.url
@@ -191,7 +191,7 @@ module.exports = React.createClass({
           flux.google.A.syncMailboxUnreadCount(this.state.mailbox.id)
         }
       } else if (evt.channel.type === 'js-new-window') {
-        shell.openExternal(evt.channel.url)
+        shell.openExternal(evt.channel.url, { activate: !flux.settings.S.getState().openLinksInBackground() })
       }
     })
     webview.addEventListener('new-window', (evt) => {

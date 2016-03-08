@@ -46,7 +46,8 @@ module.exports = React.createClass({
       notificationsEnabled: store.notificationsEnabled(),
       notificationsSilent: store.notificationsSilent(),
       alwaysAskDownloadLocation: store.alwaysAskDownloadLocation(),
-      defaultDownloadLocation: store.defaultDownloadLocation()
+      defaultDownloadLocation: store.defaultDownloadLocation(),
+      openLinksInBackground: store.openLinksInBackground()
     }
   },
 
@@ -56,50 +57,6 @@ module.exports = React.createClass({
 
   settingsChanged: function (store) {
     this.setState(this.generateState(store))
-  },
-
-  /* **************************************************************************/
-  // User Interaction
-  /* **************************************************************************/
-
-  handleToggleTitlebar: function (evt, toggled) {
-    flux.settings.A.setShowTitlebar(toggled)
-  },
-
-  handleToggleShowAppMenu: function (evt, toggled) {
-    flux.settings.A.setShowAppMenu(toggled)
-  },
-
-  handleToggleUnreadBadge: function (evt, toggled) {
-    flux.settings.A.setShowAppBadge(toggled)
-  },
-
-  handleToggleShowTrayIcon: function (evt, toggled) {
-    flux.settings.A.setShowTrayIcon(toggled)
-  },
-
-  handleToggleSpellchecker: function (evt, toggled) {
-    flux.settings.A.setEnableSpellchecker(toggled)
-  },
-
-  handleToggleSidebar: function (evt, toggled) {
-    flux.settings.A.setEnableSidebar(toggled)
-  },
-
-  handleToggleNotificationsEnabled: function (evt, toggled) {
-    flux.settings.A.setNotificationsEnabled(toggled)
-  },
-
-  handleToggleNotificationsSilent: function (evt, toggled) {
-    flux.settings.A.setNotificationsSilent(!toggled)
-  },
-
-  handleSetAlwaysAskDownloadLocation: function (evt, toggled) {
-    flux.settings.A.setAlwaysAskDownloadLocation(toggled)
-  },
-
-  handleDefaultDownloadLocationChanged: function (evt, d) {
-    flux.settings.A.setDefaultDownloadLocation(evt.target.files[0].path)
   },
 
   /* **************************************************************************/
@@ -119,7 +76,7 @@ module.exports = React.createClass({
                 key='0'
                 toggled={this.state.showTitlebar}
                 label={<span><span>Show titlebar</span> <small>(Changes applied after restart)</small></span>}
-                onToggle={this.handleToggleTitlebar} />),
+                onToggle={(evt, toggled) => flux.settings.A.setShowTitlebar(toggled)} />),
               (<br key='1' />)
             ]
           }
@@ -129,48 +86,53 @@ module.exports = React.createClass({
                 key='2'
                 toggled={this.state.showAppMenu}
                 label='Show App Menu'
-                onToggle={this.handleToggleShowAppMenu} />),
+                onToggle={(evt, toggled) => flux.settings.A.setShowAppMenu(toggled)} />),
               (<br key='3' />)
             ]
           }
           <Toggle
             toggled={this.state.showAppBadge}
             label='Show app unread badge'
-            onToggle={this.handleToggleUnreadBadge} />
+            onToggle={(evt, toggled) => flux.settings.A.setShowAppBadge(toggled)} />
           <br />
           <Toggle
             toggled={this.state.showTrayIcon}
             label='Show tray icon'
-            onToggle={this.handleToggleShowTrayIcon} />
+            onToggle={(evt, toggled) => flux.settings.A.setShowTrayIcon(toggled)} />
           <br />
           <Toggle
             toggled={this.state.sidebarEnabled}
             label='Show sidebar'
-            onToggle={this.handleToggleSidebar} />
+            onToggle={(evt, toggled) => flux.settings.A.setEnableSidebar(toggled)} />
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
           <Toggle
             toggled={this.state.spellcheckerEnabled}
             label={(<span><span>Spell-checker</span> <small>(Experimental, requires restart)</small></span>)}
-            onToggle={this.handleToggleSpellchecker} />
+            onToggle={(evt, toggled) => flux.settings.A.setEnableSpellchecker(toggled)} />
+          <br />
+          <Toggle
+            toggled={this.state.openLinksInBackground}
+            label='Open links in background'
+            onToggle={(evt, toggled) => flux.settings.A.setOpenLinksInBackground(toggled)} />
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
           <Toggle
             toggled={this.state.notificationsEnabled}
             label='Show new mail notifications'
-            onToggle={this.handleToggleNotificationsEnabled} />
+            onToggle={(evt, toggled) => flux.settings.A.setNotificationsEnabled(toggled)} />
           <br />
           <Toggle
             toggled={!this.state.notificationsSilent}
             label='Play notification sound'
             disabled={!this.state.notificationsEnabled}
-            onToggle={this.handleToggleNotificationsSilent} />
+            onToggle={(evt, toggled) => flux.settings.A.setNotificationsSilent(!toggled)} />
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
           <Toggle
             toggled={this.state.alwaysAskDownloadLocation}
             label='Always ask download location'
-            onToggle={this.handleSetAlwaysAskDownloadLocation} />
+            onToggle={(evt, toggled) => flux.settings.A.setAlwaysAskDownloadLocation(toggled)} />
           <br />
           <div>
             <RaisedButton
@@ -182,7 +144,7 @@ module.exports = React.createClass({
                 type='file'
                 ref='defaultDownloadInput'
                 disabled={this.state.alwaysAskDownloadLocation}
-                onChange={this.handleDefaultDownloadLocationChanged}
+                onChange={(evt) => flux.settings.A.setDefaultDownloadLocation(evt.target.files[0].path)}
                 defaultValue={this.state.defaultDownloadLocation} />
             </RaisedButton>
             {this.state.alwaysAskDownloadLocation ? undefined : <small>{this.state.defaultDownloadLocation}</small>}

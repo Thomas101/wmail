@@ -154,6 +154,17 @@ class SettingsActions {
     return this.mergeUpdates({ notificationsSilent: silent })
   }
 
+  /* **************************************************************************/
+  // Notifications
+  /* **************************************************************************/
+
+  /**
+  * @param background: true to open links in the background
+  */
+  setOpenLinksInBackground (background) {
+    return this.mergeUpdates({ openLinksInBackground: background })
+  }
+
 }
 
 module.exports = alt.createActions(SettingsActions)
