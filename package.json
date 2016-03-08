@@ -29,7 +29,7 @@
     "copy-webpack-plugin": "^1.1.1",
     "css-loader": "^0.23.1",
     "electron-packager": "^5.2.0",
-    "electron-prebuilt": ">=0.36.9",
+    "electron-prebuilt": ">=0.36.10",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.8.5",
     "fs-extra": "^0.26.4",
