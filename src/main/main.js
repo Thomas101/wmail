@@ -1,6 +1,18 @@
 'use strict'
 
 const app = require('app')
+
+let quitting = app.makeSingleInstance(function (commandLine, workingDirectory) {
+  if (appMenuSelectors) {
+    appMenuSelectors.showWindow();
+  }
+  return true;
+});
+if (quitting) {
+  app.quit();
+  return;
+}
+
 const AppAnalytics = require('./AppAnalytics')
 const AppDirectory = require('appdirectory')
 const LocalStorage = require('node-localstorage').LocalStorage
