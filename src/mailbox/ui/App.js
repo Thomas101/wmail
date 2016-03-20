@@ -7,18 +7,17 @@ const flux = {
   settings: require('../stores/settings')
 }
 const AppContent = require('./AppContent')
-const path = window.nativeRequire('path')
 const ipc = window.nativeRequire('electron').ipcRenderer
 const remote = window.nativeRequire('remote')
 const app = remote.require('app')
-const Tray = remote.require('tray')
-const Menu = remote.require('menu')
 const mailboxDispatch = require('./Dispatch/mailboxDispatch')
 const navigationDispatch = require('./Dispatch/navigationDispatch')
 const TimerMixin = require('react-timer-mixin')
 const constants = require('shared/constants')
 const UnreadNotifications = require('../daemons/UnreadNotifications')
 const shell = remote.require('shell')
+const shallowCompare = require('react-addons-shallow-compare')
+const Tray = require('./Tray')
 
 const injectTapEventPlugin = require('react-tap-event-plugin')
 injectTapEventPlugin()
@@ -55,8 +54,6 @@ module.exports = React.createClass({
     ipc.on('toggle-app-menu', this.toggleAppMenu)
     ipc.on('launch-settings', this.launchSettings)
     ipc.on('download-completed', this.downloadCompleted)
-
-    this.settingsChanged()
   },
 
   componentWillUnmount: function () {
@@ -78,11 +75,6 @@ module.exports = React.createClass({
     ipc.removeListener('download-completed', this.downloadCompleted)
 
     mailboxDispatch.off('blurred', this.mailboxBlurred)
-
-    if (this.appTray) {
-      this.appTray.destroy()
-      delete this.appTray
-    }
   },
 
   /* **************************************************************************/
@@ -90,91 +82,40 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState: function () {
-    return { mailbox_ids: flux.mailbox.S.getState().ids() }
+    const settingsStore = flux.settings.S.getState()
+    return {
+      messagesUnreadCount: flux.mailbox.S.getState().totalUnreadCountForAppBadge(),
+      showAppBadge: settingsStore.showAppBadge(),
+      showTrayIcon: settingsStore.showTrayIcon(),
+      showTrayUnreadCount: settingsStore.showTrayUnreadCount(),
+      trayReadColor: settingsStore.trayReadColor(),
+      trayUnreadColor: settingsStore.trayUnreadColor()
+    }
   },
 
   mailboxesChanged: function (store) {
-    this.setState({ mailbox_ids: store.ids() })
-    this.updateAppBadge(store)
-    this.pushDataToMainThread(store)
-  },
-
-  settingsChanged: function (store) {
-    this.updateAppBadge(undefined, store)
-    this.pushDataToMainThread()
-  },
-
-  shouldComponentUpdate: function (nextProps, nextState) {
-    // Nothing to ever update here. We're basically using this element as an event manager
-    return false
-  },
-
-  /* **************************************************************************/
-  // App
-  /* **************************************************************************/
-
-  /**
-  * Updates the app badge
-  * @param mailboxStore=mailbox store: the mailbox store to use
-  * @param settingsStore=settings store: the settings store to use
-  */
-  updateAppBadge: function (mailboxStore = flux.mailbox.S.getState(), settingsStore = flux.settings.S.getState()) {
-    const unread = mailboxStore.totalUnreadCountForAppBadge()
-    if (process.platform === 'darwin') {
-      if (settingsStore.showAppBadge()) {
-        app.dock.setBadge(unread ? unread.toString() : '')
-      } else {
-        app.dock.setBadge('')
-      }
-    }
-
-    if (settingsStore.showTrayIcon()) {
-      let iconName
-      if (unread) {
-        iconName = 'tray_active_22.png'
-      } else {
-        if (process.platform === 'darwin') {
-          iconName = 'tray_22Template.png'
-        } else {
-          iconName = 'tray_22.png'
-        }
-      }
-      const currentPath = decodeURIComponent(window.location.href.replace('file://', ''))
-      const iconPath = path.join(path.dirname(currentPath), 'icons', iconName)
-
-      if (this.appTray) {
-        this.appTray.setImage(iconPath)
-      } else {
-        this.appTray = new Tray(iconPath)
-      }
-
-      const unreadText = unread ? unread + ' unread mail' : 'No unread mail'
-      const contextMenu = Menu.buildFromTemplate([
-        { label: unreadText }
-      ])
-      this.appTray.setToolTip(unreadText)
-      this.appTray.setContextMenu(contextMenu)
-      this.appTray.on('click', function (e) {
-        ipc.send('focus-app')
-      })
-    } else {
-      if (this.appTray) {
-        this.appTray.destroy()
-        delete this.appTray
-      }
-    }
-  },
-
-  /**
-  * Pushes updates to the main thread
-  * @param store=mailbox store: the mailbox store to use
-  */
-  pushDataToMainThread: function (store = flux.mailbox.S.getState()) {
+    this.setState({
+      messagesUnreadCount: store.totalUnreadCountForAppBadge()
+    })
     ipc.send('mailboxes-changed', {
       mailboxes: store.all().map((mailbox) => {
         return { id: mailbox.id, name: mailbox.name, email: mailbox.email }
       })
     })
+  },
+
+  settingsChanged: function (store) {
+    this.setState({
+      showAppBadge: store.showAppBadge(),
+      showTrayIcon: store.showTrayIcon(),
+      showTrayUnreadCount: store.showTrayUnreadCount(),
+      trayReadColor: store.trayReadColor(),
+      trayUnreadColor: store.trayUnreadColor()
+    })
+  },
+
+  shouldComponentUpdate: function (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
   },
 
   /* **************************************************************************/
@@ -329,6 +270,20 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   render: function () {
-    return <AppContent />
+    if (process.platform === 'darwin') {
+      const badgeString = this.state.showAppBadge && this.state.messagesUnreadCount ? this.state.messagesUnreadCount.toString() : ''
+      app.dock.setBadge(badgeString)
+    }
+
+    return (
+      <div>
+        <AppContent />
+        {!this.state.showTrayIcon ? undefined : <Tray
+          unreadCount={this.state.messagesUnreadCount}
+          showUnreadCount={this.state.showTrayUnreadCount}
+          unreadColor={this.state.trayUnreadColor}
+          readColor={this.state.readColor} />}
+      </div>
+    )
   }
 })

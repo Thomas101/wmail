@@ -13,9 +13,9 @@ module.exports = {
       {
         label: 'Application',
         submenu: [
-          { label: 'Preferences', click: selectors.preferences, accelerator: 'CmdOrCtrl+,' },
-          { type: 'separator' },
           { label: 'About', click: selectors.aboutDialog },
+          { type: 'separator' },
+          { label: 'Preferences', click: selectors.preferences, accelerator: 'CmdOrCtrl+,' },
           { type: 'separator' },
           process.platform === 'darwin' ? { label: 'Services', role: 'services', submenu: [] } : undefined,
           process.platform === 'darwin' ? { type: 'separator' } : undefined,

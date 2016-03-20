@@ -73,13 +73,6 @@ class SettingsActions {
   }
 
   /**
-  * @param show: true to show the tray icon, false otherwise
-  */
-  setShowTrayIcon (show) {
-    return this.mergeUpdates({ showTrayIcon: show })
-  }
-
-  /**
   * @param show: true to show the app menu, false otherwise
   */
   setShowAppMenu (show) {
@@ -90,6 +83,38 @@ class SettingsActions {
   * Toggles the app menu
   */
   toggleAppMenu () { return {} }
+
+  /* **************************************************************************/
+  // Tray
+  /* **************************************************************************/
+
+  /**
+  * @param show: true to show the tray icon, false otherwise
+  */
+  setShowTrayIcon (show) {
+    return this.mergeUpdates({ showTrayIcon: show })
+  }
+
+  /**
+  * @param show: true to show the unread count in the tray
+  */
+  setShowTrayUnreadCount (show) {
+    return this.mergeUpdates({ showTrayUnreadCount: show })
+  }
+
+  /**
+  * @param col: the hex colour to make the tray icon
+  */
+  setTrayReadColor (col) {
+    return this.mergeUpdates({ trayReadColor: col })
+  }
+
+  /**
+  * @param col: the hex colour to make the tray icon
+  */
+  setTrayUnreadColor (col) {
+    return this.mergeUpdates({ trayUnreadColor: col })
+  }
 
   /* **************************************************************************/
   // Spell checker

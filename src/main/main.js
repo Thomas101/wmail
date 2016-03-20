@@ -15,7 +15,7 @@ if (quitting) {
 
 const AppAnalytics = require('./AppAnalytics')
 const AppDirectory = require('appdirectory')
-const LocalStorage = require('node-localstorage').LocalStorage
+const Storage = require('dom-storage')
 const MailboxesWindow = require('./MailboxesWindow')
 const ContentWindow = require('./ContentWindow')
 const pkg = require('../package.json')
@@ -29,13 +29,14 @@ const WindowManager = require('./WindowManager')
 const constants = require('../shared/constants')
 const exec = require('child_process').exec
 const AppSettings = require('./AppSettings')
+const path = require('path')
 
 /* ****************************************************************************/
 // Global objects
 /* ****************************************************************************/
 
 const appDirectory = new AppDirectory(pkg.name)
-const localStorage = new LocalStorage(appDirectory.userData())
+const localStorage = new Storage(path.join(appDirectory.userData(), 'main_proc_db.json'))
 const appSettings = new AppSettings(localStorage)
 const analytics = new AppAnalytics(localStorage, appSettings)
 const mailboxesWindow = new MailboxesWindow(analytics, localStorage, appSettings)
@@ -120,6 +121,10 @@ ipcMain.on('new-window', (evt, body) => {
 
 ipcMain.on('focus-app', (evt, body) => {
   windowManager.focusMailboxesWindow()
+})
+
+ipcMain.on('quit-app', (evt, body) => {
+  windowManager.quit()
 })
 
 ipcMain.on('restart-app', (evt, body) => {

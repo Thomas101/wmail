@@ -27,7 +27,7 @@ module.exports = React.createClass({
 
   getChildContext () {
     return {
-      muiTheme: Styles.ThemeManager.getMuiTheme(appTheme)
+      muiTheme: Styles.getMuiTheme(appTheme)
     }
   },
 

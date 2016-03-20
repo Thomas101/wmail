@@ -69,11 +69,28 @@ class SettingsStore {
     this.showAppBadge = () => {
       return this.__value__('showAppBadge', true)
     }
+    this.showAppMenu = () => {
+      return this.__value__('showAppMenu', true)
+    }
+
+    /* ****************************************/
+    // Tray
+    /* ****************************************/
+
     this.showTrayIcon = () => {
       return this.__value__('showTrayIcon', true)
     }
-    this.showAppMenu = () => {
-      return this.__value__('showAppMenu', true)
+
+    this.showTrayUnreadCount = () => {
+      return this.__value__('showTrayUnreadCount', true)
+    }
+
+    this.trayReadColor = () => {
+      return this.__value__('trayReadColor')
+    }
+
+    this.trayUnreadColor = () => {
+      return this.__value__('trayUnreadColor')
     }
 
     /* ****************************************/
