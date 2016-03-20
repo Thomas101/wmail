@@ -3,7 +3,7 @@
 const app = require('app')
 
 let quitting = app.makeSingleInstance(function (commandLine, workingDirectory) {
-  if (appMenuSelectors) {
+  if (typeof appMenuSelectors !== 'undefined') {
     appMenuSelectors.showWindow();
   }
   return true;
