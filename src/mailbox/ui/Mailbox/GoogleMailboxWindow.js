@@ -173,9 +173,6 @@ module.exports = React.createClass({
 
     // Bind events
     webview.addEventListener('dom-ready', () => {
-      // Cut out some google stuff we don't want
-      webview.insertCSS('.gb_9a { visibility: hidden !important; }')
-
       // Push the settings across
       webview.send('zoom-factor-set', { value: this.state.mailbox.zoomFactor })
       this.lastSetZoomFactor = this.state.mailbox.zoomFactor

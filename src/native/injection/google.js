@@ -17,4 +17,13 @@
       require('./contextMenu')(null)
     }
   })
+
+  // Inject some styles
+  const stylesheet = document.createElement('style')
+  stylesheet.innerHTML = `
+    a[href*="/SignOutOptions"] {
+      visibility: hidden !important;
+    }
+  `
+  document.head.appendChild(stylesheet)
 })()
