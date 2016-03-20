@@ -1,6 +1,7 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
 const { Toggle, Paper, RaisedButton } = require('material-ui')
+const ColorPicker = require('react-color').default
 const flux = {
   settings: require('../../stores/settings')
 }
@@ -39,12 +40,19 @@ module.exports = React.createClass({
     return {
       showTitlebar: store.showTitlebar(),
       showAppBadge: store.showAppBadge(),
-      showTrayIcon: store.showTrayIcon(),
       showAppMenu: store.showAppMenu(),
-      spellcheckerEnabled: store.spellcheckerEnabled(),
       sidebarEnabled: store.sidebarEnabled(),
+
+      showTrayIcon: store.showTrayIcon(),
+      showTrayUnreadCount: store.showTrayUnreadCount(),
+      trayReadColor: store.trayReadColor(),
+      trayUnreadColor: store.trayUnreadColor(),
+
+      spellcheckerEnabled: store.spellcheckerEnabled(),
+
       notificationsEnabled: store.notificationsEnabled(),
       notificationsSilent: store.notificationsSilent(),
+
       alwaysAskDownloadLocation: store.alwaysAskDownloadLocation(),
       defaultDownloadLocation: store.defaultDownloadLocation(),
       openLinksInBackground: store.openLinksInBackground()
@@ -52,7 +60,10 @@ module.exports = React.createClass({
   },
 
   getInitialState: function () {
-    return this.generateState()
+    return Object.assign(this.generateState(), {
+      showTrayReadColorPicker: false,
+      showTrayUnreadColorPicker: false
+    })
   },
 
   settingsChanged: function (store) {
@@ -96,14 +107,47 @@ module.exports = React.createClass({
             onToggle={(evt, toggled) => flux.settings.A.setShowAppBadge(toggled)} />
           <br />
           <Toggle
+            toggled={this.state.sidebarEnabled}
+            label='Show sidebar'
+            onToggle={(evt, toggled) => flux.settings.A.setEnableSidebar(toggled)} />
+        </Paper>
+        <Paper zDepth={1} style={{ padding: 15, marginBottom: 5 }}>
+          <Toggle
             toggled={this.state.showTrayIcon}
             label='Show tray icon'
             onToggle={(evt, toggled) => flux.settings.A.setShowTrayIcon(toggled)} />
           <br />
           <Toggle
-            toggled={this.state.sidebarEnabled}
-            label='Show sidebar'
-            onToggle={(evt, toggled) => flux.settings.A.setEnableSidebar(toggled)} />
+            toggled={this.state.showTrayUnreadCount}
+            label='Show unread count in tray'
+            disabled={!this.state.showTrayIcon}
+            onToggle={(evt, toggled) => flux.settings.A.setShowTrayUnreadCount(toggled)} />
+          <br />
+          <div>
+            <RaisedButton
+              label='Tray read colour'
+              disabled={!this.state.showTrayIcon}
+              onClick={() => this.setState({ showTrayReadColorPicker: true })} />
+            <ColorPicker
+              display={this.state.showTrayReadColorPicker}
+              type='swatches'
+              positionCSS={{left: 0}}
+              onClose={() => this.setState({ showTrayReadColorPicker: false })}
+              onChangeComplete={(col) => flux.settings.A.setTrayReadColor('#' + col.hex)} />
+          </div>
+          <br />
+          <div>
+            <RaisedButton
+              label='Tray unread colour'
+              disabled={!this.state.showTrayIcon}
+              onClick={() => this.setState({ showTrayUnreadColorPicker: true })} />
+            <ColorPicker
+              display={this.state.showTrayUnreadColorPicker}
+              type='swatches'
+              positionCSS={{left: 0}}
+              onClose={() => this.setState({ showTrayUnreadColorPicker: false })}
+              onChangeComplete={(col) => flux.settings.A.setTrayUnreadColor('#' + col.hex)} />
+          </div>
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
           <Toggle

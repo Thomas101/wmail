@@ -6,7 +6,6 @@ const Menu = remote.Menu
 const ipc = electron.ipcRenderer
 const NativeImage = remote.nativeImage
 const React = require('react')
-const path = require('path')
 const shallowCompare = require('react-addons-shallow-compare')
 
 module.exports = React.createClass({
@@ -15,8 +14,8 @@ module.exports = React.createClass({
   propTypes: {
     unreadCount: React.PropTypes.number.isRequired,
     showUnreadCount: React.PropTypes.bool.isRequired,
-    unreadColor: React.PropTypes.string.isRequired,
-    readColor: React.PropTypes.string.isRequired
+    unreadColor: React.PropTypes.string,
+    readColor: React.PropTypes.string
   },
 
   /* **************************************************************************/
@@ -24,10 +23,10 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   componentDidMount: function () {
-    const loader = new Image()
+    const loader = new window.Image()
     loader.src = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPiAgICA8cGF0aCBkPSJNMjAgNEg0Yy0xLjEgMC0xLjk5LjktMS45OSAyTDIgMThjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY2YzAtMS4xLS45LTItMi0yem0wIDE0SDRWOGw4IDUgOC01djEwem0tOC03TDQgNmgxNmwtOCA1eiIvPjwvc3ZnPg=='
     loader.onload = (e) => {
-      this.setState({ icon:loader })
+      this.setState({ icon: loader })
     }
   },
 
@@ -41,19 +40,15 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getDefaultProps: function() {
-    return {
-      unreadColor: '#C82018',
-      readColor: app.isDarkMode() ? '#FFFFFF' : '#000000'
-    }
-  },
+  getDefaultReadColor: function () { return app.isDarkMode() ? '#FFFFFF' : '#000000' },
+  getDefaultUnreadColor: function () { return '#C82018' },
 
-  getInitialState: function() {
+  getInitialState: function () {
     return { appTray: new Tray(null) }
   },
 
-  shouldComponentUpdate: function(nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState);
+  shouldComponentUpdate: function (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
   },
 
   /* **************************************************************************/
@@ -67,7 +62,7 @@ module.exports = React.createClass({
     const SIZE = 22 * window.devicePixelRatio
     const PADDING = SIZE * 0.15
     const CENTER = SIZE / 2
-    const COLOR = this.props.unreadCount ? this.props.unreadColor : this.props.readColor
+    const COLOR = this.props.unreadCount ? (this.props.unreadColor || this.getDefaultUnreadColor()) : (this.props.readColor || this.getDefaultReadColor())
 
     const canvas = document.createElement('canvas')
     canvas.width = SIZE
@@ -102,28 +97,28 @@ module.exports = React.createClass({
     ctx.lineWidth = window.devicePixelRatio * 1.1
     ctx.strokeStyle = COLOR
     ctx.stroke()
-    
-    const pngData = NativeImage.createFromDataURL(canvas.toDataURL("image/png")).toPng()
+
+    const pngData = NativeImage.createFromDataURL(canvas.toDataURL('image/png')).toPng()
     return NativeImage.createFromBuffer(pngData, window.devicePixelRatio)
   },
 
   /**
   * @return the tooltip string for the tray icon
   */
-  renderTooltip: function() {
+  renderTooltip: function () {
     return this.props.unreadCount ? this.props.unreadCount + ' unread mail' : 'No unread mail'
   },
 
   /**
   * @return the context menu for the tray icon
   */
-  renderContextMenu: function() {
+  renderContextMenu: function () {
     const contextMenu = Menu.buildFromTemplate([
       { label: this.renderTooltip(), enabled: false },
       { type: 'separator' },
-      { label: 'Focus Windows', click:(e) => ipc.send('focus-app') },
+      { label: 'Focus Windows', click: (e) => ipc.send('focus-app') },
       { type: 'separator' },
-      { label: 'Quit' }
+      { label: 'Quit', click: (e) => ipc.send('quit-app') }
     ])
     return contextMenu
   },

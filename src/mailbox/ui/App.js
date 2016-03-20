@@ -7,7 +7,6 @@ const flux = {
   settings: require('../stores/settings')
 }
 const AppContent = require('./AppContent')
-const path = window.nativeRequire('path')
 const ipc = window.nativeRequire('electron').ipcRenderer
 const remote = window.nativeRequire('remote')
 const app = remote.require('app')
@@ -87,7 +86,10 @@ module.exports = React.createClass({
     return {
       messagesUnreadCount: flux.mailbox.S.getState().totalUnreadCountForAppBadge(),
       showAppBadge: settingsStore.showAppBadge(),
-      showTrayIcon: settingsStore.showTrayIcon()
+      showTrayIcon: settingsStore.showTrayIcon(),
+      showTrayUnreadCount: settingsStore.showTrayUnreadCount(),
+      trayReadColor: settingsStore.trayReadColor(),
+      trayUnreadColor: settingsStore.trayUnreadColor()
     }
   },
 
@@ -105,7 +107,10 @@ module.exports = React.createClass({
   settingsChanged: function (store) {
     this.setState({
       showAppBadge: store.showAppBadge(),
-      showTrayIcon: store.showTrayIcon()
+      showTrayIcon: store.showTrayIcon(),
+      showTrayUnreadCount: store.showTrayUnreadCount(),
+      trayReadColor: store.trayReadColor(),
+      trayUnreadColor: store.trayUnreadColor()
     })
   },
 
@@ -270,13 +275,14 @@ module.exports = React.createClass({
       app.dock.setBadge(badgeString)
     }
 
-    //unreadColor="#FF000" readColor="#000000"
     return (
       <div>
         <AppContent />
         {!this.state.showTrayIcon ? undefined : <Tray
           unreadCount={this.state.messagesUnreadCount}
-          showUnreadCount={true} />}
+          showUnreadCount={this.state.showTrayUnreadCount}
+          unreadColor={this.state.trayUnreadColor}
+          readColor={this.state.readColor} />}
       </div>
     )
   }
