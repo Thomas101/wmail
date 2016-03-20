@@ -9,11 +9,6 @@ const React = require('react')
 const path = require('path')
 const shallowCompare = require('react-addons-shallow-compare')
 
-const TEMPLATE_SIZE = 22 * window.devicePixelRatio
-const CURRENT_PATH = path.dirname(window.location.href.replace('file://', ''))
-const IMAGE_MULTIPLIER = window.devicePixelRatio === 1 ? '' : '@' + window.devicePixelRatio + 'x'
-const TEMPLATE_PATH = path.join(CURRENT_PATH, 'icons', `tray_22${IMAGE_MULTIPLIER}Template.png`)
-
 module.exports = React.createClass({
   displayName: 'Tray',
 
@@ -29,25 +24,11 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   componentDidMount: function () {
-    // Load the resources
-    const template = new Image()
-    template.src = TEMPLATE_PATH
-    template.onload = () => {
-      this.resourcesDidLoad(template)
+    const loader = new Image()
+    loader.src = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPiAgICA8cGF0aCBkPSJNMjAgNEg0Yy0xLjEgMC0xLjk5LjktMS45OSAyTDIgMThjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY2YzAtMS4xLS45LTItMi0yem0wIDE0SDRWOGw4IDUgOC01djEwem0tOC03TDQgNmgxNmwtOCA1eiIvPjwvc3ZnPg=='
+    loader.onload = (e) => {
+      this.setState({ icon:loader })
     }
-  },
-
-  /**
-  * Handles the resources loading
-  * @param template: the template to use
-  */
-  resourcesDidLoad: function(template) {
-    // Build the tray
-    const tray = new Tray(null)
-    this.setState({
-      appTray: tray,
-      template: template
-    })
   },
 
   componentWillUnmount: function () {
@@ -68,7 +49,7 @@ module.exports = React.createClass({
   },
 
   getInitialState: function() {
-    return { template: null, appTray: null }
+    return { appTray: new Tray(null) }
   },
 
   shouldComponentUpdate: function(nextProps, nextState) {
@@ -83,39 +64,44 @@ module.exports = React.createClass({
   * @return the nativeImage for the tray
   */
   renderImage: function () {
+    const SIZE = 22 * window.devicePixelRatio
+    const PADDING = SIZE * 0.15
+    const CENTER = SIZE / 2
+    const COLOR = this.props.unreadCount ? this.props.unreadColor : this.props.readColor
+
     const canvas = document.createElement('canvas')
-    canvas.width = TEMPLATE_SIZE
-    canvas.height = TEMPLATE_SIZE
+    canvas.width = SIZE
+    canvas.height = SIZE
 
     const ctx = canvas.getContext('2d')
-    ctx.fillStyle = this.props.unreadCount ? this.props.unreadColor : this.props.readColor
-    ctx.fillRect(0, 0, TEMPLATE_SIZE, TEMPLATE_SIZE)
-    ctx.globalCompositeOperation = 'destination-atop'
-    ctx.drawImage(this.state.template, 0, 0, TEMPLATE_SIZE, TEMPLATE_SIZE)
 
-
-
-    /*var context = canvas.getContext('2d');
-      var centerX = canvas.width / 2;
-      var centerY = canvas.height / 2;
-      var radius = w/2;
-
-      context.beginPath();
-      context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-      context.fillStyle = 'green';
-      context.fill();
-      context.lineWidth = 5;
-      context.strokeStyle = '#003300';
-      context.stroke();*/
-
-    if (this.props.showUnreadCount && this.props.unreadCount) {
-      ctx.globalCompositeOperation = 'source-over'
-      ctx.fillStyle = '#0000FF'
-      ctx.font = TEMPLATE_SIZE + 'px Arial'
+    // Count
+    if (this.props.showUnreadCount && this.props.unreadCount && this.props.unreadCount < 99) {
+      ctx.fillStyle = COLOR
       ctx.textAlign = 'center'
-      ctx.fillText("1",TEMPLATE_SIZE/2, TEMPLATE_SIZE)
-      //ctx.fillRect(TEMPLATE_SIZE / 2, TEMPLATE_SIZE / 2, TEMPLATE_SIZE / 2, TEMPLATE_SIZE / 2)
+      if (this.props.unreadCount < 10) {
+        ctx.font = (SIZE * 0.5) + 'px Helvetica'
+        ctx.fillText(this.props.unreadCount, CENTER, CENTER + (SIZE * 0.20))
+      } else {
+        ctx.font = (SIZE * 0.4) + 'px Helvetica'
+        ctx.fillText(this.props.unreadCount, CENTER, CENTER + (SIZE * 0.15))
+      }
+    } else {
+      const ICON_SIZE = SIZE * 0.5
+      const POS = (SIZE - ICON_SIZE) / 2
+      ctx.fillStyle = COLOR
+      ctx.fillRect(0, 0, SIZE, SIZE)
+      ctx.globalCompositeOperation = 'destination-atop'
+      ctx.drawImage(this.state.icon, POS, POS, ICON_SIZE, ICON_SIZE)
     }
+
+    // Outer circle
+    ctx.globalCompositeOperation = 'source-over'
+    ctx.beginPath()
+    ctx.arc(CENTER, CENTER, (SIZE / 2) - PADDING, 0, 2 * Math.PI, false)
+    ctx.lineWidth = window.devicePixelRatio * 1.1
+    ctx.strokeStyle = COLOR
+    ctx.stroke()
     
     const pngData = NativeImage.createFromDataURL(canvas.toDataURL("image/png")).toPng()
     return NativeImage.createFromBuffer(pngData, window.devicePixelRatio)
@@ -143,8 +129,7 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    if (!this.state.template || !this.state.appTray) { return false }
-
+    if (!this.state.appTray || !this.state.icon) { return false }
     this.state.appTray.setImage(this.renderImage())
     this.state.appTray.setToolTip(this.renderTooltip())
     this.state.appTray.setContextMenu(this.renderContextMenu())
