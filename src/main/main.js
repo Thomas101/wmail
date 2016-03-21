@@ -1,6 +1,18 @@
 'use strict'
 
 const app = require('app')
+
+let quitting = app.makeSingleInstance(function (commandLine, workingDirectory) {
+  if (typeof appMenuSelectors !== 'undefined') {
+    appMenuSelectors.showWindow();
+  }
+  return true;
+});
+if (quitting) {
+  app.quit();
+  return;
+}
+
 const AppAnalytics = require('./AppAnalytics')
 const AppDirectory = require('appdirectory')
 const Storage = require('dom-storage')
