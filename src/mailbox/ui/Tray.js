@@ -40,7 +40,7 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getDefaultReadColor: function () { return app.isDarkMode() ? '#FFFFFF' : '#000000' },
+  getDefaultReadColor: function () { return process.platform === 'darwin' && app.isDarkMode() ? '#FFFFFF' : '#000000' },
   getDefaultUnreadColor: function () { return '#C82018' },
 
   getInitialState: function () {
