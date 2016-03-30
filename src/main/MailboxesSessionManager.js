@@ -108,7 +108,9 @@ class MailboxesSessionManager {
     })
     item.on('done', (e, state) => {
       this.downloadFinished(id)
-      this.mailboxWindow.downloadCompleted(savedLocation.path, savedLocation.name)
+      if (state === 'completed') {
+        this.mailboxWindow.downloadCompleted(savedLocation.path, savedLocation.name)
+      }
     })
   }
 
