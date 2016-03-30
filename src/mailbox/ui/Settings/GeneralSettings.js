@@ -110,6 +110,11 @@ module.exports = React.createClass({
             toggled={this.state.sidebarEnabled}
             label='Show sidebar'
             onToggle={(evt, toggled) => flux.settings.A.setEnableSidebar(toggled)} />
+          <br />
+          <Toggle
+            toggled={this.state.openLinksInBackground}
+            label='Open links in background'
+            onToggle={(evt, toggled) => flux.settings.A.setOpenLinksInBackground(toggled)} />
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginBottom: 5 }}>
           <Toggle
@@ -154,11 +159,6 @@ module.exports = React.createClass({
             toggled={this.state.spellcheckerEnabled}
             label={(<span><span>Spell-checker</span> <small>(Experimental, requires restart)</small></span>)}
             onToggle={(evt, toggled) => flux.settings.A.setEnableSpellchecker(toggled)} />
-          <br />
-          <Toggle
-            toggled={this.state.openLinksInBackground}
-            label='Open links in background'
-            onToggle={(evt, toggled) => flux.settings.A.setOpenLinksInBackground(toggled)} />
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
           <Toggle
