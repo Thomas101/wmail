@@ -175,7 +175,11 @@ class WMailWindow extends EventEmitter {
   * Toggles fullscreen mode
   */
   toggleFullscreen () {
-    this.window.setFullScreen(!this.window.isFullScreen())
+    if (this.window.isFullScreenable()) {
+      this.window.setFullScreen(!this.window.isFullScreen())
+    } else {
+      this.window.maximize(!this.window.isMaximized())
+    }
   }
 
   /**

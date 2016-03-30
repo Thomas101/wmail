@@ -38,6 +38,7 @@ class MailboxesWindow extends WMailWindow {
     return Object.assign(super.defaultWindowPreferences(), {
       minWidth: 955,
       minHeight: 400,
+      fullscreenable: true,
       titleBarStyle: this.appSettings.hasTitlebar ? 'default' : 'hidden',
       title: 'WMail',
       webPreferences: {
