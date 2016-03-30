@@ -2,6 +2,7 @@ const flux = {
   mailbox: require('../stores/mailbox'),
   settings: require('../stores/settings')
 }
+const constants = require('shared/constants')
 
 class UnreadNotifications {
 
@@ -11,6 +12,7 @@ class UnreadNotifications {
 
   constructor () {
     this.__s_mailboxesUpdated = (store) => this.mailboxesUpdated(store)
+    this.__constructTime__ = new Date().getTime()
   }
 
   /**
@@ -37,12 +39,17 @@ class UnreadNotifications {
   */
   mailboxesUpdated (store) {
     if (flux.settings.S.getState().notificationsEnabled() === false) { return }
+    const firstRun = new Date().getTime() - this.__constructTime__ < constants.GMAIL_NOTIFICATION_FIRST_RUN_GRACE_MS
+
     store.all().forEach((mailbox) => {
       if (!mailbox.showNotifications) { return }
       const unread = mailbox.google.unreadUnotifiedMessages
 
       for (var messageId in unread) {
-        this.showNotification(mailbox, unread[messageId].message)
+        if (!firstRun) {
+          this.showNotification(mailbox, unread[messageId].message)
+        }
+
         // We're in a dispatch cycle, so requeue this in it's own context
         setTimeout(function () {
           flux.mailbox.A.setGoogleUnreadNotificationShown(mailbox.id, messageId)
