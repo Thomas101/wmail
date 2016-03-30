@@ -13,6 +13,7 @@ module.exports = React.createClass({
 
   propTypes: {
     unreadCount: React.PropTypes.number.isRequired,
+    unreadMessages: React.PropTypes.object.isRequired,
     showUnreadCount: React.PropTypes.bool.isRequired,
     unreadColor: React.PropTypes.string,
     readColor: React.PropTypes.string
@@ -113,14 +114,48 @@ module.exports = React.createClass({
   * @return the context menu for the tray icon
   */
   renderContextMenu: function () {
-    const contextMenu = Menu.buildFromTemplate([
+    // Build the unread items up
+    const unreadItems = Object.keys(this.props.unreadMessages)
+      .reduce((acc, mailboxId) => {
+        const messages = Object.keys(this.props.unreadMessages[mailboxId])
+          .map((id) => this.props.unreadMessages[mailboxId][id])
+        return acc.concat(messages)
+      }, [])
+      .filter((info) => info.message !== undefined)
+      .sort((a, b) => {
+        return parseInt(b.message.internalDate) - parseInt(a.message.internalDate)
+      })
+      .slice(0, 5)
+      .map((info) => {
+        const subject = (info.message.payload.headers.find((h) => h.name === 'Subject') || {}).value || 'No Subject'
+        const fromEmail = (info.message.payload.headers.find((h) => h.name === 'From') || {}).value || ''
+        const fromEmailMatch = fromEmail.match('(.+)\<(.+)@(.+)\>$')
+        if (fromEmailMatch) {
+          return fromEmailMatch[1].trim() + ' : ' + subject
+        } else {
+          return fromEmail + ' : ' + subject
+        }
+      })
+      .map((str) => {
+        return { label: str, enabled: false }
+      })
+
+    // Build the template
+    let template = [
       { label: this.renderTooltip(), enabled: false },
-      { type: 'separator' },
-      { label: 'Focus Windows', click: (e) => ipc.send('focus-app') },
+      { type: 'separator' }
+    ]
+    if (unreadItems.length) {
+      template = template.concat(unreadItems)
+      template.push({ type: 'separator' })
+    }
+    template = template.concat([
+      { label: 'Focus', click: (e) => ipc.send('focus-app') },
       { type: 'separator' },
       { label: 'Quit', click: (e) => ipc.send('quit-app') }
     ])
-    return contextMenu
+
+    return Menu.buildFromTemplate(template)
   },
 
   render: function () {

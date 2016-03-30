@@ -83,8 +83,10 @@ module.exports = React.createClass({
 
   getInitialState: function () {
     const settingsStore = flux.settings.S.getState()
+    const mailboxStore = flux.mailbox.S.getState()
     return {
-      messagesUnreadCount: flux.mailbox.S.getState().totalUnreadCountForAppBadge(),
+      messagesUnreadCount: mailboxStore.totalUnreadCountForAppBadge(),
+      unreadMessages: mailboxStore.unreadMessagesForAppBadge(),
       showAppBadge: settingsStore.showAppBadge(),
       showTrayIcon: settingsStore.showTrayIcon(),
       showTrayUnreadCount: settingsStore.showTrayUnreadCount(),
@@ -95,7 +97,8 @@ module.exports = React.createClass({
 
   mailboxesChanged: function (store) {
     this.setState({
-      messagesUnreadCount: store.totalUnreadCountForAppBadge()
+      messagesUnreadCount: store.totalUnreadCountForAppBadge(),
+      unreadMessages: store.unreadMessagesForAppBadge()
     })
     ipc.send('mailboxes-changed', {
       mailboxes: store.all().map((mailbox) => {
@@ -278,11 +281,14 @@ module.exports = React.createClass({
     return (
       <div>
         <AppContent />
-        {!this.state.showTrayIcon ? undefined : <Tray
-          unreadCount={this.state.messagesUnreadCount}
-          showUnreadCount={this.state.showTrayUnreadCount}
-          unreadColor={this.state.trayUnreadColor}
-          readColor={this.state.readColor} />}
+        {!this.state.showTrayIcon ? undefined : (
+          <Tray
+            unreadMessages={this.state.unreadMessages}
+            unreadCount={this.state.messagesUnreadCount}
+            showUnreadCount={this.state.showTrayUnreadCount}
+            unreadColor={this.state.trayUnreadColor}
+            readColor={this.state.readColor} />
+          )}
       </div>
     )
   }

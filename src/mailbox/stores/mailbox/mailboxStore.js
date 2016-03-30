@@ -99,6 +99,24 @@ class MailboxStore {
       }, 0)
     }
 
+    /**
+    * @return all the unread messages for the app badge
+    */
+    this.unreadMessagesForAppBadge = () => {
+      return this.all().reduce((acc, mailbox) => {
+        if (mailbox && mailbox.unreadCountsTowardsAppUnread) {
+          if (mailbox.google) {
+            acc[mailbox.id] = Object.assign({}, mailbox.google.unreadMessages)
+          }
+        }
+        return acc
+      }, {})
+    }
+
+    /* ****************************************/
+    // Listeners
+    /* ****************************************/
+
     this.bindListeners({
       handleLoad: actions.LOAD,
       handleCreate: actions.CREATE,
