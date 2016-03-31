@@ -126,16 +126,19 @@ module.exports = React.createClass({
             <Toggle
               defaultToggled={selected.showUnreadBadge}
               label='Show unread badge'
+              labelPosition='right'
               onToggle={this.handleShowUnreadBadgeChange} />
             <br />
             <Toggle
               defaultToggled={selected.unreadCountsTowardsAppUnread}
               label='Add unread messages to app unread count'
+              labelPosition='right'
               onToggle={this.handleUnreadCountsTowardsAppUnread} />
             <br />
             <Toggle
               defaultToggled={selected.showNotifications}
               label='Show notifications'
+              labelPosition='right'
               onToggle={this.handleShowNotificationsChange} />
             <br />
             <RaisedButton

@@ -1,5 +1,9 @@
 const React = require('react')
-const { Dialog, Tabs, Tab, RaisedButton, Divider } = require('material-ui')
+const {
+  Dialog, RaisedButton, FlatButton, Divider,
+  Tabs, Tab, 
+  Styles: { Colors }
+} = require('material-ui')
 const GeneralSettings = require('./GeneralSettings')
 const AccountSettings = require('./AccountSettings')
 const AdvancedSettings = require('./AdvancedSettings')
@@ -102,15 +106,50 @@ module.exports = React.createClass({
       )
     }
 
+    const tabInfo = [
+      { label: 'General', value: 'general'},
+      { label: 'Accounts', value: 'accounts'},
+      { label: 'Advanced', value: 'advanced'}
+    ]
+    const heading = (
+      <div style={{ display: 'flex', flexDirection: 'row', alignContent: 'stretch' }}>
+        {tabInfo.map(({label, value}) => {
+          return (
+            <FlatButton
+              key={value}
+              label={label}
+              style={{
+                height: 50,
+                borderRadius: 0,
+                flex: 1,
+                borderBottomWidth: 2,
+                borderBottomStyle: 'solid',
+                borderBottomColor: this.state.currentTab === value ? Colors.redA200 : 'transparent'
+              }}
+              labelStyle={{
+                color: this.state.currentTab === value ? Colors.white : Colors.lightBlue100
+              }}
+              backgroundColor={Colors.lightBlue600}
+              hoverColor={Colors.lightBlue600}
+              rippleColor={Colors.lightBlue900}
+              onClick={() => this.setState({ currentTab: value })}/>
+          )
+        })}
+      </div>
+    )
+
     return (
       <Dialog
         modal={false}
+        title={heading}
         actions={buttons}
         open={this.props.open}
         bodyStyle={{ padding: 0 }}
         autoScrollBodyContent
         onRequestClose={this.props.onRequestClose}>
         <Tabs
+          inkBarStyle={{ display: 'none' }}
+          tabItemContainerStyle={{ display: 'none' }}
           value={this.state.currentTab}
           onChange={this.handleTabChange}
           contentContainerStyle={{ padding: 24 }}>
