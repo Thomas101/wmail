@@ -391,14 +391,10 @@ class GoogleActions {
 
         // Report that we've seen previously known messages
         const now = new Date().getTime()
-        messageIds.seen.forEach((messageId) => {
-          mailboxActions.updateGoogleUnread(mailboxId, messageId, { seen: now })
-        })
+        mailboxActions.updateGoogleUnread(mailboxId, messageIds, { seen: now })
 
         // Mark auto-read thread items as seen and reported
-        messageIds.autoread.forEach((messageId) => {
-          mailboxActions.setGoogleUnreadNotificationShown(mailboxId, messageId)
-        })
+        mailboxActions.setGoogleUnreadNotificationsShown(mailboxId, messageIds.autoread)
 
         return Promise.resolve(messageIds.unseen)
       })

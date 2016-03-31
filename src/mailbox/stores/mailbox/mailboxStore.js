@@ -131,7 +131,7 @@ class MailboxStore {
 
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
       handleUpdateGoogleUnread: actions.UPDATE_GOOGLE_UNREAD,
-      handleSetGoogleUnreadNotificationShown: actions.SET_GOOGLE_UNREAD_NOTIFICATION_SHOWN
+      handleSetGoogleUnreadNotificationsShown: actions.SET_GOOGLE_UNREAD_NOTIFICATIONS_SHOWN
     })
   }
 
@@ -276,25 +276,27 @@ class MailboxStore {
   /**
   * Merges the google unread items and removes any flags for updated ites
   * @param id: the id of the mailbox
-  * @param messageId: the id of the message
+  * @param messageIds: the ids of the messages
   * @param updates: the updates to apply
   */
-  handleUpdateGoogleUnread ({id, messageId, updates}) {
+  handleUpdateGoogleUnread ({id, messageIds, updates}) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleUnreadMessages = data.googleUnreadMessages || {}
 
     // Add the update
     const now = new Date().getTime()
-    if (data.googleUnreadMessages[messageId]) {
-      data.googleUnreadMessages[messageId] = Object.assign(
-        data.googleUnreadMessages[messageId],
-        { seen: now },
-        updates)
-    } else {
-      data.googleUnreadMessages[messageId] = Object.assign({
-        recordCreated: now, seen: now
-      }, updates)
-    }
+    messageIds.forEach((messageId) => {
+      if (data.googleUnreadMessages[messageId]) {
+        data.googleUnreadMessages[messageId] = Object.assign(
+          data.googleUnreadMessages[messageId],
+          { seen: now },
+          updates)
+      } else {
+        data.googleUnreadMessages[messageId] = Object.assign({
+          recordCreated: now, seen: now
+        }, updates)
+      }
+    })
 
     // Clean up old records
     data.googleUnreadMessages = Object.keys(data.googleUnreadMessages).reduce((acc, messageId) => {
@@ -313,15 +315,17 @@ class MailboxStore {
   * @param id: the id of the mailbox
   * @param messageId: the id of the message to mark
   */
-  handleSetGoogleUnreadNotificationShown ({id, messageId}) {
+  handleSetGoogleUnreadNotificationsShown ({id, messageIds}) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleUnreadMessages = data.googleUnreadMessages || {}
 
     const now = new Date().getTime()
-    if (data.googleUnreadMessages[messageId]) {
-      data.googleUnreadMessages[messageId].notified = now
-      data.googleUnreadMessages[messageId].seen = now
-    }
+    messageIds.forEach((messageId) => {
+      if (data.googleUnreadMessages[messageId]) {
+        data.googleUnreadMessages[messageId].notified = now
+        data.googleUnreadMessages[messageId].seen = now
+      }
+    })
 
     // Clean up old records
     data.googleUnreadMessages = Object.keys(data.googleUnreadMessages).reduce((acc, messageId) => {

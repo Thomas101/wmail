@@ -1,7 +1,7 @@
 const alt = require('../alt')
-// const Mailbox = require('./Mailbox')
 
 class MailboxActions {
+
   /* **************************************************************************/
   // Loading
   /* **************************************************************************/
@@ -49,17 +49,23 @@ class MailboxActions {
   /**
   * Updates the google unread threads
   * @param id: the id of the mailbox
-  * @param messageId: the id of the message
+  * @param messageIdsOrMessageId: the ids of the messages or a single id
   * @param updates: the updates to merge in
   */
-  updateGoogleUnread (id, messageId, updates) { return { id: id, messageId: messageId, updates: updates } }
+  updateGoogleUnread (id, messageIdsOrMessageId, updates) {
+    if (Array.isArray(messageIdsOrMessageId)) {
+      return { id: id, messageIds: messageIdsOrMessageId, updates: updates }
+    } else {
+      return { id: id, messageIds: [messageIdsOrMessageId], updates: updates }
+    }
+  }
 
   /**
   * Sets that a thread has sent a notification
   * @param id: the id of the mailbox
-  * @param messageId: the id of the message
+  * @param messageIds: the ids of the messages
   */
-  setGoogleUnreadNotificationShown (id, messageId) { return { id: id, messageId: messageId } }
+  setGoogleUnreadNotificationsShown (id, messageIds) { return { id: id, messageIds: messageIds } }
 
   /* **************************************************************************/
   // Avatar
