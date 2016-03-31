@@ -11,12 +11,12 @@ module.exports = React.createClass({
   // Events
   /* **************************************************************************/
 
-  handleAddInbox: function (evt) {
+  handleAddInbox (evt) {
     evt.preventDefault()
     flux.google.A.authInboxMailbox()
   },
 
-  handleAddGmail: function (evt) {
+  handleAddGmail (evt) {
     evt.preventDefault()
     flux.google.A.authGmailMailbox()
   },
@@ -28,7 +28,7 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render () {
     return (
       <div className='welcome'>
         <h1>Add your first mailbox</h1>

@@ -1,9 +1,14 @@
 import './accountSettings.less'
-
 const React = require('react')
-const { SelectField, MenuItem, Paper, Toggle, Styles, RaisedButton } = require('material-ui')
+const {
+  SelectField, MenuItem,
+  Paper, Toggle, RaisedButton,
+  Styles: { Colors }
+} = require('material-ui')
+const ColorPicker = require('react-color').default
 const GoogleInboxAccountSettings = require('./Accounts/GoogleInboxAccountSettings')
 const GoogleMailAccountSettings = require('./Accounts/GoogleMailAccountSettings')
+const { Row, Col } = require('../Flexbox')
 const flux = {
   mailbox: require('../../stores/mailbox')
 }
@@ -17,11 +22,11 @@ module.exports = React.createClass({
   // Lifecycle
   /* **************************************************************************/
 
-  componentDidMount: function () {
+  componentDidMount () {
     flux.mailbox.S.listen(this.mailboxesChanged)
   },
 
-  componentWillUnmount: function () {
+  componentWillUnmount () {
     flux.mailbox.S.unlisten(this.mailboxesChanged)
   },
 
@@ -29,16 +34,17 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getInitialState: function () {
+  getInitialState () {
     const store = flux.mailbox.S.getState()
     const all = store.all()
     return {
       mailboxes: all,
-      selected: all[0]
+      selected: all[0],
+      showAccountColorPicker: false
     }
   },
 
-  mailboxesChanged: function (store) {
+  mailboxesChanged (store) {
     const all = store.all()
     if (this.state.selected) {
       this.setState({ mailboxes: all, selected: store.get(this.state.selected.id) })
@@ -51,29 +57,35 @@ module.exports = React.createClass({
   // User Interaction
   /* **************************************************************************/
 
-  handleAccountChange: function (evt, index, mailboxId) {
+  handleAccountChange (evt, index, mailboxId) {
     this.setState({ selected: flux.mailbox.S.getState().get(mailboxId) })
   },
 
-  handleShowUnreadBadgeChange: function (evt, toggled) {
+  handleShowUnreadBadgeChange (evt, toggled) {
     flux.mailbox.A.update(this.state.selected.id, {
       showUnreadBadge: toggled
     })
   },
 
-  handleShowNotificationsChange: function (evt, toggled) {
+  handleShowNotificationsChange (evt, toggled) {
     flux.mailbox.A.update(this.state.selected.id, {
       showNotifications: toggled
     })
   },
 
-  handleUnreadCountsTowardsAppUnread: function (evt, toggled) {
+  handleUnreadCountsTowardsAppUnread (evt, toggled) {
     flux.mailbox.A.update(this.state.selected.id, {
       unreadCountsTowardsAppUnread: toggled
     })
   },
 
-  handleCustomAvatarChange: function (evt) {
+  handleAccountColorChange (col) {
+    flux.mailbox.A.update(this.state.selected.id, {
+      color: '#' + col.hex
+    })
+  },
+
+  handleCustomAvatarChange (evt) {
     if (!evt.target.files[0]) { return }
 
     // Load the image
@@ -109,7 +121,7 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render () {
     const selected = this.state.selected
     let content
     let avatarSrc = ''
@@ -123,34 +135,49 @@ module.exports = React.createClass({
       content = (
         <div>
           <Paper zDepth={1} style={{ padding: 15, marginBottom: 5 }}>
-            <Toggle
-              defaultToggled={selected.showUnreadBadge}
-              label='Show unread badge'
-              labelPosition='right'
-              onToggle={this.handleShowUnreadBadgeChange} />
-            <br />
-            <Toggle
-              defaultToggled={selected.unreadCountsTowardsAppUnread}
-              label='Add unread messages to app unread count'
-              labelPosition='right'
-              onToggle={this.handleUnreadCountsTowardsAppUnread} />
-            <br />
-            <Toggle
-              defaultToggled={selected.showNotifications}
-              label='Show notifications'
-              labelPosition='right'
-              onToggle={this.handleShowNotificationsChange} />
-            <br />
-            <RaisedButton
-              label='Change Account Icon'
-              className='file-button'
-              style={{ marginRight: 15 }}>
-              <input
-                type='file'
-                accept='image/*'
-                onChange={this.handleCustomAvatarChange}
-                defaultValue={selected.customAvatar} />
-            </RaisedButton>
+            <Row>
+              <Col sm={6}>
+                <Toggle
+                  defaultToggled={selected.showUnreadBadge}
+                  label='Show unread badge'
+                  labelPosition='right'
+                  onToggle={this.handleShowUnreadBadgeChange} />
+                <Toggle
+                  defaultToggled={selected.unreadCountsTowardsAppUnread}
+                  label='Add unread messages to app unread count'
+                  labelPosition='right'
+                  onToggle={this.handleUnreadCountsTowardsAppUnread} />
+                <Toggle
+                  defaultToggled={selected.showNotifications}
+                  label='Show notifications'
+                  labelPosition='right'
+                  onToggle={this.handleShowNotificationsChange} />
+              </Col>
+              <Col sm={6}>
+                <RaisedButton
+                  label='Change Account Icon'
+                  className='file-button'
+                  style={{ marginRight: 15 }}>
+                  <input
+                    type='file'
+                    accept='image/*'
+                    onChange={this.handleCustomAvatarChange}
+                    defaultValue={selected.customAvatar} />
+                </RaisedButton>
+                <br />
+                <div>
+                  <RaisedButton
+                    label='Account Color'
+                    onClick={() => this.setState({ showAccountColorPicker: true })} />
+                  <ColorPicker
+                    display={this.state.showAccountColorPicker}
+                    type='swatches'
+                    positionCSS={{left: 0}}
+                    onClose={() => this.setState({ showAccountColorPicker: false })}
+                    onChangeComplete={this.handleAccountColorChange} />
+                </div>
+              </Col>
+            </Row>
           </Paper>
           {accountSpecific}
         </div>
@@ -179,8 +206,8 @@ module.exports = React.createClass({
               <SelectField
                 value={selected ? selected.id : undefined}
                 className='picker'
-                style={{ width: '100%' }}
-                labelStyle={{ color: Styles.Colors.redA200 }}
+                fullWidth
+                labelStyle={{ color: Colors.redA200 }}
                 onChange={this.handleAccountChange}>
                 {
                   this.state.mailboxes.map((m) => {

@@ -30,7 +30,7 @@ module.exports = React.createClass({
   // Lifecycle
   /* **************************************************************************/
 
-  componentDidMount: function () {
+  componentDidMount () {
     this.forceFocusTO = null
 
     this.unreadNotifications = new UnreadNotifications()
@@ -56,7 +56,7 @@ module.exports = React.createClass({
     ipc.on('download-completed', this.downloadCompleted)
   },
 
-  componentWillUnmount: function () {
+  componentWillUnmount () {
     this.unreadNotifications.stop()
 
     flux.mailbox.S.unlisten(this.mailboxesChanged)
@@ -81,7 +81,7 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getInitialState: function () {
+  getInitialState () {
     const settingsStore = flux.settings.S.getState()
     const mailboxStore = flux.mailbox.S.getState()
     return {
@@ -95,7 +95,7 @@ module.exports = React.createClass({
     }
   },
 
-  mailboxesChanged: function (store) {
+  mailboxesChanged (store) {
     this.setState({
       messagesUnreadCount: store.totalUnreadCountForAppBadge(),
       unreadMessages: store.unreadMessagesForAppBadge()
@@ -107,7 +107,7 @@ module.exports = React.createClass({
     })
   },
 
-  settingsChanged: function (store) {
+  settingsChanged (store) {
     this.setState({
       showAppBadge: store.showAppBadge(),
       showTrayIcon: store.showTrayIcon(),
@@ -117,7 +117,7 @@ module.exports = React.createClass({
     })
   },
 
-  shouldComponentUpdate: function (nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState)
   },
 
@@ -130,7 +130,7 @@ module.exports = React.createClass({
   * @param evt: the event that fired
   * @param req: the request that came through
   */
-  ipcChangeActiveMailbox: function (evt, req) {
+  ipcChangeActiveMailbox (evt, req) {
     flux.mailbox.A.changeActive(req.mailboxId)
   },
 
@@ -139,7 +139,7 @@ module.exports = React.createClass({
   * @param evt: the event that fired
   * @param req: the request that came through
   */
-  ipcAuthMailboxSuccess: function (evt, req) {
+  ipcAuthMailboxSuccess (evt, req) {
     flux.google.A.authMailboxSuccess(req)
   },
 
@@ -148,7 +148,7 @@ module.exports = React.createClass({
   * @param evt: the event that fired
   * @param req: the request that came through
   */
-  ipcAuthMailboxFailure: function (evt, req) {
+  ipcAuthMailboxFailure (evt, req) {
     // Check to see if the user intentially did this
     if (req.errorMessage.toLowerCase().indexOf('user') === 0) {
       return
@@ -162,7 +162,7 @@ module.exports = React.createClass({
   * @param evt: the event that fired
   * @param req: the request that came through
   */
-  ipcZoomIn: function (evt, req) {
+  ipcZoomIn (evt, req) {
     const store = flux.mailbox.S.getState()
     const mailboxId = store.activeId()
     if (mailboxId) {
@@ -177,7 +177,7 @@ module.exports = React.createClass({
   * @param evt: the event that fired
   * @param req: the request that came through
   */
-  ipcZoomOut: function (evt, req) {
+  ipcZoomOut (evt, req) {
     const store = flux.mailbox.S.getState()
     const mailboxId = store.activeId()
     if (mailboxId) {
@@ -192,7 +192,7 @@ module.exports = React.createClass({
   * @param evt: the event that fired
   * @param req: the request that came through
   */
-  ipcZoomReset: function (evt, req) {
+  ipcZoomReset (evt, req) {
     const mailboxId = flux.mailbox.S.getState().activeId()
     if (mailboxId) {
       flux.mailbox.A.update(mailboxId, { zoomFactor: 1.0 })
@@ -203,7 +203,7 @@ module.exports = React.createClass({
   * Toggles the sidebar
   * @param evt: the event that fired
   */
-  toggleSidebar: function (evt) {
+  toggleSidebar (evt) {
     flux.settings.A.toggleSidebar()
   },
 
@@ -211,7 +211,7 @@ module.exports = React.createClass({
   * Toggles the app menu
   * @param evt: the event that fired
   */
-  toggleAppMenu: function (evt) {
+  toggleAppMenu (evt) {
     flux.settings.A.toggleAppMenu()
   },
 
@@ -219,7 +219,7 @@ module.exports = React.createClass({
   * Launches the settings
   * @param evt: the event that fired
   */
-  launchSettings: function (evt) {
+  launchSettings (evt) {
     navigationDispatch.openSettings()
   },
 
@@ -228,7 +228,7 @@ module.exports = React.createClass({
   * @param evt: the event that fired
   * @param req: the request that came through
   */
-  downloadCompleted: function (evt, req) {
+  downloadCompleted (evt, req) {
     const notification = new window.Notification('Download Completed', {
       body: req.filename
     })
@@ -245,7 +245,7 @@ module.exports = React.createClass({
   * Handles a mailbox bluring by trying to refocus the mailbox
   * @param evt: the event that fired
   */
-  mailboxBlurred: function (evt) {
+  mailboxBlurred (evt) {
     // Requeue the event to run on the end of the render cycle
     this.setTimeout(() => {
       const active = document.activeElement
@@ -272,7 +272,7 @@ module.exports = React.createClass({
   // Rendering
   /* **************************************************************************/
 
-  render: function () {
+  render () {
     if (process.platform === 'darwin') {
       const badgeString = this.state.showAppBadge && this.state.messagesUnreadCount ? this.state.messagesUnreadCount.toString() : ''
       app.dock.setBadge(badgeString)

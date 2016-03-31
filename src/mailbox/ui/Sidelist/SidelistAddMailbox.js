@@ -13,7 +13,7 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getInitialState: function () {
+  getInitialState () {
     return { popover: false, popoverAnchor: null }
   },
 
@@ -24,21 +24,21 @@ module.exports = React.createClass({
   /**
   * Opens the popover
   */
-  handleOpenPopover: function (evt) {
+  handleOpenPopover (evt) {
     this.setState({ popover: true, popoverAnchor: evt.currentTarget })
   },
 
   /**
   * Closes the popover
   */
-  handleClosePopover: function () {
+  handleClosePopover () {
     this.setState({ popover: false })
   },
 
   /**
   * Adds an inbox mail account
   */
-  handleAddInbox: function () {
+  handleAddInbox () {
     flux.google.A.authInboxMailbox()
     this.setState({ popover: false })
   },
@@ -46,7 +46,7 @@ module.exports = React.createClass({
   /**
   * Adds a gmail mail account
   */
-  handleAddGmail: function () {
+  handleAddGmail () {
     flux.google.A.authGmailMailbox()
     this.setState({popover: false})
   },
@@ -58,7 +58,7 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render () {
     return (
       <div className='add-mailbox-control'>
         <IconButton

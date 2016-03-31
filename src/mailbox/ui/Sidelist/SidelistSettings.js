@@ -14,7 +14,7 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render () {
     return (
       <div className='settings-control'>
         <IconButton

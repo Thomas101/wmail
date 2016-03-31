@@ -1,7 +1,7 @@
 const React = require('react')
 const {
   Dialog, RaisedButton, FlatButton, Divider,
-  Tabs, Tab, 
+  Tabs, Tab,
   Styles: { Colors }
 } = require('material-ui')
 const GeneralSettings = require('./GeneralSettings')
@@ -21,11 +21,11 @@ module.exports = React.createClass({
   // Lifecycle
   /* **************************************************************************/
 
-  componentDidMount: function () {
+  componentDidMount () {
     flux.settings.S.listen(this.settingsChanged)
   },
 
-  componentWillUnmount: function () {
+  componentWillUnmount () {
     flux.settings.S.unlisten(this.settingsChanged)
   },
 
@@ -33,18 +33,18 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getInitialState: function () {
+  getInitialState () {
     return {
       currentTab: 'general',
       requiresRestart: flux.settings.S.getState().requiresRestart()
     }
   },
 
-  settingsChanged: function (store) {
+  settingsChanged (store) {
     this.setState({ requiresRestart: store.requiresRestart() })
   },
 
-  shouldComponentUpdate: function (nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     if (this.state.currentTab !== nextState.currentTab) { return true }
     if (this.state.requiresRestart !== nextState.requiresRestart) { return true }
     if (nextProps.open !== this.props.open) { return true }
@@ -59,7 +59,7 @@ module.exports = React.createClass({
   /**
   * Changes the tab
   */
-  handleTabChange: function (value) {
+  handleTabChange (value) {
     if (typeof (value) === 'string') {
       this.setState({ currentTab: value })
     }
@@ -68,14 +68,14 @@ module.exports = React.createClass({
   /**
   * Closes the modal
   */
-  handleClose: function () {
+  handleClose () {
     this.props.onRequestClose()
   },
 
   /**
   * Restarts the app
   */
-  handleRestart: function () {
+  handleRestart () {
     ipc.send('restart-app', {})
   },
 
@@ -86,7 +86,7 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render () {
     let buttons
     if (this.state.requiresRestart) {
       buttons = (
@@ -107,9 +107,9 @@ module.exports = React.createClass({
     }
 
     const tabInfo = [
-      { label: 'General', value: 'general'},
-      { label: 'Accounts', value: 'accounts'},
-      { label: 'Advanced', value: 'advanced'}
+      { label: 'General', value: 'general' },
+      { label: 'Accounts', value: 'accounts' },
+      { label: 'Advanced', value: 'advanced' }
     ]
     const heading = (
       <div style={{ display: 'flex', flexDirection: 'row', alignContent: 'stretch' }}>

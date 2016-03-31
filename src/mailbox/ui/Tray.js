@@ -23,7 +23,7 @@ module.exports = React.createClass({
   // Lifecycle
   /* **************************************************************************/
 
-  componentDidMount: function () {
+  componentDidMount () {
     const loader = new window.Image()
     loader.src = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPiAgICA8cGF0aCBkPSJNMjAgNEg0Yy0xLjEgMC0xLjk5LjktMS45OSAyTDIgMThjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY2YzAtMS4xLS45LTItMi0yem0wIDE0SDRWOGw4IDUgOC01djEwem0tOC03TDQgNmgxNmwtOCA1eiIvPjwvc3ZnPg=='
     loader.onload = (e) => {
@@ -31,7 +31,7 @@ module.exports = React.createClass({
     }
   },
 
-  componentWillUnmount: function () {
+  componentWillUnmount () {
     if (this.state.appTray) {
       this.state.appTray.destroy()
     }
@@ -41,14 +41,14 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getDefaultReadColor: function () { return process.platform === 'darwin' && app.isDarkMode() ? '#FFFFFF' : '#000000' },
-  getDefaultUnreadColor: function () { return '#C82018' },
+  getDefaultReadColor () { return process.platform === 'darwin' && app.isDarkMode() ? '#FFFFFF' : '#000000' },
+  getDefaultUnreadColor () { return '#C82018' },
 
-  getInitialState: function () {
+  getInitialState () {
     return { appTray: new Tray(null) }
   },
 
-  shouldComponentUpdate: function (nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState)
   },
 
@@ -59,7 +59,7 @@ module.exports = React.createClass({
   /**
   * @return the nativeImage for the tray
   */
-  renderImage: function () {
+  renderImage () {
     const SIZE = 22 * window.devicePixelRatio
     const PADDING = SIZE * 0.15
     const CENTER = SIZE / 2
@@ -106,14 +106,14 @@ module.exports = React.createClass({
   /**
   * @return the tooltip string for the tray icon
   */
-  renderTooltip: function () {
+  renderTooltip () {
     return this.props.unreadCount ? this.props.unreadCount + ' unread mail' : 'No unread mail'
   },
 
   /**
   * @return the context menu for the tray icon
   */
-  renderContextMenu: function () {
+  renderContextMenu () {
     // Build the unread items up
     const unreadItems = Object.keys(this.props.unreadMessages)
       .reduce((acc, mailboxId) => {
@@ -158,7 +158,7 @@ module.exports = React.createClass({
     return Menu.buildFromTemplate(template)
   },
 
-  render: function () {
+  render () {
     if (!this.state.appTray || !this.state.icon) { return false }
     this.state.appTray.setImage(this.renderImage())
     this.state.appTray.setToolTip(this.renderTooltip())

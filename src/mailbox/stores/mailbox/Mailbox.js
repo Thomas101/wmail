@@ -91,6 +91,15 @@ class Mailbox {
       return undefined
     }
   }
+  get color () {
+    if (this.__data__.color) {
+      return this.__data__.color
+    } else if (this.type === Mailbox.TYPE_GMAIL) {
+      return 'rgb(220, 75, 75)'
+    } else if (this.type === Mailbox.TYPE_GINBOX) {
+      return 'rgb(66, 133, 244)'
+    }
+  }
   get email () { return this.__data__.email }
   get name () { return this.__data__.name }
   get unread () { return this.__data__.unread }

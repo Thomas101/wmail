@@ -31,12 +31,12 @@ module.exports = React.createClass({
     }
   },
 
-  componentDidMount: function () {
+  componentDidMount () {
     flux.settings.S.listen(this.settingsDidUpdate)
     navigationDispatch.on('opensettings', this.handleOpenSettings)
   },
 
-  componentWillUnmount: function () {
+  componentWillUnmount () {
     flux.settings.S.unlisten(this.settingsDidUpdate)
     navigationDispatch.off('opensettings', this.handleOpenSettings)
   },
@@ -45,20 +45,20 @@ module.exports = React.createClass({
   // Data Lifecycle
   /* **************************************************************************/
 
-  getInitialState: function () {
+  getInitialState () {
     return {
       sidebar: flux.settings.S.getState().sidebarEnabled(),
       settingsDialog: false
     }
   },
 
-  settingsDidUpdate: function (store) {
+  settingsDidUpdate (store) {
     this.setState({
       sidebar: store.sidebarEnabled()
     })
   },
 
-  shouldComponentUpdate: function (nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState)
   },
 
@@ -69,11 +69,11 @@ module.exports = React.createClass({
   /**
   * Opens the settings dialog
   */
-  handleOpenSettings: function () {
+  handleOpenSettings () {
     this.setState({ settingsDialog: true })
   },
 
-  handleCloseSettings: function () {
+  handleCloseSettings () {
     this.setState({ settingsDialog: false })
   },
 
@@ -84,7 +84,7 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render () {
     return (
       <div>
         <div className='master' style={{ display: this.state.sidebar ? 'block' : 'none' }}>

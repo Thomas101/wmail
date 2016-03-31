@@ -16,16 +16,16 @@ module.exports = React.createClass({
   // Lifecycle
   /* **************************************************************************/
 
-  componentDidMount: function () {
+  componentDidMount () {
     flux.settings.S.listen(this.settingsChanged)
     ReactDOM.findDOMNode(this.refs.defaultDownloadInput).setAttribute('webkitdirectory', 'webkitdirectory')
   },
 
-  componentWillUnmount: function () {
+  componentWillUnmount () {
     flux.settings.S.unlisten(this.settingsChanged)
   },
 
-  componentDidUpdate: function () {
+  componentDidUpdate () {
     ReactDOM.findDOMNode(this.refs.defaultDownloadInput).setAttribute('webkitdirectory', 'webkitdirectory')
   },
 
@@ -37,7 +37,7 @@ module.exports = React.createClass({
   * Generates the state from the settings
   * @param store=settingsStore: the store to use
   */
-  generateState: function (store = flux.settings.S.getState()) {
+  generateState (store = flux.settings.S.getState()) {
     return {
       showTitlebar: store.showTitlebar(),
       showAppBadge: store.showAppBadge(),
@@ -60,14 +60,14 @@ module.exports = React.createClass({
     }
   },
 
-  getInitialState: function () {
+  getInitialState () {
     return Object.assign(this.generateState(), {
       showTrayReadColorPicker: false,
       showTrayUnreadColorPicker: false
     })
   },
 
-  settingsChanged: function (store) {
+  settingsChanged (store) {
     this.setState(this.generateState(store))
   },
 
@@ -78,7 +78,7 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render () {
     return (
       <div {...this.props}>
         <Paper zDepth={1} style={{ padding: 15, marginBottom: 5 }}>

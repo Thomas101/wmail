@@ -14,7 +14,7 @@ module.exports = React.createClass({
     lg: React.PropTypes.number
   },
 
-  render: function () {
+  render () {
     let mode = 'xs'
     let size = 12
     if (this.props.xs !== undefined) {

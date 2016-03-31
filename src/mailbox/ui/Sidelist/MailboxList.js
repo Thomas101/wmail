@@ -15,11 +15,11 @@ module.exports = React.createClass({
   // Lifecycle
   /* **************************************************************************/
 
-  componentDidMount: function () {
+  componentDidMount () {
     flux.mailbox.S.listen(this.mailboxesChanged)
   },
 
-  componentWillUnmount: function () {
+  componentWillUnmount () {
     flux.mailbox.S.unlisten(this.mailboxesChanged)
   },
 
@@ -27,15 +27,15 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getInitialState: function () {
+  getInitialState () {
     return { mailbox_ids: flux.mailbox.S.getState().ids() }
   },
 
-  mailboxesChanged: function (store) {
+  mailboxesChanged (store) {
     this.setState({ mailbox_ids: store.ids() })
   },
 
-  shouldComponentUpdate: function (nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     if (!this.state || !nextState) { return true }
     if (this.state.mailbox_ids.length !== nextState.mailbox_ids.length) { return true }
     if (this.state.mailbox_ids.find((id, i) => id !== nextState.mailbox_ids[i].id)) { return true }
@@ -50,7 +50,7 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render () {
     return (
       <div {...this.props} className='mailbox-list'>
         {this.state.mailbox_ids.map((id, index) => {

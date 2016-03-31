@@ -26,7 +26,7 @@ module.exports = React.createClass({
   // Lifecycle
   /* **************************************************************************/
 
-  componentDidMount: function () {
+  componentDidMount () {
     this.lastSetZoomFactor = 1.0
     this.isMounted = true
 
@@ -37,7 +37,7 @@ module.exports = React.createClass({
     ReactDOM.findDOMNode(this).appendChild(this.renderWebviewDOMNode())
   },
 
-  componentWillUnmount: function () {
+  componentWillUnmount () {
     this.isMounted = false
     mailboxDispatch.off('reload', this.reload)
     mailboxDispatch.off('devtools', this.openDevTools)
@@ -49,7 +49,7 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getInitialState: function () {
+  getInitialState () {
     const mailboxStore = flux.mailbox.S.getState()
     return {
       mailbox: mailboxStore.get(this.props.mailbox_id),
@@ -57,7 +57,7 @@ module.exports = React.createClass({
     }
   },
 
-  mailboxesChanged: function (store) {
+  mailboxesChanged (store) {
     if (this.isMounted === false) { return }
     this.setState({
       mailbox: store.get(this.props.mailbox_id),
@@ -65,7 +65,7 @@ module.exports = React.createClass({
     })
   },
 
-  shouldComponentUpdate: function (nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     this.updateWebviewDOMNode(nextProps, nextState)
     return false // we never update this element
   },
@@ -78,7 +78,7 @@ module.exports = React.createClass({
   * Handles a reload dispatch event
   * @param evt: the event that fired
   */
-  reload: function (evt) {
+  reload (evt) {
     if (evt.mailboxId === this.props.mailbox_id) {
       const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
       webview.setAttribute('src', this.state.mailbox.url)
@@ -90,14 +90,14 @@ module.exports = React.createClass({
   * Handles the inspector dispatch event
   * @param evt: the event that fired
   */
-  openDevTools: function (evt) {
+  openDevTools (evt) {
     if (evt.mailboxId === this.props.mailbox_id) {
       const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
       webview.openDevTools()
     }
   },
 
-  refocus: function (evt) {
+  refocus (evt) {
     if (evt.mailboxId === this.props.mailbox_id || (!evt.mailboxId && this.state.isActive)) {
       const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
       setTimeout(() => {
@@ -115,7 +115,7 @@ module.exports = React.createClass({
   * @param evt: the event
   * @param webview: the webview element the event came from
   */
-  handleOpenNewWindow: function (evt, webview) {
+  handleOpenNewWindow (evt, webview) {
     const url = URL.parse(evt.url, true)
     let mode = 'external'
     if (url.host === 'inbox.google.com') {
@@ -150,7 +150,7 @@ module.exports = React.createClass({
   * the dom node. Also because it reloads the element when active changes and we need
   * the ref to the node for binding electron events we sink down to normal html
   */
-  renderWebviewDOMNode: function () {
+  renderWebviewDOMNode () {
     // Setup the session that will be used
     const partition = 'persist:' + this.state.mailbox.id
     ipc.send('prepare-webview-session', { partition: partition })
@@ -217,7 +217,7 @@ module.exports = React.createClass({
   * @param nextProps: the next props
   * @param nextState: the next state
   */
-  updateWebviewDOMNode: function (nextProps, nextState) {
+  updateWebviewDOMNode (nextProps, nextState) {
     if (!nextState.mailbox) { return }
 
     const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
@@ -246,7 +246,7 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render () {
     if (!this.state.mailbox) { return false }
 
     return <div {...this.props}></div>

@@ -20,13 +20,16 @@ module.exports = React.createClass({
   // Lifecycle
   /* **************************************************************************/
 
-  componentDidMount: function () {
+  componentWillMount () {
     this.isMounted = true
+    this.cssElement = document.createElement('style')
+    document.head.appendChild(this.cssElement)
     flux.mailbox.S.listen(this.mailboxesChanged)
   },
 
-  componentWillUnmount: function () {
+  componentWillUnmount () {
     this.isMounted = false
+    document.head.removeChild(this.cssElement)
     flux.mailbox.S.unlisten(this.mailboxesChanged)
   },
 
@@ -34,10 +37,11 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getInitialState: function () {
+  getInitialState () {
     const mailboxStore = flux.mailbox.S.getState()
+    const mailbox = mailboxStore.get(this.props.mailbox_id)
     return {
-      mailbox: mailboxStore.get(this.props.mailbox_id),
+      mailbox: mailbox,
       isActive: mailboxStore.activeId() === this.props.mailbox_id,
       isFirst: mailboxStore.isFirst(this.props.mailbox_id),
       isLast: mailboxStore.isLast(this.props.mailbox_id),
@@ -46,17 +50,18 @@ module.exports = React.createClass({
     }
   },
 
-  mailboxesChanged: function (store) {
+  mailboxesChanged (store) {
     if (this.isMounted === false) { return }
+    const mailbox = store.get(this.props.mailbox_id)
     this.setState({
-      mailbox: store.get(this.props.mailbox_id),
+      mailbox: mailbox,
       isActive: store.activeId() === this.props.mailbox_id,
       isFirst: store.isFirst(this.props.mailbox_id),
       isLast: store.isLast(this.props.mailbox_id)
     })
   },
 
-  shouldComponentUpdate: function (nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     if (this.state.mailbox !== nextState.mailbox) { return true }
     if (this.state.isActive !== nextState.isActive) { return true }
     if (this.state.popover !== nextState.popover) { return true }
@@ -74,7 +79,7 @@ module.exports = React.createClass({
   * Handles the item being clicked on
   * @param evt: the event that fired
   */
-  handleClick: function (evt) {
+  handleClick (evt) {
     evt.preventDefault()
     flux.mailbox.A.changeActive(this.props.mailbox_id)
   },
@@ -82,7 +87,7 @@ module.exports = React.createClass({
   /**
   * Opens the popover
   */
-  handleOpenPopover: function (evt) {
+  handleOpenPopover (evt) {
     evt.preventDefault()
     this.setState({ popover: true, popoverAnchor: evt.currentTarget })
   },
@@ -90,14 +95,14 @@ module.exports = React.createClass({
   /**
   * Closes the popover
   */
-  handleClosePopover: function () {
+  handleClosePopover () {
     this.setState({ popover: false })
   },
 
   /**
   * Deletes this mailbox
   */
-  handleDelete: function () {
+  handleDelete () {
     flux.mailbox.A.remove(this.props.mailbox_id)
     this.setState({ popover: false })
   },
@@ -105,7 +110,7 @@ module.exports = React.createClass({
   /**
   * Opens the inspector window for this mailbox
   */
-  handleInspect: function () {
+  handleInspect () {
     mailboxDispatch.openDevTools(this.props.mailbox_id)
     this.setState({ popover: false })
   },
@@ -113,7 +118,7 @@ module.exports = React.createClass({
   /**
   * Reloads this mailbox
   */
-  handleReload: function () {
+  handleReload () {
     mailboxDispatch.reload(this.props.mailbox_id)
     this.setState({ popover: false })
   },
@@ -121,7 +126,7 @@ module.exports = React.createClass({
   /**
   * Moves this item up
   */
-  handleMoveUp: function () {
+  handleMoveUp () {
     flux.mailbox.A.moveUp(this.props.mailbox_id)
     this.setState({ popover: false })
   },
@@ -129,7 +134,7 @@ module.exports = React.createClass({
   /**
   * Moves this item down
   */
-  handleMoveDown: function () {
+  handleMoveDown () {
     flux.mailbox.A.moveDown(this.props.mailbox_id)
     this.setState({ popover: false })
   },
@@ -139,10 +144,28 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   /**
+  * Updates the css styles for the mailbox
+  * @param mailbox: the mailbox to update for
+  */
+  updateCssStyles (mailbox) {
+    this.cssElement.innerHTML = `
+      .mailbox-list .list-item[data-id="${mailbox.id}"] .mailbox.active {
+        border-color: ${mailbox.color};
+      }
+      .mailbox-list .list-item[data-id="${mailbox.id}"] .mailbox:hover {
+        border-color: ${mailbox.color};
+      }
+      .mailbox-list .list-item[data-id="${mailbox.id}"] .mailbox.active:before {
+        background-color: ${mailbox.color};
+      }
+    `
+  },
+
+  /**
   * Renders the menu items
   * @return array of jsx elements
   */
-  renderMenuItems: function () {
+  renderMenuItems () {
     const menuItems = []
     if (!this.state.isFirst) {
       menuItems.push(<MenuItem
@@ -186,10 +209,13 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render () {
     const mailbox = this.state.mailbox
     if (!mailbox) { return false }
 
+    this.updateCssStyles(mailbox)
+
+    // Setup the classnames
     const containerProps = {
       'className': 'mailbox' + (this.state.isActive ? ' active' : ''),
       'data-type': mailbox.type
@@ -230,7 +256,12 @@ module.exports = React.createClass({
     }
 
     return (
-      <div {...this.props} className='list-item' onClick={this.handleClick} onContextMenu={this.handleOpenPopover}>
+      <div
+        {...this.props}
+        className='list-item'
+        onClick={this.handleClick}
+        onContextMenu={this.handleOpenPopover}
+        data-id={this.state.mailbox.id}>
         <div {...containerProps}>
           {innerElement}
           {badgeElement}

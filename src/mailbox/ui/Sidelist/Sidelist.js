@@ -17,7 +17,7 @@ module.exports = React.createClass({
   // Data lifecyle
   /* **************************************************************************/
 
-  shouldComponentUpdate: function (nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     return false
   },
 
@@ -28,7 +28,7 @@ module.exports = React.createClass({
   /**
   * Renders the app
   */
-  render: function () {
+  render () {
     const { style, className, ...passProps } = this.props
     return (
       <div

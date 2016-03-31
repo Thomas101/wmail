@@ -7,7 +7,7 @@ const React = require('react')
 module.exports = React.createClass({
   displayName: 'FlexboxRow',
 
-  render: function () {
+  render () {
     return (
       <div
         {...this.props}
