@@ -54,7 +54,7 @@
     "fs-extra": "^0.26.7",
     "googleapis": "^4.0.0",
     "https-proxy-agent": "^1.0.0",
-    "material-ui": "^0.15.0-alpha.2",
+    "material-ui": "0.15.0-alpha.2",
     "minivents": "^2.0.1",
     "node-fetch": "^1.4.1",
     "nodehun": "^2.0.10",
