@@ -80,18 +80,20 @@
 			* Mailbox types
 			******************************************************/
 			&[data-type="ginbox"] {
+        background-color: @INBOX_PRIM_COL;
 				&.active, &:hover { border-color: @INBOX_PRIM_COL; }
+        &.avatar { background-color: white; }
 				&.index {
-					background-color: @INBOX_PRIM_COL;
 					&.active, &:hover { border-color: @INBOX_SEC_COL; }
 				}
 				&.active:before { background-color: @INBOX_PRIM_COL; }
 			}
 
 			&[data-type="gmail"] {
+        background-color: @GMAIL_PRIM_COL;
 				&.active, &:hover { border-color: @GMAIL_PRIM_COL; }
+        &.avatar { background-color: white; }
 				&.index {
-					background-color: @GMAIL_PRIM_COL;
 					&.active, &:hover { border-color: @GMAIL_SEC_COL; }
 				}
 				&.active:before { background-color: @GMAIL_PRIM_COL; }
