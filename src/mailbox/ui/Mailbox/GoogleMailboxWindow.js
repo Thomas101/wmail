@@ -34,6 +34,7 @@ module.exports = React.createClass({
     mailboxDispatch.on('reload', this.reload)
     mailboxDispatch.on('devtools', this.openDevTools)
     mailboxDispatch.on('refocus', this.refocus)
+    mailboxDispatch.on('openMessage', this.openMessage)
     ReactDOM.findDOMNode(this).appendChild(this.renderWebviewDOMNode())
   },
 
@@ -42,6 +43,7 @@ module.exports = React.createClass({
     mailboxDispatch.off('reload', this.reload)
     mailboxDispatch.off('devtools', this.openDevTools)
     mailboxDispatch.off('refocus', this.refocus)
+    mailboxDispatch.off('openMessage', this.openMessage)
     flux.mailbox.S.unlisten(this.mailboxesChanged)
   },
 
@@ -97,12 +99,25 @@ module.exports = React.createClass({
     }
   },
 
+  /**
+  * Handles refocusing the mailbox
+  * @param evt: the event that fired
+  */
   refocus (evt) {
     if (evt.mailboxId === this.props.mailbox_id || (!evt.mailboxId && this.state.isActive)) {
       const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
-      setTimeout(() => {
-        webview.focus()
-      })
+      setTimeout(() => { webview.focus() })
+    }
+  },
+
+  /**
+  * Handles opening a new message
+  * @param evt: the event that fired
+  */
+  openMessage (evt) {
+    if (evt.mailboxId === this.props.mailbox_id) {
+      const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
+      webview.send('open-message', { messageId: evt.messageId, threadId: evt.threadId })
     }
   },
 
@@ -137,6 +152,30 @@ module.exports = React.createClass({
         break
       case 'tab':
         ipc.send('new-window', { partition: webview.partition, url: evt.url })
+        break
+    }
+  },
+
+  /* **************************************************************************/
+  // UI Modifiers
+  /* **************************************************************************/
+
+  /**
+  * Composes a new message
+  * @param email: the email address to send the message to
+  */
+  composeMessage (email) {
+    const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
+
+    switch (this.state.mailbox.type) {
+      case flux.mailbox.M.TYPE_GMAIL:
+        ipc.send('new-window', {
+          partition: webview.partition,
+          url: 'https://mail.google.com/mail/?view=cm&fs=1&tf=1&shva=1&to=' + email
+        })
+        break
+      case flux.mailbox.M.TYPE_GINBOX:
+        webview.loadURL('https://inbox.google.com/?view=cm&fs=1&tf=1&shva=1&to=' + email)
         break
     }
   },

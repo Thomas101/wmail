@@ -7,6 +7,8 @@ const ipc = electron.ipcRenderer
 const NativeImage = remote.nativeImage
 const React = require('react')
 const shallowCompare = require('react-addons-shallow-compare')
+const mailboxDispatch = require('./Dispatch/mailboxDispatch')
+const mailboxActions = require('../stores/mailbox/mailboxActions')
 
 module.exports = React.createClass({
   displayName: 'Tray',
@@ -119,6 +121,10 @@ module.exports = React.createClass({
       .reduce((acc, mailboxId) => {
         const messages = Object.keys(this.props.unreadMessages[mailboxId])
           .map((id) => this.props.unreadMessages[mailboxId][id])
+          .map((info) => {
+            info.mailboxId = mailboxId
+            return info
+          })
         return acc.concat(messages)
       }, [])
       .filter((info) => info.message !== undefined)
@@ -127,17 +133,25 @@ module.exports = React.createClass({
       })
       .slice(0, 5)
       .map((info) => {
-        const subject = (info.message.payload.headers.find((h) => h.name === 'Subject') || {}).value || 'No Subject'
-        const fromEmail = (info.message.payload.headers.find((h) => h.name === 'From') || {}).value || ''
+        const headers = info.message.payload.headers
+        const subject = (headers.find((h) => h.name === 'Subject') || {}).value || 'No Subject'
+        const fromEmail = (headers.find((h) => h.name === 'From') || {}).value || ''
         const fromEmailMatch = fromEmail.match('(.+)\<(.+)@(.+)\>$')
         if (fromEmailMatch) {
-          return fromEmailMatch[1].trim() + ' : ' + subject
+          info.snippet = fromEmailMatch[1].trim() + ' : ' + subject
         } else {
-          return fromEmail + ' : ' + subject
+          info.snippet = fromEmail + ' : ' + subject
         }
+        return info
       })
-      .map((str) => {
-        return { label: str, enabled: false }
+      .map((info) => {
+        return {
+          label: info.snippet,
+          click: (e) => {
+            mailboxActions.changeActive(info.mailboxId)
+            mailboxDispatch.openMessage(info.mailboxId, info.message.threadId, info.message.id)
+          }
+        }
       })
 
     // Build the template

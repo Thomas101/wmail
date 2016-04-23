@@ -61,6 +61,15 @@ class MailboxActions {
   }
 
   /**
+  * Sets the current list of unread messages. Also marks the list as seen
+  * @param id: the id of the mailbox
+  * @param messageIds: the ids of the messages that are currently unread
+  */
+  setGoogleUnreadMessageIds (id, messageIds) {
+    return { id: id, messageIds: messageIds }
+  }
+
+  /**
   * Sets that a thread has sent a notification
   * @param id: the id of the mailbox
   * @param messageIds: the ids of the messages

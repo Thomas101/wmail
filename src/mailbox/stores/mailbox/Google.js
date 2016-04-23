@@ -65,14 +65,23 @@ class Google {
   // Properties : Google Unread
   /* **************************************************************************/
 
-  get unreadMessages () { return this.__unread__ || {} }
+  get unreadMessages () {
+    return Object.keys(this.__unread__ || {})
+      .reduce((acc, k) => {
+        if (this.__unread__[k].unread) {
+          acc[k] = this.__unread__[k]
+        }
+        return acc
+      }, {})
+  }
 
   get unreadUnotifiedMessages () {
     const unotified = {}
+    const unread = this.unreadMessages
     const now = new Date().getTime()
 
-    for (var k in this.unreadMessages) {
-      const info = this.unreadMessages[k]
+    for (var k in unread) {
+      const info = unread[k]
       if (info.notified === undefined && info.message) {
         const messageDate = new Date(parseInt(info.message.internalDate, 10)).getTime()
         if (now - messageDate < GMAIL_NOTIFICATION_MAX_MESSAGE_AGE_MS) {

@@ -305,10 +305,18 @@ class GoogleActions {
   * @param labelField: the name of the field that should have the value taken from it
   */
   syncMailboxUnreadCountSuccess (mailboxId, response, label, labelField) {
-    mailboxActions.update(mailboxId, {
-      unread: response.response[labelField]
-    })
-    return { mailboxId: mailboxId }
+    const prevMailbox = mailboxStore.getState().get(mailboxId)
+    // Look to see if the unread count has changed. If it has, update it
+    // then ask to sync the messages to provide info to the user in a timely fasion
+    if (prevMailbox && prevMailbox.unread !== response.response[labelField]) {
+      mailboxActions.update(mailboxId, {
+        unread: response.response[labelField]
+      })
+      this.syncMailboxUnreadMessages(mailboxId)
+      return { mailboxId: mailboxId, changed: true }
+    } else {
+      return { mailboxId: mailboxId, changed: false }
+    }
   }
 
   /**
@@ -373,6 +381,9 @@ class GoogleActions {
       .then(() => googleHTTP.fetchEmailSummaries(auth, mailbox.email, mailbox.google.unreadQuery))
       .then((response) => {
         const mailbox = mailboxStore.getState().get(mailboxId)
+
+        // Mark the latest set of unread messages
+        const allMessageIds = response.response.messages.map((data) => data.id)
         const messageIds = response.response.messages.reduce((acc, data) => {
           // Look to see if we've seen this message already
           // Also look to see if this is one of multiple in a thread
@@ -390,8 +401,7 @@ class GoogleActions {
         }, { seen: [], unseen: [], threads: {}, autoread: [] })
 
         // Report that we've seen previously known messages
-        const now = new Date().getTime()
-        mailboxActions.updateGoogleUnread(mailboxId, messageIds, { seen: now })
+        mailboxActions.setGoogleUnreadMessageIds(mailboxId, allMessageIds)
 
         // Mark auto-read thread items as seen and reported
         mailboxActions.setGoogleUnreadNotificationsShown(mailboxId, messageIds.autoread)

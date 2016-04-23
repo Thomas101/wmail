@@ -130,6 +130,7 @@ class MailboxStore {
       handleMoveDown: actions.MOVE_DOWN,
 
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
+      handleSetGoogleUnreadMessageIds: actions.SET_GOOGLE_UNREAD_MESSAGE_IDS,
       handleUpdateGoogleUnread: actions.UPDATE_GOOGLE_UNREAD,
       handleSetGoogleUnreadNotificationsShown: actions.SET_GOOGLE_UNREAD_NOTIFICATIONS_SHOWN
     })
@@ -270,6 +271,45 @@ class MailboxStore {
   handleUpdateGoogleConfig ({id, updates}) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleConf = Object.assign(data.googleConf || {}, updates)
+    this.saveMailbox(id, data)
+  }
+
+  /**
+  * Marks the unread messages as seen & also marks any un-included messages
+  * as read
+  * @param id: the id of mailbox
+  * @param messageIds: the complete lis of unread message ids
+  */
+  handleSetGoogleUnreadMessageIds ({id, messageIds}) {
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleUnreadMessages = data.googleUnreadMessages || {}
+
+    // Run through all the messages google has given us and mark them as unread
+    // and also mark them as seen
+    const now = new Date().getTime()
+    const messageIdIndex = {}
+    messageIds.forEach((messageId) => {
+      messageIdIndex[messageId] = true
+      if (data.googleUnreadMessages[messageId]) {
+        data.googleUnreadMessages[messageId] = Object.assign(
+          data.googleUnreadMessages[messageId],
+          { seen: now, unread: true }
+        )
+      } else {
+        data.googleUnreadMessages[messageId] = {
+          recordCreated: now, seen: now, unread: true
+        }
+      }
+    })
+
+    // If we haven't seen a message from google, then it must be read, but
+    // we might want to keep the record around to prevent duplicate notificiations
+    Object.keys(data.googleUnreadMessages).forEach((messageId) => {
+      if (!messageIdIndex[messageId]) {
+        data.googleUnreadMessages[messageId].unread = false
+      }
+    })
+
     this.saveMailbox(id, data)
   }
 

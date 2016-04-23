@@ -41,6 +41,20 @@ class MailboxDispatch {
     this.emit('focused', { mailboxId: mailboxId })
   }
 
+  /**
+  * Emits an open message event for a mailbox
+  * @param mailboxId: the id of the mailbox
+  * @param threadId: the id of the thread
+  * @param messageId: the id of the message to open
+  */
+  openMessage (mailboxId, threadId, messageId) {
+    this.emit('openMessage', {
+      mailboxId: mailboxId,
+      threadId: threadId,
+      messageId: messageId
+    })
+  }
+
 }
 
 const mailboxDispatch = new MailboxDispatch()

@@ -60,7 +60,7 @@ module.exports = React.createClass({
       return (
         <div className='mailboxes'>
           {this.state.mailbox_ids.map((id) => {
-            return <GoogleMailboxWindow mailbox_id={id} key={id} />
+            return (<GoogleMailboxWindow mailbox_id={id} key={id} />)
           })}
         </div>
       )
