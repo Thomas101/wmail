@@ -3,6 +3,7 @@ const flux = {
   settings: require('../stores/settings')
 }
 const constants = require('shared/constants')
+const mailboxDispatch = require('../ui/Dispatch/mailboxDispatch')
 
 class UnreadNotifications {
 
@@ -101,7 +102,7 @@ class UnreadNotifications {
     const notification = new window.Notification(subject, {
       body: [fromEmail, snippet].join('\n'),
       silent: flux.settings.S.getState().notificationsSilent,
-      data: { mailbox: mailbox.id, messageId: message.id }
+      data: { mailbox: mailbox.id, messageId: message.id, threadId: message.threadId }
     })
     notification.onclick = this.handleNotificationClicked
     return notification
@@ -116,6 +117,7 @@ class UnreadNotifications {
       const data = evt.target.data
       if (data.mailbox) {
         flux.mailbox.A.changeActive(data.mailbox)
+        mailboxDispatch.openMessage(data.mailbox, data.threadId, data.messageId)
       }
     }
   }
