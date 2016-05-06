@@ -6,6 +6,7 @@ const fs = require('fs-extra')
 const child_process = require('child_process')
 const path = require('path')
 const nlf = require('nlf')
+const electronInstaller = require('electron-winstaller')
 const platform = process.argv[2] || 'darwin'
 
 class PackageBuilder {
@@ -32,6 +33,23 @@ class PackageBuilder {
     })
   }
 
+  createWindowsInstaller () {
+    return new Promise((resolve, reject) => {
+      console.log('[START] Electron Winstaller')
+      electronInstaller.createWindowsInstaller({
+        appDirectory: './WMail-win32-ia32',
+        authors: pkg.author,
+        noMsi: true,
+        outputDirectory: './WMail-win32-ia32-Installer',
+        setupExe: 'WMail Setup.exe',
+        setupIcon: path.resolve('./icons/app.ico')
+      }).then(() => {
+        console.log('[FINISH] Electron Winstaller')
+        resolve()
+      }).catch(reject)
+    })
+  }
+
   packageApp () {
     return new Promise((resolve, reject) => {
       console.log('[START] Package')
@@ -39,13 +57,19 @@ class PackageBuilder {
         dir: '.',
         name: 'WMail',
         platform: platform,
-        arch: 'all',
+        arch: (platform === 'win32' ? 'ia32' : 'all'),
         version: pkg.devDependencies['electron-prebuilt'],
         'app-bundle-id': 'tombeverley.wmail',
         'app-version': pkg.version,
-        icon: 'icons/app.icns',
+        icon: 'icons/app',
         overwrite: true,
         prune: true,
+        'version-string': {
+          CompanyName: pkg.author,
+          FileDescription: pkg.description,
+          OriginalFilename: pkg.name,
+          ProductName: 'WMail'
+        },
         ignore: '^(' + [
           '/icons',
           '/release',
@@ -57,12 +81,13 @@ class PackageBuilder {
           '/github_images',
           '/WMail-linux-ia32',
           '/WMail-linux-x64',
-          '/WMail-darwin-x64'
+          '/WMail-win32-ia32',
+          '/WMail-win32-ia32-Installer'
         ]
         .join('|') + ')'
       }, function (err, appPath) {
         if (err) {
-          reject()
+          reject(err)
         } else {
           console.log('[FINISH] Package')
           resolve()
@@ -119,6 +144,10 @@ class PackageBuilder {
           return Promise.resolve()
             .then(() => this.moveLicenses('./WMail-linux-ia32/'))
             .then(() => this.moveLicenses('./WMail-linux-x64/'))
+        } else if (platform === 'win32') {
+          return Promise.resolve()
+            .then(() => this.moveLicenses('./WMail-win32-ia32/'))
+            .then(this.createWindowsInstaller)
         } else {
           return Promise.reject()
         }

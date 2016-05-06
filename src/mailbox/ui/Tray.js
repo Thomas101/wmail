@@ -47,7 +47,13 @@ module.exports = React.createClass({
   getDefaultUnreadColor () { return '#C82018' },
 
   getInitialState () {
-    return { appTray: new Tray(null) }
+    const appTray = new Tray(null)
+    if (process.platform === 'win32') {
+      appTray.on('double-click', () => {
+        ipc.send('focus-app')
+      })
+    }
+    return { appTray: appTray }
   },
 
   shouldComponentUpdate (nextProps, nextState) {
