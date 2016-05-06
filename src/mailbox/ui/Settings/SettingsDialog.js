@@ -1,8 +1,7 @@
 const React = require('react')
 const {
-  Dialog, RaisedButton, FlatButton, Divider,
-  Tabs, Tab,
-  Styles: { Colors }
+  Dialog, RaisedButton, FlatButton,
+  Tabs, Tab
 } = require('material-ui')
 const GeneralSettings = require('./GeneralSettings')
 const AccountSettings = require('./AccountSettings')
@@ -11,6 +10,7 @@ const ipc = window.nativeRequire('electron').ipcRenderer
 const flux = {
   settings: require('../../stores/settings')
 }
+const Colors = require('material-ui/styles/colors')
 
 /* eslint-disable react/prop-types */
 
@@ -91,7 +91,6 @@ module.exports = React.createClass({
     if (this.state.requiresRestart) {
       buttons = (
         <div style={{ textAlign: 'right' }}>
-          <Divider style={{ marginBottom: 6 }} />
           <RaisedButton label='Close' secondary onClick={this.handleClose} />
           <span>&nbsp;</span>
           <RaisedButton label='Restart' primary onClick={this.handleRestart} />
@@ -100,7 +99,6 @@ module.exports = React.createClass({
     } else {
       buttons = (
         <div style={{ textAlign: 'right' }}>
-          <Divider style={{ marginBottom: 6 }} />
           <RaisedButton label='Close' primary onClick={this.handleClose} />
         </div>
       )
@@ -145,6 +143,7 @@ module.exports = React.createClass({
         actions={buttons}
         open={this.props.open}
         bodyStyle={{ padding: 0 }}
+        titleStyle={{ padding: 0 }}
         autoScrollBodyContent
         onRequestClose={this.props.onRequestClose}>
         <Tabs

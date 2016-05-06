@@ -1,5 +1,6 @@
 const React = require('react')
-const { IconButton, Styles } = require('material-ui')
+const { IconButton } = require('material-ui')
+const Colors = require('material-ui/styles/colors')
 const navigationDispatch = require('../Dispatch/navigationDispatch')
 
 /* eslint-disable react/prop-types */
@@ -22,7 +23,7 @@ module.exports = React.createClass({
           tooltip='Settings'
           tooltipPosition='top-center'
           onClick={() => navigationDispatch.openSettings()}
-          iconStyle={{ color: Styles.Colors.blueGrey400 }}>
+          iconStyle={{ color: Colors.blueGrey400 }}>
           settings
         </IconButton>
       </div>

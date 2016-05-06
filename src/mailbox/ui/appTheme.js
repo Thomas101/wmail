@@ -1,10 +1,11 @@
 'use strict'
 
-const { Styles, Utils } = require('material-ui')
-const { Colors, Spacing, zIndex } = Styles
-const { ColorManipulator } = Utils
+const { Spacing, zIndex } = require('material-ui/styles')
+const Colors = require('material-ui/styles/colors')
+const colorManipulator = require('material-ui/utils/colorManipulator')
+const getMuiTheme = require('material-ui/styles/getMuiTheme').default
 
-module.exports = Object.freeze({
+module.exports = getMuiTheme({
   spacing: Spacing,
   zIndex: zIndex,
   fontFamily: 'Roboto, sans-serif',
@@ -19,7 +20,7 @@ module.exports = Object.freeze({
     alternateTextColor: Colors.white,
     canvasColor: Colors.white,
     borderColor: Colors.grey300,
-    disabledColor: ColorManipulator.fade(Colors.darkBlack, 0.3),
+    disabledColor: colorManipulator.fade(Colors.darkBlack, 0.3),
     pickerHeaderColor: Colors.cyan500
   }
 })

@@ -3,7 +3,7 @@
 import './sidelist.less'
 
 const React = require('react')
-const { Styles } = require('material-ui')
+const Colors = require('material-ui/styles/colors')
 const MailboxList = require('./MailboxList')
 const SidelistAddMailbox = require('./SidelistAddMailbox')
 const SidelistSettings = require('./SidelistSettings')
@@ -33,7 +33,7 @@ module.exports = React.createClass({
     return (
       <div
         {...passProps}
-        style={Object.assign({ backgroundColor: Styles.Colors.blueGrey900 }, style)}
+        style={Object.assign({ backgroundColor: Colors.blueGrey900 }, style)}
         className={'absfill ' + (className || '')}>
         <MailboxList />
         <SidelistAddMailbox />

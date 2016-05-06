@@ -5,8 +5,6 @@ import './appContent.less'
 const React = require('react')
 const MailboxWindows = require('./Mailbox/MailboxWindows')
 const Sidelist = require('./Sidelist')
-const { Styles } = require('material-ui')
-const appTheme = require('./appTheme')
 const shallowCompare = require('react-addons-shallow-compare')
 const SettingsDialog = require('./Settings/SettingsDialog')
 const navigationDispatch = require('./Dispatch/navigationDispatch')
@@ -20,16 +18,6 @@ module.exports = React.createClass({
   /* **************************************************************************/
   // Lifecycle
   /* **************************************************************************/
-
-  childContextTypes: {
-    muiTheme: React.PropTypes.object
-  },
-
-  getChildContext () {
-    return {
-      muiTheme: Styles.getMuiTheme(appTheme)
-    }
-  },
 
   componentDidMount () {
     flux.settings.S.listen(this.settingsDidUpdate)

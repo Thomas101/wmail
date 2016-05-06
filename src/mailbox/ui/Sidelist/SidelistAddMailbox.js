@@ -1,5 +1,6 @@
 const React = require('react')
-const { IconButton, Styles, Popover, MenuItem, Menu } = require('material-ui')
+const { IconButton, Popover, MenuItem, Menu } = require('material-ui')
+const Colors = require('material-ui/styles/colors')
 const flux = {
   google: require('../../stores/google')
 }
@@ -66,7 +67,7 @@ module.exports = React.createClass({
           tooltip='Add Mailbox'
           tooltipPosition='top-center'
           onClick={this.handleOpenPopover}
-          iconStyle={{ color: Styles.Colors.blueGrey400 }}>
+          iconStyle={{ color: Colors.blueGrey400 }}>
           add_circle
         </IconButton>
         <Popover open={this.state.popover}

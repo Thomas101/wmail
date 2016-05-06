@@ -4,7 +4,8 @@ const flux = {
   mailbox: require('../../stores/mailbox'),
   google: require('../../stores/google')
 }
-const { Badge, Styles, Popover, Menu, MenuItem, Divider, FontIcon } = require('material-ui')
+const { Badge, Popover, Menu, MenuItem, Divider, FontIcon } = require('material-ui')
+const Colors = require('material-ui/styles/colors')
 const mailboxDispatch = require('../Dispatch/mailboxDispatch')
 
 /* eslint-disable react/prop-types */
@@ -250,7 +251,7 @@ module.exports = React.createClass({
           className='unread-badge'
           badgeStyle={{
             backgroundColor: 'rgba(238, 54, 55, 0.95)',
-            color: Styles.Colors.red50
+            color: Colors.red50
           }}/>
       )
     }

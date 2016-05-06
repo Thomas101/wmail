@@ -2,9 +2,9 @@ import './accountSettings.less'
 const React = require('react')
 const {
   SelectField, MenuItem,
-  Paper, Toggle, RaisedButton,
-  Styles: { Colors }
+  Paper, Toggle, RaisedButton
 } = require('material-ui')
+const Colors = require('material-ui/styles/colors')
 const ColorPicker = require('react-color').default
 const GoogleInboxAccountSettings = require('./Accounts/GoogleInboxAccountSettings')
 const GoogleMailAccountSettings = require('./Accounts/GoogleMailAccountSettings')

@@ -18,6 +18,8 @@ const UnreadNotifications = require('../daemons/UnreadNotifications')
 const shell = remote.require('shell')
 const shallowCompare = require('react-addons-shallow-compare')
 const Tray = require('./Tray')
+const appTheme = require('./appTheme')
+const MuiThemeProvider = require('material-ui/styles/MuiThemeProvider').default
 
 const injectTapEventPlugin = require('react-tap-event-plugin')
 injectTapEventPlugin()
@@ -280,7 +282,9 @@ module.exports = React.createClass({
 
     return (
       <div>
-        <AppContent />
+        <MuiThemeProvider muiTheme={appTheme}>
+          <AppContent />
+        </MuiThemeProvider>
         {!this.state.showTrayIcon ? undefined : (
           <Tray
             unreadMessages={this.state.unreadMessages}

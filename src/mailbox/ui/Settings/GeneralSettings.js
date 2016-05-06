@@ -88,7 +88,7 @@ module.exports = React.createClass({
                 <Toggle
                   labelPosition='right'
                   toggled={this.state.showTitlebar}
-                  label={<span><span>Show titlebar</span> <small>(Applied after restart)</small></span>}
+                  label='Show titlebar (Requires Restart)'
                   onToggle={(evt, toggled) => flux.settings.A.setShowTitlebar(toggled)} />
                 )}
               {process.platform === 'darwin' ? undefined : (
@@ -166,7 +166,7 @@ module.exports = React.createClass({
           <Toggle
             toggled={this.state.spellcheckerEnabled}
             labelPosition='right'
-            label={(<span><span>Spell-checker</span> <small>(Experimental, requires restart)</small></span>)}
+            label='Spell-checker (requires restart)'
             onToggle={(evt, toggled) => flux.settings.A.setEnableSpellchecker(toggled)} />
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
