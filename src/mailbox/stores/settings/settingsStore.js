@@ -70,7 +70,11 @@ class SettingsStore {
       return this.__value__('showAppBadge', true)
     }
     this.showAppMenu = () => {
-      return this.__value__('showAppMenu', true)
+      if (process.platform === 'win32') {
+        return this.__value__('showAppMenu', false)
+      } else {
+        return this.__value__('showAppMenu', true)
+      }
     }
 
     /* ****************************************/
