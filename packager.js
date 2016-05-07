@@ -6,7 +6,7 @@ const fs = require('fs-extra')
 const childProcess = require('child_process')
 const path = require('path')
 const nlf = require('nlf')
-const electronInstaller = require('electron-winstaller')
+// const electronInstaller = require('electron-winstaller')
 const platform = process.argv[2] || 'darwin'
 
 class PackageBuilder {
