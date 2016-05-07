@@ -2,10 +2,13 @@ import 'flexboxgrid'
 
 const React = require('react')
 
-/* eslint-disable react/prop-types */
-
 module.exports = React.createClass({
   displayName: 'FlexboxRow',
+
+  propTypes: {
+    className: React.PropTypes.string,
+    children: React.PropTypes.node
+  },
 
   render () {
     return (

@@ -5,8 +5,6 @@ const flux = {
   settings: require('../../stores/settings')
 }
 
-/* eslint-disable react/prop-types */
-
 module.exports = React.createClass({
   displayName: 'AdvancedSettings',
 

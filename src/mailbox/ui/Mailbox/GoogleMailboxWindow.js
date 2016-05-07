@@ -13,8 +13,6 @@ const ipc = window.nativeRequire('electron').ipcRenderer
 const mailboxDispatch = require('../Dispatch/mailboxDispatch')
 const TimerMixin = require('react-timer-mixin')
 
-/* eslint-disable react/prop-types */
-
 module.exports = React.createClass({
   displayName: 'GoogleMailboxWindow',
   mixins: [TimerMixin],

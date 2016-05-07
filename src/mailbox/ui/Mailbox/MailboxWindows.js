@@ -7,8 +7,6 @@ const flux = {
 const GoogleMailboxWindow = require('./GoogleMailboxWindow')
 const Welcome = require('../Welcome/Welcome')
 
-/* eslint-disable react/prop-types */
-
 module.exports = React.createClass({
   displayName: 'MailboxWindows',
 

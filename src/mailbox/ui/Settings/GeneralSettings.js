@@ -7,8 +7,6 @@ const flux = {
 }
 const { Row, Col } = require('../Flexbox')
 
-/* eslint-disable react/prop-types */
-
 module.exports = React.createClass({
   displayName: 'GeneralSettings',
 

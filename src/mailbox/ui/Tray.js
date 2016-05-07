@@ -1,7 +1,7 @@
 const remote = window.nativeRequire('remote')
 const electron = window.nativeRequire('electron')
 const Tray = remote.require('tray')
-const app = remote.require('app')
+const systemPreferences = remote.systemPreferences
 const Menu = remote.Menu
 const ipc = electron.ipcRenderer
 const NativeImage = remote.nativeImage
@@ -43,7 +43,7 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getDefaultReadColor () { return process.platform === 'darwin' && app.isDarkMode() ? '#FFFFFF' : '#000000' },
+  getDefaultReadColor () { return process.platform === 'darwin' && systemPreferences.isDarkMode() ? '#FFFFFF' : '#000000' },
   getDefaultUnreadColor () { return '#C82018' },
 
   getInitialState () {
@@ -142,7 +142,7 @@ module.exports = React.createClass({
         const headers = info.message.payload.headers
         const subject = (headers.find((h) => h.name === 'Subject') || {}).value || 'No Subject'
         const fromEmail = (headers.find((h) => h.name === 'From') || {}).value || ''
-        const fromEmailMatch = fromEmail.match('(.+)\<(.+)@(.+)\>$')
+        const fromEmailMatch = fromEmail.match('(.+)<(.+)@(.+)>$')
         if (fromEmailMatch) {
           info.snippet = fromEmailMatch[1].trim() + ' : ' + subject
         } else {

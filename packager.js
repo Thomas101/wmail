@@ -3,7 +3,7 @@
 const packager = require('electron-packager')
 const pkg = require('./package.json')
 const fs = require('fs-extra')
-const child_process = require('child_process')
+const childProcess = require('child_process')
 const path = require('path')
 const nlf = require('nlf')
 const electronInstaller = require('electron-winstaller')
@@ -18,7 +18,7 @@ class PackageBuilder {
   buildWebpack () {
     return new Promise((resolve, reject) => {
       console.log('[START] Webpack')
-      child_process.exec('node node_modules/webpack/bin/webpack.js -p', function (error, stdout, stderr) {
+      childProcess.exec('node node_modules/webpack/bin/webpack.js -p', function (error, stdout, stderr) {
         if (error) { console.error(error) }
         if (stdout) { console.log(`stdout: ${stdout}`) }
         if (stderr) { console.log(`stderr: ${stderr}`) }
@@ -155,8 +155,9 @@ class PackageBuilder {
       .then(() => {
         console.log(((new Date().getTime() - start) / 1000) + 's')
         console.log('[EXIT] Done')
-      }, () => {
+      }, (err) => {
         console.log('[EXIT] Error')
+        console.log(err)
       })
   }
 }

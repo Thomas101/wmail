@@ -39,7 +39,7 @@ class AppAnalytics {
       windowSize = window && window.getSize ? window.getSize().join('x') : undefined
     } catch (ex) { /* no-op */ }
 
-    const full_args = Object.assign({
+    const fullArgs = Object.assign({
       v: 1,
       tid: credentials.GOOGLE_ANALYTICS_ID,
       cid: this.id,
@@ -50,8 +50,8 @@ class AppAnalytics {
       av: process.platform + '-' + pkg.version
     }, args)
 
-    const qs = Object.keys(full_args).reduce((acc, k) => {
-      acc.push(k + '=' + encodeURIComponent(full_args[k]))
+    const qs = Object.keys(fullArgs).reduce((acc, k) => {
+      acc.push(k + '=' + encodeURIComponent(fullArgs[k]))
       return acc
     }, []).join('&')
 

@@ -13,8 +13,6 @@ const flux = {
   mailbox: require('../../stores/mailbox')
 }
 
-/* eslint-disable react/prop-types */
-
 module.exports = React.createClass({
   displayName: 'AccountSettings',
 

@@ -8,8 +8,6 @@ const MailboxList = require('./MailboxList')
 const SidelistAddMailbox = require('./SidelistAddMailbox')
 const SidelistSettings = require('./SidelistSettings')
 
-/* eslint-disable react/prop-types */
-
 module.exports = React.createClass({
   displayName: 'Sidelist',
 

@@ -252,7 +252,7 @@ module.exports = React.createClass({
           badgeStyle={{
             backgroundColor: 'rgba(238, 54, 55, 0.95)',
             color: Colors.red50
-          }}/>
+          }} />
       )
     }
 

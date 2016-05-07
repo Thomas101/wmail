@@ -132,7 +132,7 @@
   })
 
   ipcMain.on('restart-app', (evt, body) => {
-    exec('"' + process.execPath.replace(/\"/g, '\\"') + '"')
+    exec('"' + process.execPath.replace(/"/g, '\\"') + '"')
     windowManager.quit()
   })
 

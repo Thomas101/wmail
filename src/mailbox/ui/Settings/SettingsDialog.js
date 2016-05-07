@@ -12,8 +12,6 @@ const flux = {
 }
 const Colors = require('material-ui/styles/colors')
 
-/* eslint-disable react/prop-types */
-
 module.exports = React.createClass({
   displayName: 'SettingsDialog',
 
@@ -130,7 +128,7 @@ module.exports = React.createClass({
               backgroundColor={Colors.lightBlue600}
               hoverColor={Colors.lightBlue600}
               rippleColor={Colors.lightBlue900}
-              onClick={() => this.setState({ currentTab: value })}/>
+              onClick={() => this.setState({ currentTab: value })} />
           )
         })}
       </div>

@@ -2,8 +2,6 @@ import 'flexboxgrid'
 
 const React = require('react')
 
-/* eslint-disable react/prop-types */
-
 module.exports = React.createClass({
   displayName: 'FlexboxCol',
 
@@ -11,7 +9,9 @@ module.exports = React.createClass({
     xs: React.PropTypes.number,
     sm: React.PropTypes.number,
     md: React.PropTypes.number,
-    lg: React.PropTypes.number
+    lg: React.PropTypes.number,
+    className: React.PropTypes.string,
+    children: React.PropTypes.node
   },
 
   render () {

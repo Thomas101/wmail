@@ -3,8 +3,6 @@ const { IconButton } = require('material-ui')
 const Colors = require('material-ui/styles/colors')
 const navigationDispatch = require('../Dispatch/navigationDispatch')
 
-/* eslint-disable react/prop-types */
-
 module.exports = React.createClass({
   displayName: 'SidelistSettings',
 
