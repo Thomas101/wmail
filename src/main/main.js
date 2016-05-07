@@ -40,6 +40,7 @@
 
   const appDirectory = new AppDirectory(pkg.name)
   mkdirp.sync(appDirectory.userData())
+
   const localStorage = new Storage(path.join(appDirectory.userData(), 'main_proc_db.json'))
   const appSettings = new AppSettings(localStorage)
   const analytics = new AppAnalytics(localStorage, appSettings)
