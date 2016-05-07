@@ -33,6 +33,7 @@ class PackageBuilder {
     })
   }
 
+/*
   createWindowsInstaller () {
     return new Promise((resolve, reject) => {
       console.log('[START] Electron Winstaller')
@@ -49,6 +50,7 @@ class PackageBuilder {
       }).catch(reject)
     })
   }
+*/
 
   packageApp () {
     return new Promise((resolve, reject) => {
@@ -145,9 +147,7 @@ class PackageBuilder {
             .then(() => this.moveLicenses('./WMail-linux-ia32/'))
             .then(() => this.moveLicenses('./WMail-linux-x64/'))
         } else if (platform === 'win32') {
-          return Promise.resolve()
-            .then(() => this.moveLicenses('./WMail-win32-ia32/'))
-            .then(this.createWindowsInstaller)
+          return this.moveLicenses('./WMail-win32-ia32/')
         } else {
           return Promise.reject()
         }

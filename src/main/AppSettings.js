@@ -53,7 +53,7 @@ class AppSettings {
   /* ****************************************************************************/
 
   get hasTitlebar () { return this.loadValue('showTitlebar', false) }
-  get hasAppMenu () { return this.loadValue('showAppMenu', true) }
+  get hasAppMenu () { return this.loadValue('showAppMenu', process.platform === 'win32' ? false : true) }
   get proxyEnabled () { return this.loadValue('proxyServer', { enabled: false }).enabled }
   get proxyHost () { return this.loadValue('proxyServer', { enabled: false }).host }
   get proxyPort () { return this.loadValue('proxyServer', { enabled: false }).port }
