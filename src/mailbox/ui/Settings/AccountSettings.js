@@ -4,11 +4,13 @@ const {
   SelectField, MenuItem,
   Paper, Toggle, RaisedButton
 } = require('material-ui')
+const {
+  ColorPickerButton,
+  Flexbox: { Row, Col }
+} = require('../../Components')
 const Colors = require('material-ui/styles/colors')
-const ColorPicker = require('react-color').default
 const GoogleInboxAccountSettings = require('./Accounts/GoogleInboxAccountSettings')
 const GoogleMailAccountSettings = require('./Accounts/GoogleMailAccountSettings')
-const { Row, Col } = require('../Flexbox')
 const flux = {
   mailbox: require('../../stores/mailbox')
 }
@@ -37,8 +39,7 @@ module.exports = React.createClass({
     const all = store.all()
     return {
       mailboxes: all,
-      selected: all[0],
-      showAccountColorPicker: false
+      selected: all[0]
     }
   },
 
@@ -79,7 +80,7 @@ module.exports = React.createClass({
 
   handleAccountColorChange (col) {
     flux.mailbox.A.update(this.state.selected.id, {
-      color: '#' + col.hex
+      color: col.hex
     })
   },
 
@@ -134,7 +135,7 @@ module.exports = React.createClass({
         <div>
           <Paper zDepth={1} style={{ padding: 15, marginBottom: 5 }}>
             <Row>
-              <Col sm={6}>
+              <Col sm={7}>
                 <Toggle
                   defaultToggled={selected.showUnreadBadge}
                   label='Show unread badge'
@@ -151,7 +152,7 @@ module.exports = React.createClass({
                   labelPosition='right'
                   onToggle={this.handleShowNotificationsChange} />
               </Col>
-              <Col sm={6}>
+              <Col sm={5}>
                 <RaisedButton
                   label='Change Account Icon'
                   className='file-button'
@@ -159,20 +160,14 @@ module.exports = React.createClass({
                   <input
                     type='file'
                     accept='image/*'
-                    onChange={this.handleCustomAvatarChange}
-                    defaultValue={selected.customAvatar} />
+                    onChange={this.handleCustomAvatarChange} />
                 </RaisedButton>
                 <br />
                 <div>
-                  <RaisedButton
-                    label='Account Color'
-                    onClick={() => this.setState({ showAccountColorPicker: true })} />
-                  <ColorPicker
-                    display={this.state.showAccountColorPicker}
-                    type='swatches'
-                    positionCSS={{left: 0}}
-                    onClose={() => this.setState({ showAccountColorPicker: false })}
-                    onChangeComplete={this.handleAccountColorChange} />
+                  <ColorPickerButton
+                    label='Account Colour'
+                    value={selected.color}
+                    onChange={this.handleAccountColorChange} />
                 </div>
               </Col>
             </Row>

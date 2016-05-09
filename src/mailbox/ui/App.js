@@ -291,7 +291,7 @@ module.exports = React.createClass({
             unreadCount={this.state.messagesUnreadCount}
             showUnreadCount={this.state.showTrayUnreadCount}
             unreadColor={this.state.trayUnreadColor}
-            readColor={this.state.readColor} />
+            readColor={this.state.trayReadColor} />
           )}
       </div>
     )

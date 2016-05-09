@@ -1,6 +1,6 @@
 const React = require('react')
 const { Toggle, TextField, Paper } = require('material-ui')
-const { Row, Col } = require('../Flexbox')
+const { Row, Col } = require('../../Components/Flexbox')
 const flux = {
   settings: require('../../stores/settings')
 }

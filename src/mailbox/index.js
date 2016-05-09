@@ -1,5 +1,5 @@
 import './layout.less'
-import './components.less'
+import './Components/fileButton.less'
 
 const React = require('react')
 const ReactDOM = require('react-dom')

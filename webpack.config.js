@@ -97,6 +97,11 @@ if (production) {
   options.plugins.push(new webpack.optimize.UglifyJsPlugin({
     compress: { warnings: false }
   }))
+  options.plugins.push(new webpack.DefinePlugin({
+    'process.env': {
+      'NODE_ENV': JSON.stringify('production')
+    }
+  }))
 } else {
   options.devtool = clientFast ? 'eval-cheap-module-source-map' : 'source-map'
 }

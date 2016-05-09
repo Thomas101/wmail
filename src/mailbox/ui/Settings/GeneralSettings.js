@@ -1,11 +1,13 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
 const { Toggle, Paper, RaisedButton } = require('material-ui')
-const ColorPicker = require('react-color').default
+const {
+  ColorPickerButton,
+  Flexbox: { Row, Col }
+} = require('../../Components')
 const flux = {
   settings: require('../../stores/settings')
 }
-const { Row, Col } = require('../Flexbox')
 
 module.exports = React.createClass({
   displayName: 'GeneralSettings',
@@ -59,10 +61,7 @@ module.exports = React.createClass({
   },
 
   getInitialState () {
-    return Object.assign(this.generateState(), {
-      showTrayReadColorPicker: false,
-      showTrayUnreadColorPicker: false
-    })
+    return this.generateState()
   },
 
   settingsChanged (store) {
@@ -133,29 +132,19 @@ module.exports = React.createClass({
             </Col>
             <Col sm={6}>
               <div>
-                <RaisedButton
+                <ColorPickerButton
                   label='Tray read colour'
                   disabled={!this.state.showTrayIcon}
-                  onClick={() => this.setState({ showTrayReadColorPicker: true })} />
-                <ColorPicker
-                  display={this.state.showTrayReadColorPicker}
-                  type='swatches'
-                  positionCSS={{left: 0}}
-                  onClose={() => this.setState({ showTrayReadColorPicker: false })}
-                  onChangeComplete={(col) => flux.settings.A.setTrayReadColor('#' + col.hex)} />
+                  value={this.state.trayReadColor}
+                  onChange={(col) => flux.settings.A.setTrayReadColor(col.hex)} />
               </div>
               <br />
               <div>
-                <RaisedButton
+                <ColorPickerButton
                   label='Tray unread colour'
                   disabled={!this.state.showTrayIcon}
-                  onClick={() => this.setState({ showTrayUnreadColorPicker: true })} />
-                <ColorPicker
-                  display={this.state.showTrayUnreadColorPicker}
-                  type='swatches'
-                  positionCSS={{left: 0}}
-                  onClose={() => this.setState({ showTrayUnreadColorPicker: false })}
-                  onChangeComplete={(col) => flux.settings.A.setTrayUnreadColor('#' + col.hex)} />
+                  value={this.state.trayUnreadColor}
+                  onChange={(col) => flux.settings.A.setTrayUnreadColor(col.hex)} />
               </div>
             </Col>
           </Row>
@@ -182,30 +171,28 @@ module.exports = React.createClass({
             onToggle={(evt, toggled) => flux.settings.A.setNotificationsSilent(!toggled)} />
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
-          <Row>
-            <Col sm={6}>
-              <Toggle
-                toggled={this.state.alwaysAskDownloadLocation}
-                label='Always ask download location'
-                labelPosition='right'
-                onToggle={(evt, toggled) => flux.settings.A.setAlwaysAskDownloadLocation(toggled)} />
-            </Col>
-            <Col sm={6}>
-              <RaisedButton
-                label='Select location'
-                className='file-button'
+          <div>
+            <Toggle
+              toggled={this.state.alwaysAskDownloadLocation}
+              label='Always ask download location'
+              labelPosition='right'
+              onToggle={(evt, toggled) => flux.settings.A.setAlwaysAskDownloadLocation(toggled)} />
+            <br />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <RaisedButton
+              label='Select location'
+              className='file-button'
+              disabled={this.state.alwaysAskDownloadLocation}
+              style={{ marginRight: 15 }}>
+              <input
+                type='file'
+                ref='defaultDownloadInput'
                 disabled={this.state.alwaysAskDownloadLocation}
-                style={{ marginRight: 15 }}>
-                <input
-                  type='file'
-                  ref='defaultDownloadInput'
-                  disabled={this.state.alwaysAskDownloadLocation}
-                  onChange={(evt) => flux.settings.A.setDefaultDownloadLocation(evt.target.files[0].path)}
-                  defaultValue={this.state.defaultDownloadLocation} />
-              </RaisedButton>
-              {this.state.alwaysAskDownloadLocation ? undefined : <small>{this.state.defaultDownloadLocation}</small>}
-            </Col>
-          </Row>
+                onChange={(evt) => flux.settings.A.setDefaultDownloadLocation(evt.target.files[0].path)} />
+            </RaisedButton>
+            {this.state.alwaysAskDownloadLocation ? undefined : <small>{this.state.defaultDownloadLocation}</small>}
+          </div>
         </Paper>
       </div>
     )
