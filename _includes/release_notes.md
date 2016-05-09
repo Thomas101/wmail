@@ -1,10 +1,20 @@
-This is the next major version of WMail from 1.2.0. A big thank you to everyone who's been testing the pre-release versions, submitting bugs and code! This new version of WMail addresses quite a few performance issues and issues with notifications, so it should feel much snappier and lighter on resources. In total version 1.3.0 consists of a huge 86 commits, lots of bug fixes and features...
+This is a small release with some bugfixes and performance improvements. Nonetheless, you should totally upgrade. It still contains all the awesome from all the previous releases.
 
-# 🎉🎉🎉  The Feature (it’s a big one!) 🎉🎉🎉
-A giant thank you goes out to @MarshallOfSound who added Windows Support 🍺🍺🍺
-Thanks to the community, in paticular @parro-it  for linux support and @MarshallOfSound for windows support you can now run WMail pretty much anywhere!
+# Bugs
+* Fixed an issue where the app would crash when a default download location was set
+* Refactored the colorpickers to use a newer version of the code
 
-# Features (not to forget the rest...)
+# Code
+* Updated material-ui to stable 0.15
+* Ensured code optimisation was enabled when building react
+
+--
+
+#### Here's a recap what was new in the last major version (worth a mention as this is such a small one!)
+
+## Features
+* **Windows Support**
+
 * Settings
  * You can now hide and show the sidebar thanks to @alexweber
  * Added an option for accounts not add unread count to app unread
@@ -37,7 +47,7 @@ Thanks to the community, in paticular @parro-it  for linux support and @Marshall
 * Updated electron to the latest version for bug fixes and performance
 * Updated a bunch of libraries and framework for better stability and latest security fixes etc
 
-# Bugs 🐛🐛🐛
+## Bugs 🐛🐛🐛
 * @dkuntz2 fixed the white border around avatars
 * Unread messages in notification area no longer show stale messages
 * Unread messages are now auto-synced when the unread count changes so notification system feels more responsive.
@@ -55,7 +65,7 @@ Thanks to the community, in paticular @parro-it  for linux support and @Marshall
 * No longer show notification if download is cancelled
 
 
-# Code
+## Code
 * Continued an on-wards march to keep dependencies updated
 * Moved forward with React to version 15 which required quite a few code patches
 * Updated settings screen for accounts to remove duplicated code
