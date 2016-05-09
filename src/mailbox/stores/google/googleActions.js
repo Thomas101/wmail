@@ -383,8 +383,8 @@ class GoogleActions {
         const mailbox = mailboxStore.getState().get(mailboxId)
 
         // Mark the latest set of unread messages
-        const allMessageIds = response.response.messages.map((data) => data.id)
-        const messageIds = response.response.messages.reduce((acc, data) => {
+        const allMessageIds = (response.response.messages || []).map((data) => data.id)
+        const messageIds = (response.response.messages || []).reduce((acc, data) => {
           // Look to see if we've seen this message already
           // Also look to see if this is one of multiple in a thread
           if (acc.threads[data.threadId]) {
