@@ -42,7 +42,7 @@ module.exports = Object.freeze({
 Then run the following...
 
 ```
-npm install
+npm run-script install-all
 npm start
 ```
 
