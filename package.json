@@ -7,13 +7,11 @@
     "prestart": "webpack",
     "start": "electron bin/app/index.js",
     "test": "standard",
-
     "package:darwin": "node packager.js darwin",
     "package:linux": "node packager.js linux",
     "package:win32": "node packager.js win32",
     "package": "node packager.js darwin && node packager.js linux && node packager.js win32",
     "postinstall": "electron-rebuild",
-
     "install-all": "echo ':>wmail'; npm install; cd src/app; echo ':>wmail-app'; npm install; cd ../../src/windows/mailboxes; echo ':>wmail-windows-mailboxes'; npm install",
     "outdated-all": "echo ':>wmail'; npm outdated; cd src/app; echo ':>wmail-app'; npm outdated; cd ../../src/windows/mailboxes; echo ':>wmail-windows-mailboxes'; npm outdated"
   },
@@ -47,5 +45,8 @@
     "url-loader": "^0.5.7",
     "webpack": "^1.13.0",
     "webpack-target-electron-renderer": "^0.4.0"
+  },
+  "devDependencies": {
+    "standard": "^7.0.1"
   }
 }

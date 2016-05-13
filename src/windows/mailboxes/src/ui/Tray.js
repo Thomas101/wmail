@@ -1,10 +1,6 @@
-const remote = window.nativeRequire('remote')
 const electron = window.nativeRequire('electron')
-const Tray = remote.require('tray')
-const systemPreferences = remote.systemPreferences
-const Menu = remote.Menu
+const {Tray, systemPreferences, Menu, nativeImage} = electron.remote
 const ipc = electron.ipcRenderer
-const NativeImage = remote.nativeImage
 const React = require('react')
 const shallowCompare = require('react-addons-shallow-compare')
 const mailboxDispatch = require('./Dispatch/mailboxDispatch')
@@ -107,8 +103,8 @@ module.exports = React.createClass({
     ctx.strokeStyle = COLOR
     ctx.stroke()
 
-    const pngData = NativeImage.createFromDataURL(canvas.toDataURL('image/png')).toPng()
-    return NativeImage.createFromBuffer(pngData, window.devicePixelRatio)
+    const pngData = nativeImage.createFromDataURL(canvas.toDataURL('image/png')).toPng()
+    return nativeImage.createFromBuffer(pngData, window.devicePixelRatio)
   },
 
   /**

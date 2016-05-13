@@ -6,9 +6,8 @@ const flux = {
   google: require('../../stores/google'),
   settings: require('../../stores/settings')
 }
-const remote = window.nativeRequire('remote')
+const {shell} = window.nativeRequire('electron').remote
 const URL = window.nativeRequire('url')
-const shell = remote.require('shell')
 const ipc = window.nativeRequire('electron').ipcRenderer
 const mailboxDispatch = require('../Dispatch/mailboxDispatch')
 const TimerMixin = require('react-timer-mixin')

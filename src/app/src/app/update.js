@@ -3,8 +3,7 @@
 const fetch = require('node-fetch')
 const constants = require('../shared/constants')
 const pkg = require('../package.json')
-const dialog = require('electron').dialog
-const shell = require('shell')
+const {dialog, shell} = require('electron')
 const compareVersion = require('compare-version')
 
 class Update {

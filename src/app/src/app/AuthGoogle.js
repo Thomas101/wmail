@@ -1,9 +1,9 @@
 'use strict'
 
 const ipcMain = require('electron').ipcMain
-const electronGoogleOauth = require('electron-google-oauth')
-const credentials = require('../shared/credentials')
-const HttpsProxyAgent = require('https-proxy-agent')
+// const electronGoogleOauth = require('electron-google-oauth')
+// const credentials = require('../shared/credentials')
+// const HttpsProxyAgent = require('https-proxy-agent')
 
 class AuthGoogle {
   /* ****************************************************************************/
@@ -31,6 +31,7 @@ class AuthGoogle {
   * @param body: the body sent to us
   */
   handleAuthGoogle (evt, body) {
+    /*
     let proxyAgent
     if (this.appSettings.proxyEnabled) {
       proxyAgent = new HttpsProxyAgent(this.appSettings.proxyUrl)
@@ -73,7 +74,7 @@ class AuthGoogle {
         errorMessage: (err || {}).message ? (err || {}).message : undefined,
         errorStack: (err || {}).stack ? (err || {}).stack : undefined
       })
-    })
+    })*/
   }
 }
 

@@ -6,8 +6,7 @@
   require('./zoomLevel')
   require('./googleWindowOpen')
 
-  const electron = require('electron')
-  const ipc = electron.ipcRenderer
+  const ipc = require('electron').ipcRenderer
   const enUS = require('dictionary-en-us')
   const Spellchecker = require('nodehun')
   enUS((err, result) => {

@@ -1,6 +1,6 @@
 'use strict'
 
-const BrowserWindow = require('browser-window')
+const {BrowserWindow} = require('electron')
 const EventEmitter = require('events')
 
 class WMailWindow extends EventEmitter {

@@ -1,6 +1,6 @@
 'use strict'
 
-const Menu = require('menu')
+const {Menu} = require('electron')
 
 module.exports = {
   /**

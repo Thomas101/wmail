@@ -1,7 +1,7 @@
 'use strict'
 
 const WMailWindow = require('./WMailWindow')
-const shell = require('shell')
+const {shell} = require('electron')
 
 class ContentWindow extends WMailWindow {
 

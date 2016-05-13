@@ -8,14 +8,12 @@ const flux = {
 }
 const AppContent = require('./AppContent')
 const ipc = window.nativeRequire('electron').ipcRenderer
-const remote = window.nativeRequire('remote')
-const app = remote.require('app')
+const {app, shell} = window.nativeRequire('electron').remote
 const mailboxDispatch = require('./Dispatch/mailboxDispatch')
 const navigationDispatch = require('./Dispatch/navigationDispatch')
 const TimerMixin = require('react-timer-mixin')
 const constants = require('shared/constants')
 const UnreadNotifications = require('../daemons/UnreadNotifications')
-const shell = remote.require('shell')
 const shallowCompare = require('react-addons-shallow-compare')
 const Tray = require('./Tray')
 const appTheme = require('./appTheme')

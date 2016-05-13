@@ -1,5 +1,6 @@
 ;(function () {
-  const app = require('app')
+  const {ipcMain, dialog, app, Menu, shell} = require('electron')
+
   let windowManager
   const quitting = app.makeSingleInstance(function (commandLine, workingDirectory) {
     if (windowManager) {
@@ -19,12 +20,7 @@
   const MailboxesWindow = require('./MailboxesWindow')
   const ContentWindow = require('./ContentWindow')
   const pkg = require('../package.json')
-  const electron = require('electron')
-  const ipcMain = electron.ipcMain
-  const dialog = electron.dialog
   const appMenu = require('./appMenu')
-  const Menu = require('menu')
-  const shell = require('shell')
   const WindowManager = require('./WindowManager')
   const constants = require('../shared/constants')
   const exec = require('child_process').exec

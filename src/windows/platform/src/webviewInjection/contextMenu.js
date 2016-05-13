@@ -4,7 +4,7 @@ module.exports = function (spellChecker) {
   const electron = require('electron')
   const remote = electron.remote
   const Menu = remote.Menu
-  const shell = remote.require('shell')
+  const shell = remote.shell
 
   const textOnlyRE = new RegExp(/[^a-z]+/gi)
 
