@@ -1,4 +1,4 @@
-const google = window.nativeRequire('googleapis')
+const google = window.appNodeModulesRequire('googleapis')
 const gPlus = google.plus('v1')
 const gmail = google.gmail('v1')
 const flux = {

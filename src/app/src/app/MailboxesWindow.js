@@ -27,7 +27,7 @@ class MailboxesWindow extends WMailWindow {
   }
 
   start (url) {
-    super.start('file://' + path.join(__dirname, '/../mailbox.html'))
+    super.start('file://' + path.join(__dirname, '/../../windows/mailboxes/mailboxes.html'))
   }
 
   /* ****************************************************************************/

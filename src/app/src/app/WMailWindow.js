@@ -45,8 +45,7 @@ class WMailWindow extends EventEmitter {
   */
   defaultWindowPreferences () {
     return {
-      title: 'WMail',
-      icon: path.join(__dirname, '/../icons/app.png')
+      title: 'WMail'
     }
   }
 

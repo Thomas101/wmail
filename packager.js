@@ -6,7 +6,6 @@ const fs = require('fs-extra')
 const childProcess = require('child_process')
 const path = require('path')
 const nlf = require('nlf')
-// const electronInstaller = require('electron-winstaller')
 const platform = process.argv[2] || 'darwin'
 
 class PackageBuilder {
@@ -18,7 +17,9 @@ class PackageBuilder {
   buildWebpack () {
     return new Promise((resolve, reject) => {
       console.log('[START] Webpack')
-      childProcess.exec('node node_modules/webpack/bin/webpack.js -p', function (error, stdout, stderr) {
+      const cmd = 'node node_modules/webpack/bin/webpack.js -p'
+      const args = {maxBuffer: 1024 * 1024} // Give ourselves a meg of buffer. Webpack can be very verbose
+      childProcess.exec(cmd, args, (error, stdout, stderr) => {
         if (error) { console.error(error) }
         if (stdout) { console.log(`stdout: ${stdout}`) }
         if (stderr) { console.log(`stderr: ${stderr}`) }
@@ -33,25 +34,6 @@ class PackageBuilder {
     })
   }
 
-/*
-  createWindowsInstaller () {
-    return new Promise((resolve, reject) => {
-      console.log('[START] Electron Winstaller')
-      electronInstaller.createWindowsInstaller({
-        appDirectory: './WMail-win32-ia32',
-        authors: pkg.author,
-        noMsi: true,
-        outputDirectory: './WMail-win32-ia32-Installer',
-        setupExe: 'WMail Setup.exe',
-        setupIcon: path.resolve('./icons/app.ico')
-      }).then(() => {
-        console.log('[FINISH] Electron Winstaller')
-        resolve()
-      }).catch(reject)
-    })
-  }
-*/
-
   packageApp () {
     return new Promise((resolve, reject) => {
       console.log('[START] Package')
@@ -60,12 +42,12 @@ class PackageBuilder {
         name: 'WMail',
         platform: platform,
         arch: (platform === 'win32' ? 'ia32' : 'all'),
-        version: pkg.devDependencies['electron-prebuilt'],
+        version: pkg.dependencies['electron-prebuilt'],
         'app-bundle-id': 'tombeverley.wmail',
         'app-version': pkg.version,
-        icon: 'icons/app',
+        icon: 'assets/icons/app',
         overwrite: true,
-        prune: true,
+        prune: false,
         'version-string': {
           CompanyName: pkg.author,
           FileDescription: pkg.description,
@@ -73,14 +55,24 @@ class PackageBuilder {
           ProductName: 'WMail'
         },
         ignore: '^(' + [
-          '/icons',
-          '/release',
-          '/packager.js',
-          '/webpack.config.js',
-          '/screenshot.png',
-          '/README.md',
-          '/src',
+          // Folders
+          '/assets',
           '/github_images',
+          '/node_modules',
+          '/release',
+          '/src',
+
+          // Files
+          '/.editorconfig',
+          '/.gitignore',
+          '/.travis.yml',
+          '/.LICENSE',
+          '/.npm-debug.log',
+          '/packager.js',
+          '/README.md',
+          '/webpack.config.js',
+
+          // Output folders
           '/WMail-linux-ia32',
           '/WMail-linux-x64',
           '/WMail-win32-ia32',
@@ -105,8 +97,8 @@ class PackageBuilder {
 
       fs.mkdirsSync(J(outputPath, 'vendor-licenses'))
       fs.unlinkSync(J(outputPath, 'version'))
-      fs.move(J(outputPath, 'LICENSES.chromium.html'), J(outputPath, 'vendor-licenses/LICENSES.chromium.html'), function () {
-        fs.move(J(outputPath, 'LICENSE'), J(outputPath, 'vendor-licenses/LICENSE.electron'), function () {
+      fs.move(J(outputPath, 'LICENSES.chromium.html'), J(outputPath, 'vendor-licenses/LICENSES.chromium.html'), () => {
+        fs.move(J(outputPath, 'LICENSE'), J(outputPath, 'vendor-licenses/LICENSE.electron'), () => {
           nlf.find({ directory: '.', production: true }, function (err, data) {
             if (err) {
               reject(err)
@@ -141,7 +133,9 @@ class PackageBuilder {
       .then(this.packageApp)
       .then(() => {
         if (platform === 'darwin') {
-          return this.moveLicenses('./WMail-darwin-x64/')
+          fs.copySync('./release/Installing on OSX.html', './WMail-darwin-x64/Installing on OSX.html')
+          return Promise.resolve()
+            .then(() => this.moveLicenses('./WMail-darwin-x64/'))
         } else if (platform === 'linux') {
           return Promise.resolve()
             .then(() => this.moveLicenses('./WMail-linux-ia32/'))
@@ -158,6 +152,7 @@ class PackageBuilder {
       }, (err) => {
         console.log('[EXIT] Error')
         console.log(err)
+        console.log(err.stack)
       })
   }
 }

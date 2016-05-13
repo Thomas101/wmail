@@ -46,7 +46,6 @@ class AuthGoogle {
       standardWindow: true,
       autoHideMenuBar: true,
       title: 'Google',
-      icon: path.join(__dirname, '/../icons/app.png'),
       webPreferences: {
         nodeIntegration: false,
         partition: 'persist:' + body.id

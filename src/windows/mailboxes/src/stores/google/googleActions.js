@@ -1,6 +1,6 @@
 const alt = require('../alt')
 const constants = require('shared/constants')
-const google = window.nativeRequire('googleapis')
+const google = window.appNodeModulesRequire('googleapis')
 const OAuth2 = google.auth.OAuth2
 const credentials = require('shared/credentials')
 const googleHTTP = require('./googleHTTP')

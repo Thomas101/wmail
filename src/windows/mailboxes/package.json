@@ -1,0 +1,22 @@
+{
+  "name": "wmail-windows-mailboxes",
+  "author": "Thomas Beverley",
+  "license": "BSD-2-Clause",
+  "repository": "https://github.com/Thomas101/wmail",
+  "description": "The mailboxes window for the WMail app",
+  "dependencies": {
+    "alt": "0.18.4",
+    "fbjs": "0.8.2",
+    "flexboxgrid": "6.3.0",
+    "https-proxy-agent": "1.0.0",
+    "material-ui": "0.15.0",
+    "minivents": "2.0.1",
+    "react": "15.0.2",
+    "react-addons-shallow-compare": "15.0.2",
+    "react-color": "2.1.0",
+    "react-dom": "15.0.2",
+    "react-tap-event-plugin": "1.0.0",
+    "react-timer-mixin": "0.13.3",
+    "uuid": "2.0.2"
+  }
+}

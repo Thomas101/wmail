@@ -1,6 +1,6 @@
 'use strict'
 
-const uuid = require('../shared/uuid')
+const uuid = require('uuid')
 const fetch = require('node-fetch')
 const credentials = require('../shared/credentials')
 const osLanguage = require('os-locale').sync()

@@ -1,5 +1,3 @@
-'use strict'
-
 ;(function () {
   const app = require('app')
   let windowManager

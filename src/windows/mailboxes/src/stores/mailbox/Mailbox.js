@@ -1,4 +1,4 @@
-const uuid = require('shared/uuid')
+const uuid = require('uuid')
 const Google = require('./Google')
 
 class Mailbox {
