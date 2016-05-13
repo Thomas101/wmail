@@ -193,7 +193,7 @@ module.exports = React.createClass({
 
     // Build the dom
     const webview = document.createElement('webview')
-    webview.setAttribute('preload', './native/injection/google')
+    webview.setAttribute('preload', '../platform/webviewInjection/google')
     webview.setAttribute('partition', partition)
     webview.setAttribute('src', this.state.mailbox.url)
     webview.setAttribute('data-mailbox', this.state.mailbox.id)

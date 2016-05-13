@@ -7,8 +7,8 @@
   require('./googleWindowOpen')
 
   const ipc = require('electron').ipcRenderer
-  const enUS = require('dictionary-en-us')
-  const Spellchecker = require('nodehun')
+  const enUS = require('../../../app/node_modules/dictionary-en-us')
+  const Spellchecker = require('../../../app/node_modules/nodehun')
   enUS((err, result) => {
     if (!err) {
       const spellchecker = new Spellchecker(result.aff, result.dic)

@@ -8,13 +8,15 @@
   "dependencies": {
     "appdirectory": "0.1.0",
     "compare-version": "0.1.2",
+    "dictionary-en-us": "1.0.2",
     "dom-storage": "2.0.2",
     "fs-extra": "0.30.0",
-    "googleapis": "^6.1.0",
+    "googleapis": "6.1.0",
     "https-proxy-agent": "1.0.0",
     "minivents": "2.0.1",
     "mkdirp": "0.5.1",
     "node-fetch": "1.5.2",
+    "nodehun": "2.0.10",
     "os-locale": "1.4.0",
     "uuid": "2.0.2"
   }
