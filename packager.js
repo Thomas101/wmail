@@ -1,5 +1,4 @@
 'use strict'
-
 const packager = require('electron-packager')
 const pkg = require('./package.json')
 const fs = require('fs-extra')
@@ -45,8 +44,10 @@ class PackageBuilder {
         version: pkg.dependencies['electron-prebuilt'],
         'app-bundle-id': 'tombeverley.wmail',
         'app-version': pkg.version,
+        'app-copyright': 'Copyright ' + pkg.author + '(' + pkg.license + ' License)',
         icon: 'assets/icons/app',
         overwrite: true,
+        asar: true,
         prune: false,
         'version-string': {
           CompanyName: pkg.author,
@@ -121,6 +122,26 @@ class PackageBuilder {
     })
   }
 
+  pruneNPM () {
+    return new Promise((resolve, reject) => {
+      console.log('[START] Prune NPM')
+      const cmd = 'cd src/app; npm prune --production'
+      const args = {maxBuffer: 1024 * 1024}
+      childProcess.exec(cmd, args, (error, stdout, stderr) => {
+        if (error) { console.error(error) }
+        if (stdout) { console.log(`stdout: ${stdout}`) }
+        if (stderr) { console.log(`stderr: ${stderr}`) }
+
+        if (error) {
+          reject()
+        } else {
+          console.log('[FINISH] Prune NPM')
+          resolve()
+        }
+      })
+    })
+  }
+
   /* **************************************************************************/
   // Start stop
   /* **************************************************************************/
@@ -129,6 +150,7 @@ class PackageBuilder {
     const start = new Date().getTime()
     console.log('[START] Packing for ' + platform)
     return Promise.resolve()
+      .then(this.pruneNPM)
       .then(this.buildWebpack)
       .then(this.packageApp)
       .then(() => {
