@@ -1,5 +1,3 @@
-'use strict'
-
 const {Menu} = require('electron')
 
 module.exports = {

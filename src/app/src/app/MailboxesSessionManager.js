@@ -1,5 +1,3 @@
-'use strict'
-
 const electron = require('electron')
 const uuid = require('uuid')
 const fs = require('fs-extra')

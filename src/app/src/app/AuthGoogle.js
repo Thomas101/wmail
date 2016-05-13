@@ -1,5 +1,3 @@
-'use strict'
-
 const ipcMain = require('electron').ipcMain
 // const electronGoogleOauth = require('electron-google-oauth')
 // const credentials = require('../shared/credentials')

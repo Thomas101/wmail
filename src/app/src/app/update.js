@@ -1,5 +1,3 @@
-'use strict'
-
 const fetch = require('node-fetch')
 const constants = require('../shared/constants')
 const pkg = require('../package.json')

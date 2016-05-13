@@ -1,5 +1,3 @@
-'use strict'
-
 const Minivents = require('minivents')
 const DB_KEY = 'Settings_Shadow'
 

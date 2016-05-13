@@ -1,5 +1,3 @@
-'use strict'
-
 const WMailWindow = require('./WMailWindow')
 const AuthGoogle = require('./AuthGoogle')
 const update = require('./update')

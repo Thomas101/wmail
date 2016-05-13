@@ -1,5 +1,3 @@
-'use strict'
-
 const uuid = require('uuid')
 const fetch = require('node-fetch')
 const credentials = require('../shared/credentials')

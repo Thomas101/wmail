@@ -1,5 +1,3 @@
-'use strict'
-
 const WMailWindow = require('./WMailWindow')
 const {shell} = require('electron')
 
