@@ -21,7 +21,7 @@ module.exports = {
       { from: path.join(__dirname, 'src'), to: 'app', force: true },
       { from: path.join(__dirname, 'node_modules'), to: 'app/node_modules', force: true },
       { from: path.join(__dirname, '../shared/'), to: 'app/shared', force: true },
-      { from: path.join(ROOT_DIR, 'package.json'), to: 'app', force: true}
+      { from: path.join(ROOT_DIR, 'package.json'), to: 'app', force: true }
     ], {
       ignore: [ '.DS_Store' ]
     })

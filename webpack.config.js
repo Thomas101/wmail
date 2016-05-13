@@ -24,7 +24,7 @@ const task = getArg('--task=', '--mode=all').substr(7)
 if (task === 'app') {
   console.log('[TASK=app]')
   module.exports = [
-    require('./src/app/webpack.config.js'),
+    require('./src/app/webpack.config.js')
   ]
 } else if (task === 'mailboxes') {
   console.log('[TASK=mailboxes]')

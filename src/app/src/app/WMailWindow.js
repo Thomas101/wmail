@@ -2,7 +2,6 @@
 
 const BrowserWindow = require('browser-window')
 const EventEmitter = require('events')
-const path = require('path')
 
 class WMailWindow extends EventEmitter {
 
