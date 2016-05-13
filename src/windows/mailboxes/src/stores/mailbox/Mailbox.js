@@ -7,7 +7,7 @@ class Mailbox {
   // Class
   /* **************************************************************************/
 
-  static provisionId () { return uuid.uuid4() }
+  static provisionId () { return uuid.v4() }
 
   /* **************************************************************************/
   // Lifecycle

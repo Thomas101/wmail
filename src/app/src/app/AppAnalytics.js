@@ -14,7 +14,7 @@ class AppAnalytics {
     this.appSettings = appSettings
 
     if (!this.localStorage.getItem('ga-id')) {
-      this.localStorage.setItem('ga-id', uuid.uuid4())
+      this.localStorage.setItem('ga-id', uuid.v4())
     }
     this.id = this.localStorage.getItem('ga-id')
   }
