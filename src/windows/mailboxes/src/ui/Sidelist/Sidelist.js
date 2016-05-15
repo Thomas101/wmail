@@ -27,7 +27,7 @@ module.exports = React.createClass({
   * Renders the app
   */
   render () {
-    const { style, className, ...passProps } = this.props
+    const { style, ...passProps } = this.props
     return (
       <div
         {...passProps}
