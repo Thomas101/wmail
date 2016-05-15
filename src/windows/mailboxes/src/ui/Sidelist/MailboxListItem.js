@@ -8,8 +8,6 @@ const { Badge, Popover, Menu, MenuItem, Divider, FontIcon } = require('material-
 const Colors = require('material-ui/styles/colors')
 const mailboxDispatch = require('../Dispatch/mailboxDispatch')
 
-/* eslint-disable react/prop-types */
-
 module.exports = React.createClass({
   displayName: 'MailboxListItem',
 

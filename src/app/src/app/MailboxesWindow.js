@@ -39,6 +39,7 @@ class MailboxesWindow extends WMailWindow {
       fullscreenable: true,
       titleBarStyle: this.appSettings.hasTitlebar ? 'default' : 'hidden',
       title: 'WMail',
+      backgroundColor: '#f2f2f2',
       webPreferences: {
         nodeIntegration: true
       }

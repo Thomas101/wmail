@@ -31,8 +31,14 @@ module.exports = React.createClass({
     return (
       <div
         {...passProps}
-        style={Object.assign({ backgroundColor: Colors.blueGrey900 }, style)}
-        className={'absfill ' + (className || '')}>
+        style={Object.assign({
+          backgroundColor: Colors.blueGrey900,
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0
+        }, style)}>
         <MailboxList />
         <SidelistAddMailbox />
         <SidelistSettings />

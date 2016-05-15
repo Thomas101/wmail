@@ -1,4 +1,3 @@
-import './layout.less'
 import './Components/fileButton.less'
 
 const React = require('react')
@@ -11,6 +10,12 @@ const ipc = window.nativeRequire('electron').ipcRenderer
 // Load what we have in the db
 mailboxActions.load()
 settingsActions.load()
+
+// Remove loading
+;(() => {
+  const loading = document.getElementById('loading')
+  loading.parentElement.removeChild(loading)
+})()
 
 // Render and prepare for unrender
 ReactDOM.render(<App />, document.getElementById('app'))
