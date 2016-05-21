@@ -6,26 +6,10 @@ const {
 const GeneralSettings = require('./GeneralSettings')
 const AccountSettings = require('./AccountSettings')
 const AdvancedSettings = require('./AdvancedSettings')
-const ipc = window.nativeRequire('electron').ipcRenderer
-const flux = {
-  settings: require('../../stores/settings')
-}
 const Colors = require('material-ui/styles/colors')
 
 module.exports = React.createClass({
   displayName: 'SettingsDialog',
-
-  /* **************************************************************************/
-  // Lifecycle
-  /* **************************************************************************/
-
-  componentDidMount () {
-    flux.settings.S.listen(this.settingsChanged)
-  },
-
-  componentWillUnmount () {
-    flux.settings.S.unlisten(this.settingsChanged)
-  },
 
   /* **************************************************************************/
   // Data lifecycle
@@ -33,18 +17,12 @@ module.exports = React.createClass({
 
   getInitialState () {
     return {
-      currentTab: 'general',
-      requiresRestart: flux.settings.S.getState().requiresRestart()
+      currentTab: 'general'
     }
-  },
-
-  settingsChanged (store) {
-    this.setState({ requiresRestart: store.requiresRestart() })
   },
 
   shouldComponentUpdate (nextProps, nextState) {
     if (this.state.currentTab !== nextState.currentTab) { return true }
-    if (this.state.requiresRestart !== nextState.requiresRestart) { return true }
     if (nextProps.open !== this.props.open) { return true }
 
     return false
@@ -70,13 +48,6 @@ module.exports = React.createClass({
     this.props.onRequestClose()
   },
 
-  /**
-  * Restarts the app
-  */
-  handleRestart () {
-    ipc.send('restart-app', {})
-  },
-
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
@@ -85,22 +56,11 @@ module.exports = React.createClass({
   * Renders the app
   */
   render () {
-    let buttons
-    if (this.state.requiresRestart) {
-      buttons = (
-        <div style={{ textAlign: 'right' }}>
-          <RaisedButton label='Close' secondary onClick={this.handleClose} />
-          <span>&nbsp;</span>
-          <RaisedButton label='Restart' primary onClick={this.handleRestart} />
-        </div>
-      )
-    } else {
-      buttons = (
-        <div style={{ textAlign: 'right' }}>
-          <RaisedButton label='Close' primary onClick={this.handleClose} />
-        </div>
-      )
-    }
+    const buttons = (
+      <div style={{ textAlign: 'right' }}>
+        <RaisedButton label='Close' primary onClick={this.handleClose} />
+      </div>
+    )
 
     const tabInfo = [
       { label: 'General', value: 'general' },

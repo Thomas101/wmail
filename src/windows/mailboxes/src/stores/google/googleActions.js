@@ -363,7 +363,7 @@ class GoogleActions {
   */
   syncMailboxUnreadMessages (mailboxId) {
     // Check not disabled globally
-    if (settingsStore.getState().notificationsEnabled() === false) {
+    if (settingsStore.getState().os.notificationsEnabled === false) {
       this.syncMailboxUnreadMessagesSuccess(mailboxId)
       return { mailboxId: mailboxId, promise: Promise.resolve() }
     }

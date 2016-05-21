@@ -2,6 +2,7 @@ const electron = require('electron')
 const uuid = require('uuid')
 const fs = require('fs-extra')
 const path = require('path')
+const settingStore = require('./stores/settingStore')
 
 class MailboxesSessionManager {
 
@@ -11,11 +12,9 @@ class MailboxesSessionManager {
 
   /**
   * @param mailboxWindow: the mailbox window instance we're working for
-  * @param appSettings: the app settings
   */
-  constructor (mailboxWindow, appSettings) {
+  constructor (mailboxWindow) {
     this.mailboxWindow = mailboxWindow
-    this.appSettings = appSettings
     this.downloadsInProgress = { }
 
     this.__managed__ = new Set()
@@ -65,8 +64,8 @@ class MailboxesSessionManager {
   handleDownload (evt, item) {
     // If the user has chosen - auto save the item
     let savedLocation = null
-    if (!this.appSettings.alwaysAskDownloadLocation && this.appSettings.defaultDownloadLocation) {
-      const folderLocation = this.appSettings.defaultDownloadLocation
+    if (!settingStore.os.alwaysAskDownloadLocation && settingStore.os.defaultDownloadLocation) {
+      const folderLocation = settingStore.os.defaultDownloadLocation
       const fpath = path.parse(item.getFilename() || 'untitled')
 
       // Check the file exists

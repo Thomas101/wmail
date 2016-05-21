@@ -1,4 +1,4 @@
 module.exports = {
-  A: require('./settingsActions'),
-  S: require('./settingsStore')
+  S: require('./settingsStore'),
+  A: require('./settingsActions')
 }

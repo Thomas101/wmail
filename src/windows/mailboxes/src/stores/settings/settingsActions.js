@@ -1,4 +1,7 @@
 const alt = require('../alt')
+const {
+  Settings: {SettingsIdent: {SEGMENTS}}
+} = require('shared/Models')
 
 class SettingsActions {
   /* **************************************************************************/
@@ -15,11 +18,78 @@ class SettingsActions {
   /* **************************************************************************/
 
   /**
-  * Merges the updates in
-  * @param updates: an object oto merge into settings
+  * Updates a value
+  * @param segment: the segment to update
+  * @param changesetOrKey: either a dict of k -> or a single key
+  * @param undefinedOrVal: if changesetOrKey is a key, this should be the value
   */
-  mergeUpdates (updates) {
-    return { updates: updates }
+  update (segment, changesetOrKey, undefinedOrVal) {
+    if (typeof (changesetOrKey) === 'string') {
+      const changeset = {}
+      changeset[changesetOrKey] = undefinedOrVal
+      return { segment: segment, updates: changeset }
+    } else {
+      return { segment: segment, updates: changesetOrKey }
+    }
+  }
+
+  /**
+  * Toggles a value
+  * @param segment: the segment to update
+  * @param key: the key to toggle
+  */
+  toggle (segment, key) {
+    return { segment: segment, key: key }
+  }
+
+  /* **************************************************************************/
+  // Language
+  /* **************************************************************************/
+
+  /**
+  * @param enabled: true to enable the spell checker, false otherwise
+  */
+  setEnableSpellchecker (enabled) {
+    return this.update(SEGMENTS.LANGUAGE, 'spellcheckerEnabled', enabled)
+  }
+
+  /* **************************************************************************/
+  // OS
+  /* **************************************************************************/
+
+  /**
+  * @param ask: true to always ask, false otherwise
+  */
+  setAlwaysAskDownloadLocation (ask) {
+    return this.update(SEGMENTS.OS, 'alwaysAskDownloadLocation', ask)
+  }
+
+  /**
+  * @param path: the path to download files to automatically
+  */
+  setDefaultDownloadLocation (path) {
+    return this.update(SEGMENTS.OS, 'defaultDownloadLocation', path)
+  }
+
+  /**
+  * @param enabled: true to enable notifications, false otherwise
+  */
+  setNotificationsEnabled (enabled) {
+    return this.update(SEGMENTS.OS, 'notificationsEnabled', enabled)
+  }
+
+  /**
+  * @param silent: true to make notifications silent, false otherwise
+  */
+  setNotificationsSilent (silent) {
+    return this.update(SEGMENTS.OS, 'notificationsSilent', silent)
+  }
+
+  /**
+  * @param background: true to open links in the background
+  */
+  setOpenLinksInBackground (background) {
+    return this.update(SEGMENTS.OS, 'openLinksInBackground', background)
   }
 
   /* **************************************************************************/
@@ -40,49 +110,61 @@ class SettingsActions {
     if (port) {
       port = port.replace(/[^0-9\\.]+/g, '')
     }
-    this.setProxyServer({ host: host, port: port, enabled: true })
-    return {}
+    return this.update(SEGMENTS.PROXY, { host: host, port: port, enabled: true })
   }
 
   /**
   * Disables the proxy server
   */
   disableProxyServer () {
-    this.setProxyServer({ enabled: false })
-    return {}
+    return this.update(SEGMENTS.PROXY, { enabled: false })
   }
 
-  setProxyServer (info) { return info }
-
   /* **************************************************************************/
-  // OS Level settings
+  // UI
   /* **************************************************************************/
 
   /**
   * @param show: true to show the titlebar, false otherwise
   */
   setShowTitlebar (show) {
-    return this.mergeUpdates({ showTitlebar: show })
+    return this.update(SEGMENTS.UI, 'showTitlebar', show)
   }
 
   /**
   * @param show: true to show the badge, false otherwise
   */
   setShowAppBadge (show) {
-    return this.mergeUpdates({ showAppBadge: show })
+    return this.update(SEGMENTS.UI, 'showAppBadge', show)
   }
 
   /**
   * @param show: true to show the app menu, false otherwise
   */
   setShowAppMenu (show) {
-    return this.mergeUpdates({ showAppMenu: show })
+    return this.update(SEGMENTS.UI, 'showAppMenu', show)
   }
 
   /**
   * Toggles the app menu
   */
-  toggleAppMenu () { return {} }
+  toggleAppMenu () {
+    return this.toggle(SEGMENTS.UI, 'showAppMenu')
+  }
+
+  /**
+  * @param enabled: true to enable the sidebar, false otherwise
+  */
+  setEnableSidebar (enabled) {
+    return this.update(SEGMENTS.UI, 'sidebarEnabled', enabled)
+  }
+
+  /**
+  * Toggles the sidebar
+  */
+  toggleSidebar () {
+    return this.toggle(SEGMENTS.UI, 'sidebarEnabled')
+  }
 
   /* **************************************************************************/
   // Tray
@@ -92,104 +174,29 @@ class SettingsActions {
   * @param show: true to show the tray icon, false otherwise
   */
   setShowTrayIcon (show) {
-    return this.mergeUpdates({ showTrayIcon: show })
+    return this.update(SEGMENTS.TRAY, 'show', show)
   }
 
   /**
   * @param show: true to show the unread count in the tray
   */
   setShowTrayUnreadCount (show) {
-    return this.mergeUpdates({ showTrayUnreadCount: show })
+    return this.update(SEGMENTS.TRAY, 'showUnreadCount', show)
   }
 
   /**
   * @param col: the hex colour to make the tray icon
   */
   setTrayReadColor (col) {
-    return this.mergeUpdates({ trayReadColor: col })
+    return this.update(SEGMENTS.TRAY, 'readColor', col)
   }
 
   /**
   * @param col: the hex colour to make the tray icon
   */
   setTrayUnreadColor (col) {
-    return this.mergeUpdates({ trayUnreadColor: col })
+    return this.update(SEGMENTS.TRAY, 'unreadColor', col)
   }
-
-  /* **************************************************************************/
-  // Spell checker
-  /* **************************************************************************/
-
-  /**
-  * @param enabled: true to enable the spell checker, false otherwise
-  */
-  setEnableSpellchecker (enabled) {
-    return this.mergeUpdates({ spellcheckerEnabled: enabled })
-  }
-
-  /* **************************************************************************/
-  // Downloads
-  /* **************************************************************************/
-
-  /**
-  * @param ask: true to always ask, false otherwise
-  */
-  setAlwaysAskDownloadLocation (ask) {
-    return this.mergeUpdates({ alwaysAskDownloadLocation: ask })
-  }
-
-  /**
-  * @param path: the path to download files to automatically
-  */
-  setDefaultDownloadLocation (path) {
-    return this.mergeUpdates({ defaultDownloadLocation: path })
-  }
-
-  /* **************************************************************************/
-  // Sidebar
-  /* **************************************************************************/
-
-  /**
-  * @param enabled: true to enable the sidebar, false otherwise
-  */
-  setEnableSidebar (enabled) {
-    return this.mergeUpdates({ sidebarEnabled: enabled })
-  }
-
-  /**
-  * Toggles the sidebar
-  */
-  toggleSidebar () { return {} }
-
-  /* **************************************************************************/
-  // Notifications
-  /* **************************************************************************/
-
-  /**
-  * @param enabled: true to enable notifications, false otherwise
-  */
-  setNotificationsEnabled (enabled) {
-    return this.mergeUpdates({ notificationsEnabled: enabled })
-  }
-
-  /**
-  * @param silent: true to make notifications silent, false otherwise
-  */
-  setNotificationsSilent (silent) {
-    return this.mergeUpdates({ notificationsSilent: silent })
-  }
-
-  /* **************************************************************************/
-  // Notifications
-  /* **************************************************************************/
-
-  /**
-  * @param background: true to open links in the background
-  */
-  setOpenLinksInBackground (background) {
-    return this.mergeUpdates({ openLinksInBackground: background })
-  }
-
 }
 
 module.exports = alt.createActions(SettingsActions)

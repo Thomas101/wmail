@@ -87,11 +87,8 @@ module.exports = React.createClass({
     return {
       messagesUnreadCount: mailboxStore.totalUnreadCountForAppBadge(),
       unreadMessages: mailboxStore.unreadMessagesForAppBadge(),
-      showAppBadge: settingsStore.showAppBadge(),
-      showTrayIcon: settingsStore.showTrayIcon(),
-      showTrayUnreadCount: settingsStore.showTrayUnreadCount(),
-      trayReadColor: settingsStore.trayReadColor(),
-      trayUnreadColor: settingsStore.trayUnreadColor()
+      uiSettings: settingsStore.ui,
+      traySettings: settingsStore.tray
     }
   },
 
@@ -109,11 +106,8 @@ module.exports = React.createClass({
 
   settingsChanged (store) {
     this.setState({
-      showAppBadge: store.showAppBadge(),
-      showTrayIcon: store.showTrayIcon(),
-      showTrayUnreadCount: store.showTrayUnreadCount(),
-      trayReadColor: store.trayReadColor(),
-      trayUnreadColor: store.trayUnreadColor()
+      uiSettings: store.ui,
+      traySettings: store.tray
     })
   },
 
@@ -273,8 +267,15 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   render () {
+    const {
+      traySettings,
+      uiSettings,
+      unreadMessages,
+      messagesUnreadCount
+    } = this.state
+
     if (process.platform === 'darwin') {
-      const badgeString = this.state.showAppBadge && this.state.messagesUnreadCount ? this.state.messagesUnreadCount.toString() : ''
+      const badgeString = uiSettings.showAppBadge && messagesUnreadCount ? messagesUnreadCount.toString() : ''
       app.dock.setBadge(badgeString)
     }
 
@@ -283,13 +284,13 @@ module.exports = React.createClass({
         <MuiThemeProvider muiTheme={appTheme}>
           <AppContent />
         </MuiThemeProvider>
-        {!this.state.showTrayIcon ? undefined : (
+        {!traySettings.show ? undefined : (
           <Tray
-            unreadMessages={this.state.unreadMessages}
-            unreadCount={this.state.messagesUnreadCount}
-            showUnreadCount={this.state.showTrayUnreadCount}
-            unreadColor={this.state.trayUnreadColor}
-            readColor={this.state.trayReadColor} />
+            unreadMessages={unreadMessages}
+            unreadCount={messagesUnreadCount}
+            showUnreadCount={traySettings.showUnreadCount}
+            unreadColor={traySettings.unreadColor}
+            readColor={traySettings.readColor} />
           )}
       </div>
     )

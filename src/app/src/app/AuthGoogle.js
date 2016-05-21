@@ -4,18 +4,14 @@ const fetch = require('node-fetch')
 const credentials = require('../shared/credentials')
 const HttpsProxyAgent = require('https-proxy-agent')
 const APP_REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
+const settingStore = require('./stores/settingStore')
 
 class AuthGoogle {
   /* ****************************************************************************/
   // Lifecycle
   /* ****************************************************************************/
 
-  /**
-  * @param appSettings: the settings for the app
-  */
-  constructor (appSettings) {
-    this.appSettings = appSettings
-
+  constructor () {
     ipcMain.on('auth-google', (evt, body) => {
       this.handleAuthGoogle(evt, body)
     })
@@ -97,7 +93,7 @@ class AuthGoogle {
   * @return promise
   */
   getPermenantAccessTokenFromAuthCode (authCode) {
-    const proxyAgent = this.appSettings.proxyEnabled ? new HttpsProxyAgent(this.appSettings.proxyUrl) : undefined
+    const proxyAgent = settingStore.proxy.enabled ? new HttpsProxyAgent(settingStore.proxy.url) : undefined
     const query = {
       code: authCode,
       client_id: credentials.GOOGLE_CLIENT_ID,

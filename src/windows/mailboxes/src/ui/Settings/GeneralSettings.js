@@ -39,24 +39,10 @@ module.exports = React.createClass({
   */
   generateState (store = flux.settings.S.getState()) {
     return {
-      showTitlebar: store.showTitlebar(),
-      showAppBadge: store.showAppBadge(),
-      showAppMenu: store.showAppMenu(),
-      sidebarEnabled: store.sidebarEnabled(),
-
-      showTrayIcon: store.showTrayIcon(),
-      showTrayUnreadCount: store.showTrayUnreadCount(),
-      trayReadColor: store.trayReadColor(),
-      trayUnreadColor: store.trayUnreadColor(),
-
-      spellcheckerEnabled: store.spellcheckerEnabled(),
-
-      notificationsEnabled: store.notificationsEnabled(),
-      notificationsSilent: store.notificationsSilent(),
-
-      alwaysAskDownloadLocation: store.alwaysAskDownloadLocation(),
-      defaultDownloadLocation: store.defaultDownloadLocation(),
-      openLinksInBackground: store.openLinksInBackground()
+      ui: store.ui,
+      os: store.os,
+      language: store.language,
+      tray: store.tray
     }
   },
 
@@ -76,6 +62,8 @@ module.exports = React.createClass({
   * Renders the app
   */
   render () {
+    const {ui, os, language, tray} = this.state
+
     return (
       <div {...this.props}>
         <Paper zDepth={1} style={{ padding: 15, marginBottom: 5 }}>
@@ -84,31 +72,31 @@ module.exports = React.createClass({
               {process.platform !== 'darwin' ? undefined : (
                 <Toggle
                   labelPosition='right'
-                  toggled={this.state.showTitlebar}
+                  toggled={ui.showTitlebar}
                   label='Show titlebar (Requires Restart)'
                   onToggle={(evt, toggled) => flux.settings.A.setShowTitlebar(toggled)} />
                 )}
               {process.platform === 'darwin' ? undefined : (
                 <Toggle
                   labelPosition='right'
-                  toggled={this.state.showAppMenu}
+                  toggled={ui.showAppMenu}
                   label='Show App Menu'
                   onToggle={(evt, toggled) => flux.settings.A.setShowAppMenu(toggled)} />
               )}
               <Toggle
-                toggled={this.state.sidebarEnabled}
+                toggled={ui.sidebarEnabled}
                 label='Show sidebar'
                 labelPosition='right'
                 onToggle={(evt, toggled) => flux.settings.A.setEnableSidebar(toggled)} />
             </Col>
             <Col sm={6}>
               <Toggle
-                toggled={this.state.showAppBadge}
+                toggled={ui.showAppBadge}
                 label='Show app unread badge'
                 labelPosition='right'
                 onToggle={(evt, toggled) => flux.settings.A.setShowAppBadge(toggled)} />
               <Toggle
-                toggled={this.state.openLinksInBackground}
+                toggled={os.openLinksInBackground}
                 label='Open links in background'
                 labelPosition='right'
                 onToggle={(evt, toggled) => flux.settings.A.setOpenLinksInBackground(toggled)} />
@@ -119,31 +107,31 @@ module.exports = React.createClass({
           <Row>
             <Col sm={6}>
               <Toggle
-                toggled={this.state.showTrayIcon}
+                toggled={tray.show}
                 label='Show tray icon'
                 labelPosition='right'
                 onToggle={(evt, toggled) => flux.settings.A.setShowTrayIcon(toggled)} />
               <Toggle
-                toggled={this.state.showTrayUnreadCount}
+                toggled={tray.showUnreadCount}
                 label='Show unread count in tray'
                 labelPosition='right'
-                disabled={!this.state.showTrayIcon}
+                disabled={!tray.show}
                 onToggle={(evt, toggled) => flux.settings.A.setShowTrayUnreadCount(toggled)} />
             </Col>
             <Col sm={6}>
               <div>
                 <ColorPickerButton
                   label='Tray read colour'
-                  disabled={!this.state.showTrayIcon}
-                  value={this.state.trayReadColor}
+                  disabled={!tray.show}
+                  value={tray.readColor}
                   onChange={(col) => flux.settings.A.setTrayReadColor(col.hex)} />
               </div>
               <br />
               <div>
                 <ColorPickerButton
                   label='Tray unread colour'
-                  disabled={!this.state.showTrayIcon}
-                  value={this.state.trayUnreadColor}
+                  disabled={!tray.show}
+                  value={tray.unreadColor}
                   onChange={(col) => flux.settings.A.setTrayUnreadColor(col.hex)} />
               </div>
             </Col>
@@ -151,29 +139,29 @@ module.exports = React.createClass({
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
           <Toggle
-            toggled={this.state.spellcheckerEnabled}
+            toggled={language.spellcheckerEnabled}
             labelPosition='right'
             label='Spell-checker (requires restart)'
             onToggle={(evt, toggled) => flux.settings.A.setEnableSpellchecker(toggled)} />
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
           <Toggle
-            toggled={this.state.notificationsEnabled}
+            toggled={os.notificationsEnabled}
             labelPosition='right'
             label='Show new mail notifications'
             onToggle={(evt, toggled) => flux.settings.A.setNotificationsEnabled(toggled)} />
           <br />
           <Toggle
-            toggled={!this.state.notificationsSilent}
+            toggled={!os.notificationsSilent}
             label='Play notification sound'
             labelPosition='right'
-            disabled={!this.state.notificationsEnabled}
+            disabled={!os.notificationsEnabled}
             onToggle={(evt, toggled) => flux.settings.A.setNotificationsSilent(!toggled)} />
         </Paper>
         <Paper zDepth={1} style={{ padding: 15, marginTop: 5, marginBottom: 5 }}>
           <div>
             <Toggle
-              toggled={this.state.alwaysAskDownloadLocation}
+              toggled={os.alwaysAskDownloadLocation}
               label='Always ask download location'
               labelPosition='right'
               onToggle={(evt, toggled) => flux.settings.A.setAlwaysAskDownloadLocation(toggled)} />
@@ -183,15 +171,24 @@ module.exports = React.createClass({
             <RaisedButton
               label='Select location'
               className='file-button'
-              disabled={this.state.alwaysAskDownloadLocation}
-              style={{ marginRight: 15 }}>
+              disabled={os.alwaysAskDownloadLocation}
+              style={{ marginRight: 15, overflow: 'hidden', position: 'relative' }}>
               <input
                 type='file'
+                style={{
+                  position: 'absolute',
+                  top: -100,
+                  left: -100,
+                  right: -100,
+                  bottom: -100,
+                  opacity: 0,
+                  zIndex: 100
+                }}
                 ref='defaultDownloadInput'
-                disabled={this.state.alwaysAskDownloadLocation}
+                disabled={os.alwaysAskDownloadLocation}
                 onChange={(evt) => flux.settings.A.setDefaultDownloadLocation(evt.target.files[0].path)} />
             </RaisedButton>
-            {this.state.alwaysAskDownloadLocation ? undefined : <small>{this.state.defaultDownloadLocation}</small>}
+            {os.alwaysAskDownloadLocation ? undefined : <small>{os.defaultDownloadLocation}</small>}
           </div>
         </Paper>
       </div>

@@ -4,14 +4,14 @@ const credentials = require('../shared/credentials')
 const osLanguage = require('os-locale').sync()
 const pkg = require('../package.json')
 const HttpsProxyAgent = require('https-proxy-agent')
+const settingStore = require('./stores/settingStore')
 
 class AppAnalytics {
   /* ****************************************************************************/
   // Lifecycle
   /* ****************************************************************************/
-  constructor (localStorage, appSettings) {
+  constructor (localStorage) {
     this.localStorage = localStorage
-    this.appSettings = appSettings
 
     if (!this.localStorage.getItem('ga-id')) {
       this.localStorage.setItem('ga-id', uuid.v4())
@@ -56,7 +56,7 @@ class AppAnalytics {
     const url = 'https://www.google-analytics.com/collect?' + qs
     return fetch(url, {
       method: 'post',
-      agent: this.appSettings.proxyEnabled ? new HttpsProxyAgent(this.appSettings.proxyUrl) : undefined
+      agent: settingStore.proxy.enabled ? new HttpsProxyAgent(settingStore.proxy.url) : undefined
     })
   }
 

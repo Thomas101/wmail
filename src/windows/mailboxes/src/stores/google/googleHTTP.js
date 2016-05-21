@@ -16,8 +16,8 @@ class GoogleHTTP {
   */
   proxyInformation () {
     const store = flux.settings.S.getState()
-    if (store.getProxyServer().enabled) {
-      return store.proxyServerUrl()
+    if (store.proxy.enabled) {
+      return store.proxy.url
     } else {
       return undefined
     }

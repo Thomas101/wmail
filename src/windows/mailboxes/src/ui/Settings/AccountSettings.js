@@ -155,12 +155,20 @@ module.exports = React.createClass({
               <Col sm={5}>
                 <RaisedButton
                   label='Change Account Icon'
-                  className='file-button'
-                  style={{ marginRight: 15 }}>
+                  style={{ marginRight: 15, position: 'relative', overflow: 'hidden' }}>
                   <input
                     type='file'
                     accept='image/*'
-                    onChange={this.handleCustomAvatarChange} />
+                    onChange={this.handleCustomAvatarChange}
+                    style={{
+                      position: 'absolute',
+                      top: -100,
+                      left: -100,
+                      right: -100,
+                      bottom: -100,
+                      opacity: 0,
+                      zIndex: 100
+                    }} />
                 </RaisedButton>
                 <br />
                 <div>

@@ -23,8 +23,6 @@
   const appMenu = require('./appMenu')
   const WindowManager = require('./WindowManager')
   const constants = require('../shared/constants')
-  const exec = require('child_process').exec
-  const AppSettings = require('./AppSettings')
   const path = require('path')
   const mkdirp = require('mkdirp')
 
@@ -36,10 +34,9 @@
   mkdirp.sync(appDirectory.userData())
 
   const localStorage = new Storage(path.join(appDirectory.userData(), 'main_proc_db.json'))
-  const appSettings = new AppSettings(localStorage)
-  const analytics = new AppAnalytics(localStorage, appSettings)
-  const mailboxesWindow = new MailboxesWindow(analytics, localStorage, appSettings)
-  windowManager = new WindowManager(mailboxesWindow, appSettings)
+  const analytics = new AppAnalytics(localStorage)
+  const mailboxesWindow = new MailboxesWindow(analytics, localStorage)
+  windowManager = new WindowManager(mailboxesWindow)
 
   const appMenuSelectors = {
     fullQuit: () => { windowManager.quit() },
@@ -113,7 +110,7 @@
   })
 
   ipcMain.on('new-window', (evt, body) => {
-    const window = new ContentWindow(analytics, localStorage, appSettings)
+    const window = new ContentWindow(analytics, localStorage)
     windowManager.addContentWindow(window)
     window.start(body.url, body.partition)
   })
@@ -124,15 +121,6 @@
 
   ipcMain.on('quit-app', (evt, body) => {
     windowManager.quit()
-  })
-
-  ipcMain.on('restart-app', (evt, body) => {
-    exec('"' + process.execPath.replace(/"/g, '\\"') + '"')
-    windowManager.quit()
-  })
-
-  ipcMain.on('settings-update', (evt, settings) => {
-    appSettings.update(settings)
   })
 
   ipcMain.on('prepare-webview-session', (evt, data) => {

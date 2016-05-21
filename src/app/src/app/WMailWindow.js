@@ -1,5 +1,6 @@
 const {BrowserWindow} = require('electron')
 const EventEmitter = require('events')
+const settingStore = require('./stores/settingStore')
 
 class WMailWindow extends EventEmitter {
 
@@ -10,15 +11,13 @@ class WMailWindow extends EventEmitter {
   /**
   * @param analytics: the analytics object
   * @param localStorage: the localStorage object
-  * @param appSettings: the app settings so window preferences can be siphoned
   * @param options: object containing the following
   *                   @param screenLocationNS: the namespace to save the window state under. If not set, will not persist
   */
-  constructor (analytics, localStorage, appSettings, options) {
+  constructor (analytics, localStorage, options) {
     super()
     this.analytics = analytics
     this.localStorage = localStorage
-    this.appSettings = appSettings
     this.window = null
     this.windowScreenLocationSaver = null
     this.options = Object.freeze(Object.assign({}, options))
@@ -65,11 +64,11 @@ class WMailWindow extends EventEmitter {
       this.window.on('maximize', (evt) => { this.saveWindowScreenLocation() })
       this.window.on('unmaximize', (evt) => { this.saveWindowScreenLocation() })
     }
-    this[this.appSettings.hasAppMenu ? 'showAppMenu' : 'hideAppMenu']()
+    this[settingStore.ui.hasAppMenu ? 'showAppMenu' : 'hideAppMenu']()
 
     // Bind to change events
     this.window.on('close', (evt) => { this.emit('close', evt) })
-    this.appSettings.on('changed', this.updateWindowMenubar, this)
+    settingStore.on('changed', this.updateWindowMenubar, this)
     this.window.on('closed', (evt) => this.destroyWindow(evt))
 
     // Fire the whole thing off
@@ -81,7 +80,7 @@ class WMailWindow extends EventEmitter {
   * @param evt: the event that caused destroy
   */
   destroyWindow (evt) {
-    this.appSettings.off('changed', this.updateWindowMenubar)
+    settingStore.off('changed', this.updateWindowMenubar)
 
     this.window = null
     this.emit('closed', evt)
@@ -132,7 +131,7 @@ class WMailWindow extends EventEmitter {
   * Updates the menubar
   */
   updateWindowMenubar (prev, next) {
-    this[this.appSettings.hasAppMenu ? 'showAppMenu' : 'hideAppMenu']()
+    this[settingStore.ui.hasAppMenu ? 'showAppMenu' : 'hideAppMenu']()
   }
 
   /* ****************************************************************************/

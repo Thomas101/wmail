@@ -29,11 +29,10 @@ module.exports = React.createClass({
   * @param store=settingsStore: the store to use
   */
   generateState (store = flux.settings.S.getState()) {
-    const proxyServer = store.getProxyServer()
     return {
-      proxyEnabled: proxyServer.enabled,
-      proxyHost: proxyServer.host || '',
-      proxyPort: proxyServer.port || ''
+      proxyEnabled: store.proxy.enabled,
+      proxyHost: store.proxy.host || '',
+      proxyPort: store.proxy.port || ''
     }
   },
 

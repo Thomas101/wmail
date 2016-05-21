@@ -142,7 +142,7 @@ module.exports = React.createClass({
 
     switch (mode) {
       case 'external':
-        shell.openExternal(evt.url, { activate: !flux.settings.S.getState().openLinksInBackground() })
+        shell.openExternal(evt.url, { activate: !flux.settings.S.getState().os.openLinksInBackground })
         break
       case 'source':
         webview.src = evt.url
@@ -213,7 +213,7 @@ module.exports = React.createClass({
       webview.send('zoom-factor-set', { value: this.state.mailbox.zoomFactor })
       this.lastSetZoomFactor = this.state.mailbox.zoomFactor
       webview.send('start-spellcheck', {
-        enabled: flux.settings.S.getState().spellcheckerEnabled()
+        enabled: flux.settings.S.getState().language.spellcheckerEnabled
       })
     })
 
@@ -224,7 +224,7 @@ module.exports = React.createClass({
           flux.google.A.syncMailboxUnreadCount(this.state.mailbox.id)
         }
       } else if (evt.channel.type === 'js-new-window') {
-        shell.openExternal(evt.channel.url, { activate: !flux.settings.S.getState().openLinksInBackground() })
+        shell.openExternal(evt.channel.url, { activate: !flux.settings.S.getState().os.openLinksInBackground })
       }
     })
     webview.addEventListener('new-window', (evt) => {

@@ -35,14 +35,14 @@ module.exports = React.createClass({
 
   getInitialState () {
     return {
-      sidebar: flux.settings.S.getState().sidebarEnabled(),
+      sidebar: flux.settings.S.getState().ui.sidebarEnabled,
       settingsDialog: false
     }
   },
 
   settingsDidUpdate (store) {
     this.setState({
-      sidebar: store.sidebarEnabled()
+      sidebar: store.ui.sidebarEnabled
     })
   },
 

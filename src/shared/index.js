@@ -1,4 +1,5 @@
 module.exports = {
   credentials: require('./credentials'),
-  constants: require('./constants')
+  constants: require('./constants'),
+  Models: require('./Models')
 }

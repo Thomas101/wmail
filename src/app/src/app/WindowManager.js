@@ -1,4 +1,5 @@
 const {app} = require('electron')
+const settingStore = require('./stores/settingStore')
 
 class WindowManager {
 
@@ -8,12 +9,10 @@ class WindowManager {
 
   /**
   * @param mailboxesWindow: the main window
-  * @param appSettings: the app settings
   */
-  constructor (mailboxesWindow, appSettings) {
+  constructor (mailboxesWindow) {
     this.contentWindows = []
     this.mailboxesWindow = mailboxesWindow
-    this.appSettings = appSettings
     this.forceQuit = false
     this.mailboxesWindow.on('close', (e) => this.handleClose(e))
     this.mailboxesWindow.on('closed', () => {
@@ -33,7 +32,7 @@ class WindowManager {
   handleClose (evt) {
     if (this.focused() && !this.forceQuit) {
       this.contentWindows.forEach((w) => w.close())
-      if (process.platform === 'darwin' || this.appSettings.hasTrayIcon) {
+      if (process.platform === 'darwin' || settingStore.tray.show) {
         this.mailboxesWindow.hide()
         evt.preventDefault()
         this.forceQuit = false

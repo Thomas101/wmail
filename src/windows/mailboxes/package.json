@@ -18,5 +18,8 @@
     "react-tap-event-plugin": "1.0.0",
     "react-timer-mixin": "0.13.3",
     "uuid": "2.0.2"
+  },
+  "devDependencies": {
+    "standard": "^7.1.0"
   }
 }

@@ -20,7 +20,7 @@ if (getArg('--fast') !== undefined) {
 }
 
 // Task export
-const task = getArg('--task=', '--mode=all').substr(7)
+const task = getArg('--task=', '--task=all').substr(7)
 if (task === 'app') {
   console.log('[TASK=app]')
   module.exports = [

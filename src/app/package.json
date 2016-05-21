@@ -19,5 +19,8 @@
     "nodehun": "2.0.10",
     "os-locale": "1.4.0",
     "uuid": "2.0.2"
+  },
+  "devDependencies": {
+    "standard": "^7.1.0"
   }
 }

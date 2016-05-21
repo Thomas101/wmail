@@ -3,6 +3,7 @@ const AuthGoogle = require('./AuthGoogle')
 const update = require('./update')
 const path = require('path')
 const MailboxesSessionManager = require('./MailboxesSessionManager')
+const settingStore = require('./stores/settingStore')
 
 class MailboxesWindow extends WMailWindow {
 
@@ -13,15 +14,14 @@ class MailboxesWindow extends WMailWindow {
   /**
   * @param analytics: the analytics object
   * @param localStorage: the localStorage object
-  * @param appSettings: the app settings
   */
-  constructor (analytics, localStorage, appSettings) {
-    super(analytics, localStorage, appSettings, {
+  constructor (analytics, localStorage) {
+    super(analytics, localStorage, {
       screenLocationNS: 'mailbox_window_state'
     })
     this.heartbeatInterval = null
-    this.authGoogle = new AuthGoogle(appSettings)
-    this.sessionManager = new MailboxesSessionManager(this, appSettings)
+    this.authGoogle = new AuthGoogle()
+    this.sessionManager = new MailboxesSessionManager(this)
   }
 
   start (url) {
@@ -37,7 +37,7 @@ class MailboxesWindow extends WMailWindow {
       minWidth: 955,
       minHeight: 400,
       fullscreenable: true,
-      titleBarStyle: this.appSettings.hasTitlebar ? 'default' : 'hidden',
+      titleBarStyle: settingStore.ui.hasTitlebar ? 'default' : 'hidden',
       title: 'WMail',
       backgroundColor: '#f2f2f2',
       webPreferences: {

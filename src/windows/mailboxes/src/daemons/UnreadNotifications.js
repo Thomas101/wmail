@@ -43,7 +43,7 @@ class UnreadNotifications {
   */
   mailboxesUpdated (store) {
     if (this.__dispatching__) { return }
-    if (flux.settings.S.getState().notificationsEnabled() === false) { return }
+    if (flux.settings.S.getState().os.notificationsEnabled === false) { return }
     const firstRun = new Date().getTime() - this.__constructTime__ < constants.GMAIL_NOTIFICATION_FIRST_RUN_GRACE_MS
     const firedList = {}
     let fired = false
@@ -101,7 +101,7 @@ class UnreadNotifications {
 
     const notification = new window.Notification(subject, {
       body: [fromEmail, snippet].join('\n'),
-      silent: flux.settings.S.getState().notificationsSilent,
+      silent: flux.settings.S.getState().os.notificationsSilent,
       data: { mailbox: mailbox.id, messageId: message.id, threadId: message.threadId }
     })
     notification.onclick = this.handleNotificationClicked
