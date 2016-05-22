@@ -29,12 +29,12 @@ if (task === 'app') {
 } else if (task === 'mailboxes') {
   console.log('[TASK=mailboxes]')
   module.exports = [
-    require('./src/windows/mailboxes/webpack.config.js')
+    require('./src/scenes/mailboxes/webpack.config.js')
   ]
 } else if (task === 'platform') {
   console.log('[TASK=platform]')
   module.exports = [
-    require('./src/windows/platform/webpack.config.js')
+    require('./src/scenes/platform/webpack.config.js')
   ]
 } else if (task === 'assets') {
   console.log('[TASK=assets]')
@@ -46,7 +46,7 @@ if (task === 'app') {
   module.exports = [
     require('./assets/webpack.config.js'),
     require('./src/app/webpack.config.js'),
-    require('./src/windows/mailboxes/webpack.config.js'),
-    require('./src/windows/platform/webpack.config.js')
+    require('./src/scenes/mailboxes/webpack.config.js'),
+    require('./src/scenes/platform/webpack.config.js')
   ]
 }
