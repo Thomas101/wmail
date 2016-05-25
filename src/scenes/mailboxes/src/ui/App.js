@@ -44,14 +44,8 @@ module.exports = React.createClass({
 
     mailboxDispatch.on('blurred', this.mailboxBlurred)
 
-    ipc.on('switch-mailbox', this.ipcChangeActiveMailbox)
     ipc.on('auth-google-complete', this.ipcAuthMailboxSuccess)
     ipc.on('auth-google-error', this.ipcAuthMailboxFailure)
-    ipc.on('mailbox-zoom-in', this.ipcZoomIn)
-    ipc.on('mailbox-zoom-out', this.ipcZoomOut)
-    ipc.on('mailbox-zoom-reset', this.ipcZoomReset)
-    ipc.on('toggle-sidebar', this.toggleSidebar)
-    ipc.on('toggle-app-menu', this.toggleAppMenu)
     ipc.on('launch-settings', this.launchSettings)
     ipc.on('download-completed', this.downloadCompleted)
   },
@@ -63,14 +57,8 @@ module.exports = React.createClass({
     flux.settings.S.unlisten(this.settingsChanged)
     flux.google.A.stopPollingUpdates()
 
-    ipc.removeListener('switch-mailbox', this.ipcChangeActiveMailbox)
     ipc.removeListener('auth-google-complete', this.ipcAuthMailboxSuccess)
     ipc.removeListener('auth-google-error', this.ipcAuthMailboxFailure)
-    ipc.removeListener('mailbox-zoom-in', this.ipcZoomIn)
-    ipc.removeListener('mailbox-zoom-out', this.ipcZoomOut)
-    ipc.removeListener('mailbox-zoom-reset', this.ipcZoomReset)
-    ipc.removeListener('toggle-sidebar', this.toggleSidebar)
-    ipc.removeListener('toggle-app-menu', this.toggleAppMenu)
     ipc.removeListener('launch-settings', this.launchSettings)
     ipc.removeListener('download-completed', this.downloadCompleted)
 
@@ -120,15 +108,6 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   /**
-  * Receives a change mailbox event
-  * @param evt: the event that fired
-  * @param req: the request that came through
-  */
-  ipcChangeActiveMailbox (evt, req) {
-    flux.mailbox.A.changeActive(req.mailboxId)
-  },
-
-  /**
   * Receives a mailbox success event
   * @param evt: the event that fired
   * @param req: the request that came through
@@ -149,64 +128,6 @@ module.exports = React.createClass({
     }
     window.alert('Failed to add mailbox')
     flux.google.A.authMailboxFailure(req)
-  },
-
-  /**
-  * Zooms the active mailbox in
-  * @param evt: the event that fired
-  * @param req: the request that came through
-  */
-  ipcZoomIn (evt, req) {
-    const store = flux.mailbox.S.getState()
-    const mailboxId = store.activeMailboxId()
-    if (mailboxId) {
-      flux.mailbox.A.update(mailboxId, {
-        zoomFactor: Math.min(1.5, store.getMailbox(mailboxId).zoomFactor + 0.1)
-      })
-    }
-  },
-
-  /**
-  * Zooms the active mailbox out
-  * @param evt: the event that fired
-  * @param req: the request that came through
-  */
-  ipcZoomOut (evt, req) {
-    const store = flux.mailbox.S.getState()
-    const mailboxId = store.activeMailboxId()
-    if (mailboxId) {
-      flux.mailbox.A.update(mailboxId, {
-        zoomFactor: Math.max(0.5, store.getMailbox(mailboxId).zoomFactor - 0.1)
-      })
-    }
-  },
-
-  /**
-  * Resets the zoom on the active mailbox
-  * @param evt: the event that fired
-  * @param req: the request that came through
-  */
-  ipcZoomReset (evt, req) {
-    const mailboxId = flux.mailbox.S.getState().activeMailboxId()
-    if (mailboxId) {
-      flux.mailbox.A.update(mailboxId, { zoomFactor: 1.0 })
-    }
-  },
-
-  /**
-  * Toggles the sidebar
-  * @param evt: the event that fired
-  */
-  toggleSidebar (evt) {
-    flux.settings.A.toggleSidebar()
-  },
-
-  /**
-  * Toggles the app menu
-  * @param evt: the event that fired
-  */
-  toggleAppMenu (evt) {
-    flux.settings.A.toggleAppMenu()
   },
 
   /**

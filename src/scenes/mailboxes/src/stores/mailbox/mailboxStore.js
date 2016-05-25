@@ -108,26 +108,37 @@ class MailboxStore {
     /* ****************************************/
 
     this.bindListeners({
+      // Load
       handleLoad: actions.LOAD,
+
+      // Create & Remove
       handleCreate: actions.CREATE,
       handleRemove: actions.REMOVE,
+
+      // Update
       handleUpdate: actions.UPDATE,
       handleSetCustomAvatar: actions.SET_CUSTOM_AVATAR,
 
-      handleChangeActive: actions.CHANGE_ACTIVE,
+      // Active Update
+      handleIncreaseActiveZoom: actions.INCREASE_ACTIVE_ZOOM,
+      handleDecreaseActiveZoom: actions.DECREASE_ACTIVE_ZOOM,
+      handleResetActiveZoom: actions.RESET_ACTIVE_ZOOM,
 
-      handleMoveUp: actions.MOVE_UP,
-      handleMoveDown: actions.MOVE_DOWN,
-
+      // Google
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
       handleSetGoogleUnreadMessageIds: actions.SET_GOOGLE_UNREAD_MESSAGE_IDS,
       handleUpdateGoogleUnread: actions.UPDATE_GOOGLE_UNREAD,
-      handleSetGoogleUnreadNotificationsShown: actions.SET_GOOGLE_UNREAD_NOTIFICATIONS_SHOWN
+      handleSetGoogleUnreadNotificationsShown: actions.SET_GOOGLE_UNREAD_NOTIFICATIONS_SHOWN,
+
+      // Active & Ordering
+      handleChangeActive: actions.CHANGE_ACTIVE,
+      handleMoveUp: actions.MOVE_UP,
+      handleMoveDown: actions.MOVE_DOWN
     })
   }
 
   /* **************************************************************************/
-  // Handlers CRUD
+  // Handlers Load
   /* **************************************************************************/
 
   /**
@@ -154,6 +165,10 @@ class MailboxStore {
       this.avatars.set(id, allAvatars[id])
     })
   }
+
+  /* **************************************************************************/
+  // Handlers Create & Remove
+  /* **************************************************************************/
 
   /**
   * Creates a new mailbox
@@ -183,6 +198,10 @@ class MailboxStore {
       this.active = this.index[0]
     }
   }
+
+  /* **************************************************************************/
+  // Handlers Update
+  /* **************************************************************************/
 
   /**
   * Handles a mailbox updating
@@ -220,36 +239,37 @@ class MailboxStore {
   }
 
   /* **************************************************************************/
-  // Handlers : Active & Ordering
+  // Handlers Update Active
   /* **************************************************************************/
 
-  /**
-  * Handles the active mailbox changing
-  * @param id: the id of the mailbox
-  */
-  handleChangeActive ({id}) {
-    this.active = id
-  }
-
-  /**
-  * Handles moving the given mailbox id up
-  */
-  handleMoveUp ({id}) {
-    const mailboxIndex = this.index.findIndex((i) => i === id)
-    if (mailboxIndex !== -1 && mailboxIndex !== 0) {
-      this.index.splice(mailboxIndex - 1, 0, this.index.splice(mailboxIndex, 1)[0])
-      persistence.mailbox.setItem(INDEX_KEY, this.index)
+  handleIncreaseActiveZoom () {
+    const mailbox = this.activeMailbox()
+    if (mailbox) {
+      const mailboxJS = mailbox.changeData({
+        zoomFactor: Math.min(1.5, mailbox.zoomFactor + 0.1)
+      })
+      persistence.mailbox.setItem(mailbox.id, mailboxJS)
+      this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
     }
   }
 
-  /**
-  * Handles moving the given mailbox id down
-  */
-  handleMoveDown ({id}) {
-    const mailboxIndex = this.index.findIndex((i) => i === id)
-    if (mailboxIndex !== -1 && mailboxIndex < this.index.length) {
-      this.index.splice(mailboxIndex + 1, 0, this.index.splice(mailboxIndex, 1)[0])
-      persistence.mailbox.setItem(INDEX_KEY, this.index)
+  handleDecreaseActiveZoom () {
+    const mailbox = this.activeMailbox()
+    if (mailbox) {
+      const mailboxJS = mailbox.changeData({
+        zoomFactor: Math.min(1.5, mailbox.zoomFactor - 0.1)
+      })
+      persistence.mailbox.setItem(mailbox.id, mailboxJS)
+      this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
+    }
+  }
+
+  handleResetActiveZoom () {
+    const mailbox = this.activeMailbox()
+    if (mailbox) {
+      const mailboxJS = mailbox.changeData({ zoomFactor: 1.0 })
+      persistence.mailbox.setItem(mailbox.id, mailboxJS)
+      this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
     }
   }
 
@@ -375,6 +395,40 @@ class MailboxStore {
 
     persistence.mailbox.setItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
+  }
+
+  /* **************************************************************************/
+  // Handlers : Active & Ordering
+  /* **************************************************************************/
+
+  /**
+  * Handles the active mailbox changing
+  * @param id: the id of the mailbox
+  */
+  handleChangeActive ({id}) {
+    this.active = id
+  }
+
+  /**
+  * Handles moving the given mailbox id up
+  */
+  handleMoveUp ({id}) {
+    const mailboxIndex = this.index.findIndex((i) => i === id)
+    if (mailboxIndex !== -1 && mailboxIndex !== 0) {
+      this.index.splice(mailboxIndex - 1, 0, this.index.splice(mailboxIndex, 1)[0])
+      persistence.mailbox.setItem(INDEX_KEY, this.index)
+    }
+  }
+
+  /**
+  * Handles moving the given mailbox id down
+  */
+  handleMoveDown ({id}) {
+    const mailboxIndex = this.index.findIndex((i) => i === id)
+    if (mailboxIndex !== -1 && mailboxIndex < this.index.length) {
+      this.index.splice(mailboxIndex + 1, 0, this.index.splice(mailboxIndex, 1)[0])
+      persistence.mailbox.setItem(INDEX_KEY, this.index)
+    }
   }
 
 }

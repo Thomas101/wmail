@@ -62,27 +62,19 @@ module.exports = React.createClass({
   },
 
   handleShowUnreadBadgeChange (evt, toggled) {
-    flux.mailbox.A.update(this.state.selected.id, {
-      showUnreadBadge: toggled
-    })
+    flux.mailbox.A.setShowUnreadBage(this.state.selected.id, toggled)
   },
 
   handleShowNotificationsChange (evt, toggled) {
-    flux.mailbox.A.update(this.state.selected.id, {
-      showNotifications: toggled
-    })
+    flux.mailbox.A.setShowNotifications(this.state.selected.id, toggled)
   },
 
   handleUnreadCountsTowardsAppUnread (evt, toggled) {
-    flux.mailbox.A.update(this.state.selected.id, {
-      unreadCountsTowardsAppUnread: toggled
-    })
+    flux.mailbox.A.setUnreadCountsTowardsAppUnread(this.state.selected.id, toggled)
   },
 
   handleAccountColorChange (col) {
-    flux.mailbox.A.update(this.state.selected.id, {
-      color: col.hex
-    })
+    flux.mailbox.A.setColor(this.state.selected.id, col)
   },
 
   handleCustomAvatarChange (evt) {

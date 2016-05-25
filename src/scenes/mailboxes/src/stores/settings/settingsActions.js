@@ -2,6 +2,7 @@ const alt = require('../alt')
 const {
   Settings: {SettingsIdent: {SEGMENTS}}
 } = require('shared/Models')
+const {ipcRenderer} = window.nativeRequire('electron')
 
 class SettingsActions {
   /* **************************************************************************/
@@ -199,4 +200,8 @@ class SettingsActions {
   }
 }
 
-module.exports = alt.createActions(SettingsActions)
+const actions = alt.createActions(SettingsActions)
+ipcRenderer.on('toggle-sidebar', actions.toggleSidebar)
+ipcRenderer.on('toggle-app-menu', actions.toggleAppMenu)
+
+module.exports = actions
