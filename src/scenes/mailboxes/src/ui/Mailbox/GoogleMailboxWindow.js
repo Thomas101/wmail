@@ -55,16 +55,16 @@ module.exports = React.createClass({
   getInitialState () {
     const mailboxStore = flux.mailbox.S.getState()
     return {
-      mailbox: mailboxStore.get(this.props.mailbox_id),
-      isActive: mailboxStore.activeId() === this.props.mailbox_id
+      mailbox: mailboxStore.getMailbox(this.props.mailbox_id),
+      isActive: mailboxStore.activeMailboxId() === this.props.mailbox_id
     }
   },
 
   mailboxesChanged (store) {
     if (this.isMounted === false) { return }
     this.setState({
-      mailbox: store.get(this.props.mailbox_id),
-      isActive: store.activeId() === this.props.mailbox_id
+      mailbox: store.getMailbox(this.props.mailbox_id),
+      isActive: store.activeMailboxId() === this.props.mailbox_id
     })
   },
 

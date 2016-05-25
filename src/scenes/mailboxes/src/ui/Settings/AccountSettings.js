@@ -47,7 +47,7 @@ module.exports = React.createClass({
   mailboxesChanged (store) {
     const all = store.all()
     if (this.state.selected) {
-      this.setState({ mailboxes: all, selected: store.get(this.state.selected.id) })
+      this.setState({ mailboxes: all, selected: store.getMailbox(this.state.selected.id) })
     } else {
       this.setState({ mailboxes: all, selected: all[0] })
     }
@@ -58,7 +58,7 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   handleAccountChange (evt, index, mailboxId) {
-    this.setState({ selected: flux.mailbox.S.getState().get(mailboxId) })
+    this.setState({ selected: flux.mailbox.S.getState().getMailbox(mailboxId) })
   },
 
   handleShowUnreadBadgeChange (evt, toggled) {

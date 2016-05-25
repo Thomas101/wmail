@@ -49,7 +49,7 @@ class GoogleActions {
   * @return { auth, mailboxId } the mailbox auth and the mailbox id
   */
   getAPIAuth (mailboxId) {
-    const mailbox = mailboxStore.getState().get(mailboxId)
+    const mailbox = mailboxStore.getState().getMailbox(mailboxId)
     let generate = false
     if (cachedAuths.has(mailboxId)) {
       if (cachedAuths.get(mailboxId).time !== mailbox.google.authTime) {
@@ -105,7 +105,7 @@ class GoogleActions {
       googleAuth: data.auth
     })
     // Run the first sync
-    const mailbox = mailboxStore.getState().get(data.id)
+    const mailbox = mailboxStore.getState().getMailbox(data.id)
     const firstSync = this.syncMailbox(data.id)
     return { mailbox: mailbox, firstSync: firstSync }
   }
@@ -131,7 +131,7 @@ class GoogleActions {
   * Syncs all mailboxes
   */
   syncAllMailboxes () {
-    const mailboxIds = mailboxStore.getState().ids()
+    const mailboxIds = mailboxStore.getState().mailboxIds()
     if (mailboxIds.length === 0) { return { promises: Promise.resolve() } }
 
     const promises = mailboxIds.map((mailboxId) => {
@@ -190,7 +190,7 @@ class GoogleActions {
   * Syncs all profiles
   */
   syncAllMailboxProfiles () {
-    const mailboxIds = mailboxStore.getState().ids()
+    const mailboxIds = mailboxStore.getState().mailboxIds()
     if (mailboxIds.length === 0) { return { promises: Promise.resolve() } }
 
     const promises = mailboxIds.map((mailboxId) => {
@@ -258,7 +258,7 @@ class GoogleActions {
   * Syncs all profiles
   */
   syncAllMailboxUnreadCounts () {
-    const mailboxIds = mailboxStore.getState().ids()
+    const mailboxIds = mailboxStore.getState().mailboxIds()
     if (mailboxIds.length === 0) { return { promises: Promise.resolve() } }
 
     const promises = mailboxIds.map((mailboxId) => {
@@ -284,7 +284,7 @@ class GoogleActions {
   */
   syncMailboxUnreadCount (mailboxId) {
     const { auth } = this.getAPIAuth(mailboxId)
-    const mailbox = mailboxStore.getState().get(mailboxId)
+    const mailbox = mailboxStore.getState().getMailbox(mailboxId)
 
     const label = mailbox.google.unreadLabel
     const labelField = mailbox.google.unreadLabelField
@@ -305,7 +305,7 @@ class GoogleActions {
   * @param labelField: the name of the field that should have the value taken from it
   */
   syncMailboxUnreadCountSuccess (mailboxId, response, label, labelField) {
-    const prevMailbox = mailboxStore.getState().get(mailboxId)
+    const prevMailbox = mailboxStore.getState().getMailbox(mailboxId)
     // Look to see if the unread count has changed. If it has, update it
     // then ask to sync the messages to provide info to the user in a timely fasion
     if (prevMailbox && prevMailbox.unread !== response.response[labelField]) {
@@ -337,7 +337,7 @@ class GoogleActions {
   * Syncs all unread messages
   */
   syncAllMailboxUnreadMessages () {
-    const mailboxIds = mailboxStore.getState().ids()
+    const mailboxIds = mailboxStore.getState().mailboxIds()
     if (mailboxIds.length === 0) { return { promises: Promise.resolve() } }
 
     const promises = mailboxIds.map((mailboxId) => {
@@ -369,7 +369,7 @@ class GoogleActions {
     }
 
     // Check not distabled for inbox / no unread messages
-    const mailbox = mailboxStore.getState().get(mailboxId)
+    const mailbox = mailboxStore.getState().getMailbox(mailboxId)
     if (mailbox.unread === 0 || !mailbox.showNotifications) {
       this.syncMailboxUnreadMessagesSuccess(mailboxId)
       return { mailboxId: mailboxId, promise: Promise.resolve() }
@@ -380,7 +380,7 @@ class GoogleActions {
     const promise = Promise.resolve()
       .then(() => googleHTTP.fetchEmailSummaries(auth, mailbox.email, mailbox.google.unreadQuery))
       .then((response) => {
-        const mailbox = mailboxStore.getState().get(mailboxId)
+        const mailbox = mailboxStore.getState().getMailbox(mailboxId)
 
         // Mark the latest set of unread messages
         const allMessageIds = (response.response.messages || []).map((data) => data.id)
@@ -412,7 +412,7 @@ class GoogleActions {
         if (!messageIds || messageIds.length === 0) { return Promise.resolve([]) }
 
         const { auth } = this.getAPIAuth(mailboxId)
-        const mailbox = mailboxStore.getState().get(mailboxId)
+        const mailbox = mailboxStore.getState().getMailbox(mailboxId)
         return Promise.all(messageIds.map((messageId) => {
           return googleHTTP.fetchEmail(auth, mailbox.email, messageId).then(
             (response) => Promise.resolve({ messageId: messageId, response: response }),

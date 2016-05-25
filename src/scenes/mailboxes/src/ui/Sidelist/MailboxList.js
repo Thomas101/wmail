@@ -28,17 +28,17 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState () {
-    return { mailbox_ids: flux.mailbox.S.getState().ids() }
+    return { mailboxIds: flux.mailbox.S.getState().mailboxIds() }
   },
 
   mailboxesChanged (store) {
-    this.setState({ mailbox_ids: store.ids() })
+    this.setState({ mailboxIds: store.mailboxIds() })
   },
 
   shouldComponentUpdate (nextProps, nextState) {
     if (!this.state || !nextState) { return true }
-    if (this.state.mailbox_ids.length !== nextState.mailbox_ids.length) { return true }
-    if (this.state.mailbox_ids.find((id, i) => id !== nextState.mailbox_ids[i].id)) { return true }
+    if (this.state.mailboxIds.length !== nextState.mailboxIds.length) { return true }
+    if (this.state.mailboxIds.find((id, i) => id !== nextState.mailboxIds[i].id)) { return true }
 
     return false
   },
@@ -53,8 +53,14 @@ module.exports = React.createClass({
   render () {
     return (
       <div {...this.props} className='mailbox-list'>
-        {this.state.mailbox_ids.map((id, index) => {
-          return <MailboxListItem mailbox_id={id} key={id} index={index} />
+        {this.state.mailboxIds.map((id, index, arr) => {
+          return (
+            <MailboxListItem
+              mailboxId={id}
+              key={id}
+              index={index}
+              isFirst={index === 0}
+              isLast={index === arr.length - 1} />)
         })}
       </div>
     )

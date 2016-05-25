@@ -98,7 +98,7 @@ module.exports = React.createClass({
       unreadMessages: store.unreadMessagesForAppBadge()
     })
     ipc.send('mailboxes-changed', {
-      mailboxes: store.all().map((mailbox) => {
+      mailboxes: store.allMailboxes().map((mailbox) => {
         return { id: mailbox.id, name: mailbox.name, email: mailbox.email }
       })
     })
@@ -158,10 +158,10 @@ module.exports = React.createClass({
   */
   ipcZoomIn (evt, req) {
     const store = flux.mailbox.S.getState()
-    const mailboxId = store.activeId()
+    const mailboxId = store.activeMailboxId()
     if (mailboxId) {
       flux.mailbox.A.update(mailboxId, {
-        zoomFactor: Math.min(1.5, store.get(mailboxId).zoomFactor + 0.1)
+        zoomFactor: Math.min(1.5, store.getMailbox(mailboxId).zoomFactor + 0.1)
       })
     }
   },
@@ -173,10 +173,10 @@ module.exports = React.createClass({
   */
   ipcZoomOut (evt, req) {
     const store = flux.mailbox.S.getState()
-    const mailboxId = store.activeId()
+    const mailboxId = store.activeMailboxId()
     if (mailboxId) {
       flux.mailbox.A.update(mailboxId, {
-        zoomFactor: Math.max(0.5, store.get(mailboxId).zoomFactor - 0.1)
+        zoomFactor: Math.max(0.5, store.getMailbox(mailboxId).zoomFactor - 0.1)
       })
     }
   },
@@ -187,7 +187,7 @@ module.exports = React.createClass({
   * @param req: the request that came through
   */
   ipcZoomReset (evt, req) {
-    const mailboxId = flux.mailbox.S.getState().activeId()
+    const mailboxId = flux.mailbox.S.getState().activeMailboxId()
     if (mailboxId) {
       flux.mailbox.A.update(mailboxId, { zoomFactor: 1.0 })
     }

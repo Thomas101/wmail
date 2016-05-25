@@ -7,12 +7,16 @@ const flux = {
 const { Badge, Popover, Menu, MenuItem, Divider, FontIcon } = require('material-ui')
 const Colors = require('material-ui/styles/colors')
 const mailboxDispatch = require('../Dispatch/mailboxDispatch')
+const shallowCompare = require('react-addons-shallow-compare')
 
 module.exports = React.createClass({
   displayName: 'MailboxListItem',
 
   propTypes: {
-    mailbox_id: React.PropTypes.string.isRequired
+    mailboxId: React.PropTypes.string.isRequired,
+    index: React.PropTypes.number.isRequired,
+    isFirst: React.PropTypes.bool.isRequired,
+    isLast: React.PropTypes.bool.isRequired
   },
 
   /* **************************************************************************/
@@ -38,12 +42,10 @@ module.exports = React.createClass({
 
   getInitialState () {
     const mailboxStore = flux.mailbox.S.getState()
-    const mailbox = mailboxStore.get(this.props.mailbox_id)
+    const mailbox = mailboxStore.getMailbox(this.props.mailboxId)
     return {
       mailbox: mailbox,
-      isActive: mailboxStore.activeId() === this.props.mailbox_id,
-      isFirst: mailboxStore.isFirst(this.props.mailbox_id),
-      isLast: mailboxStore.isLast(this.props.mailbox_id),
+      isActive: mailboxStore.activeMailboxId() === this.props.mailboxId,
       popover: false,
       popoverAnchor: null
     }
@@ -51,23 +53,15 @@ module.exports = React.createClass({
 
   mailboxesChanged (store) {
     if (this.isMounted === false) { return }
-    const mailbox = store.get(this.props.mailbox_id)
+    const mailbox = store.getMailbox(this.props.mailboxId)
     this.setState({
       mailbox: mailbox,
-      isActive: store.activeId() === this.props.mailbox_id,
-      isFirst: store.isFirst(this.props.mailbox_id),
-      isLast: store.isLast(this.props.mailbox_id)
+      isActive: store.activeMailboxId() === this.props.mailboxId
     })
   },
 
   shouldComponentUpdate (nextProps, nextState) {
-    if (this.state.mailbox !== nextState.mailbox) { return true }
-    if (this.state.isActive !== nextState.isActive) { return true }
-    if (this.state.popover !== nextState.popover) { return true }
-    if (this.state.isFirst !== nextState.isFirst) { return true }
-    if (this.state.isLast !== nextState.isLast) { return true }
-
-    return false
+    return shallowCompare(this, nextProps, nextState)
   },
 
   /* **************************************************************************/
@@ -80,7 +74,7 @@ module.exports = React.createClass({
   */
   handleClick (evt) {
     evt.preventDefault()
-    flux.mailbox.A.changeActive(this.props.mailbox_id)
+    flux.mailbox.A.changeActive(this.props.mailboxId)
   },
 
   /**
@@ -102,7 +96,7 @@ module.exports = React.createClass({
   * Deletes this mailbox
   */
   handleDelete () {
-    flux.mailbox.A.remove(this.props.mailbox_id)
+    flux.mailbox.A.remove(this.props.mailboxId)
     this.setState({ popover: false })
   },
 
@@ -110,7 +104,7 @@ module.exports = React.createClass({
   * Opens the inspector window for this mailbox
   */
   handleInspect () {
-    mailboxDispatch.openDevTools(this.props.mailbox_id)
+    mailboxDispatch.openDevTools(this.props.mailboxId)
     this.setState({ popover: false })
   },
 
@@ -118,7 +112,7 @@ module.exports = React.createClass({
   * Reloads this mailbox
   */
   handleReload () {
-    mailboxDispatch.reload(this.props.mailbox_id)
+    mailboxDispatch.reload(this.props.mailboxId)
     this.setState({ popover: false })
   },
 
@@ -126,7 +120,7 @@ module.exports = React.createClass({
   * Moves this item up
   */
   handleMoveUp () {
-    flux.mailbox.A.moveUp(this.props.mailbox_id)
+    flux.mailbox.A.moveUp(this.props.mailboxId)
     this.setState({ popover: false })
   },
 
@@ -134,7 +128,7 @@ module.exports = React.createClass({
   * Moves this item down
   */
   handleMoveDown () {
-    flux.mailbox.A.moveDown(this.props.mailbox_id)
+    flux.mailbox.A.moveDown(this.props.mailboxId)
     this.setState({ popover: false })
   },
 
@@ -166,21 +160,21 @@ module.exports = React.createClass({
   */
   renderMenuItems () {
     const menuItems = []
-    if (!this.state.isFirst) {
+    if (!this.props.isFirst) {
       menuItems.push(<MenuItem
         key='moveup'
         primaryText='Move Up'
         onClick={this.handleMoveUp}
         leftIcon={<FontIcon className='material-icons'>arrow_upward</FontIcon>} />)
     }
-    if (!this.state.isLast) {
+    if (!this.props.isLast) {
       menuItems.push(<MenuItem
         key='movedown'
         primaryText='Move Down'
         onClick={this.handleMoveDown}
         leftIcon={<FontIcon className='material-icons'>arrow_downward</FontIcon>} />)
     }
-    if (!this.state.isFirst || !this.state.isLast) {
+    if (!this.props.isFirst || !this.props.isLast) {
       menuItems.push(<Divider key='div-0' />)
     }
     menuItems.push(

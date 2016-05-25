@@ -29,39 +29,17 @@ class MailboxStore {
     /**
     * @return all the mailboxes in order
     */
-    this.all = () => {
-      return this.ids().map((id) => this.mailboxes.get(id))
-    }
+    this.allMailboxes = () => { return this.index.map((id) => this.mailboxes.get(id)) }
 
     /**
     * @return the ids
     */
-    this.ids = () => { return Array.from(this.index) }
+    this.mailboxIds = () => { return Array.from(this.index) }
 
     /**
     * @return the mailbox
     */
-    this.get = (id) => { return this.mailboxes.get(id) || null }
-
-    /**
-    * @return the index of the given mailbox id
-    */
-    this.indexOf = (id) => { return this.index.findIndex((i) => i === id) }
-
-    /**
-    * @return true if it is the first mailbox
-    */
-    this.isFirst = (id) => { return this.indexOf(id) === 0 }
-
-    /**
-    * @return true if it is the last mailbox
-    */
-    this.isLast = (id) => { return this.indexOf(id) === this.index.length - 1 }
-
-    /**
-    * @return true if the store has this item
-    */
-    this.has = (id) => { return this.indexOf(id) !== -1 }
+    this.getMailbox = (id) => { return this.mailboxes.get(id) || null }
 
     /* ****************************************/
     // Avatar
@@ -76,12 +54,12 @@ class MailboxStore {
     /**
     * @return the id of the active mailbox
     */
-    this.activeId = () => { return this.active }
+    this.activeMailboxId = () => { return this.active }
 
     /**
     * @return the active mailbox
     */
-    this.active = () => { return this.mailboxes.get(this.active) }
+    this.activeMailbox = () => { return this.mailboxes.get(this.active) }
 
     /* ****************************************/
     // Aggregated queries
@@ -103,7 +81,7 @@ class MailboxStore {
     * @return the total amount of unread items taking mailbox settings into account
     */
     this.totalUnreadCountForAppBadge = () => {
-      return this.all().reduce((acc, mailbox) => {
+      return this.allMailboxes().reduce((acc, mailbox) => {
         if (mailbox && !isNaN(mailbox.unread) && mailbox.unreadCountsTowardsAppUnread) {
           acc += mailbox.unread
         }
@@ -115,7 +93,7 @@ class MailboxStore {
     * @return all the unread messages for the app badge
     */
     this.unreadMessagesForAppBadge = () => {
-      return this.all().reduce((acc, mailbox) => {
+      return this.allMailboxes().reduce((acc, mailbox) => {
         if (mailbox && mailbox.unreadCountsTowardsAppUnread) {
           if (mailbox.google) {
             acc[mailbox.id] = Object.assign({}, mailbox.google.unreadMessages)

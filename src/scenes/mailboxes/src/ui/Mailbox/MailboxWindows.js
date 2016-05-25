@@ -27,11 +27,11 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState () {
-    return { mailbox_ids: flux.mailbox.S.getState().ids() }
+    return { mailbox_ids: flux.mailbox.S.getState().mailboxIds() }
   },
 
   mailboxesChanged (store) {
-    this.setState({ mailbox_ids: store.ids() })
+    this.setState({ mailbox_ids: store.mailboxIds() })
   },
 
   shouldComponentUpdate (nextProps, nextState) {
