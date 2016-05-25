@@ -1,6 +1,8 @@
 module.exports = Object.freeze({
   APP_ID: 'tombeverley.wmail',
 
+  MAILBOX_INDEX_KEY: '__index__',
+
   GITHUB_URL: 'https://github.com/Thomas101/wmail/',
   GITHUB_ISSUE_URL: 'https://github.com/Thomas101/wmail/issues',
   GITHUB_RELEASES_URL: 'http://thomas101.github.io/wmail/download',

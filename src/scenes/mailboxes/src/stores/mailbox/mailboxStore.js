@@ -1,14 +1,16 @@
 const alt = require('../alt')
 const actions = require('./mailboxActions')
 const Mailbox = require('shared/Models/Mailbox/Mailbox')
-const { GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS } = require('shared/constants')
 const uuid = require('uuid')
 const persistence = {
   mailbox: window.remoteRequire('storage/mailboxStorage'),
   avatar: window.remoteRequire('storage/avatarStorage')
 }
+const {
+  GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS,
+  MAILBOX_INDEX_KEY
+} = require('shared/constants')
 
-const INDEX_KEY = '__index__'
 const BLANK_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAAtJREFUCB1jYAACAAAFAAGNu5vzAAAAAElFTkSuQmCC'
 
 class MailboxStore {
@@ -152,8 +154,8 @@ class MailboxStore {
 
     // Mailboxes
     Object.keys(allMailboxes).forEach((id) => {
-      if (id === INDEX_KEY) {
-        this.index = allMailboxes[INDEX_KEY]
+      if (id === MAILBOX_INDEX_KEY) {
+        this.index = allMailboxes[MAILBOX_INDEX_KEY]
       } else {
         this.mailboxes.set(id, new Mailbox(id, allMailboxes[id]))
       }
@@ -179,7 +181,7 @@ class MailboxStore {
     persistence.mailbox.setItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
     this.index.push(id)
-    persistence.mailbox.setItem(INDEX_KEY, this.index)
+    persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
     this.active = id
   }
 
@@ -190,7 +192,7 @@ class MailboxStore {
   handleRemove ({id}) {
     const wasActive = this.active === id
     this.index = this.index.filter((i) => i !== id)
-    persistence.mailbox.setItem(INDEX_KEY, this.index)
+    persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
     this.mailboxes.delete(id)
     persistence.mailbox.removeItem(id)
 
@@ -416,7 +418,7 @@ class MailboxStore {
     const mailboxIndex = this.index.findIndex((i) => i === id)
     if (mailboxIndex !== -1 && mailboxIndex !== 0) {
       this.index.splice(mailboxIndex - 1, 0, this.index.splice(mailboxIndex, 1)[0])
-      persistence.mailbox.setItem(INDEX_KEY, this.index)
+      persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
     }
   }
 
@@ -427,7 +429,7 @@ class MailboxStore {
     const mailboxIndex = this.index.findIndex((i) => i === id)
     if (mailboxIndex !== -1 && mailboxIndex < this.index.length) {
       this.index.splice(mailboxIndex + 1, 0, this.index.splice(mailboxIndex, 1)[0])
-      persistence.mailbox.setItem(INDEX_KEY, this.index)
+      persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
     }
   }
 

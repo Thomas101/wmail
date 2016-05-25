@@ -1,12 +1,12 @@
 const {Menu} = require('electron')
+const mailboxStore = require('./stores/mailboxStore')
 
 module.exports = {
   /**
   * @param selectors: the selectors for the non-standard actions
-  * @param mailboxes: the mailboxes that the app has
   * @return the menu
   */
-  build: function (selectors, mailboxes) {
+  build: function (selectors) {
     return Menu.buildFromTemplate([
       {
         label: 'Application',
@@ -61,8 +61,8 @@ module.exports = {
           { label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize' },
           { label: 'Cycle Windows', accelerator: 'CmdOrCtrl+`', click: selectors.cycleWindows }
         ]
-        .concat(mailboxes.length ? [{ type: 'separator' }] : [])
-        .concat(mailboxes.map((mailbox, index) => {
+        .concat(mailboxStore.index.length ? [{ type: 'separator' }] : [])
+        .concat(mailboxStore.orderedMailboxes().map((mailbox, index) => {
           return { label: mailbox.email || 'Untitled', accelerator: 'CmdOrCtrl+' + (index + 1), click: () => { selectors.mailbox(mailbox.id) } }
         }))
       },

@@ -25,6 +25,7 @@
   const constants = require('../shared/constants')
   const path = require('path')
   const mkdirp = require('mkdirp')
+  const mailboxStore = require('./stores/mailboxStore')
 
   /* ****************************************************************************/
   // Global objects
@@ -98,12 +99,16 @@
   }
 
   /* ****************************************************************************/
-  // IPC Events
+  // Events
   /* ****************************************************************************/
 
-  ipcMain.on('mailboxes-changed', (evt, body) => {
-    Menu.setApplicationMenu(appMenu.build(appMenuSelectors, body.mailboxes))
+  mailboxStore.on('changed', () => {
+    Menu.setApplicationMenu(appMenu.build(appMenuSelectors))
   })
+
+  /* ****************************************************************************/
+  // IPC Events
+  /* ****************************************************************************/
 
   ipcMain.on('report-error', (evt, body) => {
     analytics.appException(windowManager.mailboxesWindow.window, 'renderer', body.error)
@@ -132,7 +137,7 @@
   /* ****************************************************************************/
 
   app.on('ready', () => {
-    Menu.setApplicationMenu(appMenu.build(appMenuSelectors, []))
+    Menu.setApplicationMenu(appMenu.build(appMenuSelectors))
     windowManager.mailboxesWindow.start()
   })
 
