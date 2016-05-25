@@ -6,6 +6,7 @@ const flux = {
   google: require('../../stores/google'),
   settings: require('../../stores/settings')
 }
+const Mailbox = require('shared/Models/Mailbox/Mailbox')
 const {shell} = window.nativeRequire('electron').remote
 const URL = window.nativeRequire('url')
 const ipc = window.nativeRequire('electron').ipcRenderer
@@ -32,7 +33,10 @@ module.exports = React.createClass({
     mailboxDispatch.on('devtools', this.openDevTools)
     mailboxDispatch.on('refocus', this.refocus)
     mailboxDispatch.on('openMessage', this.openMessage)
-    ReactDOM.findDOMNode(this).appendChild(this.renderWebviewDOMNode())
+    // Wait for the dom to start rendering
+    setTimeout(() => {
+      ReactDOM.findDOMNode(this).appendChild(this.renderWebviewDOMNode())
+    })
   },
 
   componentWillUnmount () {
@@ -80,8 +84,10 @@ module.exports = React.createClass({
   reload (evt) {
     if (evt.mailboxId === this.props.mailbox_id) {
       const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
-      webview.setAttribute('src', this.state.mailbox.url)
-      flux.google.A.syncMailbox(this.state.mailbox)
+      if (webview) {
+        webview.setAttribute('src', this.state.mailbox.url)
+        flux.google.A.syncMailbox(this.state.mailbox)
+      }
     }
   },
 
@@ -92,7 +98,9 @@ module.exports = React.createClass({
   openDevTools (evt) {
     if (evt.mailboxId === this.props.mailbox_id) {
       const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
-      webview.openDevTools()
+      if (webview) {
+        webview.openDevTools()
+      }
     }
   },
 
@@ -103,7 +111,9 @@ module.exports = React.createClass({
   refocus (evt) {
     if (evt.mailboxId === this.props.mailbox_id || (!evt.mailboxId && this.state.isActive)) {
       const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
-      setTimeout(() => { webview.focus() })
+      if (webview) {
+        setTimeout(() => { webview.focus() })
+      }
     }
   },
 
@@ -114,7 +124,9 @@ module.exports = React.createClass({
   openMessage (evt) {
     if (evt.mailboxId === this.props.mailbox_id) {
       const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
-      webview.send('open-message', { messageId: evt.messageId, threadId: evt.threadId })
+      if (webview) {
+        webview.send('open-message', { messageId: evt.messageId, threadId: evt.threadId })
+      }
     }
   },
 
@@ -164,16 +176,18 @@ module.exports = React.createClass({
   composeMessage (email) {
     const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
 
-    switch (this.state.mailbox.type) {
-      case flux.mailbox.M.TYPE_GMAIL:
-        ipc.send('new-window', {
-          partition: webview.partition,
-          url: 'https://mail.google.com/mail/?view=cm&fs=1&tf=1&shva=1&to=' + email
-        })
-        break
-      case flux.mailbox.M.TYPE_GINBOX:
-        webview.loadURL('https://inbox.google.com/?view=cm&fs=1&tf=1&shva=1&to=' + email)
-        break
+    if (webview) {
+      switch (this.state.mailbox.type) {
+        case Mailbox.TYPE_GMAIL:
+          ipc.send('new-window', {
+            partition: webview.partition,
+            url: 'https://mail.google.com/mail/?view=cm&fs=1&tf=1&shva=1&to=' + email
+          })
+          break
+        case Mailbox.TYPE_GINBOX:
+          webview.loadURL('https://inbox.google.com/?view=cm&fs=1&tf=1&shva=1&to=' + email)
+          break
+      }
     }
   },
 
@@ -255,8 +269,8 @@ module.exports = React.createClass({
   */
   updateWebviewDOMNode (nextProps, nextState) {
     if (!nextState.mailbox) { return }
-
     const webview = ReactDOM.findDOMNode(this).getElementsByTagName('webview')[0]
+    if (!webview) { return }
 
     // Change the active state
     if (this.state.isActive !== nextState.isActive) {

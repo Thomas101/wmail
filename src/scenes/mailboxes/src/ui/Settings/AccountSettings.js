@@ -14,6 +14,7 @@ const GoogleMailAccountSettings = require('./Accounts/GoogleMailAccountSettings'
 const flux = {
   mailbox: require('../../stores/mailbox')
 }
+const Mailbox = require('shared/Models/Mailbox/Mailbox')
 
 module.exports = React.createClass({
   displayName: 'AccountSettings',
@@ -126,9 +127,9 @@ module.exports = React.createClass({
     let avatarSrc = ''
     if (selected) {
       let accountSpecific
-      if (selected.type === flux.mailbox.M.TYPE_GINBOX) {
+      if (selected.type === Mailbox.M.TYPE_GINBOX) {
         accountSpecific = <GoogleInboxAccountSettings mailbox={selected} />
-      } else if (selected.type === flux.mailbox.M.TYPE_GMAIL) {
+      } else if (selected.type === Mailbox.M.TYPE_GMAIL) {
         accountSpecific = <GoogleMailAccountSettings mailbox={selected} />
       }
       content = (
@@ -184,9 +185,9 @@ module.exports = React.createClass({
         </div>
       )
       if (selected.hasCustomAvatar) {
-        avatarSrc = selected.customAvatar
-      } else if (selected.avatar) {
-        avatarSrc = selected.avatar
+        avatarSrc = flux.mailbox.S.getState().getAvatar(selected.customAvatar)
+      } else if (selected.avatarURL) {
+        avatarSrc = selected.avatarURL
       }
     } else {
       content = (

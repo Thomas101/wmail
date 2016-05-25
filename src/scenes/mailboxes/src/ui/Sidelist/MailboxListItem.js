@@ -228,12 +228,16 @@ module.exports = React.createClass({
 
     // Generate avatar
     let innerElement
-    if (mailbox.avatar || mailbox.hasCustomAvatar) {
+    if (mailbox.avatarURL || mailbox.hasCustomAvatar) {
       containerProps.className += ' avatar'
       if (mailbox.hasCustomAvatar) {
-        innerElement = <img className='avatar' src={mailbox.customAvatar} />
+        innerElement = (
+          <img
+            className='avatar'
+            src={flux.mailbox.S.getState().getAvatar(mailbox.customAvatar)} />
+        )
       } else {
-        innerElement = <img className='avatar' src={mailbox.avatar} />
+        innerElement = <img className='avatar' src={mailbox.avatarURL} />
       }
     } else {
       containerProps.className += ' index'

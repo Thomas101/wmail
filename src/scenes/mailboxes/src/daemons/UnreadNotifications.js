@@ -48,7 +48,7 @@ class UnreadNotifications {
     const firedList = {}
     let fired = false
 
-    store.all().forEach((mailbox) => {
+    store.all().forEach((mailbox, k) => {
       if (!mailbox.showNotifications) { return }
       const unread = mailbox.google.unreadUnotifiedMessages
 

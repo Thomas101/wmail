@@ -56,6 +56,26 @@ class StorageBucket {
     return keys
   }
 
+  /**
+  * @return all the items in an obj
+  */
+  allItems () {
+    return this.allKeys().reduce((acc, key) => {
+      acc[key] = this.getItem(key)
+      return acc
+    }, {})
+  }
+
+  /**
+  * @return all the items in an obj
+  */
+  allStrings () {
+    return this.allKeys().reduce((acc, key) => {
+      acc[key] = this.getString(key)
+      return acc
+    }, {})
+  }
+
   /* ****************************************************************************/
   // Setters
   /* ****************************************************************************/

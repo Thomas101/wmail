@@ -12,8 +12,8 @@
     "package:win32": "node packager.js win32",
     "package": "node packager.js darwin && node packager.js linux && node packager.js win32",
     "postinstall": "electron-rebuild",
-    "install-all": "echo ':>wmail'; npm install; cd src/app; echo ':>wmail-app'; npm install; cd ../../src/windows/mailboxes; echo ':>wmail-windows-mailboxes'; npm install",
-    "outdated-all": "echo ':>wmail'; npm outdated; cd src/app; echo ':>wmail-app'; npm outdated; cd ../../src/windows/mailboxes; echo ':>wmail-windows-mailboxes'; npm outdated"
+    "install-all": "echo ':>wmail'; npm install; cd src/app; echo ':>wmail-app'; npm install; cd ../../src/scenes/mailboxes; echo ':>wmail-windows-mailboxes'; npm install",
+    "outdated-all": "echo ':>wmail'; npm outdated; cd src/app; echo ':>wmail-app'; npm outdated; cd ../../src/scenes/mailboxes; echo ':>wmail-windows-mailboxes'; npm outdated"
   },
   "keywords": [],
   "author": "Thomas Beverley",

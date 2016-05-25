@@ -1,4 +1,5 @@
-const { GMAIL_NOTIFICATION_MAX_MESSAGE_AGE_MS } = require('shared/constants')
+const Model = require('../Model')
+const { GMAIL_NOTIFICATION_MAX_MESSAGE_AGE_MS } = require('../../constants')
 
 const UNREAD_MODES = {
   INBOX: 'inbox',
@@ -6,7 +7,7 @@ const UNREAD_MODES = {
   PRIMARY_INBOX_UNREAD: 'primary_inbox_unread'
 }
 
-class Google {
+class Google extends Model {
 
   /* **************************************************************************/
   // Class
@@ -19,26 +20,28 @@ class Google {
   /* **************************************************************************/
 
   constructor (auth, config, unread) {
-    this.__auth__ = auth
-    this.__config__ = config
-    this.__unread__ = unread
+    super({
+      auth: auth || {},
+      config: config || {},
+      unread: unread || {}
+    })
   }
 
   /* **************************************************************************/
   // Properties : GoogleAuth
   /* **************************************************************************/
 
-  get hasAuth () { return this.__auth__ !== undefined }
-  get authTime () { return (this.__auth__ || {}).date }
-  get accessToken () { return (this.__auth__ || {}).access_token }
-  get refreshToken () { return (this.__auth__ || {}).refresh_token }
-  get authExpiryTime () { return ((this.__auth__ || {}).date || 0) + ((this.__auth__ || {}).expires_in || 0) }
+  get hasAuth () { return Object.keys(this.__data__.auth).length !== 0 }
+  get authTime () { return this.__data__.auth.date }
+  get accessToken () { return this.__data__.auth.access_token }
+  get refreshToken () { return this.__data__.auth.refresh_token }
+  get authExpiryTime () { return (this.__data__.auth.date || 0) + (this.__data__.auth.expires_in || 0) }
 
   /* **************************************************************************/
   // Properties : Google Config
   /* **************************************************************************/
 
-  get unreadMode () { return (this.__config__ || {}).unreadMode || UNREAD_MODES.INBOX_UNREAD }
+  get unreadMode () { return this.__data__.config.unreadMode || UNREAD_MODES.INBOX_UNREAD }
   get unreadQuery () {
     switch (this.unreadMode) {
       case UNREAD_MODES.INBOX: return 'label:inbox'
@@ -66,10 +69,10 @@ class Google {
   /* **************************************************************************/
 
   get unreadMessages () {
-    return Object.keys(this.__unread__ || {})
+    return Object.keys(this.__data__.unread)
       .reduce((acc, k) => {
-        if (this.__unread__[k].unread) {
-          acc[k] = this.__unread__[k]
+        if (this.__data__.unread[k].unread) {
+          acc[k] = this.__data__.unread[k]
         }
         return acc
       }, {})

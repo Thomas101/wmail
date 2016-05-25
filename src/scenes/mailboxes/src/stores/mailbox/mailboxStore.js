@@ -1,12 +1,15 @@
 const alt = require('../alt')
 const actions = require('./mailboxActions')
-const storage = require('../storage')
-const Mailbox = require('./Mailbox')
+const Mailbox = require('shared/Models/Mailbox/Mailbox')
 const { GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS } = require('shared/constants')
 const uuid = require('uuid')
+const persistence = {
+  mailbox: window.remoteRequire('storage/mailboxStorage'),
+  avatar: window.remoteRequire('storage/avatarStorage')
+}
 
-const INDEX_KEY = 'Mailbox_index'
-const MAILBOX_KEY = function (id) { return 'Mailbox_' + id }
+const INDEX_KEY = '__index__'
+const BLANK_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAAtJREFUCB1jYAACAAAFAAGNu5vzAAAAAElFTkSuQmCC'
 
 class MailboxStore {
   /* **************************************************************************/
@@ -16,6 +19,7 @@ class MailboxStore {
   constructor () {
     this.index = []
     this.mailboxes = new Map()
+    this.avatars = new Map()
     this.active = null
 
     /* ****************************************/
@@ -25,7 +29,9 @@ class MailboxStore {
     /**
     * @return all the mailboxes in order
     */
-    this.all = () => { return this.ids().map((id) => this.mailboxes.get(id)) }
+    this.all = () => {
+      return this.ids().map((id) => this.mailboxes.get(id))
+    }
 
     /**
     * @return the ids
@@ -56,6 +62,12 @@ class MailboxStore {
     * @return true if the store has this item
     */
     this.has = (id) => { return this.indexOf(id) !== -1 }
+
+    /* ****************************************/
+    // Avatar
+    /* ****************************************/
+
+    this.getAvatar = (id) => { return this.avatars.get(id) || BLANK_IMAGE }
 
     /* ****************************************/
     // Active
@@ -137,20 +149,6 @@ class MailboxStore {
   }
 
   /* **************************************************************************/
-  // Utils
-  /* **************************************************************************/
-
-  /**
-  * Saves a mailbox
-  * @param id: the id of the mailbox
-  * @param data: the mailbox data
-  */
-  saveMailbox (id, data) {
-    storage.set(MAILBOX_KEY(id), data)
-    this.mailboxes.set(id, new Mailbox(id, data))
-  }
-
-  /* **************************************************************************/
   // Handlers CRUD
   /* **************************************************************************/
 
@@ -158,11 +156,25 @@ class MailboxStore {
   * Loads the storage from disk
   */
   handleLoad () {
-    this.index = storage.get(INDEX_KEY, [])
-    this.index.forEach((k) => {
-      this.mailboxes.set(k, new Mailbox(k, storage.get(MAILBOX_KEY(k), null)))
+    // Load
+    const allAvatars = persistence.avatar.allStrings()
+    const allMailboxes = persistence.mailbox.allItems()
+    this.index = []
+
+    // Mailboxes
+    Object.keys(allMailboxes).forEach((id) => {
+      if (id === INDEX_KEY) {
+        this.index = allMailboxes[INDEX_KEY]
+      } else {
+        this.mailboxes.set(id, new Mailbox(id, allMailboxes[id]))
+      }
     })
     this.active = this.index[0] || null
+
+    // Avatars
+    Object.keys(allAvatars).forEach((id) => {
+      this.avatars.set(id, allAvatars[id])
+    })
   }
 
   /**
@@ -171,9 +183,10 @@ class MailboxStore {
   * @param data: the data to seed the mailbox with
   */
   handleCreate ({id, data}) {
-    this.saveMailbox(id, data)
+    persistence.mailbox.setItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
     this.index.push(id)
-    storage.set(INDEX_KEY, this.index)
+    persistence.mailbox.setItem(INDEX_KEY, this.index)
     this.active = id
   }
 
@@ -184,9 +197,9 @@ class MailboxStore {
   handleRemove ({id}) {
     const wasActive = this.active === id
     this.index = this.index.filter((i) => i !== id)
-    storage.set(INDEX_KEY, this.index)
+    persistence.mailbox.setItem(INDEX_KEY, this.index)
     this.mailboxes.delete(id)
-    storage.remove(MAILBOX_KEY(id), id)
+    persistence.mailbox.removeItem(id)
 
     if (wasActive) {
       this.active = this.index[0]
@@ -199,9 +212,9 @@ class MailboxStore {
   * @param updates: the updates to merge in
   */
   handleUpdate ({id, updates}) {
-    const mailbox = this.mailboxes.get(id)
-    const data = Object.assign(mailbox.cloneData(), updates)
-    this.saveMailbox(id, data)
+    const mailboxJS = this.mailboxes.get(id).changeData(updates)
+    persistence.mailbox.setItem(id, mailboxJS)
+    this.mailboxes.set(id, new Mailbox(id, mailboxJS))
   }
 
   /**
@@ -213,16 +226,19 @@ class MailboxStore {
     const mailbox = this.mailboxes.get(id)
     let data = mailbox.cloneData()
     if (b64Image) {
-      const imageId = 'Asset_' + uuid.v4()
-      window.localStorage[imageId] = b64Image
+      const imageId = uuid.v4()
       data.customAvatar = imageId
+      persistence.avatar.setString(imageId, b64Image)
+      this.avatars.set(imageId, b64Image)
     } else {
       if (data.customAvatar) {
-        delete window.localStorage[data.customAvatar]
+        persistence.avatar.removeItem(data.customAvatar)
+        this.avatars.delete(data.customAvatar)
         delete data.customAvatar
       }
     }
-    this.saveMailbox(id, data)
+    persistence.mailbox.setItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
   }
 
   /* **************************************************************************/
@@ -244,7 +260,7 @@ class MailboxStore {
     const mailboxIndex = this.index.findIndex((i) => i === id)
     if (mailboxIndex !== -1 && mailboxIndex !== 0) {
       this.index.splice(mailboxIndex - 1, 0, this.index.splice(mailboxIndex, 1)[0])
-      storage.set(INDEX_KEY, this.index)
+      persistence.mailbox.setItem(INDEX_KEY, this.index)
     }
   }
 
@@ -255,7 +271,7 @@ class MailboxStore {
     const mailboxIndex = this.index.findIndex((i) => i === id)
     if (mailboxIndex !== -1 && mailboxIndex < this.index.length) {
       this.index.splice(mailboxIndex + 1, 0, this.index.splice(mailboxIndex, 1)[0])
-      storage.set(INDEX_KEY, this.index)
+      persistence.mailbox.setItem(INDEX_KEY, this.index)
     }
   }
 
@@ -271,7 +287,8 @@ class MailboxStore {
   handleUpdateGoogleConfig ({id, updates}) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleConf = Object.assign(data.googleConf || {}, updates)
-    this.saveMailbox(id, data)
+    persistence.mailbox.setItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
   }
 
   /**
@@ -310,7 +327,8 @@ class MailboxStore {
       }
     })
 
-    this.saveMailbox(id, data)
+    persistence.mailbox.setItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
   }
 
   /**
@@ -347,7 +365,8 @@ class MailboxStore {
       return acc
     }, {})
 
-    this.saveMailbox(id, data)
+    persistence.mailbox.setItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
   }
 
   /**
@@ -376,7 +395,8 @@ class MailboxStore {
       return acc
     }, {})
 
-    this.saveMailbox(id, data)
+    persistence.mailbox.setItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
   }
 
 }

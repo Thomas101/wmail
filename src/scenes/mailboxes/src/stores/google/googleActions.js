@@ -7,7 +7,7 @@ const googleHTTP = require('./googleHTTP')
 const mailboxStore = require('../mailbox/mailboxStore')
 const mailboxActions = require('../mailbox/mailboxActions')
 const settingsStore = require('../settings/settingsStore')
-const Mailbox = require('../mailbox/Mailbox')
+const Mailbox = require('shared/Models/Mailbox/Mailbox')
 const ipc = window.nativeRequire('electron').ipcRenderer
 const reporter = require('../../reporter')
 
