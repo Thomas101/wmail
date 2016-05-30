@@ -13,10 +13,9 @@ class MailboxesWindow extends WMailWindow {
 
   /**
   * @param analytics: the analytics object
-  * @param localStorage: the localStorage object
   */
-  constructor (analytics, localStorage) {
-    super(analytics, localStorage, {
+  constructor (analytics) {
+    super(analytics, {
       screenLocationNS: 'mailbox_window_state'
     })
     this.heartbeatInterval = null

@@ -5,18 +5,17 @@ const osLanguage = require('os-locale').sync()
 const pkg = require('../package.json')
 const HttpsProxyAgent = require('https-proxy-agent')
 const settingStore = require('./stores/settingStore')
+const appStorage = require('./storage/appStorage')
 
 class AppAnalytics {
   /* ****************************************************************************/
   // Lifecycle
   /* ****************************************************************************/
-  constructor (localStorage) {
-    this.localStorage = localStorage
-
-    if (!this.localStorage.getItem('ga-id')) {
-      this.localStorage.setItem('ga-id', uuid.v4())
+  constructor () {
+    if (!appStorage.getItem('ga-id')) {
+      appStorage.setItem('ga-id', uuid.v4())
     }
-    this.id = this.localStorage.getItem('ga-id')
+    this.id = appStorage.getItem('ga-id')
   }
 
   /* ****************************************************************************/

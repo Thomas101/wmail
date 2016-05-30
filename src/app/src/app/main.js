@@ -1,5 +1,5 @@
 ;(function () {
-  const {ipcMain, dialog, app, Menu, shell} = require('electron')
+  const {ipcMain, dialog, app, shell} = require('electron')
 
   let windowManager
   const quitting = app.makeSingleInstance(function (commandLine, workingDirectory) {
@@ -15,31 +15,21 @@
   }
 
   const AppAnalytics = require('./AppAnalytics')
-  const AppDirectory = require('appdirectory')
-  const Storage = require('dom-storage')
   const MailboxesWindow = require('./MailboxesWindow')
   const ContentWindow = require('./ContentWindow')
   const pkg = require('../package.json')
-  const appMenu = require('./appMenu')
+  const AppPrimaryMenu = require('./AppPrimaryMenu')
   const WindowManager = require('./WindowManager')
   const constants = require('../shared/constants')
-  const path = require('path')
-  const mkdirp = require('mkdirp')
-  const mailboxStore = require('./stores/mailboxStore')
 
   /* ****************************************************************************/
   // Global objects
   /* ****************************************************************************/
 
-  const appDirectory = new AppDirectory(pkg.name)
-  mkdirp.sync(appDirectory.userData())
-
-  const localStorage = new Storage(path.join(appDirectory.userData(), 'main_proc_db.json'))
-  const analytics = new AppAnalytics(localStorage)
-  const mailboxesWindow = new MailboxesWindow(analytics, localStorage)
+  const analytics = new AppAnalytics()
+  const mailboxesWindow = new MailboxesWindow(analytics)
   windowManager = new WindowManager(mailboxesWindow)
-
-  const appMenuSelectors = {
+  const appMenu = new AppPrimaryMenu({
     fullQuit: () => { windowManager.quit() },
     closeWindow: () => {
       const focused = windowManager.focused()
@@ -96,14 +86,6 @@
         }
       })
     }
-  }
-
-  /* ****************************************************************************/
-  // Events
-  /* ****************************************************************************/
-
-  mailboxStore.on('changed', () => {
-    Menu.setApplicationMenu(appMenu.build(appMenuSelectors))
   })
 
   /* ****************************************************************************/
@@ -115,7 +97,7 @@
   })
 
   ipcMain.on('new-window', (evt, body) => {
-    const window = new ContentWindow(analytics, localStorage)
+    const window = new ContentWindow(analytics)
     windowManager.addContentWindow(window)
     window.start(body.url, body.partition)
   })
@@ -137,7 +119,7 @@
   /* ****************************************************************************/
 
   app.on('ready', () => {
-    Menu.setApplicationMenu(appMenu.build(appMenuSelectors))
+    appMenu.updateApplicationMenu()
     windowManager.mailboxesWindow.start()
   })
 

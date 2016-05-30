@@ -1,6 +1,7 @@
 const {BrowserWindow} = require('electron')
 const EventEmitter = require('events')
 const settingStore = require('./stores/settingStore')
+const appStorage = require('./storage/appStorage')
 
 class WMailWindow extends EventEmitter {
 
@@ -10,14 +11,12 @@ class WMailWindow extends EventEmitter {
 
   /**
   * @param analytics: the analytics object
-  * @param localStorage: the localStorage object
   * @param options: object containing the following
   *                   @param screenLocationNS: the namespace to save the window state under. If not set, will not persist
   */
-  constructor (analytics, localStorage, options) {
+  constructor (analytics, options) {
     super()
     this.analytics = analytics
-    this.localStorage = localStorage
     this.window = null
     this.windowScreenLocationSaver = null
     this.options = Object.freeze(Object.assign({}, options))
@@ -109,7 +108,7 @@ class WMailWindow extends EventEmitter {
         state.height = size[1]
       }
 
-      this.localStorage.setItem(this.options.screenLocationNS, JSON.stringify(state))
+      appStorage.setItem(this.options.screenLocationNS, state)
     }, 2000)
   }
 
@@ -119,9 +118,7 @@ class WMailWindow extends EventEmitter {
   */
   loadWindowScreenLocation () {
     if (this.options.screenLocationNS) {
-      if (this.localStorage.getItem(this.options.screenLocationNS)) {
-        return JSON.parse(this.localStorage.getItem(this.options.screenLocationNS))
-      }
+      return appStorage.getItem(this.options.screenLocationNS, {})
     }
 
     return {}
