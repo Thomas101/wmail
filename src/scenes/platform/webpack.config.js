@@ -1,7 +1,7 @@
 const path = require('path')
 const ROOT_DIR = path.resolve(path.join(__dirname, '../../../'))
 const BIN_DIR = path.join(ROOT_DIR, 'bin')
-const OUT_DIR = path.join(BIN_DIR, 'windows/platform')
+const OUT_DIR = path.join(BIN_DIR, 'scenes/platform')
 const devRequire = (n) => require(path.join(ROOT_DIR, 'node_modules', n))
 
 const CleanWebpackPlugin = devRequire('clean-webpack-plugin')

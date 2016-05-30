@@ -3,8 +3,9 @@ const googleapis = require('googleapis')
 const fetch = require('node-fetch')
 const credentials = require('../shared/credentials')
 const HttpsProxyAgent = require('https-proxy-agent')
-const APP_REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
 const settingStore = require('./stores/settingStore')
+
+const APP_REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
 
 class AuthGoogle {
   /* ****************************************************************************/

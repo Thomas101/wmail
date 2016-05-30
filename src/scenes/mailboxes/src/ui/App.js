@@ -6,11 +6,11 @@ const flux = {
   google: require('../stores/google'),
   settings: require('../stores/settings')
 }
+const {
+  ipcRenderer, remote: {app, shell}
+} = window.nativeRequire('electron')
 const AppContent = require('./AppContent')
-const ipc = window.nativeRequire('electron').ipcRenderer
-const {app, shell} = window.nativeRequire('electron').remote
 const mailboxDispatch = require('./Dispatch/mailboxDispatch')
-const navigationDispatch = require('./Dispatch/navigationDispatch')
 const TimerMixin = require('react-timer-mixin')
 const constants = require('shared/constants')
 const UnreadNotifications = require('../daemons/UnreadNotifications')
@@ -21,6 +21,9 @@ const MuiThemeProvider = require('material-ui/styles/MuiThemeProvider').default
 
 const injectTapEventPlugin = require('react-tap-event-plugin')
 injectTapEventPlugin()
+
+const navigationDispatch = require('./Dispatch/navigationDispatch')
+navigationDispatch.bindIPCListeners()
 
 module.exports = React.createClass({
   displayName: 'App',
@@ -44,10 +47,7 @@ module.exports = React.createClass({
 
     mailboxDispatch.on('blurred', this.mailboxBlurred)
 
-    ipc.on('auth-google-complete', this.ipcAuthMailboxSuccess)
-    ipc.on('auth-google-error', this.ipcAuthMailboxFailure)
-    ipc.on('launch-settings', this.launchSettings)
-    ipc.on('download-completed', this.downloadCompleted)
+    ipcRenderer.on('download-completed', this.downloadCompleted)
   },
 
   componentWillUnmount () {
@@ -57,10 +57,7 @@ module.exports = React.createClass({
     flux.settings.S.unlisten(this.settingsChanged)
     flux.google.A.stopPollingUpdates()
 
-    ipc.removeListener('auth-google-complete', this.ipcAuthMailboxSuccess)
-    ipc.removeListener('auth-google-error', this.ipcAuthMailboxFailure)
-    ipc.removeListener('launch-settings', this.launchSettings)
-    ipc.removeListener('download-completed', this.downloadCompleted)
+    ipcRenderer.removeListener('download-completed', this.downloadCompleted)
 
     mailboxDispatch.off('blurred', this.mailboxBlurred)
   },
@@ -85,7 +82,7 @@ module.exports = React.createClass({
       messagesUnreadCount: store.totalUnreadCountForAppBadge(),
       unreadMessages: store.unreadMessagesForAppBadge()
     })
-    ipc.send('mailboxes-changed', {
+    ipcRenderer.send('mailboxes-changed', {
       mailboxes: store.allMailboxes().map((mailbox) => {
         return { id: mailbox.id, name: mailbox.name, email: mailbox.email }
       })
@@ -106,37 +103,6 @@ module.exports = React.createClass({
   /* **************************************************************************/
   // IPC Events
   /* **************************************************************************/
-
-  /**
-  * Receives a mailbox success event
-  * @param evt: the event that fired
-  * @param req: the request that came through
-  */
-  ipcAuthMailboxSuccess (evt, req) {
-    flux.google.A.authMailboxSuccess(req)
-  },
-
-  /**
-  * Receives a mailbox failure event
-  * @param evt: the event that fired
-  * @param req: the request that came through
-  */
-  ipcAuthMailboxFailure (evt, req) {
-    // Check to see if the user intentially did this
-    if (req.errorMessage.toLowerCase().indexOf('user') === 0) {
-      return
-    }
-    window.alert('Failed to add mailbox')
-    flux.google.A.authMailboxFailure(req)
-  },
-
-  /**
-  * Launches the settings
-  * @param evt: the event that fired
-  */
-  launchSettings (evt) {
-    navigationDispatch.openSettings()
-  },
 
   /**
   * Shows a notification of a completed download

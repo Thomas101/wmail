@@ -1,5 +1,5 @@
 const {app} = require('electron')
-const settingStore = require('./stores/settingStore')
+const settingStore = require('../stores/settingStore')
 
 class WindowManager {
 

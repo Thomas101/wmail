@@ -8,7 +8,7 @@ const mailboxStore = require('../mailbox/mailboxStore')
 const mailboxActions = require('../mailbox/mailboxActions')
 const settingsStore = require('../settings/settingsStore')
 const Mailbox = require('shared/Models/Mailbox/Mailbox')
-const ipc = window.nativeRequire('electron').ipcRenderer
+const {ipcRenderer} = window.nativeRequire('electron')
 const reporter = require('../../reporter')
 
 const cachedAuths = new Map()
@@ -83,7 +83,7 @@ class GoogleActions {
   * Starts the auth process for google inbox
   */
   authInboxMailbox () {
-    ipc.send('auth-google', { id: Mailbox.provisionId(), type: 'ginbox' })
+    ipcRenderer.send('auth-google', { id: Mailbox.provisionId(), type: 'ginbox' })
     return { }
   }
 
@@ -91,15 +91,16 @@ class GoogleActions {
   * Starts the auth process for gmail
   */
   authGmailMailbox () {
-    ipc.send('auth-google', { id: Mailbox.provisionId(), type: 'gmail' })
+    ipcRenderer.send('auth-google', { id: Mailbox.provisionId(), type: 'gmail' })
     return { }
   }
 
   /**
   * Handles a mailbox authenticating
+  * @param evt: the event that came over the ipc
   * @param data: the data that came across the ipc
   */
-  authMailboxSuccess (data) {
+  authMailboxSuccess (evt, data) {
     mailboxActions.create(data.id, {
       type: data.type,
       googleAuth: data.auth
@@ -112,15 +113,20 @@ class GoogleActions {
 
   /**
   * Handles a mailbox authenticating error
+  * @param evt: the ipc event that fired
   * @param data: the data that came across the ipc
   */
-  authMailboxFailure (data) {
-    // Really log wha we're getting here to try and resolve issue #2
-    console.error('[AUTH ERR]', data)
-    console.error(data.errorString)
-    console.error(data.errorStack)
-    reporter.reportError('[AUTH ERR]' + data.errorString)
-    return { data: data }
+  authMailboxFailure (evt, data) {
+    if (data.errorMessage.toLowerCase().indexOf('user') === 0) {
+      return { user: true, data: null }
+    } else {
+      // Really log wha we're getting here to try and resolve issue #2
+      console.error('[AUTH ERR]', data)
+      console.error(data.errorString)
+      console.error(data.errorStack)
+      reporter.reportError('[AUTH ERR]' + data.errorString)
+      return { data: data, user: false }
+    }
   }
 
   /* **************************************************************************/
@@ -460,4 +466,9 @@ class GoogleActions {
 
 }
 
-module.exports = alt.createActions(GoogleActions)
+// Bind the IPC listeners
+const actions = alt.createActions(GoogleActions)
+ipcRenderer.on('auth-google-complete', actions.authMailboxSuccess)
+ipcRenderer.on('auth-google-error', actions.authMailboxFailure)
+
+module.exports = actions

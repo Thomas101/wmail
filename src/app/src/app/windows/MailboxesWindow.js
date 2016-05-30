@@ -1,9 +1,9 @@
 const WMailWindow = require('./WMailWindow')
-const AuthGoogle = require('./AuthGoogle')
-const update = require('./update')
+const AuthGoogle = require('../AuthGoogle')
+const update = require('../update')
 const path = require('path')
-const MailboxesSessionManager = require('./MailboxesSessionManager')
-const settingStore = require('./stores/settingStore')
+const MailboxesSessionManager = require('../MailboxesSessionManager')
+const settingStore = require('../stores/settingStore')
 
 class MailboxesWindow extends WMailWindow {
 
@@ -24,7 +24,7 @@ class MailboxesWindow extends WMailWindow {
   }
 
   start (url) {
-    super.start('file://' + path.join(__dirname, '/../../windows/mailboxes/mailboxes.html'))
+    super.start('file://' + path.join(__dirname, '/../../../scenes/mailboxes/mailboxes.html'))
   }
 
   /* ****************************************************************************/

@@ -15,11 +15,11 @@
   }
 
   const AppAnalytics = require('./AppAnalytics')
-  const MailboxesWindow = require('./MailboxesWindow')
-  const ContentWindow = require('./ContentWindow')
+  const MailboxesWindow = require('./windows/MailboxesWindow')
+  const ContentWindow = require('./windows/ContentWindow')
   const pkg = require('../package.json')
   const AppPrimaryMenu = require('./AppPrimaryMenu')
-  const WindowManager = require('./WindowManager')
+  const WindowManager = require('./windows/WindowManager')
   const constants = require('../shared/constants')
 
   /* ****************************************************************************/

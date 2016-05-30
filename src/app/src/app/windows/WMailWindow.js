@@ -1,7 +1,7 @@
 const {BrowserWindow} = require('electron')
 const EventEmitter = require('events')
-const settingStore = require('./stores/settingStore')
-const appStorage = require('./storage/appStorage')
+const settingStore = require('../stores/settingStore')
+const appStorage = require('../storage/appStorage')
 
 class WMailWindow extends EventEmitter {
 

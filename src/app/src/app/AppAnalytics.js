@@ -1,7 +1,7 @@
 const uuid = require('uuid')
 const fetch = require('node-fetch')
 const credentials = require('../shared/credentials')
-const osLanguage = require('os-locale').sync()
+const osLanguage = require('os-locale').sync().replace(/_/g, '-').toLowerCase()
 const pkg = require('../package.json')
 const HttpsProxyAgent = require('https-proxy-agent')
 const settingStore = require('./stores/settingStore')
