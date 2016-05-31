@@ -10,8 +10,8 @@ const {
   GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS,
   MAILBOX_INDEX_KEY
 } = require('shared/constants')
-
-const BLANK_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAAtJREFUCB1jYAACAAAFAAGNu5vzAAAAAElFTkSuQmCC'
+const { BLANK_PNG } = require('shared/b64Assets')
+const migration = require('./migration')
 
 class MailboxStore {
   /* **************************************************************************/
@@ -47,7 +47,7 @@ class MailboxStore {
     // Avatar
     /* ****************************************/
 
-    this.getAvatar = (id) => { return this.avatars.get(id) || BLANK_IMAGE }
+    this.getAvatar = (id) => { return this.avatars.get(id) || BLANK_PNG }
 
     /* ****************************************/
     // Active
@@ -147,6 +147,9 @@ class MailboxStore {
   * Loads the storage from disk
   */
   handleLoad () {
+    // Migration
+    migration.from_1_3_1()
+
     // Load
     const allAvatars = persistence.avatar.allStrings()
     const allMailboxes = persistence.mailbox.allItems()

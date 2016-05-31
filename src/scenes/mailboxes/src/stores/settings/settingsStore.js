@@ -4,6 +4,8 @@ const persistence = window.remoteRequire('storage/settingStorage')
 const {
   Settings: {LanguageSettings, OSSettings, ProxySettings, TraySettings, UISettings, SettingsIdent}
 } = require('shared/Models')
+const migration = require('./migration')
+
 class SettingsStore {
   /* **************************************************************************/
   // Lifecycle
@@ -28,6 +30,10 @@ class SettingsStore {
   /* **************************************************************************/
 
   handleLoad () {
+    // Migrate
+    migration.from_1_3_1()
+
+    // Load everything
     this.language = new LanguageSettings(persistence.getItem('language', {}))
     this.os = new OSSettings(persistence.getItem('os', {}))
     this.proxy = new ProxySettings(persistence.getItem('proxy', {}))

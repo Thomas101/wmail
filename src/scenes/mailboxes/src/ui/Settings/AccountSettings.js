@@ -37,7 +37,7 @@ module.exports = React.createClass({
 
   getInitialState () {
     const store = flux.mailbox.S.getState()
-    const all = store.all()
+    const all = store.allMailboxes()
     return {
       mailboxes: all,
       selected: all[0]
@@ -119,9 +119,9 @@ module.exports = React.createClass({
     let avatarSrc = ''
     if (selected) {
       let accountSpecific
-      if (selected.type === Mailbox.M.TYPE_GINBOX) {
+      if (selected.type === Mailbox.TYPE_GINBOX) {
         accountSpecific = <GoogleInboxAccountSettings mailbox={selected} />
-      } else if (selected.type === Mailbox.M.TYPE_GMAIL) {
+      } else if (selected.type === Mailbox.TYPE_GMAIL) {
         accountSpecific = <GoogleMailAccountSettings mailbox={selected} />
       }
       content = (

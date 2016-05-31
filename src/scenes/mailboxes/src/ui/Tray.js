@@ -5,6 +5,10 @@ const React = require('react')
 const shallowCompare = require('react-addons-shallow-compare')
 const mailboxDispatch = require('./Dispatch/mailboxDispatch')
 const mailboxActions = require('../stores/mailbox/mailboxActions')
+const {
+  BLANK_PNG,
+  MAIL_SVG
+} = require('shared/b64Assets')
 
 module.exports = React.createClass({
   displayName: 'Tray',
@@ -23,7 +27,7 @@ module.exports = React.createClass({
 
   componentDidMount () {
     const loader = new window.Image()
-    loader.src = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPiAgICA8cGF0aCBkPSJNMjAgNEg0Yy0xLjEgMC0xLjk5LjktMS45OSAyTDIgMThjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY2YzAtMS4xLS45LTItMi0yem0wIDE0SDRWOGw4IDUgOC01djEwem0tOC03TDQgNmgxNmwtOCA1eiIvPjwvc3ZnPg=='
+    loader.src = MAIL_SVG
     loader.onload = (e) => {
       this.setState({ icon: loader })
     }
@@ -43,7 +47,7 @@ module.exports = React.createClass({
   getDefaultUnreadColor () { return '#C82018' },
 
   getInitialState () {
-    const appTray = new Tray(null)
+    const appTray = new Tray(nativeImage.createFromDataURL(BLANK_PNG))
     if (process.platform === 'win32') {
       appTray.on('double-click', () => {
         ipc.send('focus-app')

@@ -3,6 +3,7 @@ const { SelectField, MenuItem, Paper } = require('material-ui')
 const flux = {
   mailbox: require('../../../stores/mailbox')
 }
+const Google = require('shared/Models/Mailbox/Google')
 
 module.exports = React.createClass({
   displayName: 'GoogleMailAccountSettings',
@@ -34,16 +35,16 @@ module.exports = React.createClass({
           onChange={this.handleUnreadModeChange}
           floatingLabelText='Unread Mode'>
           <MenuItem
-            key={flux.mailbox.Google.UNREAD_MODES.INBOX_UNREAD}
-            value={flux.mailbox.Google.UNREAD_MODES.INBOX_UNREAD}
+            key={Google.UNREAD_MODES.INBOX_UNREAD}
+            value={Google.UNREAD_MODES.INBOX_UNREAD}
             primaryText='Unread Messages' />
           <MenuItem
-            key={flux.mailbox.Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD}
-            value={flux.mailbox.Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD}
+            key={Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD}
+            value={Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD}
             primaryText='Unread Primary Messages' />
           <MenuItem
-            key={flux.mailbox.Google.UNREAD_MODES.INBOX}
-            value={flux.mailbox.Google.UNREAD_MODES}
+            key={Google.UNREAD_MODES.INBOX}
+            value={Google.UNREAD_MODES}
             primaryText='Messages in inbox' />
         </SelectField>
       </Paper>

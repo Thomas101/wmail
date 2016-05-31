@@ -37,7 +37,9 @@ class MailboxStore {
   }
 
   orderedMailboxes () {
-    return this.index.map(id => this.mailboxes.get(id))
+    return this.index
+      .map(id => this.mailboxes.get(id))
+      .filter((mailbox) => !!mailbox)
   }
 }
 

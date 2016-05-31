@@ -11,16 +11,16 @@
     "dictionary-en-us": "1.0.2",
     "dom-storage": "2.0.2",
     "fs-extra": "0.30.0",
-    "googleapis": "6.1.0",
+    "googleapis": "7.1.0",
     "https-proxy-agent": "1.0.0",
-    "minivents": "2.0.1",
+    "minivents": "2.0.2",
     "mkdirp": "0.5.1",
-    "node-fetch": "1.5.2",
+    "node-fetch": "1.5.3",
     "nodehun": "2.0.10",
     "os-locale": "1.4.0",
     "uuid": "2.0.2"
   },
   "devDependencies": {
-    "standard": "^7.1.0"
+    "standard": "7.1.1"
   }
 }

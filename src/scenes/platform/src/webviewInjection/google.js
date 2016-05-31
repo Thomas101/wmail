@@ -9,6 +9,7 @@
   const ipc = require('electron').ipcRenderer
   const enUS = require('../../../app/node_modules/dictionary-en-us')
   const Spellchecker = require('../../../app/node_modules/nodehun')
+
   enUS((err, result) => {
     if (!err) {
       const spellchecker = new Spellchecker(result.aff, result.dic)
@@ -18,6 +19,7 @@
       require('./contextMenu')(null)
     }
   })
+
 
   // Inject some styles
   ;(() => {
