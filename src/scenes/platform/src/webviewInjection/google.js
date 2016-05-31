@@ -20,7 +20,6 @@
     }
   })
 
-
   // Inject some styles
   ;(() => {
     const stylesheet = document.createElement('style')
