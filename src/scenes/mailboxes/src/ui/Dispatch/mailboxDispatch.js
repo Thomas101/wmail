@@ -2,14 +2,6 @@ const Minivents = require('minivents')
 
 class MailboxDispatch {
   /**
-  * Emits a reload command
-  * @param mailboxId: the id of the mailbox
-  */
-  reload (mailboxId) {
-    this.emit('reload', { mailboxId: mailboxId })
-  }
-
-  /**
   * Emits a open dev tools command
   * @param mailboxId: the id of the mailbox
   */

@@ -6,6 +6,7 @@
   "description": "The mailboxes window for the WMail app",
   "dependencies": {
     "alt": "0.18.4",
+    "camelcase": "^3.0.0",
     "fbjs": "0.8.3",
     "flexboxgrid": "6.3.0",
     "https-proxy-agent": "1.0.0",

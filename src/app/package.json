@@ -18,6 +18,7 @@
     "node-fetch": "1.5.3",
     "nodehun": "2.0.10",
     "os-locale": "1.4.0",
+    "spellchecker": "^3.3.1",
     "uuid": "2.0.2"
   },
   "devDependencies": {

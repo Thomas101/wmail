@@ -7,7 +7,7 @@
   require('./googleWindowOpen')
 
   const ipc = require('electron').ipcRenderer
-  const enUS = require('../../../app/node_modules/dictionary-en-us')
+  /* const enUS = require('../../../app/node_modules/dictionary-en-us')
   const Spellchecker = require('../../../app/node_modules/nodehun')
 
   enUS((err, result) => {
@@ -18,7 +18,8 @@
     } else {
       require('./contextMenu')(null)
     }
-  })
+  })*/
+  require('./contextMenu')(null)
 
   // Inject some styles
   ;(() => {

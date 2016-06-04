@@ -186,12 +186,6 @@ module.exports = React.createClass({
     menuItems.push(<Divider key='div-1' />)
     menuItems.push(
       <MenuItem
-        key='reload'
-        primaryText='Reload'
-        onClick={this.handleReload}
-        leftIcon={<FontIcon className='material-icons'>refresh</FontIcon>} />)
-    menuItems.push(
-      <MenuItem
         key='insepct'
         primaryText='Inspect'
         onClick={this.handleInspect}
