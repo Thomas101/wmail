@@ -109,6 +109,20 @@ class MailboxesWindow extends WMailWindow {
   }
 
   /**
+  * Switches to the previous mailbox
+  */
+  switchPrevMailbox () {
+    this.window.webContents.send('switch-mailbox', { prev: true })
+  }
+
+  /**
+  * Switches to the next mailbox
+  */
+  switchNextMailbox () {
+    this.window.webContents.send('switch-mailbox', { next: true })
+  }
+
+  /**
   * Launches the preferences modal
   */
   launchPreferences () {

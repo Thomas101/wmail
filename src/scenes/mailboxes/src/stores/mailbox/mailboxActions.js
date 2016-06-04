@@ -184,6 +184,16 @@ class MailboxActions {
   */
   changeActive (id) { return { id: id } }
 
+  /**
+  * Changes the active mailbox to the previous in the list
+  */
+  changeActiveToPrev () { return {} }
+
+  /**
+  * Changes the active mailbox to the next in the list
+  */
+  changeActiveToNext () { return {} }
+
   /* **************************************************************************/
   // Ordering
   /* **************************************************************************/
@@ -206,6 +216,14 @@ const actions = alt.createActions(MailboxActions)
 ipcRenderer.on('mailbox-zoom-in', actions.increaseActiveZoom)
 ipcRenderer.on('mailbox-zoom-out', actions.decreaseActiveZoom)
 ipcRenderer.on('mailbox-zoom-reset', actions.resetActiveZoom)
-ipcRenderer.on('switch-mailbox', (evt, req) => actions.changeActive(req.mailboxId))
+ipcRenderer.on('switch-mailbox', (evt, req) => {
+  if (req.mailboxId) {
+    actions.changeActive(req.mailboxId)
+  } else if (req.prev) {
+    actions.changeActiveToPrev()
+  } else if (req.next) {
+    actions.changeActiveToNext()
+  }
+})
 
 module.exports = actions

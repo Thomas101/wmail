@@ -80,9 +80,14 @@ class AppPrimaryMenu {
           { label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize' },
           { label: 'Cycle Windows', accelerator: 'CmdOrCtrl+`', click: this._selectors.cycleWindows }
         ]
-        .concat(mailboxes.length ? [{ type: 'separator' }] : [])
+        .concat(!mailboxes.length ? [] : [
+          { type: 'separator' },
+          { label: 'Previous Mailbox', accelerator: 'CmdOrCtrl+[', click: this._selectors.prevMailbox },
+          { label: 'Next Mailbox', accelerator: 'CmdOrCtrl+]', click: this._selectors.nextMailbox },
+          { type: 'separator' }
+        ])
         .concat(mailboxes.map((mailbox, index) => {
-          return { label: mailbox.email || 'Untitled', accelerator: 'CmdOrCtrl+' + (index + 1), click: () => { this._selectors.mailbox(mailbox.id) } }
+          return { label: mailbox.email || 'Untitled', accelerator: 'CmdOrCtrl+' + (index + 1), click: () => { this._selectors.changeMailbox(mailbox.id) } }
         }))
       },
       {
@@ -124,6 +129,18 @@ class AppPrimaryMenu {
         this.updateApplicationMenu(nextMailboxes)
       }
     }
+  }
+
+  /* ****************************************************************************/
+  // Click handlers
+  /* ****************************************************************************/
+
+  changeToPrevMailbox () {
+
+  }
+
+  changeToNextMailbox () {
+
   }
 }
 

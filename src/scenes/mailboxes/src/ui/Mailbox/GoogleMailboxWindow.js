@@ -236,19 +236,19 @@ module.exports = React.createClass({
     ].filter((c) => !!c).join(' ')
 
     return (
-      <WebView
-        ref='browser'
-        preload='../platform/webviewInjection/google'
-        partition={'persist:' + this.props.mailboxId}
-        src={this.state.browserSrc}
-        className={className}
-        domReady={this.handleBrowserDomReady}
-        ipcMessage={this.dispatchBrowserIPCMessage}
-        newWindow={this.handleBrowserOpenNewWindow}
-        willNavigate={this.handleBrowserWillNavigate}
-        focus={this.handleBrowserFocused}
-        blur={this.handleBrowserBlurred}
-      />
+      <div className={className}>
+        <WebView
+          ref='browser'
+          preload='../platform/webviewInjection/google'
+          partition={'persist:' + this.props.mailboxId}
+          src={this.state.browserSrc}
+          domReady={this.handleBrowserDomReady}
+          ipcMessage={this.dispatchBrowserIPCMessage}
+          newWindow={this.handleBrowserOpenNewWindow}
+          willNavigate={this.handleBrowserWillNavigate}
+          focus={this.handleBrowserFocused}
+          blur={this.handleBrowserBlurred} />
+      </div>
     )
   }
 })

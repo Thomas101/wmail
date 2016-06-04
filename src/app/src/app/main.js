@@ -65,10 +65,20 @@
     zoomIn: () => { windowManager.mailboxesWindow.mailboxZoomIn() },
     zoomOut: () => { windowManager.mailboxesWindow.mailboxZoomOut() },
     zoomReset: () => { windowManager.mailboxesWindow.mailboxZoomReset() },
-    mailbox: (mailboxId) => {
+    changeMailbox: (mailboxId) => {
       windowManager.mailboxesWindow.show()
       windowManager.mailboxesWindow.focus()
       windowManager.mailboxesWindow.switchMailbox(mailboxId)
+    },
+    prevMailbox: () => {
+      windowManager.mailboxesWindow.show()
+      windowManager.mailboxesWindow.focus()
+      windowManager.mailboxesWindow.switchPrevMailbox()
+    },
+    nextMailbox: () => {
+      windowManager.mailboxesWindow.show()
+      windowManager.mailboxesWindow.focus()
+      windowManager.mailboxesWindow.switchNextMailbox()
     },
     cycleWindows: () => { windowManager.focusNextWindow() },
     aboutDialog: () => {

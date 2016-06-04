@@ -1,28 +1,21 @@
 #app {
-  .master, .detail {
+
+  &, .mailboxes, .master, .detail {
     position: absolute;
     top: 0px;
     left: 0px;
     right: 0px;
     bottom: 0px;
-
-    &.master {
-      width: 70px;
-      right: auto;
-      z-index: 100;
-      -webkit-app-region: drag;
-    }
-
-    &.detail {
-      left: 70px;
-    }
   }
 
-  .mailboxes {
-  	position: absolute;
-  	top: 0px;
-  	bottom: 0px;
-  	left: 0px;
-  	right: 0px;
+  .master {
+    width: 70px;
+    right: auto;
+    z-index: 100;
+    -webkit-app-region: drag;
+  }
+
+  .detail {
+    left: 70px;
   }
 }

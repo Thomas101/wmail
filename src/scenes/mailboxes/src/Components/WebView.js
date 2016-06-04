@@ -104,10 +104,6 @@ module.exports = React.createClass({
 
   openDevTools () { this.getWebviewNode().openDevTools() },
 
-  reload () {
-    this.getWebviewNode().setAttribute('src', this.props.src)
-  },
-
   send (name, obj) { this.getWebviewNode().send(name, obj) },
 
   /* **************************************************************************/
@@ -132,8 +128,7 @@ module.exports = React.createClass({
 
     return (
       <div
-        className={this.props.className}
-        style={{ position: 'relative' }}
+        style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: 0 }}
         dangerouslySetInnerHTML={{__html: `<webview ${attrs}></webview>`}} />
     )
   }

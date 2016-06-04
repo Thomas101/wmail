@@ -135,6 +135,8 @@ class MailboxStore {
 
       // Active & Ordering
       handleChangeActive: actions.CHANGE_ACTIVE,
+      handleChangeActivePrev: actions.CHANGE_ACTIVE_TO_PREV,
+      handleChangeActiveNext: actions.CHANGE_ACTIVE_TO_NEXT,
       handleMoveUp: actions.MOVE_UP,
       handleMoveDown: actions.MOVE_DOWN
     })
@@ -439,6 +441,22 @@ class MailboxStore {
   */
   handleChangeActive ({id}) {
     this.active = id
+  }
+
+  /**
+  * Handles the active mailbox changing to the prev in the index
+  */
+  handleChangeActivePrev () {
+    const activeIndex = this.index.findIndex((id) => id === this.active)
+    this.active = this.index[Math.max(0, activeIndex - 1)] || null
+  }
+
+  /**
+  * Handles the active mailbox changing to the next in the index
+  */
+  handleChangeActiveNext () {
+    const activeIndex = this.index.findIndex((id) => id === this.active)
+    this.active = this.index[Math.min(this.index.length - 1, activeIndex + 1)] || null
   }
 
   /**
