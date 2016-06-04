@@ -4,7 +4,8 @@ import './mailboxList.less'
 
 const React = require('react')
 const flux = {
-  mailbox: require('../../stores/mailbox')
+  mailbox: require('../../stores/mailbox'),
+  settings: require('../../stores/settings')
 }
 const MailboxListItem = require('./MailboxListItem')
 
@@ -28,7 +29,11 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState () {
-    return { mailboxIds: flux.mailbox.S.getState().mailboxIds() }
+    return {
+      mailboxIds: flux.mailbox.S.getState().mailboxIds(),
+      // purposely don't update this, because effects are only seen after restart
+      showTitlebar: flux.settings.S.getState().ui.showTitlebar
+    }
   },
 
   mailboxesChanged (store) {
@@ -52,7 +57,10 @@ module.exports = React.createClass({
   */
   render () {
     return (
-      <div {...this.props} className='mailbox-list'>
+      <div
+        {...this.props}
+        className='mailbox-list'
+        style={{ top: process.platform !== 'darwin' || this.state.showTitlebar ? 0 : undefined }}>
         {this.state.mailboxIds.map((id, index, arr) => {
           return (
             <MailboxListItem

@@ -36,7 +36,7 @@ class MailboxesWindow extends WMailWindow {
       minWidth: 955,
       minHeight: 400,
       fullscreenable: true,
-      titleBarStyle: settingStore.ui.hasTitlebar ? 'default' : 'hidden',
+      titleBarStyle: settingStore.ui.showTitlebar ? 'default' : 'hidden',
       title: 'WMail',
       backgroundColor: '#f2f2f2',
       webPreferences: {

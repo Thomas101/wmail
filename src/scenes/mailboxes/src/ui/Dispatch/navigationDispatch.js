@@ -15,7 +15,7 @@ class NavigationDispatch {
   * Binds the listeners to the ipc renderer
   */
   bindIPCListeners () {
-    ipcRenderer.on('launch-settings', this.openSettings)
+    ipcRenderer.on('launch-settings', () => { this.openSettings() })
     return this
   }
 

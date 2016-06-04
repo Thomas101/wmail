@@ -57,10 +57,10 @@ module.exports = React.createClass({
     mailboxDispatch.off('devtools', this.handleOpenDevTools)
     mailboxDispatch.off('refocus', this.handleRefocus)
     mailboxDispatch.off('openMessage', this.handleOpenMessage)
-    ipcRenderer.removeEventListener('mailbox-window-find-start', this.handleIPCSearchStart)
-    ipcRenderer.removeEventListener('mailbox-window-find-next', this.handleIPCSearchNext)
-    ipcRenderer.removeEventListener('mailbox-window-navigate-back', this.handleIPCNavigateBack)
-    ipcRenderer.removeEventListener('mailbox-window-navigate-forward', this.handleIPCNavigateForward)
+    ipcRenderer.removeListener('mailbox-window-find-start', this.handleIPCSearchStart)
+    ipcRenderer.removeListener('mailbox-window-find-next', this.handleIPCSearchNext)
+    ipcRenderer.removeListener('mailbox-window-navigate-back', this.handleIPCNavigateBack)
+    ipcRenderer.removeListener('mailbox-window-navigate-forward', this.handleIPCNavigateForward)
   },
 
   /* **************************************************************************/
