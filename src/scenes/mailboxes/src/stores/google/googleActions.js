@@ -377,6 +377,10 @@ class GoogleActions {
     // Check not distabled for inbox / no unread messages
     const mailbox = mailboxStore.getState().getMailbox(mailboxId)
     if (mailbox.unread === 0 || !mailbox.showNotifications) {
+      if (mailbox.unread === 0) {
+        // Artificially mark all messages as read
+        mailboxActions.setAllGoogleMessagesRead(mailboxId)
+      }
       this.syncMailboxUnreadMessagesSuccess(mailboxId)
       return { mailboxId: mailboxId, promise: Promise.resolve() }
     }

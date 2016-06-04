@@ -130,6 +130,7 @@ class MailboxStore {
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
       handleSetGoogleUnreadMessageIds: actions.SET_GOOGLE_UNREAD_MESSAGE_IDS,
       handleUpdateGoogleUnread: actions.UPDATE_GOOGLE_UNREAD,
+      handleSetAllGoogleMessagesRead: actions.SET_ALL_GOOGLE_MESSAGES_READ,
       handleSetGoogleUnreadNotificationsShown: actions.SET_GOOGLE_UNREAD_NOTIFICATIONS_SHOWN,
 
       // Active & Ordering
@@ -370,6 +371,32 @@ class MailboxStore {
 
     persistence.mailbox.setItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
+  }
+
+  /**
+  * Sets all the unread messages in the mailbox to be read
+  * @param id: the id of the mailbox
+  */
+  handleSetAllGoogleMessagesRead ({ id }) {
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleUnreadMessages = data.googleUnreadMessages || {}
+    
+    const now = new Date().getTime()
+    let didUpdate = false
+    Object.keys(data.googleUnreadMessages).forEach((messageId) => {
+      if (data.googleUnreadMessages[messageId].unread) {
+        didUpdate = true
+        data.googleUnreadMessages[messageId] = Object.assign(
+          data.googleUnreadMessages[messageId],
+          { seen: now, unread: false }
+        )
+      }
+    })
+
+    if (didUpdate) {
+      persistence.mailbox.setItem(id, data)
+      this.mailboxes.set(id, new Mailbox(id, data))
+    }
   }
 
   /**

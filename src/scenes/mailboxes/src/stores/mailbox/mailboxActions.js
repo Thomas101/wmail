@@ -136,6 +136,14 @@ class MailboxActions {
   }
 
   /**
+  * Sets all the google messages as read
+  * @param id: the id of the mailbox
+  */
+  setAllGoogleMessagesRead (id) {
+    return { id: id }
+  }
+
+  /**
   * Sets that a thread has sent a notification
   * @param id: the id of the mailbox
   * @param messageIds: the ids of the messages
