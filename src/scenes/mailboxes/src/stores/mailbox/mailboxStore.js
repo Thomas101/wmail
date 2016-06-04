@@ -23,6 +23,7 @@ class MailboxStore {
     this.mailboxes = new Map()
     this.avatars = new Map()
     this.active = null
+    this.search = new Map()
 
     /* ****************************************/
     // Fetching Mailboxes
@@ -62,6 +63,18 @@ class MailboxStore {
     * @return the active mailbox
     */
     this.activeMailbox = () => { return this.mailboxes.get(this.active) }
+
+    /* ****************************************/
+    // Search
+    /* ****************************************/
+
+    /**
+    * @param mailboxId: the id of the mailbox
+    * @return true if the mailbox is searching, false otherwise
+    */
+    this.isSearchingMailbox = (mailboxId) => {
+      return this.search.get(mailboxId) === true
+    }
 
     /* ****************************************/
     // Aggregated queries
@@ -125,6 +138,10 @@ class MailboxStore {
       handleIncreaseActiveZoom: actions.INCREASE_ACTIVE_ZOOM,
       handleDecreaseActiveZoom: actions.DECREASE_ACTIVE_ZOOM,
       handleResetActiveZoom: actions.RESET_ACTIVE_ZOOM,
+
+      // Search
+      handleStartSearchingMailbox: actions.START_SEARCHING_MAILBOX,
+      handleStopSearchingMailbox: actions.STOP_SEARCHING_MAILBOX,
 
       // Google
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
@@ -479,6 +496,24 @@ class MailboxStore {
       this.index.splice(mailboxIndex + 1, 0, this.index.splice(mailboxIndex, 1)[0])
       persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
     }
+  }
+
+  /* **************************************************************************/
+  // Handlers : Search
+  /* **************************************************************************/
+
+  /**
+  * Indicates the mailbox is searching
+  */
+  handleStartSearchingMailbox (params) {
+    this.search.set(params.id || this.active, true)
+  }
+
+  /**
+  * Indicates the mailbox is no longer searching
+  */
+  handleStopSearchingMailbox (params) {
+    this.search.delete(params.id || this.active)
   }
 
 }

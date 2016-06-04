@@ -95,7 +95,9 @@
           shell.openExternal(constants.GITHUB_URL)
         }
       })
-    }
+    },
+    find: () => { windowManager.mailboxesWindow.findStart() },
+    findNext: () => { windowManager.mailboxesWindow.findNext() }
   })
 
   /* ****************************************************************************/

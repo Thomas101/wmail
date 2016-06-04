@@ -195,6 +195,22 @@ class MailboxActions {
   changeActiveToNext () { return {} }
 
   /* **************************************************************************/
+  // Search
+  /* **************************************************************************/
+
+  /**
+  * Starts searching the mailbox
+  * @param id: the mailbox id
+  */
+  startSearchingMailbox (id) { return {id: id} }
+
+  /**
+  * Stops searching the mailbox
+  * @param id: the mailbox id
+  */
+  stopSearchingMailbox (id) { return {id: id} }
+
+  /* **************************************************************************/
   // Ordering
   /* **************************************************************************/
 
@@ -216,6 +232,7 @@ const actions = alt.createActions(MailboxActions)
 ipcRenderer.on('mailbox-zoom-in', actions.increaseActiveZoom)
 ipcRenderer.on('mailbox-zoom-out', actions.decreaseActiveZoom)
 ipcRenderer.on('mailbox-zoom-reset', actions.resetActiveZoom)
+ipcRenderer.on('mailbox-window-find-start', () => actions.startSearchingMailbox())
 ipcRenderer.on('switch-mailbox', (evt, req) => {
   if (req.mailboxId) {
     actions.changeActive(req.mailboxId)

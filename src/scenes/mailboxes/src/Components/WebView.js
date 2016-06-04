@@ -106,6 +106,10 @@ module.exports = React.createClass({
 
   send (name, obj) { this.getWebviewNode().send(name, obj) },
 
+  findInPage (text, options) { return this.getWebviewNode().findInPage(text, options) },
+
+  stopFindInPage (action) { this.getWebviewNode().stopFindInPage(action) },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/

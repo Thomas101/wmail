@@ -11,6 +11,7 @@ const URL = window.nativeRequire('url')
 const mailboxDispatch = require('../Dispatch/mailboxDispatch')
 const TimerMixin = require('react-timer-mixin')
 const {WebView} = require('../../Components')
+const MailboxSearch = require('./MailboxSearch')
 
 module.exports = React.createClass({
   displayName: 'GoogleMailboxWindow',
@@ -37,6 +38,8 @@ module.exports = React.createClass({
     mailboxDispatch.on('devtools', this.handleOpenDevTools)
     mailboxDispatch.on('refocus', this.handleRefocus)
     mailboxDispatch.on('openMessage', this.handleOpenMessage)
+    ipcRenderer.on('mailbox-window-find-start', this.handleIPCSearchStart)
+    ipcRenderer.on('mailbox-window-find-next', this.handleIPCSearchNext)
 
     // Autofocus on the first run
     if (this.state.isActive) {
@@ -52,6 +55,8 @@ module.exports = React.createClass({
     mailboxDispatch.off('devtools', this.handleOpenDevTools)
     mailboxDispatch.off('refocus', this.handleRefocus)
     mailboxDispatch.off('openMessage', this.handleOpenMessage)
+    ipcRenderer.removeEventListener('mailbox-window-find-start', this.handleIPCSearchStart)
+    ipcRenderer.removeEventListener('mailbox-window-find-next', this.handleIPCSearchNext)
   },
 
   /* **************************************************************************/
@@ -64,6 +69,7 @@ module.exports = React.createClass({
     return {
       mailbox: mailbox,
       isActive: mailboxStore.activeMailboxId() === props.mailboxId,
+      isSearching: mailboxStore.isSearchingMailbox(props.mailboxId),
       browserSrc: mailbox.url
     }
   },
@@ -80,12 +86,19 @@ module.exports = React.createClass({
   mailboxesChanged (store) {
     const mailbox = store.getMailbox(this.props.mailboxId)
     if (mailbox) {
+      // Precompute
       const zoomChanged = this.state.mailbox.zoomFactor !== mailbox.zoomFactor
+      const isSearching = store.isSearchingMailbox(this.props.mailboxId)
+
+      // Set the state
       this.setState({
         mailbox: mailbox,
         isActive: store.activeMailboxId() === this.props.mailboxId,
+        isSearching: isSearching,
         browserSrc: mailbox.url
       })
+
+      // Apply any actions
       if (zoomChanged) {
         this.refs.browser.send('zoom-factor-set', { value: this.state.mailbox.zoomFactor })
       }
@@ -225,6 +238,58 @@ module.exports = React.createClass({
   },
 
   /* **************************************************************************/
+  // UI Events : Search
+  /* **************************************************************************/
+
+  /**
+  * Handles an ipc search start event coming in
+  */
+  handleIPCSearchStart () {
+    if (this.state.isActive) {
+      setTimeout(() => {
+        this.refs.search.focus()
+      })
+    }
+  },
+
+  /**
+  * Handles an ipc search next event coming in
+  */
+  handleIPCSearchNext () {
+    if (this.state.isActive) {
+      this.handleSearchNext(this.refs.search.searchQuery())
+    }
+  },
+
+  /**
+  * Handles the search text changing
+  * @param str: the search string
+  */
+  handleSearchChanged (str) {
+    if (str.length) {
+      this.refs.browser.findInPage(str)
+    } else {
+      this.refs.browser.stopFindInPage('clearSelection')
+    }
+  },
+
+  /**
+  * Handles searching for the next occurance
+  */
+  handleSearchNext (str) {
+    if (str.length) {
+      this.refs.browser.findInPage(str, { findNext: true })
+    }
+  },
+
+  /**
+  * Handles cancelling searching
+  */
+  handleSearchCancel () {
+    flux.mailbox.A.stopSearchingMailbox(this.props.mailboxId)
+  },
+
+  /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
 
@@ -237,6 +302,11 @@ module.exports = React.createClass({
     const className = [
       'mailbox-window',
       this.state.isActive ? 'active' : undefined
+    ].filter((c) => !!c).join(' ')
+
+    const searchClassName = [
+      'mailbox-search',
+      this.state.isSearching ? 'active' : undefined
     ].filter((c) => !!c).join(' ')
 
     return (
@@ -252,6 +322,12 @@ module.exports = React.createClass({
           willNavigate={this.handleBrowserWillNavigate}
           focus={this.handleBrowserFocused}
           blur={this.handleBrowserBlurred} />
+        <MailboxSearch
+          ref='search'
+          className={searchClassName}
+          onSearchChange={this.handleSearchChanged}
+          onSearchNext={this.handleSearchNext}
+          onSearchCancel={this.handleSearchCancel} />
       </div>
     )
   }

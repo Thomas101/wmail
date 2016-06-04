@@ -1,5 +1,6 @@
 'use strict'
 
+import './layout.less'
 import './appContent.less'
 
 const React = require('react')

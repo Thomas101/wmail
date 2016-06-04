@@ -155,6 +155,20 @@ class MailboxesWindow extends WMailWindow {
     })
   }
 
+  /**
+  * Starts finding in the mailboxes window
+  */
+  findStart () {
+    this.window.webContents.send('mailbox-window-find-start', { })
+  }
+
+  /**
+  * Finds the next in the mailbox window
+  */
+  findNext () {
+    this.window.webContents.send('mailbox-window-find-next', { })
+  }
+
 }
 
 module.exports = MailboxesWindow
