@@ -79,14 +79,18 @@ module.exports = React.createClass({
 
   mailboxesChanged (store) {
     const mailbox = store.getMailbox(this.props.mailboxId)
-    const zoomChanged = this.state.mailbox.zoomFactor !== mailbox.zoomFactor
-    this.setState({
-      mailbox: mailbox,
-      isActive: store.activeMailboxId() === this.props.mailboxId,
-      browserSrc: mailbox.url
-    })
-    if (zoomChanged) {
-      this.refs.browser.send('zoom-factor-set', { value: this.state.mailbox.zoomFactor })
+    if (mailbox) {
+      const zoomChanged = this.state.mailbox.zoomFactor !== mailbox.zoomFactor
+      this.setState({
+        mailbox: mailbox,
+        isActive: store.activeMailboxId() === this.props.mailboxId,
+        browserSrc: mailbox.url
+      })
+      if (zoomChanged) {
+        this.refs.browser.send('zoom-factor-set', { value: this.state.mailbox.zoomFactor })
+      }
+    } else {
+      this.setState({ mailbox: null })
     }
   },
 
@@ -145,7 +149,7 @@ module.exports = React.createClass({
     if (url.host === 'inbox.google.com') {
       mode = 'source'
     } else if (url.host === 'mail.google.com') {
-      if (url.query.ui === '2') {
+      if (url.query.ui === '2' || url.query.view === 'om') {
         mode = 'tab'
       } else {
         mode = 'source'
@@ -160,7 +164,7 @@ module.exports = React.createClass({
         this.setState({ browserSrc: evt.url })
         break
       case 'tab':
-        ipcRenderer.send('new-window', { partition: this.refs.browser.partition, url: evt.url })
+        ipcRenderer.send('new-window', { partition: 'persist:' + this.props.mailboxId, url: evt.url })
         break
     }
   },
