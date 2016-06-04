@@ -82,6 +82,31 @@ class MailboxActions {
     return this.update(id, { color: col })
   }
 
+  /**
+  * Sets the unread Count
+  */
+  setUnreadCount (id, count) {
+    if (count === 0) {
+      this.setAllGoogleMessagesRead.defer(id)
+    }
+    return this.update(id, { unread: count })
+  }
+
+  /**
+  * Sets the basic profile info
+  * @param id: the mailbox id
+  * @param email: the users email address
+  * @param name: the accounts display name
+  * @param avatar: the accounts avatar
+  */
+  setBasicProfileInfo (id, email, name, avatar) {
+    return this.update(id, {
+      avatar: avatar,
+      email: email,
+      name: name
+    })
+  }
+
   /* **************************************************************************/
   // Updating: Active
   /* **************************************************************************/

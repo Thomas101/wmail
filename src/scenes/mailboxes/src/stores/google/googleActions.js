@@ -238,11 +238,12 @@ class GoogleActions {
   * @param response: the response from the api
   */
   syncMailboxProfileSuccess (mailboxId, response) {
-    mailboxActions.update(mailboxId, {
-      avatar: response.response.image.url,
-      email: (response.response.emails.find((a) => a.type === 'account') || {}).value,
-      name: response.response.displayName
-    })
+    mailboxActions.setBasicProfileInfo(
+      mailboxId,
+      (response.response.emails.find((a) => a.type === 'account') || {}).value,
+      response.response.displayName,
+      response.response.image.url
+    )
     return { mailboxId: mailboxId }
   }
 
@@ -315,9 +316,7 @@ class GoogleActions {
     // Look to see if the unread count has changed. If it has, update it
     // then ask to sync the messages to provide info to the user in a timely fasion
     if (prevMailbox && prevMailbox.unread !== response.response[labelField]) {
-      mailboxActions.update(mailboxId, {
-        unread: response.response[labelField]
-      })
+      mailboxActions.setUnreadCount(mailboxId, response.response[labelField])
       this.syncMailboxUnreadMessages(mailboxId)
       return { mailboxId: mailboxId, changed: true }
     } else {
@@ -377,10 +376,6 @@ class GoogleActions {
     // Check not distabled for inbox / no unread messages
     const mailbox = mailboxStore.getState().getMailbox(mailboxId)
     if (mailbox.unread === 0 || !mailbox.showNotifications) {
-      if (mailbox.unread === 0) {
-        // Artificially mark all messages as read
-        mailboxActions.setAllGoogleMessagesRead(mailboxId)
-      }
       this.syncMailboxUnreadMessagesSuccess(mailboxId)
       return { mailboxId: mailboxId, promise: Promise.resolve() }
     }

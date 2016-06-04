@@ -380,7 +380,7 @@ class MailboxStore {
   handleSetAllGoogleMessagesRead ({ id }) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleUnreadMessages = data.googleUnreadMessages || {}
-    
+
     const now = new Date().getTime()
     let didUpdate = false
     Object.keys(data.googleUnreadMessages).forEach((messageId) => {
