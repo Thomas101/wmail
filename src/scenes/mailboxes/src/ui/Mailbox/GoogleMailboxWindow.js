@@ -40,6 +40,8 @@ module.exports = React.createClass({
     mailboxDispatch.on('openMessage', this.handleOpenMessage)
     ipcRenderer.on('mailbox-window-find-start', this.handleIPCSearchStart)
     ipcRenderer.on('mailbox-window-find-next', this.handleIPCSearchNext)
+    ipcRenderer.on('mailbox-window-navigate-back', this.handleIPCNavigateBack)
+    ipcRenderer.on('mailbox-window-navigate-forward', this.handleIPCNavigateForward)
 
     // Autofocus on the first run
     if (this.state.isActive) {
@@ -57,6 +59,8 @@ module.exports = React.createClass({
     mailboxDispatch.off('openMessage', this.handleOpenMessage)
     ipcRenderer.removeEventListener('mailbox-window-find-start', this.handleIPCSearchStart)
     ipcRenderer.removeEventListener('mailbox-window-find-next', this.handleIPCSearchNext)
+    ipcRenderer.removeEventListener('mailbox-window-navigate-back', this.handleIPCNavigateBack)
+    ipcRenderer.removeEventListener('mailbox-window-navigate-forward', this.handleIPCNavigateForward)
   },
 
   /* **************************************************************************/
@@ -242,26 +246,6 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   /**
-  * Handles an ipc search start event coming in
-  */
-  handleIPCSearchStart () {
-    if (this.state.isActive) {
-      setTimeout(() => {
-        this.refs.search.focus()
-      })
-    }
-  },
-
-  /**
-  * Handles an ipc search next event coming in
-  */
-  handleIPCSearchNext () {
-    if (this.state.isActive) {
-      this.handleSearchNext(this.refs.search.searchQuery())
-    }
-  },
-
-  /**
   * Handles the search text changing
   * @param str: the search string
   */
@@ -287,6 +271,48 @@ module.exports = React.createClass({
   */
   handleSearchCancel () {
     flux.mailbox.A.stopSearchingMailbox(this.props.mailboxId)
+  },
+
+  /* **************************************************************************/
+  // IPC Events
+  /* **************************************************************************/
+
+  /**
+  * Handles an ipc search start event coming in
+  */
+  handleIPCSearchStart () {
+    if (this.state.isActive) {
+      setTimeout(() => {
+        this.refs.search.focus()
+      })
+    }
+  },
+
+  /**
+  * Handles an ipc search next event coming in
+  */
+  handleIPCSearchNext () {
+    if (this.state.isActive) {
+      this.handleSearchNext(this.refs.search.searchQuery())
+    }
+  },
+
+  /**
+  * Handles navigating the mailbox back
+  */
+  handleIPCNavigateBack () {
+    if (this.state.isActive) {
+      this.refs.browser.navigateBack()
+    }
+  },
+
+  /**
+  * Handles navigating the mailbox forward
+  */
+  handleIPCNavigateForward () {
+    if (this.state.isActive) {
+      this.refs.browser.navigateForward()
+    }
   },
 
   /* **************************************************************************/

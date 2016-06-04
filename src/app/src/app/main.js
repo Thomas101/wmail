@@ -97,7 +97,9 @@
       })
     },
     find: () => { windowManager.mailboxesWindow.findStart() },
-    findNext: () => { windowManager.mailboxesWindow.findNext() }
+    findNext: () => { windowManager.mailboxesWindow.findNext() },
+    mailboxNavBack: () => { windowManager.mailboxesWindow.navigateMailboxBack() },
+    mailboxNavForward: () => { windowManager.mailboxesWindow.navigateMailboxForward() }
   })
 
   /* ****************************************************************************/

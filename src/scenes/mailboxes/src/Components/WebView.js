@@ -110,6 +110,10 @@ module.exports = React.createClass({
 
   stopFindInPage (action) { this.getWebviewNode().stopFindInPage(action) },
 
+  navigateBack () { this.getWebviewNode().goBack() },
+
+  navigateForward () { this.getWebviewNode().goForward() },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/

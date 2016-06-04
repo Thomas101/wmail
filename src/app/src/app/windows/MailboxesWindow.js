@@ -169,6 +169,20 @@ class MailboxesWindow extends WMailWindow {
     this.window.webContents.send('mailbox-window-find-next', { })
   }
 
+  /**
+  * Tells the active mailbox to navigate back
+  */
+  navigateMailboxBack () {
+    this.window.webContents.send('mailbox-window-navigate-back', { })
+  }
+
+  /**
+  * Tells the active mailbox to navigate back
+  */
+  navigateMailboxForward () {
+    this.window.webContents.send('mailbox-window-navigate-forward', { })
+  }
+
 }
 
 module.exports = MailboxesWindow

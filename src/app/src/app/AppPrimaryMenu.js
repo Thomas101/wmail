@@ -68,6 +68,9 @@ class AppPrimaryMenu {
           { label: 'Toggle Sidebar', accelerator: 'Ctrl+Command+S', click: this._selectors.sidebarToggle },
           process.platform === 'darwin' ? undefined : { label: 'Toggle Menu', accelerator: 'CmdOrCtrl+\\', click: this._selectors.menuToggle },
           { type: 'separator' },
+          { label: 'Navigate Back', accelerator: 'CmdOrCtrl+[', click: this._selectors.mailboxNavBack },
+          { label: 'Navigate Forward', accelerator: 'CmdOrCtrl+]', click: this._selectors.mailboxNavForward },
+          { type: 'separator' },
           { label: 'Zoom Mailbox In', accelerator: 'CmdOrCtrl+Plus', click: this._selectors.zoomIn },
           { label: 'Zoom Mailbox Out', accelerator: 'CmdOrCtrl+-', click: this._selectors.zoomOut },
           { label: 'Reset Mailbox Zoom', click: this._selectors.zoomReset },
@@ -85,8 +88,8 @@ class AppPrimaryMenu {
         ]
         .concat(!mailboxes.length ? [] : [
           { type: 'separator' },
-          { label: 'Previous Mailbox', accelerator: 'CmdOrCtrl+[', click: this._selectors.prevMailbox },
-          { label: 'Next Mailbox', accelerator: 'CmdOrCtrl+]', click: this._selectors.nextMailbox },
+          { label: 'Previous Mailbox', accelerator: 'CmdOrCtrl+<', click: this._selectors.prevMailbox },
+          { label: 'Next Mailbox', accelerator: 'CmdOrCtrl+>', click: this._selectors.nextMailbox },
           { type: 'separator' }
         ])
         .concat(mailboxes.map((mailbox, index) => {
