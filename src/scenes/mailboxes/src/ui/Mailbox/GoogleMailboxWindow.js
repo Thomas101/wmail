@@ -140,7 +140,7 @@ module.exports = React.createClass({
   * @param evt: the event that fired
   */
   handleOpenMessage (evt) {
-    if (evt.mailboxId === this.props.mailbox_id) {
+    if (evt.mailboxId === this.props.mailboxId) {
       this.refs.browser.send('open-message', { messageId: evt.messageId, threadId: evt.threadId })
     }
   },

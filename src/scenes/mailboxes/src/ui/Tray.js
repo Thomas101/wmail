@@ -154,6 +154,7 @@ module.exports = React.createClass({
         return {
           label: info.snippet,
           click: (e) => {
+            ipc.send('focus-app', { })
             mailboxActions.changeActive(info.mailboxId)
             mailboxDispatch.openMessage(info.mailboxId, info.message.threadId, info.message.id)
           }
