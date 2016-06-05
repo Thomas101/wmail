@@ -1,7 +1,7 @@
 const React = require('react')
 const { IconButton } = require('material-ui')
 const Colors = require('material-ui/styles/colors')
-const navigationDispatch = require('../Dispatch/navigationDispatch')
+const {navigationDispatch} = require('../../Dispatch')
 
 module.exports = React.createClass({
   displayName: 'SidelistSettings',

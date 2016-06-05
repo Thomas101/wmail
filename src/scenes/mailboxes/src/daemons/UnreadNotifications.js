@@ -3,7 +3,8 @@ const flux = {
   settings: require('../stores/settings')
 }
 const constants = require('shared/constants')
-const mailboxDispatch = require('../ui/Dispatch/mailboxDispatch')
+const {mailboxDispatch} = require('../Dispatch')
+const {ipcRenderer} = window.nativeRequire('electron')
 
 class UnreadNotifications {
 
@@ -116,6 +117,7 @@ class UnreadNotifications {
     if (evt.target && evt.target.data) {
       const data = evt.target.data
       if (data.mailbox) {
+        ipcRenderer.send('focus-app', { })
         flux.mailbox.A.changeActive(data.mailbox)
         mailboxDispatch.openMessage(data.mailbox, data.threadId, data.messageId)
       }

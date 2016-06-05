@@ -3,7 +3,7 @@ const {Tray, systemPreferences, Menu, nativeImage} = electron.remote
 const ipc = electron.ipcRenderer
 const React = require('react')
 const shallowCompare = require('react-addons-shallow-compare')
-const mailboxDispatch = require('./Dispatch/mailboxDispatch')
+const {mailboxDispatch} = require('../Dispatch')
 const mailboxActions = require('../stores/mailbox/mailboxActions')
 const {
   BLANK_PNG,

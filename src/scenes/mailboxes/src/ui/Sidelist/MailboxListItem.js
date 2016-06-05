@@ -6,7 +6,7 @@ const flux = {
 }
 const { Badge, Popover, Menu, MenuItem, Divider, FontIcon } = require('material-ui')
 const Colors = require('material-ui/styles/colors')
-const mailboxDispatch = require('../Dispatch/mailboxDispatch')
+const {mailboxDispatch} = require('../../Dispatch')
 const shallowCompare = require('react-addons-shallow-compare')
 
 module.exports = React.createClass({

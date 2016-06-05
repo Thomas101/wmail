@@ -8,7 +8,7 @@ const {
   remote: {shell}, ipcRenderer
 } = window.nativeRequire('electron')
 const URL = window.nativeRequire('url')
-const mailboxDispatch = require('../Dispatch/mailboxDispatch')
+const {mailboxDispatch} = require('../../Dispatch')
 const TimerMixin = require('react-timer-mixin')
 const {WebView} = require('../../Components')
 const MailboxSearch = require('./MailboxSearch')
@@ -132,6 +132,16 @@ module.exports = React.createClass({
   handleRefocus (evt) {
     if (evt.mailboxId === this.props.mailboxId || (!evt.mailboxId && this.state.isActive)) {
       this.setTimeout(() => { this.refs.browser.focus() })
+    }
+  },
+
+  /**
+  * Handles opening a new message
+  * @param evt: the event that fired
+  */
+  handleOpenMessage (evt) {
+    if (evt.mailboxId === this.props.mailbox_id) {
+      this.refs.browser.send('open-message', { messageId: evt.messageId, threadId: evt.threadId })
     }
   },
 

@@ -9,8 +9,10 @@ const flux = {
 const {
   ipcRenderer, remote: {app, shell}
 } = window.nativeRequire('electron')
+const {
+  mailboxDispatch, navigationDispatch
+} = require('../Dispatch')
 const AppContent = require('./AppContent')
-const mailboxDispatch = require('./Dispatch/mailboxDispatch')
 const TimerMixin = require('react-timer-mixin')
 const constants = require('shared/constants')
 const UnreadNotifications = require('../daemons/UnreadNotifications')
@@ -22,7 +24,6 @@ const MuiThemeProvider = require('material-ui/styles/MuiThemeProvider').default
 const injectTapEventPlugin = require('react-tap-event-plugin')
 injectTapEventPlugin()
 
-const navigationDispatch = require('./Dispatch/navigationDispatch')
 navigationDispatch.bindIPCListeners()
 
 module.exports = React.createClass({

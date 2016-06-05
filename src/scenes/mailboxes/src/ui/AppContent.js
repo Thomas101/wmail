@@ -8,7 +8,7 @@ const MailboxWindows = require('./Mailbox/MailboxWindows')
 const Sidelist = require('./Sidelist')
 const shallowCompare = require('react-addons-shallow-compare')
 const SettingsDialog = require('./Settings/SettingsDialog')
-const navigationDispatch = require('./Dispatch/navigationDispatch')
+const {navigationDispatch} = require('../Dispatch')
 const flux = {
   settings: require('../stores/settings')
 }
