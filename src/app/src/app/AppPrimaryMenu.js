@@ -64,7 +64,7 @@ class AppPrimaryMenu {
       {
         label: 'View',
         submenu: [
-          { label: 'Toggle Full Screen', accelerator: 'Ctrl+Command+F', click: this._selectors.fullscreenToggle },
+          { label: 'Toggle Full Screen', accelerator: process.platform === 'darwin' ? 'Ctrl+Command+F' : 'F11', click: this._selectors.fullscreenToggle },
           { label: 'Toggle Sidebar', accelerator: 'Ctrl+Command+S', click: this._selectors.sidebarToggle },
           process.platform === 'darwin' ? undefined : { label: 'Toggle Menu', accelerator: 'CmdOrCtrl+\\', click: this._selectors.menuToggle },
           { type: 'separator' },
