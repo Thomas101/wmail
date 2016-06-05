@@ -6,7 +6,6 @@ const credentials = require('shared/credentials')
 const googleHTTP = require('./googleHTTP')
 const mailboxStore = require('../mailbox/mailboxStore')
 const mailboxActions = require('../mailbox/mailboxActions')
-const settingsStore = require('../settings/settingsStore')
 const Mailbox = require('shared/Models/Mailbox/Mailbox')
 const {ipcRenderer} = window.nativeRequire('electron')
 const reporter = require('../../reporter')
@@ -315,8 +314,8 @@ class GoogleActions {
     const prevMailbox = mailboxStore.getState().getMailbox(mailboxId)
     // Look to see if the unread count has changed. If it has, update it
     // then ask to sync the messages to provide info to the user in a timely fasion
-    if (prevMailbox && prevMailbox.unread !== response.response[labelField]) {
-      mailboxActions.setUnreadCount(mailboxId, response.response[labelField])
+    if (prevMailbox && prevMailbox.google.labelUnreadCount !== response.response[labelField]) {
+      mailboxActions.setGoogleLabelUnreadCount(mailboxId, response.response[labelField])
       this.syncMailboxUnreadMessages(mailboxId)
       return { mailboxId: mailboxId, changed: true }
     } else {
@@ -367,15 +366,9 @@ class GoogleActions {
   * @param mailboxId: the id of the mailbox
   */
   syncMailboxUnreadMessages (mailboxId) {
-    // Check not disabled globally
-    if (settingsStore.getState().os.notificationsEnabled === false) {
-      this.syncMailboxUnreadMessagesSuccess(mailboxId)
-      return { mailboxId: mailboxId, promise: Promise.resolve() }
-    }
-
-    // Check not distabled for inbox / no unread messages
+    // Check for no unread messages
     const mailbox = mailboxStore.getState().getMailbox(mailboxId)
-    if (mailbox.unread === 0 || !mailbox.showNotifications) {
+    if (mailbox.google.labelUnreadCount === 0) {
       this.syncMailboxUnreadMessagesSuccess(mailboxId)
       return { mailboxId: mailboxId, promise: Promise.resolve() }
     }

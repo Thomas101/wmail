@@ -4,7 +4,8 @@ const { GMAIL_NOTIFICATION_MAX_MESSAGE_AGE_MS } = require('../../constants')
 const UNREAD_MODES = {
   INBOX: 'inbox',
   INBOX_UNREAD: 'inbox_unread',
-  PRIMARY_INBOX_UNREAD: 'primary_inbox_unread'
+  PRIMARY_INBOX_UNREAD: 'primary_inbox_unread',
+  INBOX_UNREAD_IMPORTANT: 'inbox_unread_important'
 }
 
 class Google extends Model {
@@ -19,11 +20,12 @@ class Google extends Model {
   // Lifecycle
   /* **************************************************************************/
 
-  constructor (auth, config, unread) {
+  constructor (auth, config, unread, labelUnread) {
     super({
       auth: auth || {},
       config: config || {},
-      unread: unread || {}
+      unread: unread || {},
+      labelUnread: labelUnread || {}
     })
   }
 
@@ -47,6 +49,7 @@ class Google extends Model {
       case UNREAD_MODES.INBOX: return 'label:inbox'
       case UNREAD_MODES.INBOX_UNREAD: return 'label:inbox label:unread'
       case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return 'label:inbox label:unread category:primary'
+      case UNREAD_MODES.INBOX_UNREAD_IMPORTANT: return 'label:inbox label:unread label:important'
     }
   }
   get unreadLabel () {
@@ -54,6 +57,7 @@ class Google extends Model {
       case UNREAD_MODES.INBOX: return 'INBOX'
       case UNREAD_MODES.INBOX_UNREAD: return 'INBOX'
       case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return 'CATEGORY_PERSONAL' // actually primary
+      case UNREAD_MODES.INBOX_UNREAD_IMPORTANT: return 'IMPORTANT'
     }
   }
   get unreadLabelField () {
@@ -61,12 +65,15 @@ class Google extends Model {
       case UNREAD_MODES.INBOX: return 'threadsTotal'
       case UNREAD_MODES.INBOX_UNREAD: return 'threadsUnread'
       case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return 'threadsUnread'
+      case UNREAD_MODES.INBOX_UNREAD_IMPORTANT: return 'threadsUnread'
     }
   }
 
   /* **************************************************************************/
   // Properties : Google Unread
   /* **************************************************************************/
+
+  get labelUnreadCount () { return this.__data__.labelUnread.count || 0 }
 
   get unreadMessages () {
     return Object.keys(this.__data__.unread)
@@ -76,6 +83,12 @@ class Google extends Model {
         }
         return acc
       }, {})
+  }
+
+  get unreadMessageCount () {
+    return Object.keys(this.__data__.unread)
+      .filter((k) => this.__data__.unread[k].unread)
+      .length
   }
 
   get unreadUnotifiedMessages () {

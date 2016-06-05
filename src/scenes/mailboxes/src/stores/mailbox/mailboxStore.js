@@ -149,6 +149,7 @@ class MailboxStore {
       handleUpdateGoogleUnread: actions.UPDATE_GOOGLE_UNREAD,
       handleSetAllGoogleMessagesRead: actions.SET_ALL_GOOGLE_MESSAGES_READ,
       handleSetGoogleUnreadNotificationsShown: actions.SET_GOOGLE_UNREAD_NOTIFICATIONS_SHOWN,
+      handleSetGoogleLabelUnreadCount: actions.SET_GOOGLE_LABEL_UNREAD_COUNT,
 
       // Active & Ordering
       handleChangeActive: actions.CHANGE_ACTIVE,
@@ -444,6 +445,17 @@ class MailboxStore {
       return acc
     }, {})
 
+    persistence.mailbox.setItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
+  }
+
+  /**
+  * Sets the unread count for the google label
+  */
+  handleSetGoogleLabelUnreadCount ({ id, count }) {
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleLabelUnread = data.googleLabelUnread || {}
+    data.googleLabelUnread.count = count
     persistence.mailbox.setItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }

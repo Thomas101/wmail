@@ -44,6 +44,10 @@ module.exports = React.createClass({
             value={Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD}
             primaryText='Unread Messages in Primary Category' />
           <MenuItem
+            key={Google.UNREAD_MODES.INBOX_UNREAD_IMPORTANT}
+            value={Google.UNREAD_MODES.INBOX_UNREAD_IMPORTANT}
+            primaryText='Unread Important Messages' />
+          <MenuItem
             key={Google.UNREAD_MODES.INBOX}
             value={Google.UNREAD_MODES}
             primaryText='All Messages in inbox' />

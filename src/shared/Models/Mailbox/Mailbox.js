@@ -18,7 +18,12 @@ class Mailbox extends Model {
     super(data)
     this.__id__ = id
 
-    this.__google__ = new Google(this.__data__.googleAuth, this.__data__.googleConf, this.__data__.googleUnreadMessages)
+    this.__google__ = new Google(
+      this.__data__.googleAuth,
+      this.__data__.googleConf,
+      this.__data__.googleUnreadMessages,
+      this.__data__.googleLabelUnread
+    )
   }
 
   /* **************************************************************************/
@@ -77,7 +82,7 @@ class Mailbox extends Model {
   }
   get email () { return this.__data__.email }
   get name () { return this.__data__.name }
-  get unread () { return this.__data__.unread }
+  get unread () { return this.__google__.unreadMessageCount }
 
   /* **************************************************************************/
   // Properties : Auth types

@@ -83,16 +83,6 @@ class MailboxActions {
   }
 
   /**
-  * Sets the unread Count
-  */
-  setUnreadCount (id, count) {
-    if (count === 0) {
-      this.setAllGoogleMessagesRead.defer(id)
-    }
-    return this.update(id, { unread: count })
-  }
-
-  /**
   * Sets the basic profile info
   * @param id: the mailbox id
   * @param email: the users email address
@@ -174,6 +164,18 @@ class MailboxActions {
   * @param messageIds: the ids of the messages
   */
   setGoogleUnreadNotificationsShown (id, messageIds) { return { id: id, messageIds: messageIds } }
+
+  /**
+  * Sets the unread count for the google tracking label
+  * @param id: the id of the mailbox
+  * @param count: the count to set
+  */
+  setGoogleLabelUnreadCount (id, count) {
+    if (count === 0) {
+      this.setAllGoogleMessagesRead.defer(id)
+    }
+    return { id: id, count: count }
+  }
 
   /* **************************************************************************/
   // Active
