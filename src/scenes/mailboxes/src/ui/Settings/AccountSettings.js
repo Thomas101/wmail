@@ -45,7 +45,7 @@ module.exports = React.createClass({
   },
 
   mailboxesChanged (store) {
-    const all = store.all()
+    const all = store.allMailboxes()
     if (this.state.selected) {
       this.setState({ mailboxes: all, selected: store.getMailbox(this.state.selected.id) })
     } else {

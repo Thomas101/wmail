@@ -2,7 +2,7 @@ const electron = require('electron')
 const uuid = require('uuid')
 const fs = require('fs-extra')
 const path = require('path')
-const settingStore = require('./stores/settingStore')
+const settingStore = require('../stores/settingStore')
 
 class MailboxesSessionManager {
 

@@ -31,17 +31,18 @@ module.exports = React.createClass({
     return (
       <Paper zDepth={1} style={{ padding: 15 }}>
         <SelectField
+          fullWidth
           value={this.props.mailbox.google.unreadMode}
           onChange={this.handleUnreadModeChange}
           floatingLabelText='Unread Mode'>
           <MenuItem
             key={Google.UNREAD_MODES.INBOX_UNREAD}
             value={Google.UNREAD_MODES.INBOX_UNREAD}
-            primaryText='Unread Messages' />
+            primaryText='All Unread Messages' />
           <MenuItem
             key={Google.UNREAD_MODES.INBOX}
             value={Google.UNREAD_MODES.INBOX}
-            primaryText='Messages in inbox' />
+            primaryText='All Messages in inbox' />
         </SelectField>
       </Paper>
     )
