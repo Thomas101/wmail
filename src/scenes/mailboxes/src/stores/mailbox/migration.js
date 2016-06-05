@@ -22,8 +22,8 @@ module.exports = {
         persistence.setItem(MAILBOX_INDEX_KEY, index)
 
         // Write the completion
-        window.localStorage.setItem('pre_1_3_1:MailboxIndex', JSON.stringify(index))
-        window.localStorage.removeItem('MailboxIndex')
+        window.localStorage.setItem('pre_1_3_1:Mailbox_index', JSON.stringify(index))
+        window.localStorage.removeItem('Mailbox_index')
         Object.keys(mailboxes).forEach((mailboxId) => {
           window.localStorage.setItem('pre_1_3_1:Mailbox_' + mailboxId, JSON.stringify(mailboxes[mailboxId]))
           window.localStorage.removeItem('Mailbox_' + mailboxId)
