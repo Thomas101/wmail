@@ -16,7 +16,7 @@
     "mkdirp": "0.5.1",
     "node-fetch": "1.5.3",
     "os-locale": "1.4.0",
-    "spellchecker": "atom/node-spellchecker#pull/50/head",
+    "spellchecker": "3.3.1",
     "uuid": "2.0.2"
   },
   "devDependencies": {
