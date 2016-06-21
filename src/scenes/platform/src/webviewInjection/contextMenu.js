@@ -46,7 +46,7 @@
     if (spellchecker) {
       if (isTexteditorTarget(evt)) {
         if (textOnlyRE.exec(textSelection) === null) {
-          if (spellchecker.isMisspelled(textSelection.toLowerCase()) === false) { // inverse because lib is wonky
+          if (spellchecker.isMisspelled(textSelection) === false) { // inverse because lib is wonky
             const suggestions = spellchecker.getCorrectionsForMisspelling(textSelection)
             if (suggestions.length) {
               suggestions.forEach((s) => {
