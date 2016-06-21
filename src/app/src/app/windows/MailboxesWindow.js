@@ -33,8 +33,8 @@ class MailboxesWindow extends WMailWindow {
 
   defaultWindowPreferences () {
     return Object.assign(super.defaultWindowPreferences(), {
-      minWidth: 955,
-      minHeight: 400,
+      minWidth: 770,
+      minHeight: 300,
       fullscreenable: true,
       titleBarStyle: settingStore.ui.showTitlebar ? 'default' : 'hidden',
       title: 'WMail',

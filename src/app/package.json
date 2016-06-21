@@ -10,16 +10,16 @@
     "compare-version": "0.1.2",
     "dom-storage": "2.0.2",
     "fs-extra": "0.30.0",
-    "googleapis": "7.1.0",
+    "googleapis": "9.0.0",
     "https-proxy-agent": "1.0.0",
     "minivents": "2.0.2",
     "mkdirp": "0.5.1",
     "node-fetch": "1.5.3",
     "os-locale": "1.4.0",
-    "spellchecker": "3.3.1",
+    "spellchecker": "atom/node-spellchecker#pull/50/head",
     "uuid": "2.0.2"
   },
   "devDependencies": {
-    "standard": "7.1.1"
+    "standard": "7.1.2"
   }
 }

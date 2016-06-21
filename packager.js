@@ -5,6 +5,7 @@ const fs = require('fs-extra')
 const childProcess = require('child_process')
 const path = require('path')
 const nlf = require('nlf')
+const electronInstaller = require('electron-winstaller')
 const platform = process.argv[2] || 'darwin'
 
 class PackageBuilder {
@@ -30,6 +31,23 @@ class PackageBuilder {
           resolve()
         }
       })
+    })
+  }
+
+  createWindowsInstaller () {
+    return new Promise((resolve, reject) => {
+      console.log('[START] Electron Winstaller')
+      electronInstaller.createWindowsInstaller({
+        appDirectory: './WMail-win32-ia32',
+        authors: pkg.author,
+        noMsi: true,
+        outputDirectory: './WMail-win32-ia32-Installer',
+        setupExe: 'WMail Setup.exe',
+        setupIcon: path.resolve('./icons/app.ico')
+      }).then(() => {
+        console.log('[FINISH] Electron Winstaller')
+        resolve()
+      }).catch(reject)
     })
   }
 
@@ -163,7 +181,9 @@ class PackageBuilder {
             .then(() => this.moveLicenses('./WMail-linux-ia32/'))
             .then(() => this.moveLicenses('./WMail-linux-x64/'))
         } else if (platform === 'win32') {
-          return this.moveLicenses('./WMail-win32-ia32/')
+          return Promise.resolve()
+            .then(() => this.moveLicenses('./WMail-win32-ia32/'))
+            .then(this.createWindowsInstaller)
         } else {
           return Promise.reject()
         }

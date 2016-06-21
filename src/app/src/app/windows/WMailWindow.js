@@ -42,7 +42,8 @@ class WMailWindow extends EventEmitter {
   defaultWindowPreferences () {
     return {
       title: 'WMail',
-      icon: nativeImage.createFromPath(path.join(__dirname, '/../../../icons/app.png'))
+      //icon: nativeImage.createFromPath(path.join(__dirname, '/../../../icons/app.png'))
+      icon: path.join(__dirname, '/../../../icons/app.png')
     }
   }
 

@@ -1,10 +1,14 @@
-module.exports = function (spellChecker) {
+;(function () {
   'use strict'
 
   const electron = require('electron')
   const remote = electron.remote
   const Menu = remote.Menu
   const shell = remote.shell
+  let spellchecker
+  try {
+    spellchecker = require('../../../app/node_modules/spellchecker')
+  } catch (ex) { }
 
   const textOnlyRE = new RegExp(/[^a-z]+/gi)
 
@@ -39,11 +43,11 @@ module.exports = function (spellChecker) {
     const menu = []
 
     // Spell check suggestions
-    if (spellChecker) {
+    if (spellchecker) {
       if (isTexteditorTarget(evt)) {
         if (textOnlyRE.exec(textSelection) === null) {
-          if (!spellChecker.isCorrectSync(textSelection)) {
-            const suggestions = spellChecker.spellSuggestionsSync(textSelection)
+          if (spellchecker.isMisspelled(textSelection.toLowerCase())) {
+            const suggestions = spellchecker.getCorrectionsForMisspelling(textSelection)
             if (suggestions.length) {
               suggestions.forEach((s) => {
                 menu.push({
@@ -96,4 +100,4 @@ module.exports = function (spellChecker) {
     menu.push({ label: 'Select all', role: 'selectall' })
     Menu.buildFromTemplate(menu).popup(remote.getCurrentWindow(), x, y)
   }, false)
-}
+})()

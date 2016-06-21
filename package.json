@@ -2,7 +2,7 @@
   "name": "wmail",
   "version": "1.3.1",
   "prerelease": false,
-  "description": "The missing desktop client for Gmail & Google Inbox",
+  "description": "The missing desktop client for Gmail and Google Inbox",
   "scripts": {
     "prestart": "webpack",
     "start": "electron bin/app/index.js",
@@ -22,7 +22,7 @@
   "main": "bin/app/index.js",
   "dependencies": {
     "babel": "6.5.2",
-    "babel-core": "6.9.1",
+    "babel-core": "6.10.4",
     "babel-loader": "6.2.4",
     "babel-preset-es2015": "6.9.0",
     "babel-preset-react": "6.5.0",
@@ -30,12 +30,12 @@
     "clean-webpack-plugin": "0.1.9",
     "copy-webpack-plugin": "3.0.1",
     "css-loader": "0.23.1",
-    "electron-packager": "7.0.2",
-    "electron-prebuilt": "1.2.0",
+    "electron-packager": "7.0.4",
+    "electron-prebuilt": "1.2.3",
     "electron-rebuild": "1.1.5",
-    "electron-winstaller": "2.3.0",
+    "electron-winstaller": "2.3.1",
     "extract-text-webpack-plugin": "1.0.1",
-    "file-loader": "0.8.5",
+    "file-loader": "0.9.0",
     "jsx-loader": "0.13.2",
     "less": "2.7.1",
     "less-loader": "2.2.3",
@@ -46,6 +46,6 @@
     "webpack-target-electron-renderer": "0.4.0"
   },
   "devDependencies": {
-    "standard": "^7.1.1"
+    "standard": "^7.1.2"
   }
 }
