@@ -43,7 +43,7 @@ class PackageBuilder {
         noMsi: true,
         outputDirectory: './WMail-win32-ia32-Installer',
         setupExe: 'WMail Setup.exe',
-        setupIcon: path.resolve('./icons/app.ico')
+        setupIcon: path.resolve('./assets/icons/app.ico')
       }).then(() => {
         console.log('[FINISH] Electron Winstaller')
         resolve()
