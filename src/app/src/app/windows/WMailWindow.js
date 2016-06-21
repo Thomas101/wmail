@@ -1,4 +1,4 @@
-const {BrowserWindow, nativeImage} = require('electron')
+const {BrowserWindow} = require('electron')
 const EventEmitter = require('events')
 const settingStore = require('../stores/settingStore')
 const appStorage = require('../storage/appStorage')
@@ -42,7 +42,6 @@ class WMailWindow extends EventEmitter {
   defaultWindowPreferences () {
     return {
       title: 'WMail',
-      //icon: nativeImage.createFromPath(path.join(__dirname, '/../../../icons/app.png'))
       icon: path.join(__dirname, '/../../../icons/app.png')
     }
   }

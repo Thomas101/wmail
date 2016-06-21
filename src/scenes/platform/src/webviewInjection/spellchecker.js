@@ -11,7 +11,7 @@
 
       webFrame.setSpellCheckProvider('en-us', true, {
         spellCheck: (text) => {
-          return !spellchecker.isMisspelled(text.toLowerCase())
+          return spellchecker.isMisspelled(text.toLowerCase()) !== false // inverse because lib is wonky
         }
       })
     })

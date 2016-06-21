@@ -73,7 +73,7 @@ class Google extends Model {
   // Properties : Google Unread
   /* **************************************************************************/
 
-  get labelUnreadCount () { return this.__data__.labelUnread.count || 0 }
+  get labelUnreadCount () { return this.__data__.labelUnread.count || -1 }
 
   get unreadMessages () {
     return Object.keys(this.__data__.unread)
