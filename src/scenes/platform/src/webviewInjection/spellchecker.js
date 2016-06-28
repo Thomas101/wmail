@@ -15,5 +15,5 @@
         }
       })
     })
-  } catch (ex) { }
+  } catch (ex) { alert(ex) }
 })()
