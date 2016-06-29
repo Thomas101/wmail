@@ -23,7 +23,7 @@ install:
 build_script:
   - node --version
   - npm --version
+  - npm test
   - npm run-script package:win32
 
-test:
-  - npm test
+test: off
