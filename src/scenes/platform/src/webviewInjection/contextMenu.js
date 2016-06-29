@@ -5,12 +5,9 @@
   const remote = electron.remote
   const Menu = remote.Menu
   const shell = remote.shell
-  let spellchecker
-  try {
-    spellchecker = require('../../../app/node_modules/spellchecker')
-  } catch (ex) { }
 
-  const textOnlyRE = new RegExp(/[^a-z]+/gi)
+  // let spellchecker
+  // const textOnlyRE = new RegExp(/[^a-z]+/gi)
 
   /**
   * @param evt: the event that triggered
@@ -43,7 +40,7 @@
     const menu = []
 
     // Spell check suggestions
-    if (spellchecker) {
+    /* if (spellchecker) {
       if (isTexteditorTarget(evt)) {
         if (textOnlyRE.exec(textSelection) === null) {
           if (spellchecker.isMisspelled(textSelection) === false) { // inverse because lib is wonky
@@ -66,7 +63,7 @@
           }
         }
       }
-    }
+    }*/
 
     // Link
     const linkTarget = isLinkTarget(evt)
