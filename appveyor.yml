@@ -1,0 +1,29 @@
+version: 0.4.{build}
+
+platform:
+  - x64
+
+cache:
+  - node_modules
+  - app\node_modules
+  - '%APPDATA%\npm-cache'
+  - '%USERPROFILE%\.electron'
+
+init:
+  - git config --global core.autocrlf input
+
+install:
+  - ps: Install-Product node 6 x64
+  - git reset --hard HEAD
+  - npm install npm -g
+  - npm install electron-builder@next # force install next version to test electron-builder
+  - npm run-script install-all
+  - echo "module.exports=Object.freeze({GOOGLE_CLIENT_ID:'"%APP_GOOGLE_CLIENT_ID%"',GOOGLE_CLIENT_SECRET:'"%APP_GOOGLE_CLIENT_SECRET%"',GOOGLE_ANALYTICS_ID:'"%APP_GOOGLE_ANALYTICS_ID%"'})" >> src/shared/credentials.js
+
+build_script:
+  - node --version
+  - npm --version
+  - npm run-script package:win32
+
+test:
+  - npm test
