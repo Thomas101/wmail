@@ -18,12 +18,12 @@ install:
   - npm install npm -g
   - npm install electron-builder@next # force install next version to test electron-builder
   - npm run-script install-all
-  - echo "module.exports=Object.freeze({GOOGLE_CLIENT_ID:'"%APP_GOOGLE_CLIENT_ID%"',GOOGLE_CLIENT_SECRET:'"%APP_GOOGLE_CLIENT_SECRET%"',GOOGLE_ANALYTICS_ID:'"%APP_GOOGLE_ANALYTICS_ID%"'})" >> src/shared/credentials.js
+  - echo "module.exports=Object.freeze({GOOGLE_CLIENT_ID:'"%APP_GOOGLE_CLIENT_ID%"',GOOGLE_CLIENT_SECRET:'"%APP_GOOGLE_CLIENT_SECRET%"',GOOGLE_ANALYTICS_ID:'"%APP_GOOGLE_ANALYTICS_ID%"'})" >> src\shared\credentials.js
+  - type src\shared\credentials.js
 
 build_script:
   - node --version
   - npm --version
-  - npm test
   - npm run-script package:win32
 
 test: off
