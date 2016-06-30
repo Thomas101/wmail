@@ -1,51 +1,11 @@
 sudo: required
-dist: trusty
-
-language: c
-
-matrix:
-  include:
-    - os: linux
-      env: CC=clang CXX=clang++ npm_config_clang=1
-      compiler: clang
-
-cache:
-  directories:
-  - node_modules
-  - app/node_modules
-  - $HOME/.electron
-  - $HOME/.cache/fpm
-
-addons:
-  apt:
-    packages:
-      - libgnome-keyring-dev
-      - icnsutils
-
-before_install:
-  - mkdir -p /tmp/git-lfs && curl -L https://github.com/github/git-lfs/releases/download/v1.2.0/git-lfs-$([ "$TRAVIS_OS_NAME" == "linux" ] && echo "linux" || echo "darwin")-amd64-1.2.0.tar.gz | tar -xz -C /tmp/git-lfs --strip-components 1 && /tmp/git-lfs/git-lfs pull
-
 install:
-- nvm install 6
-- npm install electron-builder@next # force install next version to test electron-builder
-- npm run-script install-all
-- echo "module.exports=Object.freeze({GOOGLE_CLIENT_ID:'"$APP_GOOGLE_CLIENT_ID"',GOOGLE_CLIENT_SECRET:'"$APP_GOOGLE_CLIENT_SECRET"',GOOGLE_ANALYTICS_ID:'"$APP_GOOGLE_ANALYTICS_ID"'})" >> src/shared/credentials.js
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo apt-get update -qq
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  - npm install -g standard
 
-script:
-- npm test
-- npm run-script package:linux
-
-after_success:
-  - echo APPKEY=$DROPBOX_APPKEY >> $HOME/.dropbox_uploader
-  - echo APPSECRET=$DROPBOX_APPSECRET >> $HOME/.dropbox_uploader
-  - echo ACCESS_LEVEL=sandbox >> $HOME/.dropbox_uploader
-  - echo OAUTH_ACCESS_TOKEN=$DROPBOX_OAUTH_ACCESS_TOKEN >> $HOME/.dropbox_uploader
-  - echo OAUTH_ACCESS_TOKEN_SECRET=$DROPBOX_OAUTH_ACCESS_TOKEN_SCRET >> $HOME/.dropbox_uploader
-  - curl "https://raw.githubusercontent.com/andreafabrizi/Dropbox-Uploader/master/dropbox_uploader.sh" -o dropbox_uploader.sh
-  - chmod +x dropbox_uploader.sh
-  - zip -r linux.zip WMail-linux-ia32/ WMail-linux-x64/
-  - ./dropbox_uploader.sh -f $HOME/.dropbox_uploader upload linux.zip linux_$(date +%s).zip
-
-branches:
-  except:
-    - "/^v\\d+\\.\\d+\\.\\d+$/"
+language: node_js
+node_js:
+  - "6.2.0"
