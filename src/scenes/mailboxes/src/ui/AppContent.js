@@ -35,15 +35,18 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState () {
+    const settingsStore = flux.settings.S.getState()
     return {
-      sidebar: flux.settings.S.getState().ui.sidebarEnabled,
+      sidebar: settingsStore.ui.sidebarEnabled,
+      titlebar: settingsStore.ui.showTitlebar,
       settingsDialog: false
     }
   },
 
   settingsDidUpdate (store) {
     this.setState({
-      sidebar: store.ui.sidebarEnabled
+      sidebar: store.ui.sidebarEnabled,
+      titlebar: store.ui.showTitlebar
     })
   },
 
@@ -76,6 +79,7 @@ module.exports = React.createClass({
   render () {
     return (
       <div>
+        {!this.state.titlebar ? (<div className='titlebar' />) : undefined}
         <div className='master' style={{ display: this.state.sidebar ? 'block' : 'none' }}>
           <Sidelist />
         </div>

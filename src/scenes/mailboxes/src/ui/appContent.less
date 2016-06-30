@@ -1,6 +1,16 @@
 #app {
   overflow: hidden;
-  
+
+  .titlebar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 16px;
+    -webkit-app-region: drag;
+    z-index: 100;
+  }
+
   &, .mailboxes, .master, .detail {
     position: absolute;
     top: 0px;
