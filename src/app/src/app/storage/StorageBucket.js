@@ -21,8 +21,25 @@ class StorageBucket {
   constructor (bucketName) {
     this.__path__ = path.join(dbPath, bucketName + '_db.json')
     this.__backupPath__ = this.__path__ + 'b'
-    this.__storage__ = new Storage(this.__path__)
 
+    // Check to see if we need to restore from backup
+    let restoreBackup = false
+    try {
+      const data = fs.readFileSync(this.__path__, 'utf-8')
+      if (!data.length) {
+        restoreBackup = true
+      }
+    } catch (ex) {
+      restoreBackup = true
+    }
+
+    if (restoreBackup) {
+      try {
+        fs.copySync(this.__backupPath__, this.__path__)
+      } catch (ex) { }
+    }
+
+    // Periodically backup
     this.autoBackup = setInterval(() => {
       let data = ''
       try {
@@ -34,6 +51,7 @@ class StorageBucket {
       }
     }, DB_BACKUP_INTERVAL_MS + (Math.floor(Math.random() * 10000)))
 
+    this.__storage__ = new Storage(this.__path__)
     Minivents(this)
   }
 
