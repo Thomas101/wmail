@@ -4,6 +4,8 @@ const mkdirp = require('mkdirp')
 const Storage = require('dom-storage')
 const path = require('path')
 const Minivents = require('minivents')
+const fs = require('fs-extra')
+const { DB_BACKUP_INTERVAL_MS } = require('../../shared/constants')
 
 // Setup
 const appDirectory = new AppDirectory(pkg.name)
@@ -17,7 +19,21 @@ class StorageBucket {
   /* ****************************************************************************/
 
   constructor (bucketName) {
-    this.__storage__ = new Storage(path.join(dbPath, bucketName + '_db.json'))
+    this.__path__ = path.join(dbPath, bucketName + '_db.json')
+    this.__backupPath__ = this.__path__ + 'b'
+    this.__storage__ = new Storage(this.__path__)
+
+    this.autoBackup = setInterval(() => {
+      let data = ''
+      try {
+        data = fs.readFileSync(this.__path__, 'utf8')
+      } catch (ex) { }
+
+      if (data.length) {
+        fs.outputFileSync(this.__backupPath__, data)
+      }
+    }, DB_BACKUP_INTERVAL_MS + (Math.floor(Math.random() * 10000)))
+
     Minivents(this)
   }
 
