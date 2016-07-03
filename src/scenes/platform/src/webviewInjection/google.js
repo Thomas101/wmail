@@ -1,12 +1,17 @@
 ;(function () {
   'use strict'
 
+  const spellchecker = require('./spellchecker')
+  const contextMenu = require('./contextMenu')
+
   require('./keyboardNavigation')
   require('./clickReport')
   require('./zoomLevel')
   require('./googleWindowOpen')
-  require('./spellchecker')
-  require('./contextMenu')
+
+  spellchecker((dictionary) => {
+    contextMenu.setDictionary(dictionary)
+  })
 
   const ipc = require('electron').ipcRenderer
 

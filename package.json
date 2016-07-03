@@ -47,5 +47,10 @@
   },
   "devDependencies": {
     "standard": "^7.1.2"
+  },
+  "standard": {
+    "ignore": [
+      "src/app/lib/"
+    ]
   }
 }

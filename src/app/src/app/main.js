@@ -21,6 +21,7 @@
   const AppPrimaryMenu = require('./AppPrimaryMenu')
   const WindowManager = require('./windows/WindowManager')
   const constants = require('../shared/constants')
+  const spellcheck = require('./spellcheck')
 
   /* ****************************************************************************/
   // Global objects
@@ -135,6 +136,7 @@
   app.on('ready', () => {
     appMenu.updateApplicationMenu()
     windowManager.mailboxesWindow.start()
+    spellcheck.start()
   })
 
   app.on('window-all-closed', function () {

@@ -8,7 +8,7 @@
   "dependencies": {
     "appdirectory": "0.1.0",
     "compare-version": "0.1.2",
-    "dictionary-en-us": "^1.0.2",
+    "dictionary-en-us": "1.0.2",
     "dom-storage": "2.0.2",
     "fs-extra": "0.30.0",
     "googleapis": "9.0.0",
@@ -17,7 +17,8 @@
     "mkdirp": "0.5.1",
     "node-fetch": "1.5.3",
     "os-locale": "1.4.0",
-    "typo-js": "^1.0.1",
+    "request": "2.72.0",
+    "typo-js": "./lib/Typo.js/typo",
     "uuid": "2.0.2"
   },
   "devDependencies": {

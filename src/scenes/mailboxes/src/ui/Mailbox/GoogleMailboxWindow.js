@@ -157,6 +157,12 @@ module.exports = React.createClass({
     switch (evt.channel.type) {
       case 'page-click': this.handleBrowserPageClick(evt); break
       case 'js-new-window': this.handleBrowserJSNewWindow(evt); break
+      case 'undo': this.refs.browser.undo(); break
+      case 'redo': this.refs.browser.redo(); break
+      case 'cut': this.refs.browser.cut(); break
+      case 'copy': this.refs.browser.copy(); break
+      case 'paste': this.refs.browser.paste(); break
+      case 'selectAll': this.refs.browser.selectAll(); break
       default:
     }
   },

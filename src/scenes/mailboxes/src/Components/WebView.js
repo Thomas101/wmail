@@ -114,6 +114,18 @@ module.exports = React.createClass({
 
   navigateForward () { this.getWebviewNode().goForward() },
 
+  undo () { this.getWebviewNode().undo() },
+
+  redo () { this.getWebviewNode().redo() },
+
+  cut () { this.getWebviewNode().cut() },
+
+  copy () { this.getWebviewNode().copy() },
+
+  paste () { this.getWebviewNode().paste() },
+
+  selectAll () { this.getWebviewNode().selectAll() },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
