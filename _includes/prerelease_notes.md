@@ -16,15 +16,15 @@ This release feels like it's been the hardest and most difficult one to put toge
 
 # Code
 * Code has been restructured into 3 main packages. The primary package, main app and mailboxes window. Because of this I've been able to remove a lot of dead code that was shipping in the production build. This has reduced file size and decreased build time. Here' some fancy stats
- * Production filesize 17% smaller (164mb to 136mb)
- * 95% reduction in files (9878 to 415)
+  * Production filesize 17% smaller (164mb to 136mb)
+  * 95% reduction in files (9878 to 415)
 * Dependencies have been updated
 * Electron has been updated to version 1.2 which had a few breaking changes
 * Startup process looks a fair bit cleaner with UI placeholders
 * Moved the database from localstorage to a centralised app database
- * This means data is available throughout the app and database duplication has been removed
- * The main thread has direct access to the data and listens on changes directly
- * The models are now common between the main and rendering thread for reduced code duplication
+  * This means data is available throughout the app and database duplication has been removed
+  * The main thread has direct access to the data and listens on changes directly
+  * The models are now common between the main and rendering thread for reduced code duplication
 * The kitchen sink has been taken out of `app.js` to make code more maintable
 * Renamed Google Mailbox to WMail on Google Services
 * Split the GoogleMailbox view to use a common WebView that deals with the nasties of managing its state
