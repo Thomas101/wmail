@@ -183,7 +183,7 @@ class PackageBuilder {
         } else if (platform === 'win32') {
           return Promise.resolve()
             .then(() => this.moveLicenses('./WMail-win32-ia32/'))
-            .then(this.createWindowsInstaller)
+            // .then(this.createWindowsInstaller)
         } else {
           return Promise.reject()
         }

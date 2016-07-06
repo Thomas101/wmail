@@ -143,6 +143,10 @@
     app.quit()
   })
 
+  app.on('quit', function () {
+    spellcheck.kill()
+  })
+
   app.on('activate', function () {
     windowManager.mailboxesWindow.show()
   })

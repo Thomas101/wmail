@@ -12,10 +12,10 @@
     "https-proxy-agent": "1.0.0",
     "material-ui": "0.15.1",
     "minivents": "2.0.2",
-    "react": "15.1.0",
-    "react-addons-shallow-compare": "15.1.0",
+    "react": "15.2.0",
+    "react-addons-shallow-compare": "15.2.0",
     "react-color": "2.2.0",
-    "react-dom": "15.1.0",
+    "react-dom": "15.2.0",
     "react-tap-event-plugin": "1.0.0",
     "react-timer-mixin": "0.13.3",
     "uuid": "2.0.2"

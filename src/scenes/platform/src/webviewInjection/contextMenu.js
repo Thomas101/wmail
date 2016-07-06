@@ -5,7 +5,7 @@
   const remote = electron.remote
   const ContextMenuView = require('./ContextMenuView')
   const shell = remote.shell
-  const request = require('request')
+  const request = require('../../../app/node_modules/request')
   const { SPELLCHECK_HTTP_PORT } = require('../../../app/shared/constants')
 
   let dictionary
