@@ -16,9 +16,7 @@ module.exports = React.createClass({
   propTypes: {
     unreadCount: React.PropTypes.number.isRequired,
     unreadMessages: React.PropTypes.object.isRequired,
-    showUnreadCount: React.PropTypes.bool.isRequired,
-    unreadColor: React.PropTypes.string,
-    readColor: React.PropTypes.string
+    traySettings: React.PropTypes.object.isRequired
   },
 
   /* **************************************************************************/
@@ -68,10 +66,17 @@ module.exports = React.createClass({
   * @return the nativeImage for the tray
   */
   renderImage () {
+    const { traySettings, unreadCount } = this.props
+    const { unreadColor, readColor, showUnreadCount, isReadColorDefault } = traySettings
     const SIZE = 22 * window.devicePixelRatio
     const PADDING = SIZE * 0.15
     const CENTER = SIZE / 2
-    const COLOR = this.props.unreadCount ? (this.props.unreadColor || this.getDefaultUnreadColor()) : (this.props.readColor || this.getDefaultReadColor())
+    let color
+    if (unreadCount) {
+      color = unreadColor || this.getDefaultReadColor()
+    } else {
+      color = isReadColorDefault ? this.getDefaultReadColor() : readColor
+    }
 
     const canvas = document.createElement('canvas')
     canvas.width = SIZE
@@ -80,20 +85,20 @@ module.exports = React.createClass({
     const ctx = canvas.getContext('2d')
 
     // Count
-    if (this.props.showUnreadCount && this.props.unreadCount && this.props.unreadCount < 99) {
-      ctx.fillStyle = COLOR
+    if (showUnreadCount && unreadCount && unreadCount < 99) {
+      ctx.fillStyle = color
       ctx.textAlign = 'center'
-      if (this.props.unreadCount < 10) {
+      if (unreadCount < 10) {
         ctx.font = (SIZE * 0.5) + 'px Helvetica'
-        ctx.fillText(this.props.unreadCount, CENTER, CENTER + (SIZE * 0.20))
+        ctx.fillText(unreadCount, CENTER, CENTER + (SIZE * 0.20))
       } else {
         ctx.font = (SIZE * 0.4) + 'px Helvetica'
-        ctx.fillText(this.props.unreadCount, CENTER, CENTER + (SIZE * 0.15))
+        ctx.fillText(unreadCount, CENTER, CENTER + (SIZE * 0.15))
       }
     } else {
       const ICON_SIZE = SIZE * 0.5
       const POS = (SIZE - ICON_SIZE) / 2
-      ctx.fillStyle = COLOR
+      ctx.fillStyle = color
       ctx.fillRect(0, 0, SIZE, SIZE)
       ctx.globalCompositeOperation = 'destination-atop'
       ctx.drawImage(this.state.icon, POS, POS, ICON_SIZE, ICON_SIZE)
@@ -104,7 +109,7 @@ module.exports = React.createClass({
     ctx.beginPath()
     ctx.arc(CENTER, CENTER, (SIZE / 2) - PADDING, 0, 2 * Math.PI, false)
     ctx.lineWidth = window.devicePixelRatio * 1.1
-    ctx.strokeStyle = COLOR
+    ctx.strokeStyle = color
     ctx.stroke()
 
     const pngData = nativeImage.createFromDataURL(canvas.toDataURL('image/png')).toPng()
@@ -122,11 +127,12 @@ module.exports = React.createClass({
   * @return the context menu for the tray icon
   */
   renderContextMenu () {
+    const unreadMessages = this.props.unreadMessages
     // Build the unread items up
-    const unreadItems = Object.keys(this.props.unreadMessages)
+    const unreadItems = Object.keys(unreadMessages)
       .reduce((acc, mailboxId) => {
-        const messages = Object.keys(this.props.unreadMessages[mailboxId])
-          .map((id) => this.props.unreadMessages[mailboxId][id])
+        const messages = Object.keys(unreadMessages[mailboxId])
+          .map((id) => unreadMessages[mailboxId][id])
           .map((info) => {
             info.mailboxId = mailboxId
             return info
