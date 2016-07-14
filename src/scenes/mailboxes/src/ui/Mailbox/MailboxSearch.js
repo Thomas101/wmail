@@ -93,8 +93,13 @@ module.exports = React.createClass({
   * Renders the app
   */
   render () {
+    const passProps = Object.assign({}, this.props)
+    delete passProps.onSearchCancel
+    delete passProps.onSearchChange
+    delete passProps.onSearchNext
+
     return (
-      <Paper {...this.props}>
+      <Paper {...passProps}>
         <TextField
           ref='textField'
           hintText='Search'

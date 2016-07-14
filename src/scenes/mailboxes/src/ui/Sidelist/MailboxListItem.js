@@ -246,9 +246,15 @@ module.exports = React.createClass({
       )
     }
 
+    const passProps = Object.assign({}, this.props)
+    delete passProps.mailboxId
+    delete passProps.index
+    delete passProps.isFirst
+    delete passProps.isLast
+
     return (
       <div
-        {...this.props}
+        {...passProps}
         className='list-item'
         onClick={this.handleClick}
         onContextMenu={this.handleOpenPopover}
