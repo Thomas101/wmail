@@ -73,7 +73,7 @@ class AppPrimaryMenu {
           { type: 'separator' },
           { label: 'Zoom Mailbox In', accelerator: 'CmdOrCtrl+Plus', click: this._selectors.zoomIn },
           { label: 'Zoom Mailbox Out', accelerator: 'CmdOrCtrl+-', click: this._selectors.zoomOut },
-          { label: 'Reset Mailbox Zoom', click: this._selectors.zoomReset },
+          { label: 'Reset Mailbox Zoom', accelerator: 'CmdOrCtrl+0', click: this._selectors.zoomReset },
           { type: 'separator' },
           { label: 'Reload', accelerator: 'CmdOrCtrl+R', click: this._selectors.reload },
           { label: 'Developer Tools', accelerator: 'Alt+CmdOrCtrl+J', click: this._selectors.devTools }
