@@ -351,6 +351,10 @@ module.exports = React.createClass({
       this.state.isSearching ? 'active' : undefined
     ].filter((c) => !!c).join(' ')
 
+    if (this.state.isActive) {
+      this.setTimeout(() => { this.refs.browser.focus() })
+    }
+
     return (
       <div className={className}>
         <WebView
