@@ -18,5 +18,6 @@ module.exports = Object.freeze({
   REFOCUS_MAILBOX_INTERVAL_MS: 300,
 
   DB_BACKUP_INTERVAL_MS: 1000 * 60 * 5, // 5 minutes
+  DB_WRITE_DELAY_MS: 500, // 0.5secs
   SPELLCHECK_HTTP_PORT: 31013
 })

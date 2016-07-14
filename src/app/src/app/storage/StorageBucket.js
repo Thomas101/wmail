@@ -1,11 +1,10 @@
 const AppDirectory = require('appdirectory')
 const pkg = require('../../package.json')
 const mkdirp = require('mkdirp')
-const Storage = require('dom-storage')
 const path = require('path')
 const Minivents = require('minivents')
 const fs = require('fs-extra')
-const { DB_BACKUP_INTERVAL_MS } = require('../../shared/constants')
+const { DB_BACKUP_INTERVAL_MS, DB_WRITE_DELAY_MS } = require('../../shared/constants')
 
 // Setup
 const appDirectory = new AppDirectory(pkg.name)
@@ -21,9 +20,31 @@ class StorageBucket {
   constructor (bucketName) {
     this.__path__ = path.join(dbPath, bucketName + '_db.json')
     this.__backupPath__ = this.__path__ + 'b'
+    this.__writer__ = null
+    this.__data__ = undefined
 
-    // Check to see if we need to restore from backup
+    // Setup backup infrastructure
+    this._restoreBackup()
+    this.autoBackup = setInterval(() => {
+      this._performBackup()
+    }, DB_BACKUP_INTERVAL_MS + (Math.floor(Math.random() * 10000)))
+
+    this._loadFromDisk()
+
+    Minivents(this)
+  }
+
+  /* ****************************************************************************/
+  // Backup
+  /* ****************************************************************************/
+
+  /**
+  * Attempts to restore the backup if required
+  * @return true if a backup was performed successfully
+  */
+  _restoreBackup () {
     let restoreBackup = false
+    let didPerform = false
     try {
       const data = fs.readFileSync(this.__path__, 'utf-8')
       if (!data.length) {
@@ -36,23 +57,55 @@ class StorageBucket {
     if (restoreBackup) {
       try {
         fs.copySync(this.__backupPath__, this.__path__)
+        didPerform = true
       } catch (ex) { }
     }
 
-    // Periodically backup
-    this.autoBackup = setInterval(() => {
-      let data = ''
-      try {
-        data = fs.readFileSync(this.__path__, 'utf8')
-      } catch (ex) { }
+    return didPerform
+  }
 
-      if (data.length) {
-        fs.outputFileSync(this.__backupPath__, data)
-      }
-    }, DB_BACKUP_INTERVAL_MS + (Math.floor(Math.random() * 10000)))
+  /**
+  * Backs up the data
+  */
+  _performBackup () {
+    let data = ''
+    try {
+      data = fs.readFileSync(this.__path__, 'utf8')
+    } catch (ex) { }
 
-    this.__storage__ = new Storage(this.__path__)
-    Minivents(this)
+    if (data.length) {
+      fs.outputFileSync(this.__backupPath__, data)
+    }
+  }
+
+  /* ****************************************************************************/
+  // Persistence
+  /* ****************************************************************************/
+
+  /**
+  * Loads the database from disk
+  */
+  _loadFromDisk () {
+    let data = '{}'
+    try {
+      data = fs.readFileSync(this.__path__, 'utf8')
+    } catch (ex) { }
+
+    try {
+      this.__data__ = JSON.parse(data)
+    } catch (ex) {
+      this.__data__ = {}
+    }
+  }
+
+  /**
+  * Writes the current data to disk
+  */
+  _writeToDisk () {
+    clearTimeout(this.__writer__)
+    this.__writer__ = setTimeout(() => {
+      fs.writeFileSync(this.__path__, JSON.stringify(this.__data__), 'utf8')
+    }, DB_WRITE_DELAY_MS)
   }
 
   /* ****************************************************************************/
@@ -65,7 +118,7 @@ class StorageBucket {
   * @return the json item or d
   */
   getItem (k, d) {
-    const json = this.__storage__.getItem(k)
+    const json = this.__data__[k]
     return json ? JSON.parse(json) : d
   }
 
@@ -75,7 +128,7 @@ class StorageBucket {
   * @return the string item or d
   */
   getString (k, d) {
-    const json = this.__storage__.getItem(k)
+    const json = this.__data__[k]
     return json || d
   }
 
@@ -83,11 +136,7 @@ class StorageBucket {
   * @return a list of all keys
   */
   allKeys () {
-    const keys = []
-    for (let i = 0; i < this.__storage__.length; i++) {
-      keys.push(this.__storage__.key(i))
-    }
-    return keys
+    return Object.keys(this.__data__)
   }
 
   /**
@@ -120,7 +169,8 @@ class StorageBucket {
   * @return v
   */
   setItem (k, v) {
-    this.__storage__.setItem(k, JSON.stringify(v))
+    this.__data__[k] = JSON.stringify(v)
+    this._writeToDisk()
     this.emit('changed', { type: 'setItem', key: k })
     this.emit('changed:' + k, { })
     return v
@@ -132,7 +182,8 @@ class StorageBucket {
   * @return s
   */
   setString (k, s) {
-    this.__storage__.setItem(k, s)
+    this.__data__[k] = s
+    this._writeToDisk()
     this.emit('changed', { type: 'setString', key: k })
     this.emit('changed:' + k, { })
     return s
@@ -146,7 +197,8 @@ class StorageBucket {
   * @param k: the key to remove
   */
   removeItem (k) {
-    this.__storage__.removeItem(k)
+    delete this.__data__[k]
+    this._writeToDisk()
     this.emit('changed', { type: 'removeItem', key: k })
     this.emit('changed:' + k, { })
   }
