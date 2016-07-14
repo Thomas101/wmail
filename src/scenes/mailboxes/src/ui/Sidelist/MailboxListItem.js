@@ -222,7 +222,7 @@ module.exports = React.createClass({
         innerElement = (
           <img
             className='avatar'
-            src={flux.mailbox.S.getState().getAvatar(mailbox.customAvatar)} />
+            src={flux.mailbox.S.getState().getAvatar(mailbox.customAvatarId)} />
         )
       } else {
         innerElement = <img className='avatar' src={mailbox.avatarURL} />

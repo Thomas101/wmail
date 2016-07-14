@@ -177,7 +177,7 @@ module.exports = React.createClass({
         </div>
       )
       if (selected.hasCustomAvatar) {
-        avatarSrc = flux.mailbox.S.getState().getAvatar(selected.customAvatar)
+        avatarSrc = flux.mailbox.S.getState().getAvatar(selected.customAvatarId)
       } else if (selected.avatarURL) {
         avatarSrc = selected.avatarURL
       }
