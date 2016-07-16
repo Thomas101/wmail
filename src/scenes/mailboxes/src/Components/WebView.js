@@ -98,7 +98,12 @@ module.exports = React.createClass({
   // Webview calls
   /* **************************************************************************/
 
-  focus () { this.getWebviewNode().focus() },
+  focus () {
+    const node = this.getWebviewNode()
+    if (document.activeElement !== node) {
+      this.getWebviewNode().focus()
+    }
+  },
 
   blur () { this.getWebviewNode().blur() },
 
