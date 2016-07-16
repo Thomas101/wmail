@@ -1,10 +1,8 @@
 ;(function () {
   'use strict'
 
-  const electron = require('electron')
-  const remote = electron.remote
+  const { shell, clipboard } = require('electron').remote
   const ContextMenuView = require('./ContextMenuView')
-  const shell = remote.shell
   const request = require('../../../app/node_modules/request')
   const { SPELLCHECK_HTTP_PORT } = require('../../../app/shared/constants')
 
@@ -88,6 +86,9 @@
       }})
       menuTemplate.push({ label: 'Open Link in Background', click: () => {
         shell.openExternal(linkTarget, { activate: false })
+      }})
+      menuTemplate.push({ label: 'Copy link Address', click: () => {
+        clipboard.writeText(linkTarget)
       }})
       menuTemplate.push({ type: 'separator' })
     }
