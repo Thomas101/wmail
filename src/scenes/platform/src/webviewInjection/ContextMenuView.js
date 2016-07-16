@@ -79,11 +79,11 @@
     */
     const renderBackdrop = function () {
       const elem = document.createElement('div')
-      elem.style.position = 'absolute'
-      elem.style.top = '-1000px'
-      elem.style.right = '-1000px'
-      elem.style.bottom = '-1000px'
-      elem.style.left = '-1000px'
+      elem.style.position = 'fixed'
+      elem.style.top = '0px'
+      elem.style.right = '0px'
+      elem.style.bottom = '0px'
+      elem.style.left = '0px'
       elem.style.zIndex = 10000
       elem.style.backgroundColor = 'transparent'
 
@@ -101,13 +101,15 @@
     */
     const renderTap = function (x, y) {
       const elem = document.createElement('div')
-      elem.style.position = 'absolute'
+      elem.style.position = 'fixed'
       elem.style.width = '1px'
       elem.style.height = '1px'
+      elem.style.backgroundColor = 'transparent'
       elem.style.overflow = 'visible'
       elem.style.top = y + 'px'
       elem.style.left = x + 'px'
-      elem.style.backgroundColor = 'transparent'
+      elem.style.zIndex = 10001
+
       return elem
     }
 
@@ -207,8 +209,8 @@
       elem.style.paddingLeft = '16px'
       elem.style.paddingRight = '16px'
       elem.style.cursor = 'pointer'
-      elem.style.fontSize = '16px'
-      elem.style.lineHeight = '32px'
+      elem.style.fontSize = '14px'
+      elem.style.lineHeight = '22px'
       elem.style.whiteSpace = 'nowrap'
       elem.style.color = 'rgba(0, 0, 0, 0.870588)'
       elem.style.webkitTapHighlightColor = 'transparent'
