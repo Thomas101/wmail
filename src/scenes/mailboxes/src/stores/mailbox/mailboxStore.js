@@ -205,7 +205,7 @@ class MailboxStore {
     persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
     this.index.push(id)
-    persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
+    persistence.mailbox.setJSONItem(MAILBOX_INDEX_KEY, this.index)
     this.active = id
   }
 
@@ -495,7 +495,7 @@ class MailboxStore {
     const mailboxIndex = this.index.findIndex((i) => i === id)
     if (mailboxIndex !== -1 && mailboxIndex !== 0) {
       this.index.splice(mailboxIndex - 1, 0, this.index.splice(mailboxIndex, 1)[0])
-      persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
+      persistence.mailbox.setJSONItem(MAILBOX_INDEX_KEY, this.index)
     }
   }
 
