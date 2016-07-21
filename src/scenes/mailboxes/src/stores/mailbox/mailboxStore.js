@@ -3,8 +3,8 @@ const actions = require('./mailboxActions')
 const Mailbox = require('shared/Models/Mailbox/Mailbox')
 const uuid = require('uuid')
 const persistence = {
-  mailbox: window.remoteRequire('storage/mailboxStorage'),
-  avatar: window.remoteRequire('storage/avatarStorage')
+  mailbox: require('./mailboxPersistence'),
+  avatar: require('./avatarPersistence')
 }
 const {
   GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS,
@@ -172,8 +172,8 @@ class MailboxStore {
     migration.from_1_3_1()
 
     // Load
-    const allAvatars = persistence.avatar.allStrings()
-    const allMailboxes = persistence.mailbox.allItems()
+    const allAvatars = persistence.avatar.allItemsSync()
+    const allMailboxes = persistence.mailbox.allJSONItemsSync()
     this.index = []
 
     // Mailboxes
@@ -202,7 +202,7 @@ class MailboxStore {
   * @param data: the data to seed the mailbox with
   */
   handleCreate ({id, data}) {
-    persistence.mailbox.setItem(id, data)
+    persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
     this.index.push(id)
     persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
@@ -216,7 +216,7 @@ class MailboxStore {
   handleRemove ({id}) {
     const wasActive = this.active === id
     this.index = this.index.filter((i) => i !== id)
-    persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
+    persistence.mailbox.setJSONItem(MAILBOX_INDEX_KEY, this.index)
     this.mailboxes.delete(id)
     persistence.mailbox.removeItem(id)
 
@@ -236,7 +236,7 @@ class MailboxStore {
   */
   handleUpdate ({id, updates}) {
     const mailboxJS = this.mailboxes.get(id).changeData(updates)
-    persistence.mailbox.setItem(id, mailboxJS)
+    persistence.mailbox.setJSONItem(id, mailboxJS)
     this.mailboxes.set(id, new Mailbox(id, mailboxJS))
   }
 
@@ -251,7 +251,7 @@ class MailboxStore {
     if (b64Image) {
       const imageId = uuid.v4()
       data.customAvatar = imageId
-      persistence.avatar.setString(imageId, b64Image)
+      persistence.avatar.setItem(imageId, b64Image)
       this.avatars.set(imageId, b64Image)
     } else {
       if (data.customAvatar) {
@@ -260,7 +260,7 @@ class MailboxStore {
         delete data.customAvatar
       }
     }
-    persistence.mailbox.setItem(id, data)
+    persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }
 
@@ -274,7 +274,7 @@ class MailboxStore {
       const mailboxJS = mailbox.changeData({
         zoomFactor: Math.min(1.5, mailbox.zoomFactor + 0.1)
       })
-      persistence.mailbox.setItem(mailbox.id, mailboxJS)
+      persistence.mailbox.setJSONItem(mailbox.id, mailboxJS)
       this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
     }
   }
@@ -285,7 +285,7 @@ class MailboxStore {
       const mailboxJS = mailbox.changeData({
         zoomFactor: Math.min(1.5, mailbox.zoomFactor - 0.1)
       })
-      persistence.mailbox.setItem(mailbox.id, mailboxJS)
+      persistence.mailbox.setJSONItem(mailbox.id, mailboxJS)
       this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
     }
   }
@@ -294,7 +294,7 @@ class MailboxStore {
     const mailbox = this.activeMailbox()
     if (mailbox) {
       const mailboxJS = mailbox.changeData({ zoomFactor: 1.0 })
-      persistence.mailbox.setItem(mailbox.id, mailboxJS)
+      persistence.mailbox.setJSONItem(mailbox.id, mailboxJS)
       this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
     }
   }
@@ -311,7 +311,7 @@ class MailboxStore {
   handleUpdateGoogleConfig ({id, updates}) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleConf = Object.assign(data.googleConf || {}, updates)
-    persistence.mailbox.setItem(id, data)
+    persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }
 
@@ -351,7 +351,7 @@ class MailboxStore {
       }
     })
 
-    persistence.mailbox.setItem(id, data)
+    persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }
 
@@ -389,7 +389,7 @@ class MailboxStore {
       return acc
     }, {})
 
-    persistence.mailbox.setItem(id, data)
+    persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }
 
@@ -414,7 +414,7 @@ class MailboxStore {
     })
 
     if (didUpdate) {
-      persistence.mailbox.setItem(id, data)
+      persistence.mailbox.setJSONItem(id, data)
       this.mailboxes.set(id, new Mailbox(id, data))
     }
   }
@@ -445,7 +445,7 @@ class MailboxStore {
       return acc
     }, {})
 
-    persistence.mailbox.setItem(id, data)
+    persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }
 
@@ -456,7 +456,7 @@ class MailboxStore {
     const data = this.mailboxes.get(id).cloneData()
     data.googleLabelUnread = data.googleLabelUnread || {}
     data.googleLabelUnread.count = count
-    persistence.mailbox.setItem(id, data)
+    persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }
 
@@ -506,7 +506,7 @@ class MailboxStore {
     const mailboxIndex = this.index.findIndex((i) => i === id)
     if (mailboxIndex !== -1 && mailboxIndex < this.index.length) {
       this.index.splice(mailboxIndex + 1, 0, this.index.splice(mailboxIndex, 1)[0])
-      persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
+      persistence.mailbox.setJSONItem(MAILBOX_INDEX_KEY, this.index)
     }
   }
 

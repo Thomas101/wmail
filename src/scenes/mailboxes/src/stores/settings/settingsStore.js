@@ -1,6 +1,6 @@
 const alt = require('../alt')
 const actions = require('./settingsActions')
-const persistence = window.remoteRequire('storage/settingStorage')
+const persistence = require('./settingsPersistence')
 const {
   Settings: {LanguageSettings, OSSettings, ProxySettings, TraySettings, UISettings, SettingsIdent}
 } = require('shared/Models')
@@ -34,11 +34,11 @@ class SettingsStore {
     migration.from_1_3_1()
 
     // Load everything
-    this.language = new LanguageSettings(persistence.getItem('language', {}))
-    this.os = new OSSettings(persistence.getItem('os', {}))
-    this.proxy = new ProxySettings(persistence.getItem('proxy', {}))
-    this.tray = new TraySettings(persistence.getItem('tray', {}))
-    this.ui = new UISettings(persistence.getItem('ui', {}))
+    this.language = new LanguageSettings(persistence.getJSONItemSync('language', {}))
+    this.os = new OSSettings(persistence.getJSONItemSync('os', {}))
+    this.proxy = new ProxySettings(persistence.getJSONItemSync('proxy', {}))
+    this.tray = new TraySettings(persistence.getJSONItemSync('tray', {}))
+    this.ui = new UISettings(persistence.getJSONItemSync('ui', {}))
   }
 
   /* **************************************************************************/
@@ -98,7 +98,7 @@ class SettingsStore {
     const persistenceKey = this.persistenceKeyFromSegment(segment)
 
     const js = this[storeKey].changeData(updates)
-    persistence.setItem(persistenceKey, js)
+    persistence.setJSONItem(persistenceKey, js)
     this[storeKey] = new StoreClass(js)
   }
 
@@ -114,7 +114,7 @@ class SettingsStore {
 
     const js = this[storeKey].cloneData()
     js[key] = !js[key]
-    persistence.setItem(persistenceKey, js)
+    persistence.setJSONItem(persistenceKey, js)
     this[storeKey] = new StoreClass(js)
   }
 }

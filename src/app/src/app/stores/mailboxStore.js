@@ -11,7 +11,7 @@ class MailboxStore {
     this.index = []
     this.mailboxes = new Map()
 
-    const allRawItems = persistence.allItems()
+    const allRawItems = persistence.allJSONItems()
     Object.keys(allRawItems).forEach((id) => {
       if (id === MAILBOX_INDEX_KEY) {
         this.index = allRawItems[id]
@@ -23,10 +23,10 @@ class MailboxStore {
     // Listen for changes
     persistence.on('changed', (evt) => {
       if (evt.key === MAILBOX_INDEX_KEY) {
-        this.index = persistence.getItem(MAILBOX_INDEX_KEY)
+        this.index = persistence.getJSONItem(MAILBOX_INDEX_KEY)
       } else {
         if (evt.type === 'setItem') {
-          this.mailboxes.set(evt.key, new Mailbox(evt.key, persistence.getItem(evt.key)))
+          this.mailboxes.set(evt.key, new Mailbox(evt.key, persistence.getJSONItem(evt.key)))
         }
         if (evt.type === 'removeItem') {
           this.mailboxes.delete(evt.key)

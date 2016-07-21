@@ -22,6 +22,9 @@
   const WindowManager = require('./windows/WindowManager')
   const constants = require('../shared/constants')
   const spellcheck = require('./spellcheck')
+  const storage = require('./storage')
+
+  Object.keys(storage).forEach((k) => storage[k].checkAwake())
 
   /* ****************************************************************************/
   // Global objects

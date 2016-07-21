@@ -1,10 +1,11 @@
+const {ipcMain} = require('electron')
 const AppDirectory = require('appdirectory')
 const pkg = require('../../package.json')
 const mkdirp = require('mkdirp')
 const path = require('path')
 const Minivents = require('minivents')
 const fs = require('fs-extra')
-const { DB_BACKUP_INTERVAL_MS, DB_WRITE_DELAY_MS } = require('../../shared/constants')
+const { DB_WRITE_DELAY_MS } = require('../../shared/constants')
 
 // Setup
 const appDirectory = new AppDirectory(pkg.name)
@@ -19,64 +20,23 @@ class StorageBucket {
 
   constructor (bucketName) {
     this.__path__ = path.join(dbPath, bucketName + '_db.json')
-    this.__backupPath__ = this.__path__ + 'b'
-    this.__writer__ = null
+    this.__writeHold__ = null
+    this.__writeLock__ = false
     this.__data__ = undefined
+    this.__ipcReplyChannel__ = `storageBucket:${bucketName}:reply`
 
-    // Setup backup infrastructure
-    this._restoreBackup()
-    this.autoBackup = setInterval(() => {
-      this._performBackup()
-    }, DB_BACKUP_INTERVAL_MS + (Math.floor(Math.random() * 10000)))
+    this._loadFromDiskSync()
 
-    this._loadFromDisk()
+    ipcMain.on(`storageBucket:${bucketName}:setItem`, this._handleIPCSetItem.bind(this))
+    ipcMain.on(`storageBucket:${bucketName}:removeItem`, this._handleIPCRemoveItem.bind(this))
+    ipcMain.on(`storageBucket:${bucketName}:getItem`, this._handleIPCGetItem.bind(this))
+    ipcMain.on(`storageBucket:${bucketName}:allKeys`, this._handleIPCAllKeys.bind(this))
+    ipcMain.on(`storageBucket:${bucketName}:allItems`, this._handleIPCAllItems.bind(this))
 
     Minivents(this)
   }
 
-  /* ****************************************************************************/
-  // Backup
-  /* ****************************************************************************/
-
-  /**
-  * Attempts to restore the backup if required
-  * @return true if a backup was performed successfully
-  */
-  _restoreBackup () {
-    let restoreBackup = false
-    let didPerform = false
-    try {
-      const data = fs.readFileSync(this.__path__, 'utf-8')
-      if (!data.length) {
-        restoreBackup = true
-      }
-    } catch (ex) {
-      restoreBackup = true
-    }
-
-    if (restoreBackup) {
-      try {
-        fs.copySync(this.__backupPath__, this.__path__)
-        didPerform = true
-      } catch (ex) { }
-    }
-
-    return didPerform
-  }
-
-  /**
-  * Backs up the data
-  */
-  _performBackup () {
-    let data = ''
-    try {
-      data = fs.readFileSync(this.__path__, 'utf8')
-    } catch (ex) { }
-
-    if (data.length) {
-      fs.outputFileSync(this.__backupPath__, data)
-    }
-  }
+  checkAwake () { return true }
 
   /* ****************************************************************************/
   // Persistence
@@ -85,7 +45,7 @@ class StorageBucket {
   /**
   * Loads the database from disk
   */
-  _loadFromDisk () {
+  _loadFromDiskSync () {
     let data = '{}'
     try {
       data = fs.readFileSync(this.__path__, 'utf8')
@@ -102,9 +62,18 @@ class StorageBucket {
   * Writes the current data to disk
   */
   _writeToDisk () {
-    clearTimeout(this.__writer__)
-    this.__writer__ = setTimeout(() => {
-      fs.writeFileSync(this.__path__, JSON.stringify(this.__data__), 'utf8')
+    clearTimeout(this.__writeHold__)
+    this.__writeHold__ = setTimeout(() => {
+      if (this.__writeLock__) {
+        // Requeue in DB_WRITE_DELAY_MS
+        this._writeToDisk()
+        return
+      } else {
+        this.__writeLock__ = true
+        fs.writeFile(this.__path__, JSON.stringify(this.__data__), 'utf8', () => {
+          this.__writeLock__ = false
+        })
+      }
     }, DB_WRITE_DELAY_MS)
   }
 
@@ -115,11 +84,11 @@ class StorageBucket {
   /**
   * @param k: the key of the item
   * @param d=undefined: the default value if not exists
-  * @return the json item or d
+  * @return the string item or d
   */
   getItem (k, d) {
     const json = this.__data__[k]
-    return json ? JSON.parse(json) : d
+    return json || d
   }
 
   /**
@@ -127,9 +96,9 @@ class StorageBucket {
   * @param d=undefined: the default value if not exists
   * @return the string item or d
   */
-  getString (k, d) {
-    const json = this.__data__[k]
-    return json || d
+  getJSONItem (k, d) {
+    const item = this.getItem(k)
+    return item ? JSON.parse(item) : d
   }
 
   /**
@@ -150,17 +119,17 @@ class StorageBucket {
   }
 
   /**
-  * @return all the items in an obj
+  * @return all the items in an obj json parsed
   */
-  allStrings () {
+  allJSONItems () {
     return this.allKeys().reduce((acc, key) => {
-      acc[key] = this.getString(key)
+      acc[key] = this.getJSONItem(key)
       return acc
     }, {})
   }
 
   /* ****************************************************************************/
-  // Setters
+  // Modifiers
   /* ****************************************************************************/
 
   /**
@@ -168,8 +137,8 @@ class StorageBucket {
   * @param v: the value to set
   * @return v
   */
-  setItem (k, v) {
-    this.__data__[k] = JSON.stringify(v)
+  _setItem (k, v) {
+    this.__data__[k] = '' + v
     this._writeToDisk()
     this.emit('changed', { type: 'setItem', key: k })
     this.emit('changed:' + k, { })
@@ -177,30 +146,85 @@ class StorageBucket {
   }
 
   /**
-  * @param k: the key to set
-  * @param s: the value to set
-  * @return s
-  */
-  setString (k, s) {
-    this.__data__[k] = s
-    this._writeToDisk()
-    this.emit('changed', { type: 'setString', key: k })
-    this.emit('changed:' + k, { })
-    return s
-  }
-
-  /* ****************************************************************************/
-  // Removers
-  /* ****************************************************************************/
-
-  /**
   * @param k: the key to remove
   */
-  removeItem (k) {
+  _removeItem (k) {
     delete this.__data__[k]
     this._writeToDisk()
     this.emit('changed', { type: 'removeItem', key: k })
     this.emit('changed:' + k, { })
+  }
+
+  /* ****************************************************************************/
+  // IPC Access
+  /* ****************************************************************************/
+
+  /**
+  * Responds to an ipc message
+  * @param evt: the original event that fired
+  * @param response: teh response to send
+  * @param sendSync: set to true to respond synchronously
+  */
+  _sendIPCResponse (evt, response, sendSync = false) {
+    if (sendSync) {
+      evt.returnValue = response
+    } else {
+      evt.sender.send(this.__ipcReplyChannel__, response)
+    }
+  }
+
+  /**
+  * Sets an item over IPC
+  * @param evt: the fired event
+  * @param body: request body
+  */
+  _handleIPCSetItem (evt, body) {
+    this._setItem(body.key, body.value)
+    this._sendIPCResponse(evt, { id: body.id, response: null }, body.sync)
+  }
+
+  /**
+  * Removes an item over IPC
+  * @param evt: the fired event
+  * @param body: request body
+  */
+  _handleIPCRemoveItem (evt, body) {
+    this._removeItem(body.key)
+    this._sendIPCResponse(evt, { id: body.id, response: null }, body.sync)
+  }
+
+  /**
+  * Gets an item over IPC
+  * @param evt: the fired event
+  * @param body: request body
+  */
+  _handleIPCGetItem (evt, body) {
+    this._sendIPCResponse(evt, {
+      id: body.id,
+      response: this.getItem(body.key)
+    }, body.sync)
+  }
+
+  /**
+  * Gets the keys over IPC
+  * @param body: request body
+  */
+  _handleIPCAllKeys (evt, body) {
+    this._sendIPCResponse(evt, {
+      id: body.id,
+      response: this.allKeys()
+    }, body.sync)
+  }
+
+  /**
+  * Gets all the items over IPC
+  * @param body: request body
+  */
+  _handleIPCAllItems (evt, body) {
+    this._sendIPCResponse(evt, {
+      id: body.id,
+      response: this.allItems()
+    }, body.sync)
   }
 }
 

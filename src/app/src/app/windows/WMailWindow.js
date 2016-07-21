@@ -110,7 +110,7 @@ class WMailWindow extends EventEmitter {
         state.height = size[1]
       }
 
-      appStorage.setItem(this.options.screenLocationNS, state)
+      appStorage.setJSONItem(this.options.screenLocationNS, state)
     }, 2000)
   }
 
@@ -120,7 +120,7 @@ class WMailWindow extends EventEmitter {
   */
   loadWindowScreenLocation () {
     if (this.options.screenLocationNS) {
-      return appStorage.getItem(this.options.screenLocationNS, {})
+      return appStorage.getJSONItem(this.options.screenLocationNS, {})
     }
 
     return {}

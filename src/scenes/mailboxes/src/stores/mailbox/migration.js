@@ -1,4 +1,4 @@
-const persistence = window.remoteRequire('storage/mailboxStorage')
+const persistence = require('./mailboxPersistence')
 const {MAILBOX_INDEX_KEY} = require('shared/constants')
 
 module.exports = {
@@ -17,9 +17,9 @@ module.exports = {
 
         // Write the new values
         Object.keys(mailboxes).forEach((mailboxId) => {
-          persistence.setItem(mailboxId, mailboxes[mailboxId])
+          persistence.setJSONItemSync(mailboxId, mailboxes[mailboxId])
         })
-        persistence.setItem(MAILBOX_INDEX_KEY, index)
+        persistence.setJSONItemSync(MAILBOX_INDEX_KEY, index)
 
         // Write the completion
         window.localStorage.setItem('pre_1_3_1:Mailbox_index', JSON.stringify(index))

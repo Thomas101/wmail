@@ -5,7 +5,7 @@
   "repository": "https://github.com/Thomas101/wmail",
   "description": "The mailboxes window for the WMail app",
   "dependencies": {
-    "alt": "0.18.4",
+    "alt": "0.18.5",
     "camelcase": "^3.0.0",
     "fbjs": "0.8.3",
     "flexboxgrid": "6.3.0",

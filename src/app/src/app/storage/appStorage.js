@@ -1,2 +1,2 @@
-const StorageBucket = require('./StorageBucket')
+const StorageBucket = require('./StorageBucketAppMutable')
 module.exports = new StorageBucket('app')
