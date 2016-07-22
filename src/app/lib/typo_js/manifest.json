@@ -1,0 +1,9 @@
+{
+	"manifest_version": 2,
+	"name": "Typo.js Testing Harness",
+	"version": "1.1",
+	"description": "Run the test suite by clicking on the Typo toolbar button.",
+	"browser_action": {
+		"default_popup": "tests/index.html"
+	}
+}
