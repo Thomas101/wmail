@@ -77,7 +77,14 @@ class StorageBucket {
   * @return promise with the value
   */
   getJSONItem (k, d) {
-    return this.getItem(k).then((v) => Promise.resolve(v ? JSON.parse(v) : d))
+    return this.getItem(k)
+      .then((v) => {
+        try {
+          return Promise.resolve(v ? JSON.parse(v) : d)
+        } catch (ex) {
+          return Promise.resolve({})
+        }
+      })
   }
 
   /**
@@ -86,7 +93,7 @@ class StorageBucket {
   * @return the value
   */
   getJSONItemSync (k, d) {
-    const str = this.getItemSync(k, d)
+    const str = this.getItemSync(k)
     return str ? JSON.parse(str) : d
   }
 

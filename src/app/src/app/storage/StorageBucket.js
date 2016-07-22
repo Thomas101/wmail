@@ -98,7 +98,11 @@ class StorageBucket {
   */
   getJSONItem (k, d) {
     const item = this.getItem(k)
-    return item ? JSON.parse(item) : d
+    try {
+      return item ? JSON.parse(item) : d
+    } catch (ex) {
+      return {}
+    }
   }
 
   /**

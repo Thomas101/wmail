@@ -43,11 +43,11 @@ module.exports = {
       transfer('sidebarEnabled', 'ui', 'sidebarEnabled')
 
       // Save
-      persistence.setItemSync('language', next.language)
-      persistence.setItemSync('os', next.os)
-      persistence.setItemSync('proxy', next.proxy)
-      persistence.setItemSync('tray', next.tray)
-      persistence.setItemSync('ui', next.ui)
+      persistence.setJSONItemSync('language', next.language)
+      persistence.setJSONItemSync('os', next.os)
+      persistence.setJSONItemSync('proxy', next.proxy)
+      persistence.setJSONItemSync('tray', next.tray)
+      persistence.setJSONItemSync('ui', next.ui)
 
       // Save
       window.localStorage.setItem('pre_1_3_1:App_settings', JSON.stringify(prev))

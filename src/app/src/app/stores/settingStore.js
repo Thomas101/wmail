@@ -21,19 +21,19 @@ class SettingStore {
       this.emit('changed', {})
     })
     persistence.on('changed:os', () => {
-      this.language = new OSSettings(persistence.getJSONItem('os', {}))
+      this.os = new OSSettings(persistence.getJSONItem('os', {}))
       this.emit('changed', {})
     })
     persistence.on('changed:proxy', () => {
-      this.language = new ProxySettings(persistence.getJSONItem('proxy', {}))
+      this.proxy = new ProxySettings(persistence.getJSONItem('proxy', {}))
       this.emit('changed', {})
     })
     persistence.on('changed:tray', () => {
-      this.language = new TraySettings(persistence.getJSONItem('tray', {}))
+      this.tray = new TraySettings(persistence.getJSONItem('tray', {}))
       this.emit('changed', {})
     })
     persistence.on('changed:ui', () => {
-      this.language = new UISettings(persistence.getJSONItem('ui', {}))
+      this.ui = new UISettings(persistence.getJSONItem('ui', {}))
       this.emit('changed', {})
     })
   }
