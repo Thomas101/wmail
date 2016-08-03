@@ -422,7 +422,21 @@ class GoogleActions {
         if (items.length === 0) { return Promise.resolve() }
 
         items.forEach((item) => {
-          mailboxActions.updateGoogleUnread(mailboxId, item.messageId, { message: item.response.response })
+          const origMessage = item.response.response
+          const shortMessage = {
+            id: origMessage.id,
+            threadId: origMessage.threadId,
+            historyId: origMessage.historyId,
+            internalDate: origMessage.internalDate,
+            snippet: origMessage.snippet,
+            payload: {
+              headers: origMessage.payload.headers.filter((header) => {
+                return header.name === 'Subject' || header.name === 'From' || header.name === 'To'
+              })
+            }
+          }
+
+          mailboxActions.updateGoogleUnread(mailboxId, item.messageId, { message: shortMessage })
         })
 
         return Promise.resolve()
