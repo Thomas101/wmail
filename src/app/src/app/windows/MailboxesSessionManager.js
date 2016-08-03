@@ -63,7 +63,6 @@ class MailboxesSessionManager {
 
   handleDownload (evt, item) {
     // If the user has chosen - auto save the item
-    let savedLocation = null
     if (!settingStore.os.alwaysAskDownloadLocation && settingStore.os.defaultDownloadLocation) {
       const folderLocation = settingStore.os.defaultDownloadLocation
       const fpath = path.parse(item.getFilename() || 'untitled')
@@ -89,12 +88,9 @@ class MailboxesSessionManager {
           iter++
         } else {
           item.setSavePath(testPath)
-          savedLocation = { path: folderLocation, name: testName }
           break
         }
       }
-    } else {
-      savedLocation = { path: electron.app.getPath('downloads'), name: item.getFilename() }
     }
 
     // Report the progress to the window to display it
@@ -106,7 +102,9 @@ class MailboxesSessionManager {
     item.on('done', (e, state) => {
       this.downloadFinished(id)
       if (state === 'completed') {
-        this.mailboxWindow.downloadCompleted(savedLocation.path, savedLocation.name)
+        const savePath = item.getSavePath()
+        const saveName = path.basename(savePath)
+        this.mailboxWindow.downloadCompleted(savePath, saveName)
       }
     })
   }

@@ -30,22 +30,15 @@ class SettingsStore {
   /* **************************************************************************/
 
   handleLoad () {
-    console.log('loada')
     // Migrate
     migration.from_1_3_1()
-    console.log(1)
 
     // Load everything
     this.language = new LanguageSettings(persistence.getJSONItemSync('language', {}))
-    console.log(2)
     this.os = new OSSettings(persistence.getJSONItemSync('os', {}))
-    console.log(3)
     this.proxy = new ProxySettings(persistence.getJSONItemSync('proxy', {}))
-    console.log(4)
     this.tray = new TraySettings(persistence.getJSONItemSync('tray', {}))
-    console.log(5)
     this.ui = new UISettings(persistence.getJSONItemSync('ui', {}))
-    console.log('loadb')
   }
 
   /* **************************************************************************/
