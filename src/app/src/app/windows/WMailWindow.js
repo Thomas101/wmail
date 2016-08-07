@@ -130,7 +130,7 @@ class WMailWindow extends EventEmitter {
   * Updates the menubar
   */
   updateWindowMenubar (prev, next) {
-    this[settingStore.ui.hasAppMenu ? 'showAppMenu' : 'hideAppMenu']()
+    this[settingStore.ui.showAppMenu ? 'showAppMenu' : 'hideAppMenu']()
   }
 
   /* ****************************************************************************/
