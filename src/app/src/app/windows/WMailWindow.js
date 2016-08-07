@@ -65,7 +65,7 @@ class WMailWindow extends EventEmitter {
       this.window.on('maximize', (evt) => { this.saveWindowScreenLocation() })
       this.window.on('unmaximize', (evt) => { this.saveWindowScreenLocation() })
     }
-    this[settingStore.ui.hasAppMenu ? 'showAppMenu' : 'hideAppMenu']()
+    this[settingStore.ui.showAppMenu ? 'showAppMenu' : 'hideAppMenu']()
 
     // Bind to change events
     this.window.on('close', (evt) => { this.emit('close', evt) })
