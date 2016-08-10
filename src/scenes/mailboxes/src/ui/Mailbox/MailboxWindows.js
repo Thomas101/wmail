@@ -27,14 +27,42 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState () {
-    return { mailboxIds: flux.mailbox.S.getState().mailboxIds() }
+    const mailboxStore = flux.mailbox.S.getState()
+    return {
+      mailboxIds: mailboxStore.mailboxIds(),
+      activeMailboxId: mailboxStore.activeMailboxId() // doesn't cause re-render
+    }
   },
 
   mailboxesChanged (store) {
-    this.setState({ mailboxIds: store.mailboxIds() })
+    this.setState({
+      mailboxIds: store.mailboxIds(),
+      activeMailboxId: store.activeMailboxId()
+    })
+  },
+
+  /* **************************************************************************/
+  // Rendering
+  /* **************************************************************************/
+
+  /**
+  * This deals with an electron bug by badly updating the body style
+  * https://github.com/Thomas101/wmail/issues/211
+  */
+  preventWindowMovementBug (nextState) {
+    if (this.state.activeMailboxId !== nextState.activeMailboxId) {
+      setTimeout(() => {
+        document.body.style.position = 'absolute'
+        setTimeout(() => {
+          document.body.style.position = 'fixed'
+        }, 50)
+      }, 50)
+    }
   },
 
   shouldComponentUpdate (nextProps, nextState) {
+    this.preventWindowMovementBug(nextState)
+
     if (!this.state || !nextState) { return true }
     if (this.state.mailboxIds.length !== nextState.mailboxIds.length) { return true }
 
@@ -46,13 +74,6 @@ module.exports = React.createClass({
     return false
   },
 
-  /* **************************************************************************/
-  // Rendering
-  /* **************************************************************************/
-
-  /**
-  * Renders the app
-  */
   render () {
     if (this.state.mailboxIds.length) {
       return (
