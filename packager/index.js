@@ -8,14 +8,14 @@ const argv = require('yargs').argv
 
 const argvPlatform = (Array.isArray(argv.platform) ? new Set(argv.platform) : new Set([argv.platform || 'all']))
 const platforms = argvPlatform.has('all') ? ['darwin', 'linux', 'win32'] : Array.from(argvPlatform)
-const noLicense = argv.noLicense
+const distribution = argv.distribution
 
 Promise.resolve()
-  .then(JSBuilder.pruneNPM)
+  .then(() => distribution ? JSBuilder.pruneNPM() : Promise.resolve())
   .then(JSBuilder.runWebpack)
   .then(() => ElectronBuilder.packageApp(platforms, pkg))
-  .then(() => noLicense ? Promise.resolve() : Licenses.buildLicensesIntoReleases(platforms))
-  .then(() => ReleaseAssets.copyAssetsIntoReleases(platforms))
+  .then(() => distribution ? Licenses.buildLicensesIntoReleases(platforms) : Promise.resolve())
+  .then(() => distribution ? ReleaseAssets.copyAssetsIntoReleases(platforms) : Promise.resolve())
   .then(
     () => { },
     (err) => {

@@ -60,6 +60,8 @@ class Licenses {
         ].join('\n') + '\n\n\n\n'
         const licenses = electronLicense + npmLicenseString
         fs.writeFile(J('vendor-licenses/LICENSES'), licenses)
+        fs.unlinkSync(J('LICENSE'))
+        fs.copySync(path.join(ROOT_PATH, 'LICENSE'), J('LICENSE'))
 
         resolve()
       })

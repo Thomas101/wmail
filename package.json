@@ -10,7 +10,7 @@
     "package:darwin": "node packager --platform=darwin",
     "package:linux": "node packager --platform=linux",
     "package:win32": "node packager --platform=win32",
-    "package": "node packager",
+    "package": "node packager --distribution",
     "postinstall": "electron-rebuild",
     "install-all": "echo ':>wmail'; npm install; cd src/app; echo ':>wmail-app'; npm install; cd ../../src/scenes/mailboxes; echo ':>wmail-scenes-mailboxes'; npm install",
     "outdated-all": "echo ':>wmail'; npm outdated; cd src/app; echo ':>wmail-app'; npm outdated; cd ../../src/scenes/mailboxes; echo ':>wmail-scenes-mailboxes'; npm outdated"
