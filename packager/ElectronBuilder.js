@@ -17,6 +17,7 @@ class ElectronBuilder {
       '/release',
       '/src',
       '/packager',
+      '/dist',
 
       // Files
       '/.editorconfig',

@@ -1,6 +1,7 @@
 credentials.js
 node_modules
 bin
+dist
 WMail-darwin-x64
 WMail-linux-ia32/
 WMail-linux-x64/

@@ -21,6 +21,7 @@
   "repository": "https://github.com/Thomas101/wmail",
   "main": "bin/app/index.js",
   "dependencies": {
+    "appdmg": "^0.4.5",
     "babel": "6.5.2",
     "babel-core": "6.13.2",
     "babel-loader": "6.2.4",
