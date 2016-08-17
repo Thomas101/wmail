@@ -21,7 +21,7 @@
   "repository": "https://github.com/Thomas101/wmail",
   "main": "bin/app/index.js",
   "dependencies": {
-    "appdmg": "^0.4.5",
+    "appdmg": "0.4.5",
     "babel": "6.5.2",
     "babel-core": "6.13.2",
     "babel-loader": "6.2.4",
@@ -40,16 +40,17 @@
     "jsx-loader": "0.13.2",
     "less": "2.7.1",
     "less-loader": "2.2.3",
-    "msi-packager": "^1.3.0",
+    "makedeb": "0.0.4",
+    "msi-packager": "1.3.0",
     "nlf": "1.4.2",
     "style-loader": "0.13.1",
     "url-loader": "0.5.7",
     "webpack": "1.13.1",
     "webpack-target-electron-renderer": "0.4.0",
-    "yargs": "^4.8.1"
+    "yargs": "4.8.1"
   },
   "devDependencies": {
-    "standard": "^7.1.2"
+    "standard": "7.1.2"
   },
   "standard": {
     "ignore": [
