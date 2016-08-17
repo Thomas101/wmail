@@ -1,8 +1,12 @@
 const appdmg = require('appdmg')
+const msiPackager = require('msi-packager')
 const path = require('path')
-const { ROOT_PATH } = require('./constants')
 const fs = require('fs-extra')
+const childProcess = require('child_process')
 const TaskLogger = require('./TaskLogger')
+
+const { ROOT_PATH } = require('./constants')
+const { WINDOWS_UPGRADE_CODE } = require('../src/shared/credentials')
 
 class Distribution {
 
@@ -32,7 +36,7 @@ class Distribution {
         specification: {
           title: `WMail ${pkg.version} ${pkg.prerelease ? 'Prerelease' : ''}`,
           format: 'UDBZ',
-          icon: 'assets/icons/app.ico',
+          icon: 'assets/icons/app.icns',
           'background-color': '#CCCCCC',
           background: path.join(__dirname, 'dmg/background.png'),
           'icon-size': 100,
@@ -60,19 +64,86 @@ class Distribution {
   }
 
   /**
+  * Distributes the windows version of the app
+  * @param pkg: the package info
+  * @param arch: one of 'x86' or 'x64'
+  * @return promise
+  */
+  static distributeWindows (pkg, arch) {
+    return new Promise((resolve, reject) => {
+      const task = TaskLogger.start(`Windows MSI (${arch})`)
+
+      // Pre-calc all the needed paths
+      const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_${arch}`
+      const distPath = path.join(ROOT_PATH, 'dist')
+      const builtPath = path.join(ROOT_PATH, arch === 'x64' ? 'WMail-win32-x64' : 'WMail-win32-ia32')
+      const msiTargetPath = path.join(distPath, filename + '.msi')
+      const zipTargetPath = path.join(distPath, filename + '.zip')
+      const zipExtraPaths = [
+        path.join(builtPath, 'LICENSE')
+      ].concat(
+        fs.readdirSync(path.join(builtPath, 'vendor-licenses')).map((f) => {
+          return path.join(builtPath, 'vendor-licenses', f)
+        })
+      )
+
+      // Clean-up old
+      try {
+        fs.unlinkSync(msiTargetPath)
+      } catch (ex) { /* no-op */ }
+      try {
+        fs.unlinkSync(zipTargetPath)
+      } catch (ex) { /* no-op */ }
+
+      // Package
+      msiPackager({
+        source: builtPath,
+        output: msiTargetPath,
+        name: `WMail ${pkg.version} ${pkg.prerelease ? 'Prerelease' : ''}`,
+        upgradeCode: WINDOWS_UPGRADE_CODE,
+        version: pkg.version,
+        manufacturer: 'http://thomas101.github.io/wmail',
+        iconPath: path.join(ROOT_PATH, 'assets/icons/app.ico'),
+        executable: 'WMail.exe',
+        arch: arch
+      }, (err) => {
+        if (err) { task.fail(); reject(err); return }
+
+        // Zip
+        const cmd = `zip -X -r -q -j "${zipTargetPath}" "${msiTargetPath}" ${zipExtraPaths.map((p) => '"' + p + '"').join(' ')}`
+        childProcess.exec(cmd, {}, (error, stdout, stderr) => {
+          if (error) { console.error(error) }
+          if (stdout) { console.log(`stdout: ${stdout}`) }
+          if (stderr) { console.log(`stderr: ${stderr}`) }
+
+          if (error) { task.fail(); reject(); return }
+
+          fs.unlinkSync(msiTargetPath)
+          task.finish()
+          resolve()
+        })
+      })
+    })
+  }
+
+  /**
   * Distributes the app for the given platforms
   * @param platforms: the platforms to distribute for
   * @param pkg: the package info
   * @return promise
   */
   static distribute (platforms, pkg) {
-    return Promise.all(platforms.map((platform) => {
+    return platforms.reduce((acc, platform) => {
       if (platform === 'darwin') {
-        return Distribution.distributeDarwin(pkg)
+        return acc.then(() => Distribution.distributeDarwin(pkg))
+      } else if (platform === 'win32') {
+        return acc
+          .then(() => Distribution.distributeWindows(pkg, 'x86'))
+          .then(() => Distribution.distributeWindows(pkg, 'x64'))
       } else {
-        return Promise.resolve()
+        return acc
       }
-    }))
+    }, Promise.resolve())
   }
 }
 

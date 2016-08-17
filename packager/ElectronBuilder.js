@@ -52,7 +52,7 @@ class ElectronBuilder {
         dir: ROOT_PATH,
         name: 'WMail',
         platform: platform,
-        arch: (platform === 'win32' ? 'ia32' : 'all'),
+        arch: 'all',
         version: pkg.dependencies['electron-prebuilt'],
         'app-bundle-id': 'tombeverley.wmail',
         'app-version': pkg.version,

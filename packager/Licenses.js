@@ -59,7 +59,7 @@ class Licenses {
           fs.readFileSync(J('LICENSE'))
         ].join('\n') + '\n\n\n\n'
         const licenses = electronLicense + npmLicenseString
-        fs.writeFile(J('vendor-licenses/LICENSES'), licenses)
+        fs.writeFile(J('vendor-licenses/LICENSES.vendor'), licenses)
         fs.unlinkSync(J('LICENSE'))
         fs.copySync(path.join(ROOT_PATH, 'LICENSE'), J('LICENSE'))
 
@@ -85,6 +85,7 @@ class Licenses {
             acc.push(Licenses.buildLicenses(path.join(ROOT_PATH, 'WMail-linux-x64/'), npmLicenseString))
           } else if (platform === 'win32') {
             acc.push(Licenses.buildLicenses(path.join(ROOT_PATH, 'WMail-win32-ia32/'), npmLicenseString))
+            acc.push(Licenses.buildLicenses(path.join(ROOT_PATH, 'WMail-win32-x64/'), npmLicenseString))
           }
           return acc
         }, []))

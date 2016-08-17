@@ -11,6 +11,7 @@ const argvPlatform = (Array.isArray(argv.platform) ? new Set(argv.platform) : ne
 const platforms = argvPlatform.has('all') ? ['darwin', 'linux', 'win32'] : Array.from(argvPlatform)
 const dist = argv.distribution
 
+//Distribution.distribute(['win32'], pkg).then(() => console.log('ok'), (e) => console.log(e))
 Promise.resolve()
   .then(() => dist ? JSBuilder.pruneNPM() : Promise.resolve())
   .then(JSBuilder.runWebpack)
