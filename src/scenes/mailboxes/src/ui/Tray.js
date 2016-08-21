@@ -233,6 +233,6 @@ module.exports = React.createClass({
     this.appTray.setToolTip(this.renderTooltip())
     this.appTray.setContextMenu(this.renderContextMenu())
 
-    return (<div></div>)
+    return (<div />)
   }
 })

@@ -190,9 +190,9 @@ class WMailWindow extends EventEmitter {
     this.window.webContents.openDevTools()
   }
 
-	/**
-	* Show the app menu
-	*/
+  /**
+  * Show the app menu
+  */
   showAppMenu () {
     this.window.setMenuBarVisibility(true)
   }

@@ -81,15 +81,24 @@
     // Link
     const linkTarget = isLinkTarget(evt)
     if (linkTarget && linkTarget.indexOf('://') !== -1) {
-      menuTemplate.push({ label: 'Open Link', click: () => {
-        shell.openExternal(linkTarget)
-      }})
-      menuTemplate.push({ label: 'Open Link in Background', click: () => {
-        shell.openExternal(linkTarget, { activate: false })
-      }})
-      menuTemplate.push({ label: 'Copy link Address', click: () => {
-        clipboard.writeText(linkTarget)
-      }})
+      menuTemplate.push({
+        label: 'Open Link',
+        click: () => {
+          shell.openExternal(linkTarget)
+        }
+      })
+      menuTemplate.push({
+        label: 'Open Link in Background',
+        click: () => {
+          shell.openExternal(linkTarget, { activate: false })
+        }
+      })
+      menuTemplate.push({
+        label: 'Copy link Address',
+        click: () => {
+          clipboard.writeText(linkTarget)
+        }
+      })
       menuTemplate.push({ type: 'separator' })
     }
 
