@@ -40,9 +40,16 @@ class WMailWindow extends EventEmitter {
   * @return the settings
   */
   defaultWindowPreferences () {
+    let icon
+    if (process.platform === 'win32') {
+      icon = path.join(__dirname, '/../../../icons/app.ico')
+    } else if (process.platform === 'linux') {
+      icon = path.join(__dirname, '/../../../icons/app.png')
+    }
+
     return {
       title: 'WMail',
-      icon: path.join(__dirname, '/../../../icons/app.png')
+      icon: icon
     }
   }
 
