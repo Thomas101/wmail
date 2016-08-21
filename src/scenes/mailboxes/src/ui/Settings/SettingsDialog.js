@@ -7,9 +7,18 @@ const GeneralSettings = require('./GeneralSettings')
 const AccountSettings = require('./AccountSettings')
 const AdvancedSettings = require('./AdvancedSettings')
 const Colors = require('material-ui/styles/colors')
+const styles = require('./settingStyles')
 
 module.exports = React.createClass({
+  /* **************************************************************************/
+  // Class
+  /* **************************************************************************/
+
   displayName: 'SettingsDialog',
+  propTypes: {
+    open: React.PropTypes.bool.isRequired,
+    onRequestClose: React.PropTypes.func.isRequired
+  },
 
   /* **************************************************************************/
   // Data lifecycle
@@ -19,13 +28,6 @@ module.exports = React.createClass({
     return {
       currentTab: 'general'
     }
-  },
-
-  shouldComponentUpdate (nextProps, nextState) {
-    if (this.state.currentTab !== nextState.currentTab) { return true }
-    if (nextProps.open !== this.props.open) { return true }
-
-    return false
   },
 
   /* **************************************************************************/
@@ -41,47 +43,39 @@ module.exports = React.createClass({
     }
   },
 
-  /**
-  * Closes the modal
-  */
-  handleClose () {
-    this.props.onRequestClose()
-  },
-
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
 
-  /**
-  * Renders the app
-  */
+  shouldComponentUpdate (nextProps, nextState) {
+    if (this.state.currentTab !== nextState.currentTab) { return true }
+    if (nextProps.open !== this.props.open) { return true }
+
+    return false
+  },
+
   render () {
     const buttons = (
       <div style={{ textAlign: 'right' }}>
-        <RaisedButton label='Close' primary onClick={this.handleClose} />
+        <RaisedButton label='Close' primary onClick={() => this.props.onRequestClose()} />
       </div>
     )
 
     const tabInfo = [
-      { label: 'General', value: 'general' },
-      { label: 'Accounts', value: 'accounts' },
-      { label: 'Advanced', value: 'advanced' }
+      { label: 'General', value: 'general', component: (<GeneralSettings />) },
+      { label: 'Accounts', value: 'accounts', component: (<AccountSettings />) },
+      { label: 'Advanced', value: 'advanced', component: (<AdvancedSettings />) }
     ]
     const heading = (
-      <div style={{ display: 'flex', flexDirection: 'row', alignContent: 'stretch' }}>
+      <div style={styles.tabToggles}>
         {tabInfo.map(({label, value}) => {
           return (
             <FlatButton
               key={value}
               label={label}
-              style={{
-                height: 50,
-                borderRadius: 0,
-                flex: 1,
-                borderBottomWidth: 2,
-                borderBottomStyle: 'solid',
+              style={Object.assign({}, styles.tabToggle, {
                 borderBottomColor: this.state.currentTab === value ? Colors.redA200 : 'transparent'
-              }}
+              })}
               labelStyle={{
                 color: this.state.currentTab === value ? Colors.white : Colors.lightBlue100
               }}
@@ -97,6 +91,7 @@ module.exports = React.createClass({
     return (
       <Dialog
         modal={false}
+        contentStyle={styles.dialog}
         title={heading}
         actions={buttons}
         open={this.props.open}
@@ -110,15 +105,13 @@ module.exports = React.createClass({
           value={this.state.currentTab}
           onChange={this.handleTabChange}
           contentContainerStyle={{ padding: 24 }}>
-          <Tab label='General' value='general'>
-            <GeneralSettings />
-          </Tab>
-          <Tab label='Accounts' value='accounts'>
-            <AccountSettings />
-          </Tab>
-          <Tab label='Advanced' value='advanced'>
-            <AdvancedSettings />
-          </Tab>
+          {tabInfo.map((tab) => {
+            return (
+              <Tab label={tab.label} value={tab.value} key={tab.value}>
+                {tab.component}
+              </Tab>
+            )
+          })}
         </Tabs>
       </Dialog>
     )

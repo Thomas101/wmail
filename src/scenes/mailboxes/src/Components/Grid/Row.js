@@ -1,9 +1,9 @@
-import 'flexboxgrid'
+import 'bootstrap-grid'
 
 const React = require('react')
 
 module.exports = React.createClass({
-  displayName: 'FlexboxRow',
+  displayName: 'GridRow',
 
   propTypes: {
     className: React.PropTypes.string,
@@ -14,7 +14,7 @@ module.exports = React.createClass({
     return (
       <div
         {...this.props}
-        className={'row' + (this.props.className ? ' ' + this.props.className : '')}>
+        className={['row', this.props.className].filter((c) => !!c).join(' ')}>
         {this.props.children}
       </div>
     )

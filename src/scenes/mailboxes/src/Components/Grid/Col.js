@@ -1,21 +1,22 @@
-import 'flexboxgrid'
+import 'bootstrap-grid'
 
 const React = require('react')
 
 module.exports = React.createClass({
-  displayName: 'FlexboxCol',
+  displayName: 'GridCol',
 
   propTypes: {
     xs: React.PropTypes.number,
     sm: React.PropTypes.number,
     md: React.PropTypes.number,
     lg: React.PropTypes.number,
+    offset: React.PropTypes.number,
     className: React.PropTypes.string,
     children: React.PropTypes.node
   },
 
   render () {
-    const {xs, sm, md, lg, className, children, ...passProps} = this.props
+    const {xs, sm, md, lg, offset, className, children, ...passProps} = this.props
 
     let mode = 'xs'
     let size = 12
@@ -33,10 +34,14 @@ module.exports = React.createClass({
       size = lg
     }
 
+    const classNames = [
+      ['col', mode, size].join('-'),
+      offset !== undefined ? ['col', mode, 'offset', size].join('-') : undefined,
+      className
+    ].filter((c) => !!c).join(' ')
+
     return (
-      <div
-        {...passProps}
-        className={['col', mode, size].join('-') + (className ? ' ' + className : '')}>
+      <div {...passProps} className={classNames}>
         {children}
       </div>
     )

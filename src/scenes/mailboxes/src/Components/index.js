@@ -1,5 +1,5 @@
 module.exports = {
   ColorPickerButton: require('./ColorPickerButton'),
-  Flexbox: require('./Flexbox'),
+  Grid: require('./Grid'),
   WebView: require('./WebView')
 }
