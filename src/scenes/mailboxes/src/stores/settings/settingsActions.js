@@ -193,10 +193,24 @@ class SettingsActions {
   }
 
   /**
+  * @param col: the hex colour to make the tray icon background
+  */
+  setTrayReadBackgroundColor (col) {
+    return this.update(SEGMENTS.TRAY, 'readBackgroundColor', col)
+  }
+
+  /**
   * @param col: the hex colour to make the tray icon
   */
   setTrayUnreadColor (col) {
     return this.update(SEGMENTS.TRAY, 'unreadColor', col)
+  }
+
+  /**
+  * @param col: the hex colour to make the tray icon background
+  */
+  setTrayUnreadBackgroundColor (col) {
+    return this.update(SEGMENTS.TRAY, 'unreadBackgroundColor', col)
   }
 }
 

@@ -1,13 +1,11 @@
 const electron = window.nativeRequire('electron')
-const {Tray, systemPreferences, Menu, nativeImage} = electron.remote
-const ipc = electron.ipcRenderer
+const { ipcRenderer, remote } = electron
+const {Tray, Menu, nativeImage} = remote
 const React = require('react')
 const {mailboxDispatch} = require('../Dispatch')
 const mailboxActions = require('../stores/mailbox/mailboxActions')
-const {
-  BLANK_PNG,
-  MAIL_SVG
-} = require('shared/b64Assets')
+const { BLANK_PNG } = require('shared/b64Assets')
+const { TrayRenderer } = require('../Components')
 
 module.exports = React.createClass({
   displayName: 'Tray',
@@ -27,14 +25,8 @@ module.exports = React.createClass({
     this.appTray = new Tray(nativeImage.createFromDataURL(BLANK_PNG))
     if (process.platform === 'win32') {
       this.appTray.on('double-click', () => {
-        ipc.send('focus-app')
+        ipcRenderer.send('focus-app')
       })
-    }
-
-    const loader = new window.Image()
-    loader.src = MAIL_SVG
-    loader.onload = (e) => {
-      this.setState({ icon: loader })
     }
   },
 
@@ -53,14 +45,8 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getDefaultReadColor () { return process.platform === 'darwin' && systemPreferences.isDarkMode() ? '#FFFFFF' : '#000000' },
-  getDefaultUnreadColor () { return '#C82018' },
-
   getInitialState () {
-    return Object.assign(
-      {
-        icon: null
-      },
+    return Object.assign({},
       this.generateCtxMenuUnreadMessages(this.props.unreadMessages)
     )
   },
@@ -123,68 +109,20 @@ module.exports = React.createClass({
   shouldComponentUpdate (nextProps, nextState) {
     if (this.props.unreadCount !== nextProps.unreadCount) { return true }
     if (this.state.ctxMenuUnreadMessagesSig !== nextState.ctxMenuUnreadMessagesSig) { return true }
-    if (!!this.state.icon !== !!nextState.icon) { return true }
 
-    const trayDiff = ['unreadColor', 'readColor', 'showUnreadCount', 'isReadColorDefault'].findIndex((k) => {
+    const trayDiff = [
+      'unreadColor',
+      'unreadBackgroundColor',
+      'readColor',
+      'readBackgroundColor',
+      'showUnreadCount',
+      'isReadColorDefault'
+    ].findIndex((k) => {
       return this.props.traySettings[k] !== nextProps.traySettings[k]
     }) !== -1
     if (trayDiff) { return true }
 
     return false
-  },
-
-  /**
-  * @return the nativeImage for the tray
-  */
-  renderImage () {
-    const { traySettings, unreadCount } = this.props
-    const { unreadColor, readColor, showUnreadCount, isReadColorDefault } = traySettings
-    const SIZE = 22 * window.devicePixelRatio
-    const PADDING = SIZE * 0.15
-    const CENTER = SIZE / 2
-    let color
-    if (unreadCount) {
-      color = unreadColor || this.getDefaultReadColor()
-    } else {
-      color = isReadColorDefault ? this.getDefaultReadColor() : readColor
-    }
-
-    const canvas = document.createElement('canvas')
-    canvas.width = SIZE
-    canvas.height = SIZE
-
-    const ctx = canvas.getContext('2d')
-
-    // Count
-    if (showUnreadCount && unreadCount && unreadCount < 99) {
-      ctx.fillStyle = color
-      ctx.textAlign = 'center'
-      if (unreadCount < 10) {
-        ctx.font = (SIZE * 0.5) + 'px Helvetica'
-        ctx.fillText(unreadCount, CENTER, CENTER + (SIZE * 0.20))
-      } else {
-        ctx.font = (SIZE * 0.4) + 'px Helvetica'
-        ctx.fillText(unreadCount, CENTER, CENTER + (SIZE * 0.15))
-      }
-    } else {
-      const ICON_SIZE = SIZE * 0.5
-      const POS = (SIZE - ICON_SIZE) / 2
-      ctx.fillStyle = color
-      ctx.fillRect(0, 0, SIZE, SIZE)
-      ctx.globalCompositeOperation = 'destination-atop'
-      ctx.drawImage(this.state.icon, POS, POS, ICON_SIZE, ICON_SIZE)
-    }
-
-    // Outer circle
-    ctx.globalCompositeOperation = 'source-over'
-    ctx.beginPath()
-    ctx.arc(CENTER, CENTER, (SIZE / 2) - PADDING, 0, 2 * Math.PI, false)
-    ctx.lineWidth = window.devicePixelRatio * 1.1
-    ctx.strokeStyle = color
-    ctx.stroke()
-
-    const pngData = nativeImage.createFromDataURL(canvas.toDataURL('image/png')).toPng()
-    return nativeImage.createFromBuffer(pngData, window.devicePixelRatio)
   },
 
   /**
@@ -202,7 +140,7 @@ module.exports = React.createClass({
       return {
         label: info.label,
         click: (e) => {
-          ipc.send('focus-app', { })
+          ipcRenderer.send('focus-app', { })
           mailboxActions.changeActive(info.mailboxId)
           mailboxDispatch.openMessage(info.mailboxId, info.threadId, info.messageId)
         }
@@ -219,19 +157,40 @@ module.exports = React.createClass({
       template.push({ type: 'separator' })
     }
     template = template.concat([
-      { label: 'Focus', click: (e) => ipc.send('focus-app') },
+      { label: 'Focus', click: (e) => ipcRenderer.send('focus-app') },
       { type: 'separator' },
-      { label: 'Quit', click: (e) => ipc.send('quit-app') }
+      { label: 'Quit', click: (e) => ipcRenderer.send('quit-app') }
     ])
 
     return Menu.buildFromTemplate(template)
   },
 
+  trayIconSize () {
+    switch (process.platform) {
+      case 'darwin': return 22
+      case 'win32': return 32
+      case 'linux': return 32
+      default: return 32
+    }
+  },
+
   render () {
-    if (!this.appTray || !this.state.icon) { return false }
-    this.appTray.setImage(this.renderImage())
-    this.appTray.setToolTip(this.renderTooltip())
-    this.appTray.setContextMenu(this.renderContextMenu())
+    const { unreadCount, traySettings } = this.props
+
+    // Not great that this happens in a promise, but it's pretty quick so should be okay
+    TrayRenderer.renderNativeImage({
+      unreadCount: unreadCount,
+      showUnreadCount: traySettings.showUnreadCount,
+      unreadColor: traySettings.unreadColor,
+      readColor: TrayRenderer.themedReadColor(traySettings.readColor, traySettings.isReadColorDefault),
+      unreadBackgroundColor: traySettings.unreadBackgroundColor,
+      readBackgroundColor: traySettings.readBackgroundColor,
+      size: this.trayIconSize()
+    }).then((image) => {
+      this.appTray.setImage(image)
+      this.appTray.setToolTip(this.renderTooltip())
+      this.appTray.setContextMenu(this.renderContextMenu())
+    })
 
     return (<div />)
   }

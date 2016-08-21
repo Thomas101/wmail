@@ -70,22 +70,12 @@ module.exports = React.createClass({
           <Row>
             <Col md={6}>
               <UISettingsSection ui={ui} os={os} />
-            </Col>
-            <Col md={6}>
               <NotificationSettingsSection os={os} />
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
               <DownloadSettingsSection os={os} />
             </Col>
             <Col md={6}>
-              <LanguageSettingsSection language={language} />
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
               <TraySettingsSection tray={tray} />
+              <LanguageSettingsSection language={language} />
             </Col>
           </Row>
         </Container>
