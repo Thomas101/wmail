@@ -65,7 +65,7 @@ module.exports = {
     position: 'absolute',
     top: 20,
     left: 20,
-    boxShadow: 'rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px' //copied from paper
+    boxShadow: 'rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px' // copied from paper
   },
   accountPickerContainer: {
     position: 'absolute',

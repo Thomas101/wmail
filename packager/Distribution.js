@@ -224,9 +224,9 @@ class Distribution {
       } else if (platform === 'linux') {
         return acc
           .then(() => Distribution.distributeLinuxTar(pkg, ARCH.X86))
-          .then(() => Distribution.distributeLinuxDeb(pkg, ARCH.X86))
           .then(() => Distribution.distributeLinuxTar(pkg, ARCH.X64))
-          .then(() => Distribution.distributeLinuxDeb(pkg, ARCH.X64))
+          // .then(() => Distribution.distributeLinuxDeb(pkg, ARCH.X86))
+          // .then(() => Distribution.distributeLinuxDeb(pkg, ARCH.X64))
       } else {
         return acc
       }
