@@ -47,9 +47,8 @@ module.exports = React.createClass({
             label='Always ask download location'
             labelPosition='right'
             onToggle={(evt, toggled) => settingsActions.setAlwaysAskDownloadLocation(toggled)} />
-          <br />
         </div>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={Object.assign({}, styles.button, { display: 'flex', alignItems: 'center' })}>
           <RaisedButton
             label='Select location'
             className='file-button'

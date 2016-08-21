@@ -48,6 +48,10 @@ module.exports = {
     opacity: 0,
     zIndex: 100
   },
+  button: {
+    marginTop: 5,
+    marginBottom: 5
+  },
 
   /* **************************************************************************/
   // Account

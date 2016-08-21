@@ -62,17 +62,18 @@ module.exports = React.createClass({
     return (
       <Paper zDepth={1} style={styles.paper} {...passProps}>
         <h1 style={styles.subheading}>Icon</h1>
-        <RaisedButton
-          label='Change Account Icon'
-          style={styles.fileInputButton}>
-          <input
-            type='file'
-            accept='image/*'
-            onChange={this.handleCustomAvatarChange}
-            style={styles.fileInput} />
-        </RaisedButton>
-        <br />
-        <div>
+        <div style={styles.button}>
+          <RaisedButton
+            label='Change Account Icon'
+            style={styles.fileInputButton}>
+            <input
+              type='file'
+              accept='image/*'
+              onChange={this.handleCustomAvatarChange}
+              style={styles.fileInput} />
+          </RaisedButton>
+        </div>
+        <div style={styles.button}>
           <ColorPickerButton
             label='Account Colour'
             value={mailbox.color}

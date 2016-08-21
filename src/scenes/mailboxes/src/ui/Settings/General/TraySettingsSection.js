@@ -1,9 +1,6 @@
 const React = require('react')
 const { Toggle, Paper } = require('material-ui')
-const {
-  ColorPickerButton,
-  Grid: { Container, Row, Col }
-} = require('../../../Components')
+const { ColorPickerButton } = require('../../../Components')
 const settingsActions = require('../../../stores/settings/settingsActions')
 const styles = require('../settingStyles')
 const shallowCompare = require('react-addons-shallow-compare')
@@ -32,40 +29,31 @@ module.exports = React.createClass({
     return (
       <Paper zDepth={1} style={styles.paper} {...passProps}>
         <h1 style={styles.subheading}>Tray</h1>
-        <Container fluid>
-          <Row>
-            <Col sm={6}>
-              <Toggle
-                toggled={tray.show}
-                label='Show tray icon'
-                labelPosition='right'
-                onToggle={(evt, toggled) => settingsActions.setShowTrayIcon(toggled)} />
-              <Toggle
-                toggled={tray.showUnreadCount}
-                label='Show unread count in tray'
-                labelPosition='right'
-                disabled={!tray.show}
-                onToggle={(evt, toggled) => settingsActions.setShowTrayUnreadCount(toggled)} />
-            </Col>
-            <Col sm={6}>
-              <div>
-                <ColorPickerButton
-                  label='Tray read colour'
-                  disabled={!tray.show}
-                  value={tray.readColor}
-                  onChange={(col) => settingsActions.setTrayReadColor(col.hex)} />
-              </div>
-              <br />
-              <div>
-                <ColorPickerButton
-                  label='Tray unread colour'
-                  disabled={!tray.show}
-                  value={tray.unreadColor}
-                  onChange={(col) => settingsActions.setTrayUnreadColor(col.hex)} />
-              </div>
-            </Col>
-          </Row>
-        </Container>
+        <Toggle
+          toggled={tray.show}
+          label='Show icon'
+          labelPosition='right'
+          onToggle={(evt, toggled) => settingsActions.setShowTrayIcon(toggled)} />
+        <Toggle
+          toggled={tray.showUnreadCount}
+          label='Show unread count'
+          labelPosition='right'
+          disabled={!tray.show}
+          onToggle={(evt, toggled) => settingsActions.setShowTrayUnreadCount(toggled)} />
+        <div style={styles.button}>
+          <ColorPickerButton
+            label='Colour when read'
+            disabled={!tray.show}
+            value={tray.readColor}
+            onChange={(col) => settingsActions.setTrayReadColor(col.hex)} />
+        </div>
+        <div style={styles.button}>
+          <ColorPickerButton
+            label='Color when unread'
+            disabled={!tray.show}
+            value={tray.unreadColor}
+            onChange={(col) => settingsActions.setTrayUnreadColor(col.hex)} />
+        </div>
       </Paper>
     )
   }
