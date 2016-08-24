@@ -69,6 +69,7 @@ class AppPrimaryMenu {
           process.platform === 'darwin' ? undefined : { label: 'Toggle Menu', accelerator: 'CmdOrCtrl+\\', click: this._selectors.menuToggle },
           { type: 'separator' },
           { label: 'Navigate Back', accelerator: 'CmdOrCtrl+[', click: this._selectors.mailboxNavBack },
+          { label: 'Navigate Back', accelerator: 'CmdOrCtrl+Left', click: this._selectors.mailboxNavBack },
           { label: 'Navigate Forward', accelerator: 'CmdOrCtrl+]', click: this._selectors.mailboxNavForward },
           { type: 'separator' },
           { label: 'Zoom Mailbox In', accelerator: 'CmdOrCtrl+Plus', click: this._selectors.zoomIn },
