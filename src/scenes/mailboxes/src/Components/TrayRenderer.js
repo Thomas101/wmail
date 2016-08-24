@@ -35,6 +35,7 @@ class TrayRenderer {
         unreadBackgroundColor: 'transparent',
         readBackgroundColor: 'transparent',
         size: 100,
+        thick: process.platform === 'win32',
         __defaultMerged__: true
       }, config)
     }
@@ -52,6 +53,7 @@ class TrayRenderer {
       const SIZE = config.size * config.pixelRatio
       const PADDING = SIZE * 0.15
       const CENTER = SIZE / 2
+      const HAS_COUNT = config.showUnreadCount && config.unreadCount && config.unreadCount < 99
       const color = config.unreadCount ? config.unreadColor : config.readColor
       const backgroundColor = config.unreadCount ? config.unreadBackgroundColor : config.readBackgroundColor
 
@@ -61,23 +63,25 @@ class TrayRenderer {
       const ctx = canvas.getContext('2d')
 
       // Circle
-      ctx.beginPath()
-      ctx.arc(CENTER, CENTER, (SIZE / 2) - PADDING, 0, 2 * Math.PI, false)
-      ctx.fillStyle = backgroundColor
-      ctx.fill()
-      ctx.lineWidth = SIZE / 20
-      ctx.strokeStyle = color
-      ctx.stroke()
+      if (!config.thick || config.thick && HAS_COUNT) {
+        ctx.beginPath()
+        ctx.arc(CENTER, CENTER, (SIZE / 2) - PADDING, 0, 2 * Math.PI, false)
+        ctx.fillStyle = backgroundColor
+        ctx.fill()
+        ctx.lineWidth = SIZE / (config.thick ? 10 : 20)
+        ctx.strokeStyle = color
+        ctx.stroke()
+      }
 
       // Count or Icon
-      if (config.showUnreadCount && config.unreadCount && config.unreadCount < 99) {
+      if (HAS_COUNT) {
         ctx.fillStyle = color
         ctx.textAlign = 'center'
         if (config.unreadCount < 10) {
-          ctx.font = (SIZE * 0.5) + 'px Helvetica'
+          ctx.font = `${config.thick ? 'bold ' : ''}${SIZE * 0.5}px Helvetica`
           ctx.fillText(config.unreadCount, CENTER, CENTER + (SIZE * 0.20))
         } else {
-          ctx.font = (SIZE * 0.4) + 'px Helvetica'
+          ctx.font = `${config.thick ? 'bold ' : ''}${SIZE * 0.4}px Helvetica`
           ctx.fillText(config.unreadCount, CENTER, CENTER + (SIZE * 0.15))
         }
 
@@ -86,7 +90,7 @@ class TrayRenderer {
         const image = B64_SVG_PREFIX + window.btoa(MAIL_SVG.replace('fill="#000000"', `fill="${color}"`))
         const loader = new window.Image()
         loader.onload = function () {
-          const ICON_SIZE = SIZE * 0.5
+          const ICON_SIZE = SIZE * (config.thick ? 1.0 : 0.5)
           const POS = (SIZE - ICON_SIZE) / 2
           ctx.drawImage(loader, POS, POS, ICON_SIZE, ICON_SIZE)
           resolve(canvas)

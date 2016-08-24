@@ -1,4 +1,4 @@
-const appdmg = require('appdmg')
+const appdmg = process.platform === 'darwin' ? require('appdmg') : undefined
 const msiPackager = require('msi-packager')
 const path = require('path')
 const fs = require('fs-extra')

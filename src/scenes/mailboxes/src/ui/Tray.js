@@ -168,7 +168,7 @@ module.exports = React.createClass({
   trayIconSize () {
     switch (process.platform) {
       case 'darwin': return 22
-      case 'win32': return 32
+      case 'win32': return 16
       case 'linux': return 32
       default: return 32
     }
