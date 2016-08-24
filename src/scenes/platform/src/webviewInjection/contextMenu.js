@@ -1,7 +1,8 @@
 ;(function () {
   'use strict'
 
-  const { shell, clipboard } = require('electron').remote
+  const { remote, ipcRenderer } = require('electron')
+  const { shell, clipboard } = remote
   const ContextMenuView = require('./ContextMenuView')
   const request = require('../../../app/node_modules/request')
   const { SPELLCHECK_HTTP_PORT } = require('../../../app/shared/constants')
@@ -119,6 +120,13 @@
     }
 
     menuTemplate.push({ label: 'Select all', role: 'selectall' })
+    menuTemplate.push({ type: 'separator' })
+    menuTemplate.push({
+      label: 'WMail Settings',
+      click: () => {
+        ipcRenderer.sendToHost({ type: 'open-settings' })
+      }
+    })
     menu = new ContextMenuView().show(menuTemplate, x, y)
   }, false)
 

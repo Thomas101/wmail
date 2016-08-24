@@ -8,7 +8,7 @@ const {
   remote: {shell}, ipcRenderer
 } = window.nativeRequire('electron')
 const URL = window.nativeRequire('url')
-const {mailboxDispatch} = require('../../Dispatch')
+const {mailboxDispatch, navigationDispatch} = require('../../Dispatch')
 const TimerMixin = require('react-timer-mixin')
 const {WebView} = require('../../Components')
 const MailboxSearch = require('./MailboxSearch')
@@ -156,6 +156,7 @@ module.exports = React.createClass({
   dispatchBrowserIPCMessage (evt) {
     switch (evt.channel.type) {
       case 'page-click': this.handleBrowserPageClick(evt); break
+      case 'open-settings': navigationDispatch.openSettings(); break
       case 'js-new-window': this.handleBrowserJSNewWindow(evt); break
       case 'undo': this.refs.browser.undo(); break
       case 'redo': this.refs.browser.redo(); break
