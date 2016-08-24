@@ -129,6 +129,8 @@ module.exports = React.createClass({
 
   paste () { this.getWebviewNode().paste() },
 
+  pasteAndMatchStyle () { this.getWebviewNode().pasteAndMatchStyle() },
+
   selectAll () { this.getWebviewNode().selectAll() },
 
   /* **************************************************************************/

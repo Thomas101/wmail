@@ -113,6 +113,7 @@
       menuTemplate.push({ label: 'Cut', role: 'cut' })
       menuTemplate.push({ label: 'Copy', role: 'copy' })
       menuTemplate.push({ label: 'Paste', role: 'paste' })
+      menuTemplate.push({ label: 'Paste and match style', role: 'pasteMatchStyle' })
       menuTemplate.push({ type: 'separator' })
     } else if (textSelection) {
       menuTemplate.push({ label: 'Copy', role: 'copy' })

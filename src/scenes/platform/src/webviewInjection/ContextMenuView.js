@@ -11,6 +11,7 @@
     cut: function () { ipcRenderer.sendToHost({ type: 'cut' }) },
     copy: function () { ipcRenderer.sendToHost({ type: 'copy' }) },
     paste: function () { ipcRenderer.sendToHost({ type: 'paste' }) },
+    pasteMatchStyle: function () { ipcRenderer.sendToHost({ type: 'pasteMatchStyle' }) },
     selectall: function () { ipcRenderer.sendToHost({ type: 'selectAll' }) }
   }
 

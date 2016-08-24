@@ -163,6 +163,7 @@ module.exports = React.createClass({
       case 'cut': this.refs.browser.cut(); break
       case 'copy': this.refs.browser.copy(); break
       case 'paste': this.refs.browser.paste(); break
+      case 'pasteMatchStyle': this.refs.browser.pasteAndMatchStyle(); break
       case 'selectAll': this.refs.browser.selectAll(); break
       default:
     }
