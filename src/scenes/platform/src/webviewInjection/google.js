@@ -6,7 +6,6 @@
 
   require('./keyboardNavigation')
   require('./clickReport')
-  require('./zoomLevel')
   require('./googleWindowOpen')
 
   spellchecker((dictionary) => {

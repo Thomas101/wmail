@@ -133,6 +133,12 @@ module.exports = React.createClass({
 
   selectAll () { this.getWebviewNode().selectAll() },
 
+  setZoomLevel (level) {
+    // Cant set zoom factor due to https://github.com/electron/electron/issues/6958. Nice workaround below...
+    // .setZoomFactor(level)
+    this.getWebviewNode().setZoomLevelLimits(level, level)
+  },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/

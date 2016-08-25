@@ -104,7 +104,7 @@ module.exports = React.createClass({
 
       // Apply any actions
       if (zoomChanged) {
-        this.refs.browser.send('zoom-factor-set', { value: this.state.mailbox.zoomFactor })
+        this.refs.browser.setZoomLevel(this.state.mailbox.zoomFactor)
       }
     } else {
       this.setState({ mailbox: null })
@@ -209,7 +209,7 @@ module.exports = React.createClass({
   */
   handleBrowserDomReady () {
     // Push the settings across
-    this.refs.browser.send('zoom-factor-set', { value: this.state.mailbox.zoomFactor })
+    this.refs.browser.setZoomLevel(this.state.mailbox.zoomFactor)
     this.refs.browser.send('start-spellcheck', {
       enabled: flux.settings.S.getState().language.spellcheckerEnabled
     })
