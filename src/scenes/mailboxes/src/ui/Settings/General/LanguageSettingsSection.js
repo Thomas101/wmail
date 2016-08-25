@@ -31,7 +31,7 @@ module.exports = React.createClass({
         <Toggle
           toggled={language.spellcheckerEnabled}
           labelPosition='right'
-          label='Spell-checker (requires restart)'
+          label='Spell-checker (Requires Restart)'
           onToggle={(evt, toggled) => settingsActions.setEnableSpellchecker(toggled)} />
       </Paper>
     )

@@ -3,7 +3,6 @@ const { Toggle, Paper } = require('material-ui')
 const settingsActions = require('../../../stores/settings/settingsActions')
 const styles = require('../settingStyles')
 const shallowCompare = require('react-addons-shallow-compare')
-const Colors = require('material-ui/styles/colors')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -35,32 +34,19 @@ module.exports = React.createClass({
             <Toggle
               labelPosition='right'
               toggled={ui.showTitlebar}
-              label={(
-                <span>
-                  Show titlebar <small style={{color: Colors.grey400}}>Requires Restart</small>
-                </span>
-              )}
+              label='Show titlebar (Requires Restart)'
               onToggle={(evt, toggled) => settingsActions.setShowTitlebar(toggled)} />
             )}
           {process.platform === 'darwin' ? undefined : (
             <Toggle
               labelPosition='right'
               toggled={ui.showAppMenu}
-              label={(
-                <span>
-                  Show App Menu <span style={{color: Colors.grey400}}>Ctrl+\</span>
-                </span>
-              )}
+              label='Show App Menu (Ctrl+\)'
               onToggle={(evt, toggled) => settingsActions.setShowAppMenu(toggled)} />
           )}
           <Toggle
             toggled={ui.sidebarEnabled}
-            label={(
-              <span>
-                Show sidebar
-                <small style={{color: Colors.grey400}}> {process.platform === 'darwin' ? 'Ctrl+cmd+S' : 'Ctrl+alt+S'}</small>
-              </span>
-            )}
+            label={`Show Sidebar (${process.platform === 'darwin' ? 'Ctrl+cmd+S' : 'Ctrl+alt+S'})`}
             labelPosition='right'
             onToggle={(evt, toggled) => settingsActions.setEnableSidebar(toggled)} />
           <Toggle
