@@ -23,24 +23,16 @@ if (getArg('--fast') !== undefined) {
 const task = getArg('--task=', '--task=all').substr(7)
 if (task === 'app') {
   console.log('[TASK=app]')
-  module.exports = [
-    require('./src/app/webpack.config.js')
-  ]
+  module.exports = [ require('./src/app/webpack.config.js') ]
 } else if (task === 'mailboxes') {
   console.log('[TASK=mailboxes]')
-  module.exports = [
-    require('./src/scenes/mailboxes/webpack.config.js')
-  ]
+  module.exports = [ require('./src/scenes/mailboxes/webpack.config.js') ]
 } else if (task === 'platform') {
   console.log('[TASK=platform]')
-  module.exports = [
-    require('./src/scenes/platform/webpack.config.js')
-  ]
+  module.exports = [ require('./src/scenes/platform/webpack.config.js') ]
 } else if (task === 'assets') {
   console.log('[TASK=assets]')
-  module.exports = [
-    require('./assets/webpack.config.js')
-  ]
+  module.exports = [ require('./assets/webpack.config.js') ]
 } else {
   console.log('[TASK=all]')
   module.exports = [

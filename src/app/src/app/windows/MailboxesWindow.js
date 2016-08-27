@@ -5,6 +5,12 @@ const path = require('path')
 const MailboxesSessionManager = require('./MailboxesSessionManager')
 const settingStore = require('../stores/settingStore')
 
+const MAILBOXES_DIR = path.resolve(path.join(__dirname, '/../../../scenes/mailboxes'))
+const ALLOWED_URLS = new Set([
+  'file://' + path.join(MAILBOXES_DIR, 'mailboxes.html'),
+  'file://' + path.join(MAILBOXES_DIR, 'offline.html')
+])
+
 class MailboxesWindow extends WMailWindow {
 
   /* ****************************************************************************/
@@ -24,7 +30,7 @@ class MailboxesWindow extends WMailWindow {
   }
 
   start (url) {
-    super.start('file://' + path.join(__dirname, '/../../../scenes/mailboxes/mailboxes.html'))
+    super.start('file://' + path.join(MAILBOXES_DIR, 'mailboxes.html'))
   }
 
   /* ****************************************************************************/
@@ -49,8 +55,10 @@ class MailboxesWindow extends WMailWindow {
     super.createWindow.apply(this, Array.from(arguments))
 
     // We're locking on to our window. This stops file drags redirecting the page
-    this.window.webContents.on('will-navigate', (evt) => {
-      evt.preventDefault()
+    this.window.webContents.on('will-navigate', (evt, url) => {
+      if (!ALLOWED_URLS.has(url)) {
+        evt.preventDefault()
+      }
     })
 
     update.checkNow(this.window)

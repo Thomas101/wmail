@@ -35,7 +35,8 @@ const options = {
 
     // Copy our static assets
     new CopyWebpackPlugin([
-      { from: path.join(__dirname, 'src/mailboxes.html'), to: 'mailboxes.html', force: true }
+      { from: path.join(__dirname, 'src/mailboxes.html'), to: 'mailboxes.html', force: true },
+      { from: path.join(__dirname, 'src/offline.html'), to: 'offline.html', force: true }
     ], {
       ignore: [ '.DS_Store' ]
     }),
