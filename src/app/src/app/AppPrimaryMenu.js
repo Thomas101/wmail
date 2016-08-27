@@ -36,13 +36,13 @@ class AppPrimaryMenu {
           { type: 'separator' },
           process.platform === 'darwin' ? { label: 'Services', role: 'services', submenu: [] } : undefined,
           process.platform === 'darwin' ? { type: 'separator' } : undefined,
-          { label: 'Show Window', accelerator: 'Command+N', click: this._selectors.showWindow },
-          { label: 'Hide Window', accelerator: 'Command+W', click: this._selectors.closeWindow },
+          { label: 'Show Window', accelerator: 'CmdOrCtrl+N', click: this._selectors.showWindow },
+          { label: 'Hide Window', accelerator: 'CmdOrCtrl+W', click: this._selectors.closeWindow },
           { label: 'Hide', accelerator: 'CmdOrCtrl+H', role: 'hide' },
           { label: 'Hide Others', accelerator: 'Alt+CmdOrCtrl+H', role: 'hideothers' },
           { label: 'Show All', role: 'unhide' },
           { type: 'separator' },
-          { label: 'Quit', accelerator: 'Command+Q', click: this._selectors.fullQuit }
+          { label: 'Quit', accelerator: 'CmdOrCtrl+Q', click: this._selectors.fullQuit }
         ].filter((item) => item !== undefined)
       },
       {
@@ -54,7 +54,7 @@ class AppPrimaryMenu {
           { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
           { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
           { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
-          { label: 'Paste and match style', accelerator: 'Command+Shift+V', selector: 'pasteAndMatchStyle:' },
+          { label: 'Paste and match style', accelerator: 'CmdOrCtrl+Shift+V', selector: 'pasteAndMatchStyle:' },
           { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' },
           { type: 'separator' },
           { label: 'Find', accelerator: 'CmdOrCtrl+F', click: this._selectors.find },
