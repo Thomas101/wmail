@@ -4,10 +4,8 @@
   const { remote, ipcRenderer } = require('electron')
   const { shell, clipboard } = remote
   const ContextMenuView = require('./ContextMenuView')
-  const request = require('../../../app/node_modules/request')
-  const { SPELLCHECK_HTTP_PORT } = require('../../../app/shared/constants')
 
-  let dictionary
+  let spellchecker
   const textOnlyRE = new RegExp(/[^a-z]+/gi)
 
   /**
@@ -42,36 +40,34 @@
     let menu
 
     // Spell check suggestions
-    if (dictionary) {
+    if (spellchecker && spellchecker.hasDictionary()) {
       if (isTexteditorTarget(evt)) {
         if (textOnlyRE.exec(textSelection) === null) {
-          if (!dictionary.check(textSelection)) {
+          if (!spellchecker.check(textSelection)) {
             menuTemplate.push({ label: 'Fetching Suggestions...', enabled: false })
             menuTemplate.push({ type: 'separator' })
 
-            request('http://localhost:' + SPELLCHECK_HTTP_PORT + '/suggest?word=' + encodeURIComponent(textSelection), (err, response, body) => {
-              if (err) {
-                menuTemplate.splice(0, 1)
-                menuTemplate.unshift({ label: 'Error Fetching Suggestions', enabled: false })
-              } else {
-                menuTemplate.splice(0, 1)
-                const suggestions = JSON.parse(body)
+            spellchecker.suggestions(textSelection).then((suggestions) => {
+              menuTemplate.splice(0, 1)
 
-                if (suggestions.length) {
-                  suggestions.reverse().forEach((s) => {
-                    menuTemplate.unshift({
-                      label: s,
-                      click: () => {
-                        const range = selection.getRangeAt(0)
-                        range.deleteContents()
-                        range.insertNode(document.createTextNode(s))
-                      }
-                    })
+              if (suggestions.length) {
+                suggestions.reverse().forEach((s) => {
+                  menuTemplate.unshift({
+                    label: s,
+                    click: () => {
+                      const range = selection.getRangeAt(0)
+                      range.deleteContents()
+                      range.insertNode(document.createTextNode(s))
+                    }
                   })
-                } else {
-                  menuTemplate.unshift({ label: 'No Spelling Suggestions', enabled: false })
-                }
+                })
+              } else {
+                menuTemplate.unshift({ label: 'No Spelling Suggestions', enabled: false })
               }
+              menu.update(menuTemplate)
+            }, (_err) => {
+              menuTemplate.splice(0, 1)
+              menuTemplate.unshift({ label: 'Error Fetching Suggestions', enabled: false })
               menu.update(menuTemplate)
             })
           }
@@ -132,8 +128,8 @@
   }, false)
 
   module.exports = {
-    setDictionary: (dict) => {
-      dictionary = dict
+    setSpellchecker: (sc) => {
+      spellchecker = sc
     }
   }
 })()

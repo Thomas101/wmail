@@ -3,14 +3,11 @@
 
   const spellchecker = require('./spellchecker')
   const contextMenu = require('./contextMenu')
+  contextMenu.setSpellchecker(spellchecker)
 
   require('./keyboardNavigation')
   require('./clickReport')
   require('./googleWindowOpen')
-
-  spellchecker((dictionary) => {
-    contextMenu.setDictionary(dictionary)
-  })
 
   const ipc = require('electron').ipcRenderer
 

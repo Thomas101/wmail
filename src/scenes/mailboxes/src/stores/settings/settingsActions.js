@@ -1,6 +1,6 @@
 const alt = require('../alt')
 const {
-  Settings: {SettingsIdent: {SEGMENTS}}
+  Settings: {SettingsIdent: {SEGMENTS}, LanguageSettings}
 } = require('shared/Models')
 const {ipcRenderer} = window.nativeRequire('electron')
 
@@ -52,6 +52,17 @@ class SettingsActions {
   */
   setEnableSpellchecker (enabled) {
     return this.update(SEGMENTS.LANGUAGE, 'spellcheckerEnabled', enabled)
+  }
+
+  /**
+  * @param lang: the language to set to
+  */
+  setSpellcheckerLanguage (lang) {
+    if (lang === LanguageSettings.defaultSpellcheckerLanguage) {
+      return this.update(SEGMENTS.LANGUAGE, 'customSpellcheckerLanguage', undefined)
+    } else {
+      return this.update(SEGMENTS.LANGUAGE, 'customSpellcheckerLanguage', lang)
+    }
   }
 
   /* **************************************************************************/

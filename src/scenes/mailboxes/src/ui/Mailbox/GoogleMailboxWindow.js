@@ -210,9 +210,13 @@ module.exports = React.createClass({
   handleBrowserDomReady () {
     // Push the settings across
     this.refs.browser.setZoomLevel(this.state.mailbox.zoomFactor)
-    this.refs.browser.send('start-spellcheck', {
-      enabled: flux.settings.S.getState().language.spellcheckerEnabled
-    })
+
+    const languageSettings = flux.settings.S.getState().language
+    if (languageSettings.spellcheckerEnabled) {
+      this.refs.browser.send('start-spellcheck', {
+        language: languageSettings.customSpellcheckerLanguage
+      })
+    }
   },
 
   /**

@@ -74,6 +74,10 @@ const options = {
       {
         test: /(\.less|\.css)$/,
         loaders: ['style', 'css', 'less']
+      },
+      {
+        test: /(\.json)$/,
+        loader: 'json'
       }
     ]
   }

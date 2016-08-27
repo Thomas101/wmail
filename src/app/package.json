@@ -18,7 +18,8 @@
     "os-locale": "1.4.0",
     "request": "2.74.0",
     "typo-js": "./lib/typo_js/typo",
-    "uuid": "2.0.2"
+    "uuid": "2.0.2",
+    "yargs": "5.0.0"
   },
   "devDependencies": {
     "standard": "8.0.0"

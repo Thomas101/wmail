@@ -1,13 +1,18 @@
 const http = require('http')
 const url = require('url')
-const { SPELLCHECK_HTTP_PORT } = require('../../shared/constants')
+const SpellcheckLoader = require('../../shared/SpellcheckManager')
 const enUS = require('dictionary-en-us')
 const Typo = require('typo-js')
+const AppDirectory = require('appdirectory')
+const pkg = require('../../package.json')
+const {argv} = require('yargs')
 
-enUS((err, load) => {
-  if (err) { return }
+const appDirectory = new AppDirectory(pkg.name).userData()
+const port = parseInt(argv.port)
+const language = argv.language === '_' ? undefined : argv.language
+const loader = new SpellcheckLoader(appDirectory, enUS, Typo)
 
-  const dictionary = new Typo('en_US', load.aff.toString(), load.dic.toString())
+loader.loadEngine(language).then((dictionary) => {
   const server = http.createServer(function (request, response) {
     try {
       const queryData = url.parse(request.url, true).query
@@ -39,5 +44,5 @@ enUS((err, load) => {
     }
   })
 
-  server.listen(SPELLCHECK_HTTP_PORT)
+  server.listen(port)
 })
