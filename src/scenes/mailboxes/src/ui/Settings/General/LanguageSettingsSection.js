@@ -1,7 +1,7 @@
 const React = require('react')
 const { Toggle, Paper, SelectField, MenuItem } = require('material-ui')
 const settingsActions = require('../../../stores/settings/settingsActions')
-const spellcheckChangeActions = require('../../../stores/spellcheckChange/spellcheckChangeActions')
+const scDictionaryActions = require('../../../stores/scDictionary/scDictionaryActions')
 const styles = require('../settingStyles')
 const shallowCompare = require('react-addons-shallow-compare')
 const SpellcheckManager = require('shared/SpellcheckManager')
@@ -25,7 +25,7 @@ module.exports = React.createClass({
       if (value === this.props.language.defaultSpellcheckerLanguage) {
         settingsActions.setSpellcheckerLanguage(undefined)
       } else {
-        spellcheckChangeActions.startDictionaryChange(value)
+        scDictionaryActions.startDictionaryChange(value)
       }
     }
   },
@@ -60,9 +60,10 @@ module.exports = React.createClass({
         <SelectField
           floatingLabelText='Spell-checker language (Requires Restart)'
           value={language.spellcheckerLanguage}
+          fullWidth
           onChange={this.handleSpellcheckerLanguageChange}>
-          {allLanguages.map((lang) => {
-            return (<MenuItem value={lang} primaryText={SpellcheckManager.remoteDictionaries[lang]} />)
+          {allLanguages.map(([lang, { name }]) => {
+            return (<MenuItem key={lang} value={lang} primaryText={name} />)
           })}
         </SelectField>
       </Paper>

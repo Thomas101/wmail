@@ -1,7 +1,7 @@
 const alt = require('../alt')
 const uuid = require('uuid')
 
-class SpellcheckChangeActions {
+class SCDictionaryActions {
 
   /* **************************************************************************/
   // Changing
@@ -34,4 +34,4 @@ class SpellcheckChangeActions {
   }
 }
 
-module.exports = alt.createActions(SpellcheckChangeActions)
+module.exports = alt.createActions(SCDictionaryActions)

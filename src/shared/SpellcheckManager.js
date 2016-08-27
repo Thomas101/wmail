@@ -73,7 +73,7 @@ class SpellcheckManager {
   */
   loadEngine (language = 'en_US') {
     return Promise.resolve()
-      .then(() => this._loadDictionary(language !== 'en_US'))
+      .then(() => this.loadDictionary(language !== 'en_US'))
       .then((load) => new this._Typo(language, load.aff, load.dic))
   }
 }
