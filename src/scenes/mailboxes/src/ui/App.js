@@ -1,5 +1,3 @@
-'use strict'
-
 const React = require('react')
 const flux = {
   mailbox: require('../stores/mailbox'),
@@ -7,7 +5,7 @@ const flux = {
   settings: require('../stores/settings')
 }
 const {
-  ipcRenderer, remote: {app, shell}
+  ipcRenderer, remote: {shell}
 } = window.nativeRequire('electron')
 const {
   mailboxDispatch, navigationDispatch
@@ -18,6 +16,7 @@ const constants = require('shared/constants')
 const UnreadNotifications = require('../daemons/UnreadNotifications')
 const shallowCompare = require('react-addons-shallow-compare')
 const Tray = require('./Tray')
+const AppBadge = require('./AppBadge')
 const appTheme = require('./appTheme')
 const MuiThemeProvider = require('material-ui/styles/MuiThemeProvider').default
 
@@ -190,11 +189,6 @@ module.exports = React.createClass({
       messagesUnreadCount
     } = this.state
 
-    if (process.platform === 'darwin') {
-      const badgeString = uiSettings.showAppBadge && messagesUnreadCount ? messagesUnreadCount.toString() : ''
-      app.dock.setBadge(badgeString)
-    }
-
     return (
       <div>
         <MuiThemeProvider muiTheme={appTheme}>
@@ -205,7 +199,10 @@ module.exports = React.createClass({
             unreadMessages={unreadMessages}
             unreadCount={messagesUnreadCount}
             traySettings={traySettings} />
-          )}
+        )}
+        {!uiSettings.showAppBadge ? undefined : (
+          <AppBadge unreadCount={messagesUnreadCount} />
+        )}
       </div>
     )
   }
