@@ -31,7 +31,7 @@ module.exports = React.createClass({
 
     return (
       <Paper zDepth={1} style={styles.paper} {...passProps}>
-        <h1 style={styles.subheading}>Tray</h1>
+        <h1 style={styles.subheading}>{process.platform === 'darwin' ? 'Menu Bar' : 'Tray'}</h1>
         <Toggle
           toggled={tray.show}
           label='Show icon'
