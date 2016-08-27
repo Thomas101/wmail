@@ -3,6 +3,7 @@ module.exports = Object.freeze({
 
   MAILBOX_INDEX_KEY: '__index__',
 
+  WEB_URL: 'https://thomas101.github.io/wmail/',
   GITHUB_URL: 'https://github.com/Thomas101/wmail/',
   GITHUB_ISSUE_URL: 'https://github.com/Thomas101/wmail/issues',
   GITHUB_RELEASES_URL: 'http://thomas101.github.io/wmail/download',

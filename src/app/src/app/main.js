@@ -64,7 +64,8 @@
       const focused = windowManager.focused()
       focused ? focused.openDevTools() : undefined
     },
-    learnMore: () => { shell.openExternal(constants.GITHUB_URL) },
+    learnMoreGithub: () => { shell.openExternal(constants.GITHUB_URL) },
+    learnMore: () => { shell.openExternal(constants.WEB_URL) },
     bugReport: () => { shell.openExternal(constants.GITHUB_ISSUE_URL) },
     zoomIn: () => { windowManager.mailboxesWindow.mailboxZoomIn() },
     zoomOut: () => { windowManager.mailboxesWindow.mailboxZoomOut() },

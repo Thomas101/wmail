@@ -9,6 +9,7 @@ const LanguageSettingsSection = require('./General/LanguageSettingsSection')
 const NotificationSettingsSection = require('./General/NotificationSettingsSection')
 const TraySettingsSection = require('./General/TraySettingsSection')
 const UISettingsSection = require('./General/UISettingsSection')
+const InfoSettingsSection = require('./General/InfoSettingsSection')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -72,10 +73,11 @@ module.exports = React.createClass({
               <UISettingsSection ui={ui} os={os} />
               <NotificationSettingsSection os={os} />
               <DownloadSettingsSection os={os} />
+              <LanguageSettingsSection language={language} />
             </Col>
             <Col md={6}>
               <TraySettingsSection tray={tray} />
-              <LanguageSettingsSection language={language} />
+              <InfoSettingsSection />
             </Col>
           </Row>
         </Container>
