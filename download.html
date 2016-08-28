@@ -2,8 +2,8 @@
 layout: default
 release_v: "v1.3.1"
 release_s: "1_3_1"
-prerelease_v: "v1.3.6"
-prerelease_s: "1_3_6"
+prerelease_v: "v1.3.7"
+prerelease_s: "1_3_7"
 ---
 {% capture release_notes %}{% include release_notes.md %}{% endcapture %}
 {% capture prerelease_notes %}{% include prerelease_notes.md %}{% endcapture %}
@@ -73,24 +73,31 @@ prerelease_s: "1_3_6"
             <h2>{{ page.prerelease_v }}</h2>
             <p><span class="label label-danger">Latest Pre-Release</span></p>
             <p>
-              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_osx.zip" class="btn btn-default">
+              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_osx.dmg" class="btn btn-default">
                 <span class="fa fa-apple"></span> Download OSX
-              </a>
-            </p>
-            <p>
-              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_windows.zip" class="btn btn-default">
-                <span class="fa fa-windows"></span> Download Windows
               </a>
             </p>
 
             <p>
-              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_linux32.zip" class="btn btn-default">
+              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_windows_x86.zip" class="btn btn-default">
+                <span class="fa fa-windows"></span> Download Windows 32-bit
+              </a>
+            </p>
+
+            <p>
+              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_windows_x64.zip" class="btn btn-default">
+                <span class="fa fa-windows"></span> Download Windows 64-bit
+              </a>
+            </p>
+
+            <p>
+              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_linux_x86.tar.gz" class="btn btn-default">
                 <span class="fa fa-linux"></span> Download Linux 32-bit
               </a>
             </p>
 
             <p>
-              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_linux64.zip" class="btn btn-default">
+              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_linux_x64.tar.gz" class="btn btn-default">
                 <span class="fa fa-linux"></span> Download Linux 64-bit
               </a>
             </p>
