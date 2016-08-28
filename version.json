@@ -1,8 +1,13 @@
+{% capture release_notes %}{% include release_notes.md %}{% endcapture %}
+{% capture prerelease_notes %}{% include prerelease_notes.md %}{% endcapture %}
+
 {
   "release": {
-    "version": "1.3.1"
+    "version": "1.3.1",
+    "releaseNotes": "{{ release_notes | escape }}"
   },
   "prerelease": {
-    "version": "1.3.6"
+    "version": "1.3.6",
+    "releaseNotes": "{{ prerelease_notes | escape }}"
   }
 }
