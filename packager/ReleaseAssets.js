@@ -11,7 +11,7 @@ class ReleaseAssets {
   */
   static copyAssetsIntoReleases (platforms) {
     if (new Set(platforms).has('darwin')) {
-      fs.copySync(path.join(ROOT_PATH, 'release/Installing on OSX.html'), path.join(ROOT_PATH, 'WMail-darwin-x64/Installing on OSX.html'))
+      fs.copySync(path.join(__dirname, 'dmg/First Run.html'), path.join(ROOT_PATH, 'WMail-darwin-x64/First Run.html'))
       return Promise.resolve()
     } else {
       return Promise.resolve()

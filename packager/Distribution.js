@@ -52,7 +52,7 @@ class Distribution {
           contents: [
             { x: 150, y: 100, type: 'file', path: 'WMail-darwin-x64/WMail.app' },
             { x: 450, y: 100, type: 'link', path: '/Applications' },
-            { x: 150, y: 400, type: 'file', path: 'WMail-darwin-x64/Installing on OSX.html' },
+            { x: 150, y: 400, type: 'file', path: 'WMail-darwin-x64/First Run.html' },
             { x: 300, y: 400, type: 'file', path: 'WMail-darwin-x64/LICENSE' },
             { x: 450, y: 400, type: 'file', path: 'WMail-darwin-x64/vendor-licenses' }
           ]
