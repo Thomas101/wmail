@@ -42,8 +42,19 @@ module.exports = Object.freeze({
 Then run the following...
 
 ```
+npm install webpack -g
 npm run-script install-all
 npm start
+```
+
+### Packaging Builds
+
+To package builds. (Note packaging osx builds can only be done from osx)
+```
+brew install msitools
+npm install
+npm rebuild
+npm run-script package
 ```
 
 
