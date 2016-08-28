@@ -23,6 +23,12 @@ const options = {
     filename: 'mailboxes.js'
   },
   plugins: [
+    !isProduction ? undefined : new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
+
     // Clean out our bin dir
     new CleanWebpackPlugin([path.relative(BIN_DIR, OUT_DIR)], {
       root: BIN_DIR,
