@@ -2,7 +2,15 @@ const alt = require('../alt')
 const actions = require('./settingsActions')
 const persistence = require('./settingsPersistence')
 const {
-  Settings: {LanguageSettings, OSSettings, ProxySettings, TraySettings, UISettings, SettingsIdent}
+  Settings: {
+    AppSettings,
+    LanguageSettings,
+    OSSettings,
+    ProxySettings,
+    TraySettings,
+    UISettings,
+    SettingsIdent
+  }
 } = require('shared/Models')
 const migration = require('./migration')
 
@@ -12,6 +20,7 @@ class SettingsStore {
   /* **************************************************************************/
 
   constructor () {
+    this.app = null
     this.language = null
     this.os = null
     this.proxy = null
@@ -34,6 +43,7 @@ class SettingsStore {
     migration.from_1_3_1()
 
     // Load everything
+    this.app = new AppSettings(persistence.getJSONItemSync('app', {}))
     this.language = new LanguageSettings(persistence.getJSONItemSync('language', {}))
     this.os = new OSSettings(persistence.getJSONItemSync('os', {}))
     this.proxy = new ProxySettings(persistence.getJSONItemSync('proxy', {}))
@@ -51,6 +61,7 @@ class SettingsStore {
   */
   storeKeyFromSegment (segment) {
     switch (segment) {
+      case SettingsIdent.SEGMENTS.APP: return 'app'
       case SettingsIdent.SEGMENTS.LANGUAGE: return 'language'
       case SettingsIdent.SEGMENTS.OS: return 'os'
       case SettingsIdent.SEGMENTS.PROXY: return 'proxy'
@@ -65,6 +76,7 @@ class SettingsStore {
   */
   storeClassFromSegment (segment) {
     switch (segment) {
+      case SettingsIdent.SEGMENTS.APP: return AppSettings
       case SettingsIdent.SEGMENTS.LANGUAGE: return LanguageSettings
       case SettingsIdent.SEGMENTS.OS: return OSSettings
       case SettingsIdent.SEGMENTS.PROXY: return ProxySettings
@@ -79,6 +91,7 @@ class SettingsStore {
   */
   persistenceKeyFromSegment (segment) {
     switch (segment) {
+      case SettingsIdent.SEGMENTS.APP: return 'app'
       case SettingsIdent.SEGMENTS.LANGUAGE: return 'language'
       case SettingsIdent.SEGMENTS.OS: return 'os'
       case SettingsIdent.SEGMENTS.PROXY: return 'proxy'

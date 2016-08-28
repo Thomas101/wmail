@@ -1,6 +1,5 @@
 const WMailWindow = require('./WMailWindow')
 const AuthGoogle = require('../AuthGoogle')
-const update = require('../update')
 const path = require('path')
 const MailboxesSessionManager = require('./MailboxesSessionManager')
 const settingStore = require('../stores/settingStore')
@@ -61,7 +60,6 @@ class MailboxesWindow extends WMailWindow {
       }
     })
 
-    update.checkNow(this.window)
     this.analytics.appOpened(this.window)
     this.heartbeatInterval = setInterval(() => {
       this.analytics.appHeartbeat(this.window)

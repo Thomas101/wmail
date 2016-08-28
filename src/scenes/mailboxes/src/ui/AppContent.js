@@ -10,6 +10,7 @@ const shallowCompare = require('react-addons-shallow-compare')
 const SettingsDialog = require('./Settings/SettingsDialog')
 const SCDictionaryChangeHandler = require('./SCDictionary/SCDictionaryChangeHandler')
 const {navigationDispatch} = require('../Dispatch')
+const UpdateCheckDialog = require('./UpdateCheckDialog')
 const flux = {
   settings: require('../stores/settings')
 }
@@ -89,6 +90,7 @@ module.exports = React.createClass({
         </div>
         <SettingsDialog open={this.state.settingsDialog} onRequestClose={this.handleCloseSettings} />
         <SCDictionaryChangeHandler />
+        <UpdateCheckDialog />
       </div>
     )
   }

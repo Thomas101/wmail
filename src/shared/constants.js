@@ -6,8 +6,9 @@ module.exports = Object.freeze({
   WEB_URL: 'https://thomas101.github.io/wmail/',
   GITHUB_URL: 'https://github.com/Thomas101/wmail/',
   GITHUB_ISSUE_URL: 'https://github.com/Thomas101/wmail/issues',
-  GITHUB_RELEASES_URL: 'http://thomas101.github.io/wmail/download',
-  UPDATE_CHECK_URL: 'https://api.github.com/repos/Thomas101/wmail/releases',
+  UPDATE_DOWNLOAD_URL: 'http://thomas101.github.io/wmail/download',
+  UPDATE_CHECK_URL: 'https://thomas101.github.io/wmail/version.json',
+  UPDATE_CHECK_INTERVAL: 1000 * 60 * 60 * 12, // 12 hours
 
   GMAIL_PROFILE_SYNC_MS: 1000 * 60 * 60, // 60 mins
   GMAIL_UNREAD_SYNC_MS: 1000 * 60, // 60 seconds
