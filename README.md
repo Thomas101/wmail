@@ -1,5 +1,7 @@
 # Wmail
 
+[![Donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/Thomas101/donate)
+
 The missing desktop client for Gmail & Google Inbox. Bringing the Gmail & Google Inbox experience to your desktop in a neatly packaged app
 
 [Download the latest release](http://thomas101.github.io/wmail/download)
