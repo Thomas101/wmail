@@ -2,5 +2,22 @@
 layout: default
 ---
 {% capture privacy %}{% include privacy.md %}{% endcapture %}
+<section class="bg-red-600 color-red-50 page-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h1>Wmail Privacy Policy</h1>
+      </div>
+    </div>
+  </div>
+</section>
 
-{{ privacy | markdownify }}
+<section class="page-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        {{ privacy | markdownify }}
+      </div>
+    </div>
+  </div>
+</section>
