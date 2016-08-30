@@ -75,6 +75,7 @@
     },
     learnMoreGithub: () => { shell.openExternal(constants.GITHUB_URL) },
     learnMore: () => { shell.openExternal(constants.WEB_URL) },
+    privacy: () => { shell.openExternal(constants.PRIVACY_URL) },
     bugReport: () => { shell.openExternal(constants.GITHUB_ISSUE_URL) },
     zoomIn: () => { windowManager.mailboxesWindow.mailboxZoomIn() },
     zoomOut: () => { windowManager.mailboxesWindow.mailboxZoomOut() },
