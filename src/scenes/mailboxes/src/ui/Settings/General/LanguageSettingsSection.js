@@ -43,7 +43,7 @@ module.exports = React.createClass({
     const {language, showRestart, ...passProps} = this.props
 
     const allLanguages = Object.keys(SpellcheckManager.remoteDictionaries)
-      .map((lang) => [lang, SpellcheckManager.remoteDictionaries[lang]])
+      .map((lang) => [lang, SpellcheckManager.remoteDictionaries[lang].name])
       .sort((a, b) => {
         if (a[1] < b[1]) return -1
         if (a[1] > b[1]) return 1
@@ -66,7 +66,7 @@ module.exports = React.createClass({
           value={language.spellcheckerLanguage}
           fullWidth
           onChange={this.handleSpellcheckerLanguageChange}>
-          {allLanguages.map(([lang, { name }]) => {
+          {allLanguages.map(([lang, name]) => {
             return (<MenuItem key={lang} value={lang} primaryText={name} />)
           })}
         </SelectField>

@@ -67,16 +67,17 @@ module.exports = React.createClass({
   */
   render () {
     const {ui, os, language, tray} = this.state
+    const {showRestart, ...passProps} = this.props
 
     return (
-      <div {...this.props}>
+      <div {...passProps}>
         <Container fluid>
           <Row>
             <Col md={6}>
-              <UISettingsSection ui={ui} os={os} showRestart={this.props.showRestart} />
+              <UISettingsSection ui={ui} os={os} showRestart={showRestart} />
               <NotificationSettingsSection os={os} />
               <DownloadSettingsSection os={os} />
-              <LanguageSettingsSection language={language} showRestart={this.props.showRestart} />
+              <LanguageSettingsSection language={language} showRestart={showRestart} />
             </Col>
             <Col md={6}>
               <TraySettingsSection tray={tray} />
