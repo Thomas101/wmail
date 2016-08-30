@@ -87,13 +87,13 @@ class AppPrimaryMenu {
           { label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize' },
           { label: 'Cycle Windows', accelerator: 'CmdOrCtrl+`', click: this._selectors.cycleWindows }
         ]
-        .concat(!mailboxes.length ? [] : [
+        .concat(mailboxes.length <= 1 ? [] : [
           { type: 'separator' },
           { label: 'Previous Mailbox', accelerator: 'CmdOrCtrl+<', click: this._selectors.prevMailbox },
           { label: 'Next Mailbox', accelerator: 'CmdOrCtrl+>', click: this._selectors.nextMailbox },
           { type: 'separator' }
         ])
-        .concat(mailboxes.map((mailbox, index) => {
+        .concat(mailboxes.length <= 1 ? [] : mailboxes.map((mailbox, index) => {
           return { label: mailbox.email || 'Untitled', accelerator: 'CmdOrCtrl+' + (index + 1), click: () => { this._selectors.changeMailbox(mailbox.id) } }
         }))
       },
