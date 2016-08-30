@@ -13,7 +13,8 @@ module.exports = React.createClass({
 
   displayName: 'LanguageSettingsSection',
   propTypes: {
-    language: React.PropTypes.object.isRequired
+    language: React.PropTypes.object.isRequired,
+    showRestart: React.PropTypes.func.isRequired
   },
 
   /* **************************************************************************/
@@ -39,7 +40,7 @@ module.exports = React.createClass({
   },
 
   render () {
-    const {language, ...passProps} = this.props
+    const {language, showRestart, ...passProps} = this.props
 
     const allLanguages = Object.keys(SpellcheckManager.remoteDictionaries)
       .map((lang) => [lang, SpellcheckManager.remoteDictionaries[lang]])
@@ -56,7 +57,10 @@ module.exports = React.createClass({
           toggled={language.spellcheckerEnabled}
           labelPosition='right'
           label='Spell-checker (Requires Restart)'
-          onToggle={(evt, toggled) => settingsActions.setEnableSpellchecker(toggled)} />
+          onToggle={(evt, toggled) => {
+            showRestart()
+            settingsActions.setEnableSpellchecker(toggled)
+          }} />
         <SelectField
           floatingLabelText='Spell-checker language (Requires Restart)'
           value={language.spellcheckerLanguage}

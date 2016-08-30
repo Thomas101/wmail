@@ -6,6 +6,7 @@ const {
 const scDictionaryStore = require('../../stores/scDictionary/scDictionaryStore')
 const scDictionaryActions = require('../../stores/scDictionary/scDictionaryActions')
 const {
+  ipcRenderer,
   remote: {shell}
 } = window.nativeRequire('electron')
 
@@ -92,6 +93,13 @@ module.exports = React.createClass({
     scDictionaryActions.finishDictionaryChange()
   },
 
+  /**
+  * Relaunches the app
+  */
+  handleRelaunch () {
+    ipcRenderer.send('relaunch-app', { })
+  },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
@@ -140,10 +148,15 @@ module.exports = React.createClass({
               <span> dictionary has been downloaded and installed. To apply these changes restart the app</span>
             </p>
             <RaisedButton
-              label='Finish'
+              label='Restart Now'
               disableTouchRipple
               disableFocusRipple
               primary
+              onTouchTap={this.handleRelaunch} />
+            <FlatButton
+              label='Restart Later'
+              disableTouchRipple
+              disableFocusRipple
               onTouchTap={this.handleCancel} />
           </StepContent>
         </Step>

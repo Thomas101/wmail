@@ -17,6 +17,9 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   displayName: 'GeneralSettings',
+  propTypes: {
+    showRestart: React.PropTypes.func.isRequired
+  },
 
   /* **************************************************************************/
   // Lifecycle
@@ -70,10 +73,10 @@ module.exports = React.createClass({
         <Container fluid>
           <Row>
             <Col md={6}>
-              <UISettingsSection ui={ui} os={os} />
+              <UISettingsSection ui={ui} os={os} showRestart={this.props.showRestart} />
               <NotificationSettingsSection os={os} />
               <DownloadSettingsSection os={os} />
-              <LanguageSettingsSection language={language} />
+              <LanguageSettingsSection language={language} showRestart={this.props.showRestart} />
             </Col>
             <Col md={6}>
               <TraySettingsSection tray={tray} />

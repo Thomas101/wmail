@@ -8,6 +8,7 @@ const AccountSettings = require('./AccountSettings')
 const AdvancedSettings = require('./AdvancedSettings')
 const Colors = require('material-ui/styles/colors')
 const styles = require('./settingStyles')
+const { ipcRenderer } = window.nativeRequire('electron')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -21,12 +22,23 @@ module.exports = React.createClass({
   },
 
   /* **************************************************************************/
+  // Component Lifecycle
+  /* **************************************************************************/
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.open !== nextProps.open) {
+      this.setState({ showRestart: false })
+    }
+  },
+
+  /* **************************************************************************/
   // Data lifecycle
   /* **************************************************************************/
 
   getInitialState () {
     return {
-      currentTab: 'general'
+      currentTab: 'general',
+      showRestart: false
     }
   },
 
@@ -43,26 +55,39 @@ module.exports = React.createClass({
     }
   },
 
+  /**
+  * Shows the option to restart
+  */
+  handleShowRestart () {
+    this.setState({ showRestart: true })
+  },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
 
   shouldComponentUpdate (nextProps, nextState) {
     if (this.state.currentTab !== nextState.currentTab) { return true }
+    if (this.state.showRestart !== nextState.showRestart) { return true }
     if (nextProps.open !== this.props.open) { return true }
 
     return false
   },
 
   render () {
-    const buttons = (
+    const buttons = this.state.showRestart ? (
+      <div style={{ textAlign: 'right' }}>
+        <RaisedButton label='Close' style={{ marginRight: 16 }} onClick={() => this.props.onRequestClose()} />
+        <RaisedButton label='Restart' primary onClick={() => ipcRenderer.send('relaunch-app', { })} />
+      </div>
+    ) : (
       <div style={{ textAlign: 'right' }}>
         <RaisedButton label='Close' primary onClick={() => this.props.onRequestClose()} />
       </div>
     )
 
     const tabInfo = [
-      { label: 'General', value: 'general', component: (<GeneralSettings />) },
+      { label: 'General', value: 'general', component: (<GeneralSettings showRestart={this.handleShowRestart} />) },
       { label: 'Accounts', value: 'accounts', component: (<AccountSettings />) },
       { label: 'Advanced', value: 'advanced', component: (<AdvancedSettings />) }
     ]

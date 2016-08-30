@@ -129,6 +129,11 @@
     windowManager.quit()
   })
 
+  ipcMain.on('relaunch-app', (evt, body) => {
+    app.relaunch()
+    windowManager.quit()
+  })
+
   ipcMain.on('prepare-webview-session', (evt, data) => {
     mailboxesWindow.sessionManager.startManagingSession(data.partition)
   })

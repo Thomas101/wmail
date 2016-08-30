@@ -12,7 +12,8 @@ module.exports = React.createClass({
   displayName: 'UISettingsSection',
   propTypes: {
     ui: React.PropTypes.object.isRequired,
-    os: React.PropTypes.object.isRequired
+    os: React.PropTypes.object.isRequired,
+    showRestart: React.PropTypes.func.isRequired
   },
 
   /* **************************************************************************/
@@ -24,7 +25,7 @@ module.exports = React.createClass({
   },
 
   render () {
-    const {ui, os, ...passProps} = this.props
+    const {ui, os, showRestart, ...passProps} = this.props
 
     return (
       <div {...passProps}>
@@ -35,7 +36,10 @@ module.exports = React.createClass({
               labelPosition='right'
               toggled={ui.showTitlebar}
               label='Show titlebar (Requires Restart)'
-              onToggle={(evt, toggled) => settingsActions.setShowTitlebar(toggled)} />
+              onToggle={(evt, toggled) => {
+                showRestart()
+                settingsActions.setShowTitlebar(toggled)
+              }} />
             )}
           {process.platform === 'darwin' ? undefined : (
             <Toggle
