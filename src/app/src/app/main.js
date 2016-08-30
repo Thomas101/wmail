@@ -23,8 +23,17 @@
   const constants = require('../shared/constants')
   const spellcheck = require('./spellcheck')
   const storage = require('./storage')
+  const settingStore = require('./stores/settingStore')
 
   Object.keys(storage).forEach((k) => storage[k].checkAwake())
+
+  /* ****************************************************************************/
+  // Commandline switches
+  /* ****************************************************************************/
+
+  if (settingStore.app.ignoreGPUBlacklist) {
+    app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true')
+  }
 
   /* ****************************************************************************/
   // Global objects
