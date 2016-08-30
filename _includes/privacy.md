@@ -16,7 +16,7 @@ WMail provides access to Google services such as Gmail in a similar way to your 
 
 ## Reporting a bug
 
-When reporting a bug/issue, you are using Github therefore the information they collect about you is different and can be found on their (Privacy Policy)[https://help.github.com/articles/github-privacy-policy/] page. If you're using Github Enterprise, that policy can be found, (here)[https://enterprise.github.com/privacy].
+When reporting a bug/issue, you are using Github therefore the information they collect about you is different and can be found on their [Privacy Policy](https://help.github.com/articles/github-privacy-policy/) page. If you're using Github Enterprise, that policy can be found, [here](https://enterprise.github.com/privacy).
 
 ## Contacting the Developer
 
