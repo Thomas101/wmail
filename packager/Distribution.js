@@ -104,7 +104,7 @@ class Distribution {
       msiPackager({
         source: builtPath,
         output: msiTargetPath,
-        name: `WMail ${pkg.version} ${pkg.prerelease ? 'Prerelease' : ''}`,
+        name: 'WMail',
         upgradeCode: WINDOWS_UPGRADE_CODE,
         version: pkg.version,
         manufacturer: 'http://thomas101.github.io/wmail',
