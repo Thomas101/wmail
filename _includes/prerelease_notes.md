@@ -1,5 +1,7 @@
 This version forms the first release candidate for version 1.4.0 and is packed full of goodies 😍
 
+**Note for installing on windows** you will need to uninstall any previous versions of WMail before installing this release
+
 # Features
 
 - Support for 38 dictionary languages! Bonjour, Hola, Hallo!
