@@ -8,7 +8,7 @@ const MailboxWindows = require('./Mailbox/MailboxWindows')
 const Sidelist = require('./Sidelist')
 const shallowCompare = require('react-addons-shallow-compare')
 const SettingsDialog = require('./Settings/SettingsDialog')
-const SCDictionaryChangeHandler = require('./SCDictionary/SCDictionaryChangeHandler')
+const DictionaryInstallHandler = require('./DictionaryInstaller/DictionaryInstallHandler')
 const {navigationDispatch} = require('../Dispatch')
 const UpdateCheckDialog = require('./UpdateCheckDialog')
 const flux = {
@@ -89,7 +89,7 @@ module.exports = React.createClass({
           <MailboxWindows />
         </div>
         <SettingsDialog open={this.state.settingsDialog} onRequestClose={this.handleCloseSettings} />
-        <SCDictionaryChangeHandler />
+        <DictionaryInstallHandler />
         <UpdateCheckDialog />
       </div>
     )

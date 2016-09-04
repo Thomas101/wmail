@@ -1,10 +1,11 @@
 const React = require('react')
-const { Toggle, Paper, SelectField, MenuItem } = require('material-ui')
-const settingsActions = require('../../../stores/settings/settingsActions')
-const scDictionaryActions = require('../../../stores/scDictionary/scDictionaryActions')
+const { Toggle, Paper, SelectField, MenuItem, RaisedButton } = require('material-ui')
+const flux = {
+  settings: require('../../../stores/settings'),
+  dictionaries: require('../../../stores/dictionaries')
+}
 const styles = require('../settingStyles')
 const shallowCompare = require('react-addons-shallow-compare')
-const remoteDictionaries = require('shared/remoteDictionaries.json')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -18,17 +19,31 @@ module.exports = React.createClass({
   },
 
   /* **************************************************************************/
-  // UI Events
+  // Component Lifecycle
   /* **************************************************************************/
 
-  handleSpellcheckerLanguageChange (evt, index, value) {
-    if (value !== this.props.language.spellcheckerLanguage) {
-      if (value === this.props.language.defaultSpellcheckerLanguage) {
-        settingsActions.setSpellcheckerLanguage(undefined)
-      } else {
-        scDictionaryActions.startDictionaryChange(value)
-      }
+  componentDidMount () {
+    flux.dictionaries.S.listen(this.dictionariesChanged)
+  },
+
+  componentWillUnmount () {
+    flux.dictionaries.S.unlisten(this.dictionariesChanged)
+  },
+
+  /* **************************************************************************/
+  // Data Lifecycle
+  /* **************************************************************************/
+
+  getInitialState () {
+    return {
+      installedDictionaries: flux.dictionaries.S.getState().sortedInstalledDictionaryInfos()
     }
+  },
+
+  dictionariesChanged (store) {
+    this.setState({
+      installedDictionaries: flux.dictionaries.S.getState().sortedInstalledDictionaryInfos()
+    })
   },
 
   /* **************************************************************************/
@@ -41,14 +56,7 @@ module.exports = React.createClass({
 
   render () {
     const {language, showRestart, ...passProps} = this.props
-
-    const allLanguages = Object.keys(remoteDictionaries)
-      .map((lang) => [lang, remoteDictionaries[lang].name])
-      .sort((a, b) => {
-        if (a[1] < b[1]) return -1
-        if (a[1] > b[1]) return 1
-        return 0
-      })
+    const { installedDictionaries } = this.state
 
     return (
       <Paper zDepth={1} style={styles.paper} {...passProps}>
@@ -59,17 +67,25 @@ module.exports = React.createClass({
           label='Spell-checker (Requires Restart)'
           onToggle={(evt, toggled) => {
             showRestart()
-            settingsActions.setEnableSpellchecker(toggled)
+            flux.settings.A.setEnableSpellchecker(toggled)
           }} />
         <SelectField
           floatingLabelText='Spell-checker language (Requires Restart)'
           value={language.spellcheckerLanguage}
           fullWidth
-          onChange={this.handleSpellcheckerLanguageChange}>
-          {allLanguages.map(([lang, name]) => {
-            return (<MenuItem key={lang} value={lang} primaryText={name} />)
+          onChange={(evt, index, value) => {
+            showRestart()
+            flux.settings.A.setSpellcheckerLanguage(value)
+          }}>
+          {installedDictionaries.map((info) => {
+            return (<MenuItem key={info.lang} value={info.lang} primaryText={info.name} />)
           })}
         </SelectField>
+        <RaisedButton
+          label='Install more Dictionaries'
+          onTouchTap={() => {
+            flux.dictionaries.A.startDictionaryInstall()
+          }} />
       </Paper>
     )
   }

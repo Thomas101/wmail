@@ -2,7 +2,7 @@ module.exports = (function () {
   'use strict'
 
   const { ipcRenderer, webFrame } = require('electron')
-  const DictionaryLoader = require('./DictionaryLoader')
+  const dictionaryLoad = require('./dictionaryLoad')
   const elconsole = require('./elconsole')
 
   let Nodehun
@@ -13,28 +13,36 @@ module.exports = (function () {
     throw ex
   }
 
-  const loader = new DictionaryLoader()
+  const spellchecker = {
+    nodehun: null,
+    language: null
+  }
 
-  // Listen on the start call
-  let spellchecker = null
   ipcRenderer.on('start-spellcheck', (evt, data) => {
     if (!Nodehun) { return }
-    if (spellchecker) { return }
+    if (spellchecker.language === data.language) { return }
 
-    loader.loadFromLanguage(data.language).then((dic) => {
-      spellchecker = new Nodehun(dic.aff, dic.dic)
+    spellchecker.language = data.language
+    dictionaryLoad(data.language).then((dic) => {
+      spellchecker.nodehun = new Nodehun(dic.aff, dic.dic)
       webFrame.setSpellCheckProvider('en-us', true, {
         spellCheck: (text) => {
-          return spellchecker.isCorrectSync(text)
+          return spellchecker.nodehun.isCorrectSync(text)
         }
       })
-    })
+    }, (err) => elconsole.error('Failed to load dictionary', err))
+  })
+
+  ipcRenderer.on('stop-spellcheck', (evt, data) => {
+    spellchecker.nodehun = null
+    spellchecker.language = null
+    webFrame.setSpellCheckProvider('en-us', true, undefined)
   })
 
   return {
-    hasDictionary: () => { return !!spellchecker },
-    getDictionary: () => { return spellchecker },
-    check: (text) => { return spellchecker.isCorrectSync(text) },
-    suggestions: (text) => { return spellchecker.spellSuggestionsSync(text) }
+    hasDictionary: () => { return !!spellchecker.nodehun },
+    getDictionary: () => { return spellchecker.nodehun },
+    check: (text) => { return spellchecker.nodehun.isCorrectSync(text) },
+    suggestions: (text) => { return spellchecker.nodehun.spellSuggestionsSync(text) }
   }
 })()

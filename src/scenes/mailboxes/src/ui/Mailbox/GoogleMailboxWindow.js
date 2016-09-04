@@ -209,7 +209,7 @@ module.exports = React.createClass({
     const languageSettings = flux.settings.S.getState().language
     if (languageSettings.spellcheckerEnabled) {
       this.refs.browser.send('start-spellcheck', {
-        language: languageSettings.customSpellcheckerLanguage
+        language: languageSettings.spellcheckerLanguage
       })
     }
   },
