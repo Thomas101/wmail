@@ -185,8 +185,7 @@ module.exports = React.createClass({
       readColor: TrayRenderer.themedReadColor(traySettings.readColor, traySettings.isReadColorDefault),
       unreadBackgroundColor: traySettings.unreadBackgroundColor,
       readBackgroundColor: traySettings.readBackgroundColor,
-      size: this.trayIconSize(),
-      pixelRatio: 10
+      size: this.trayIconSize()
     }).then((image) => {
       this.appTray.setImage(image)
       this.appTray.setToolTip(this.renderTooltip())

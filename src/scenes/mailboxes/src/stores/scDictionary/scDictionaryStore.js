@@ -1,7 +1,7 @@
 const alt = require('../alt')
 const actions = require('./scDictionaryActions')
 const settingsActions = require('../settings/settingsActions')
-const SpellcheckManager = require('shared/SpellcheckManager')
+const remoteDictionaries = require('shared/remoteDictionaries.json')
 const LanguageSettings = require('shared/Models/Settings/LanguageSettings')
 
 const fs = require('fs')
@@ -83,7 +83,7 @@ class SCDictionaryStore {
   handleInstallDictionary () {
     if (this.dictionaryInstall.inflight || !this.changeTo) { return }
     const changeTo = this.changeTo
-    const info = SpellcheckManager.remoteDictionaries[changeTo]
+    const info = remoteDictionaries[changeTo]
 
     this.dictionaryInstall = { inflight: true, success: false, error: false }
 

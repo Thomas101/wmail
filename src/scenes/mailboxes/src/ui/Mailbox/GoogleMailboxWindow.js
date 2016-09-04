@@ -158,13 +158,8 @@ module.exports = React.createClass({
       case 'page-click': this.handleBrowserPageClick(evt); break
       case 'open-settings': navigationDispatch.openSettings(); break
       case 'js-new-window': this.handleBrowserJSNewWindow(evt); break
-      case 'undo': this.refs.browser.undo(); break
-      case 'redo': this.refs.browser.redo(); break
-      case 'cut': this.refs.browser.cut(); break
-      case 'copy': this.refs.browser.copy(); break
-      case 'paste': this.refs.browser.paste(); break
-      case 'pasteMatchStyle': this.refs.browser.pasteAndMatchStyle(); break
-      case 'selectAll': this.refs.browser.selectAll(); break
+      case 'elevated-log': this.elevatedLog(evt); break
+      case 'elevated-error': this.elevatedError(evt); break
       default:
     }
   },
@@ -249,6 +244,10 @@ module.exports = React.createClass({
     }
   },
 
+  /* **************************************************************************/
+  // Browser Events : Focus
+  /* **************************************************************************/
+
   /**
   * Handles a browser focusing
   */
@@ -261,6 +260,26 @@ module.exports = React.createClass({
   */
   handleBrowserBlurred () {
     mailboxDispatch.blurred(this.props.mailboxId)
+  },
+
+  /* **************************************************************************/
+  // Browser Events : Logging
+  /* **************************************************************************/
+
+  /**
+  * Handles an elevated log from the client
+  * @param evt: the event that fired
+  */
+  elevatedLog (evt) {
+    console.log.apply(this, ['[ELEVATED LOG ' + this.props.mailboxId + ']'].concat(evt.channel.messages))
+  },
+
+  /**
+  * Handles an elevated error from the client
+  * @param evt: the event that fired
+  */
+  elevatedError (evt) {
+    console.error.apply(this, ['[ELEVATED ERROR ' + this.props.mailboxId + ']'].concat(evt.channel.messages))
   },
 
   /* **************************************************************************/

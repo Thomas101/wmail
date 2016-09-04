@@ -2,7 +2,7 @@ const React = require('react')
 const { Dialog } = require('material-ui')
 const scDictionaryStore = require('../../stores/scDictionary/scDictionaryStore')
 const SCDictionaryChangeStepper = require('./SCDictionaryChangeStepper')
-const SpellcheckManager = require('shared/SpellcheckManager')
+const remoteDictionaries = require('shared/remoteDictionaries.json')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -49,7 +49,7 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   render () {
-    const info = !this.state.isChanging ? {} : SpellcheckManager.remoteDictionaries[this.state.changingLang]
+    const info = !this.state.isChanging ? {} : remoteDictionaries[this.state.changingLang]
 
     return (
       <Dialog
@@ -59,7 +59,7 @@ module.exports = React.createClass({
         {!this.state.isChanging ? undefined : (
           <SCDictionaryChangeStepper
             key={this.state.changingId}
-            info={SpellcheckManager.remoteDictionaries[this.state.changingLang]}
+            info={remoteDictionaries[this.state.changingLang]}
             lang={this.state.changingLang} />
         )}
       </Dialog>

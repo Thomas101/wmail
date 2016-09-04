@@ -3,5 +3,5 @@ module.exports = {
   credentials: require('./credentials'),
   constants: require('./constants'),
   Models: require('./Models'),
-  SpellcheckManager: require('./SpellcheckManager')
+  remoteDictionaries: require('./remoteDictionaries.json')
 }

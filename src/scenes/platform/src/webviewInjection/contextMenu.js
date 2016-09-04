@@ -2,8 +2,7 @@
   'use strict'
 
   const { remote, ipcRenderer } = require('electron')
-  const { shell, clipboard } = remote
-  const ContextMenuView = require('./ContextMenuView')
+  const { shell, clipboard, Menu } = remote
 
   let spellchecker
   const textOnlyRE = new RegExp(/[^a-z]+/gi)
@@ -32,8 +31,6 @@
   }
 
   document.addEventListener('contextmenu', (evt) => {
-    const x = evt.clientX
-    const y = evt.clientY
     const selection = window.getSelection()
     const textSelection = selection.toString().trim()
     const menuTemplate = []
@@ -44,32 +41,22 @@
       if (isTexteditorTarget(evt)) {
         if (textOnlyRE.exec(textSelection) === null) {
           if (!spellchecker.check(textSelection)) {
-            menuTemplate.push({ label: 'Fetching Suggestions...', enabled: false })
-            menuTemplate.push({ type: 'separator' })
-
-            spellchecker.suggestions(textSelection).then((suggestions) => {
-              menuTemplate.splice(0, 1)
-
-              if (suggestions.length) {
-                suggestions.reverse().forEach((s) => {
-                  menuTemplate.unshift({
-                    label: s,
-                    click: () => {
-                      const range = selection.getRangeAt(0)
-                      range.deleteContents()
-                      range.insertNode(document.createTextNode(s))
-                    }
-                  })
+            const suggestions = spellchecker.suggestions(textSelection)
+            if (suggestions.length) {
+              suggestions.forEach((suggestion) => {
+                menuTemplate.push({
+                  label: suggestion,
+                  click: () => {
+                    const range = selection.getRangeAt(0)
+                    range.deleteContents()
+                    range.insertNode(document.createTextNode(suggestion))
+                  }
                 })
-              } else {
-                menuTemplate.unshift({ label: 'No Spelling Suggestions', enabled: false })
-              }
-              menu.update(menuTemplate)
-            }, (_err) => {
-              menuTemplate.splice(0, 1)
-              menuTemplate.unshift({ label: 'Error Fetching Suggestions', enabled: false })
-              menu.update(menuTemplate)
-            })
+              })
+            } else {
+              menuTemplate.push({ label: 'No Spelling Suggestions', enabled: false })
+            }
+            menuTemplate.push({ type: 'separator' })
           }
         }
       }
@@ -109,7 +96,7 @@
       menuTemplate.push({ label: 'Cut', role: 'cut' })
       menuTemplate.push({ label: 'Copy', role: 'copy' })
       menuTemplate.push({ label: 'Paste', role: 'paste' })
-      menuTemplate.push({ label: 'Paste and match style', role: 'pasteMatchStyle' })
+      menuTemplate.push({ label: 'Paste and match style', role: 'pasteandmatchstyle' })
       menuTemplate.push({ type: 'separator' })
     } else if (textSelection) {
       menuTemplate.push({ label: 'Copy', role: 'copy' })
@@ -124,7 +111,8 @@
         ipcRenderer.sendToHost({ type: 'open-settings' })
       }
     })
-    menu = new ContextMenuView().show(menuTemplate, x, y)
+    menu = Menu.buildFromTemplate(menuTemplate)
+    menu.popup(remote.getCurrentWindow())
   }, false)
 
   module.exports = {

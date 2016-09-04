@@ -1,32 +1,22 @@
 const fs = require('fs')
-const LanguageSettings = require('./Models/Settings/LanguageSettings')
-const remoteDictionaries = require('./remoteDictionaries.json')
+const LanguageSettings = require('../../../app/shared/Models/Settings/LanguageSettings')
+const enUS = require('../../../app/node_modules/dictionary-en-us')
+const pkg = require('../../../app/package.json')
+const AppDirectory = require('../../../app/node_modules/appdirectory')
 
-class SpellcheckManager {
+const appDirectory = new AppDirectory(pkg.name).userData()
 
-  /* ****************************************************************************/
-  // Class
-  /* ****************************************************************************/
-
-  static get remoteDictionaries () { return remoteDictionaries }
+class DictioanryLoader {
 
   /* ****************************************************************************/
   // Lifecycle
   /* ****************************************************************************/
 
-  constructor (appDirectory, enUSLoader, Typo) {
+  constructor () {
     const paths = LanguageSettings.customDictionaryPaths(appDirectory)
     this._affPath = paths.aff
     this._dicPath = paths.dic
-    this._enUSLoader = enUSLoader
-    this._Typo = Typo
   }
-
-  /* ****************************************************************************/
-  // Properties
-  /* ****************************************************************************/
-
-  get remoteDictionaries () { return remoteDictionaries }
 
   /* ****************************************************************************/
   // Loading
@@ -37,14 +27,14 @@ class SpellcheckManager {
   * @param isCustom: true to load a custom dictionary
   * @return promise with {aff, dic} pre-converted to strings
   */
-  loadDictionary (isCustom) {
+  load (isCustom) {
     if (isCustom) {
       return new Promise((resolve, reject) => {
-        fs.readFile(this._affPath, 'utf8', (err, aff) => {
+        fs.readFile(this._affPath, (err, aff) => {
           if (err) {
             reject(err)
           } else {
-            fs.readFile(this._dicPath, 'utf8', (err, dic) => {
+            fs.readFile(this._dicPath, (err, dic) => {
               if (err) {
                 reject(err)
               } else {
@@ -56,11 +46,11 @@ class SpellcheckManager {
       })
     } else {
       return new Promise((resolve, reject) => {
-        this._enUSLoader((err, load) => {
+        enUS((err, load) => {
           if (err) {
             reject(err)
           } else {
-            resolve({ aff: load.aff.toString(), dic: load.dic.toString() })
+            resolve({ aff: load.aff, dic: load.dic })
           }
         })
       })
@@ -71,11 +61,9 @@ class SpellcheckManager {
   * Loads the spellchecker
   * @param language='en_US': the language that we're loading
   */
-  loadEngine (language = 'en_US') {
-    return Promise.resolve()
-      .then(() => this.loadDictionary(language !== 'en_US'))
-      .then((load) => new this._Typo(language, load.aff, load.dic))
+  loadFromLanguage (language = 'en_US') {
+    return this.load(language !== 'en_US')
   }
 }
 
-module.exports = SpellcheckManager
+module.exports = DictioanryLoader
