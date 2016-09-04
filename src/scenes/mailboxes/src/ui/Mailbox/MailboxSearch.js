@@ -9,6 +9,7 @@ module.exports = React.createClass({
 
   displayName: 'MailboxSearch',
   propTypes: {
+    isSearching: React.PropTypes.bool.isRequired,
     onSearchChange: React.PropTypes.func,
     onSearchNext: React.PropTypes.func,
     onSearchCancel: React.PropTypes.func
@@ -89,17 +90,20 @@ module.exports = React.createClass({
   // Rendering
   /* **************************************************************************/
 
-  /**
-  * Renders the app
-  */
   render () {
     const passProps = Object.assign({}, this.props)
     delete passProps.onSearchCancel
     delete passProps.onSearchChange
     delete passProps.onSearchNext
+    delete passProps.isSearching
+
+    const className = [
+      'mailbox-search',
+      this.props.isSearching ? 'active' : undefined
+    ].concat(this.props.className).filter((c) => !!c).join(' ')
 
     return (
-      <Paper {...passProps}>
+      <Paper {...passProps} className={className}>
         <TextField
           ref='textField'
           hintText='Search'

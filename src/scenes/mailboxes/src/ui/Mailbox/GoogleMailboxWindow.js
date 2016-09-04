@@ -12,6 +12,8 @@ const {mailboxDispatch, navigationDispatch} = require('../../Dispatch')
 const TimerMixin = require('react-timer-mixin')
 const {WebView} = require('../../Components')
 const MailboxSearch = require('./MailboxSearch')
+const MailboxTargetUrl = require('./MailboxTargetUrl')
+const shallowCompare = require('react-addons-shallow-compare')
 
 module.exports = React.createClass({
   displayName: 'GoogleMailboxWindow',
@@ -77,7 +79,8 @@ module.exports = React.createClass({
       isActive: mailboxStore.activeMailboxId() === props.mailboxId,
       isSearching: mailboxStore.isSearchingMailbox(props.mailboxId),
       browserSrc: mailbox.url,
-      language: flux.settings.S.getState().language
+      language: flux.settings.S.getState().language,
+      focusedUrl: null
     }
   },
 
@@ -379,23 +382,23 @@ module.exports = React.createClass({
   // Rendering
   /* **************************************************************************/
 
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
+  },
+
   /**
   * Renders the app
   */
   render () {
     if (!this.state.mailbox) { return false }
+    const { isActive, browserSrc, focusedUrl, isSearching } = this.state
 
     const className = [
       'mailbox-window',
-      this.state.isActive ? 'active' : undefined
+      isActive ? 'active' : undefined
     ].filter((c) => !!c).join(' ')
 
-    const searchClassName = [
-      'mailbox-search',
-      this.state.isSearching ? 'active' : undefined
-    ].filter((c) => !!c).join(' ')
-
-    if (this.state.isActive) {
+    if (isActive) {
       this.setTimeout(() => { this.refs.browser.focus() })
     }
 
@@ -405,16 +408,18 @@ module.exports = React.createClass({
           ref='browser'
           preload='../platform/webviewInjection/google'
           partition={'persist:' + this.props.mailboxId}
-          src={this.state.browserSrc}
+          src={browserSrc}
           domReady={this.handleBrowserDomReady}
           ipcMessage={this.dispatchBrowserIPCMessage}
           newWindow={this.handleBrowserOpenNewWindow}
           willNavigate={this.handleBrowserWillNavigate}
           focus={this.handleBrowserFocused}
-          blur={this.handleBrowserBlurred} />
+          blur={this.handleBrowserBlurred}
+          updateTargetUrl={(evt) => this.setState({ focusedUrl: evt.url !== '' ? evt.url : null })} />
+        <MailboxTargetUrl url={focusedUrl} />
         <MailboxSearch
           ref='search'
-          className={searchClassName}
+          isSearching={isSearching}
           onSearchChange={this.handleSearchChanged}
           onSearchNext={this.handleSearchNext}
           onSearchCancel={this.handleSearchCancel} />

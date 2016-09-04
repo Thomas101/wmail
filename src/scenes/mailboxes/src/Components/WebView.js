@@ -25,7 +25,8 @@ const WEBVIEW_EVENTS = [
   'plugin-crashed',
   'destroyed',
   'focus',
-  'blur'
+  'blur',
+  'update-target-url'
 ]
 
 const WEBVIEW_PROPS = {
