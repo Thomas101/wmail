@@ -33,6 +33,7 @@ module.exports = React.createClass({
   componentDidMount () {
     // Stores
     flux.mailbox.S.listen(this.mailboxesChanged)
+    flux.settings.S.listen(this.settingsChanged)
 
     // Handle dispatch events
     mailboxDispatch.on('devtools', this.handleOpenDevTools)
@@ -52,6 +53,7 @@ module.exports = React.createClass({
   componentWillUnmount () {
     // Stores
     flux.mailbox.S.unlisten(this.mailboxesChanged)
+    flux.settings.S.unlisten(this.settingsChanged)
 
     // Handle dispatch events
     mailboxDispatch.off('devtools', this.handleOpenDevTools)
@@ -74,7 +76,8 @@ module.exports = React.createClass({
       mailbox: mailbox,
       isActive: mailboxStore.activeMailboxId() === props.mailboxId,
       isSearching: mailboxStore.isSearchingMailbox(props.mailboxId),
-      browserSrc: mailbox.url
+      browserSrc: mailbox.url,
+      language: flux.settings.S.getState().language
     }
   },
 
@@ -108,6 +111,22 @@ module.exports = React.createClass({
       }
     } else {
       this.setState({ mailbox: null })
+    }
+  },
+
+  settingsChanged (store) {
+    // Not strictly the react way to do this here, but we need a point to push
+    // changes down to the webview and this seems like the most sensible place
+    // to do that
+    if (store.language !== this.state.language) {
+      const prevLanguage = this.state.language
+      const nextLanguage = store.language
+
+      if (prevLanguage.spellcheckerLanguage !== nextLanguage.spellcheckerLanguage) {
+        this.refs.browser.send('start-spellcheck', { language: nextLanguage.spellcheckerLanguage })
+      }
+
+      this.setState({ language: nextLanguage })
     }
   },
 

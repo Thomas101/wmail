@@ -33,12 +33,6 @@ module.exports = (function () {
     }, (err) => elconsole.error('Failed to load dictionary', err))
   })
 
-  ipcRenderer.on('stop-spellcheck', (evt, data) => {
-    spellchecker.nodehun = null
-    spellchecker.language = null
-    webFrame.setSpellCheckProvider('en-us', true, undefined)
-  })
-
   return {
     hasDictionary: () => { return !!spellchecker.nodehun },
     getDictionary: () => { return spellchecker.nodehun },

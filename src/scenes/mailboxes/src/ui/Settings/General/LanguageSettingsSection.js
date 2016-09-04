@@ -70,22 +70,17 @@ module.exports = React.createClass({
             flux.settings.A.setEnableSpellchecker(toggled)
           }} />
         <SelectField
-          floatingLabelText='Spell-checker language (Requires Restart)'
+          floatingLabelText='Spell-checker language'
           value={language.spellcheckerLanguage}
           fullWidth
-          onChange={(evt, index, value) => {
-            showRestart()
-            flux.settings.A.setSpellcheckerLanguage(value)
-          }}>
+          onChange={(evt, index, value) => { flux.settings.A.setSpellcheckerLanguage(value) }}>
           {installedDictionaries.map((info) => {
             return (<MenuItem key={info.lang} value={info.lang} primaryText={info.name} />)
           })}
         </SelectField>
         <RaisedButton
           label='Install more Dictionaries'
-          onTouchTap={() => {
-            flux.dictionaries.A.startDictionaryInstall()
-          }} />
+          onTouchTap={() => { flux.dictionaries.A.startDictionaryInstall() }} />
       </Paper>
     )
   }
