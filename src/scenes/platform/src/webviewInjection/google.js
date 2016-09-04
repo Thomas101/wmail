@@ -8,6 +8,7 @@
   require('./keyboardNavigation')
   require('./clickReport')
   require('./googleWindowOpen')
+  require('./custom')
 
   const ipc = require('electron').ipcRenderer
 

@@ -89,6 +89,16 @@ class Mailbox extends Model {
   /* **************************************************************************/
 
   get google () { return this.__google__ }
+
+  /* **************************************************************************/
+  // Properties : Custom injectables
+  /* **************************************************************************/
+
+  get customCSS () { return this.__data__.customCSS }
+  get hasCustomCSS () { return !!this.customCSS }
+
+  get customJS () { return this.__data__.customJS }
+  get hasCustomJS () { return !!this.customJS }
 }
 
 module.exports = Mailbox

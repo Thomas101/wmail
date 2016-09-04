@@ -191,6 +191,59 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   /**
+  * Handles the Browser DOM becoming ready
+  */
+  handleBrowserDomReady () {
+    // Push the settings across
+    this.refs.browser.setZoomLevel(this.state.mailbox.zoomFactor)
+
+    const languageSettings = flux.settings.S.getState().language
+    if (languageSettings.spellcheckerEnabled) {
+      this.refs.browser.send('start-spellcheck', {
+        language: languageSettings.spellcheckerLanguage
+      })
+    }
+
+    // Push the custom user content
+    if (this.state.mailbox.hasCustomCSS || this.state.mailbox.hasCustomJS) {
+      this.refs.browser.send('inject-custom-content', {
+        css: '* { background-color:red !important; }',
+        js: 'alert("hello")'
+      })
+    }
+  },
+
+  /* **************************************************************************/
+  // Browser Events : Navigation
+  /* **************************************************************************/
+
+  /**
+  * Handles a browser receiving a click in the window
+  * @param evt: the event that fired
+  */
+  handleBrowserPageClick (evt) {
+    if (!flux.google.S.getState().hasOpenUnreadCountRequest(this.state.mailbox.id)) {
+      flux.google.A.syncMailboxUnreadCount(this.state.mailbox.id)
+    }
+  },
+
+  /**
+  * Handles a browser preparing to navigate
+  * @param evt: the event that fired
+  */
+  handleBrowserWillNavigate (evt) {
+    // the lamest protection again dragging files into the window
+    // but this is the only thing I could find that leaves file drag working
+    if (evt.url.indexOf('file://') === 0) {
+      this.setState({ browserSrc: this.state.mailbox.url })
+    }
+  },
+
+  /* **************************************************************************/
+  // Browser Events : New Windows
+  /* **************************************************************************/
+
+  /**
   * Handles a new window open request
   * @param evt: the event
   * @param webview: the webview element the event came from
@@ -222,48 +275,11 @@ module.exports = React.createClass({
   },
 
   /**
-  * Handles the Browser DOM becoming ready
-  */
-  handleBrowserDomReady () {
-    // Push the settings across
-    this.refs.browser.setZoomLevel(this.state.mailbox.zoomFactor)
-
-    const languageSettings = flux.settings.S.getState().language
-    if (languageSettings.spellcheckerEnabled) {
-      this.refs.browser.send('start-spellcheck', {
-        language: languageSettings.spellcheckerLanguage
-      })
-    }
-  },
-
-  /**
-  * Handles a browser receiving a click in the window
-  * @param evt: the event that fired
-  */
-  handleBrowserPageClick (evt) {
-    if (!flux.google.S.getState().hasOpenUnreadCountRequest(this.state.mailbox.id)) {
-      flux.google.A.syncMailboxUnreadCount(this.state.mailbox.id)
-    }
-  },
-
-  /**
   * Handles a new JS browser window
   * @Param evt: the event that fired
   */
   handleBrowserJSNewWindow (evt) {
     shell.openExternal(evt.channel.url, { activate: !flux.settings.S.getState().os.openLinksInBackground })
-  },
-
-  /**
-  * Handles a browser preparing to navigate
-  * @param evt: the event that fired
-  */
-  handleBrowserWillNavigate (evt) {
-    // the lamest protection again dragging files into the window
-    // but this is the only thing I could find that leaves file drag working
-    if (evt.url.indexOf('file://') === 0) {
-      this.setState({ browserSrc: this.state.mailbox.url })
-    }
   },
 
   /* **************************************************************************/
