@@ -1,3 +1,6 @@
+console.log(require('./test/nodehun.node'))
+
+
 ;(function () {
   const {ipcMain, dialog, app, shell} = require('electron')
 
