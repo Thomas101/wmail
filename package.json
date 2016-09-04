@@ -13,7 +13,11 @@
     "package": "node packager --distribution",
     "postinstall": "electron-rebuild",
     "install-all": "echo ':>wmail'; npm install; cd src/app; echo ':>wmail-app'; npm install; cd ../../src/scenes/mailboxes; echo ':>wmail-scenes-mailboxes'; npm install",
-    "outdated-all": "echo ':>wmail'; npm outdated; cd src/app; echo ':>wmail-app'; npm outdated; cd ../../src/scenes/mailboxes; echo ':>wmail-scenes-mailboxes'; npm outdated"
+    "outdated-all": "echo ':>wmail'; npm outdated; cd src/app; echo ':>wmail-app'; npm outdated; cd ../../src/scenes/mailboxes; echo ':>wmail-scenes-mailboxes'; npm outdated",
+    "dev:platform": "webpack --task=platform; electron bin/app/index.js",
+    "dev:app": "webpack --task=app; electron bin/app/index.js",
+    "dev:mailboxes": "webpack --task=mailboxes; electron bin/app/index.js",
+    "dev:assets": "webpack --task=assets; electron bin/app/index.js"
   },
   "keywords": [],
   "author": "Thomas Beverley",
