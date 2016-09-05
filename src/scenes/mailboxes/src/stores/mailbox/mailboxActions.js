@@ -97,8 +97,26 @@ class MailboxActions {
     })
   }
 
+  /**
+  * Sets the custom css
+  * @param id: the mailbox id
+  * @param css: the css code
+  */
+  setCustomCSS (id, css) {
+    return this.update(id, { customCSS: css })
+  }
+
+  /**
+  * Sets the custom js
+  * @param id: the mailbox id
+  * @param js: the js code
+  */
+  setCustomJS (id, js) {
+    return this.update(id, { customJS: js })
+  }
+
   /* **************************************************************************/
-  // Updating: Active
+  // Updating: Zoom
   /* **************************************************************************/
 
   /**

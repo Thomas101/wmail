@@ -40,6 +40,7 @@ module.exports = React.createClass({
     // Handle dispatch events
     mailboxDispatch.on('devtools', this.handleOpenDevTools)
     mailboxDispatch.on('refocus', this.handleRefocus)
+    mailboxDispatch.on('reload', this.handleReload)
     mailboxDispatch.on('openMessage', this.handleOpenMessage)
     ipcRenderer.on('mailbox-window-find-start', this.handleIPCSearchStart)
     ipcRenderer.on('mailbox-window-find-next', this.handleIPCSearchNext)
@@ -158,6 +159,16 @@ module.exports = React.createClass({
   },
 
   /**
+  * Handles reloading the mailbox
+  * @param evt: the event that fired
+  */
+  handleReload (evt) {
+    if (evt.mailboxId === this.props.mailboxId) {
+      this.refs.browser.reload()
+    }
+  },
+
+  /**
   * Handles opening a new message
   * @param evt: the event that fired
   */
@@ -207,8 +218,8 @@ module.exports = React.createClass({
     // Push the custom user content
     if (this.state.mailbox.hasCustomCSS || this.state.mailbox.hasCustomJS) {
       this.refs.browser.send('inject-custom-content', {
-        css: '* { background-color:red !important; }',
-        js: 'alert("hello")'
+        css: this.state.mailbox.customCSS,
+        js: this.state.mailbox.customJS
       })
     }
   },

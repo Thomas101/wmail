@@ -18,6 +18,14 @@ class MailboxDispatch {
   }
 
   /**
+  * Reloads a mailbox
+  * @param mailboxId: the id of mailbox
+  */
+  reload (mailboxId) {
+    this.emit('reload', { mailboxId: mailboxId })
+  }
+
+  /**
   * Emis a blurred event for a mailbox
   * @param mailboxId: the id of the mailbox
   */

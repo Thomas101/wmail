@@ -1,5 +1,7 @@
 const React = require('react')
-const {Paper, Toggle} = require('material-ui')
+const {Paper, Toggle, SelectField, MenuItem} = require('material-ui')
+const Mailbox = require('shared/Models/Mailbox/Mailbox')
+const Google = require('shared/Models/Mailbox/Google')
 const mailboxActions = require('../../../stores/mailbox/mailboxActions')
 const styles = require('../settingStyles')
 const shallowCompare = require('react-addons-shallow-compare')
@@ -24,6 +26,7 @@ module.exports = React.createClass({
 
   render () {
     const { mailbox, ...passProps } = this.props
+
     return (
       <Paper zDepth={1} style={styles.paper} {...passProps}>
         <h1 style={styles.subheading}>Unread &amp; Notifications</h1>
@@ -42,6 +45,50 @@ module.exports = React.createClass({
           label='Show notifications'
           labelPosition='right'
           onToggle={(evt, toggled) => mailboxActions.setShowNotifications(mailbox.id, toggled)} />
+        {mailbox.type === Mailbox.TYPE_GINBOX ? (
+          <SelectField
+            fullWidth
+            value={mailbox.google.unreadMode}
+            onChange={(evt, index, unreadMode) => {
+              mailboxActions.updateGoogleConfig(this.props.mailbox.id, { unreadMode: unreadMode })
+            }}
+            floatingLabelText='Unread Mode'>
+            <MenuItem
+              key={Google.UNREAD_MODES.INBOX_UNREAD}
+              value={Google.UNREAD_MODES.INBOX_UNREAD}
+              primaryText='All Unread Messages' />
+            <MenuItem
+              key={Google.UNREAD_MODES.INBOX}
+              value={Google.UNREAD_MODES.INBOX}
+              primaryText='All Messages in inbox' />
+          </SelectField>
+        ) : undefined}
+        {mailbox.type === Mailbox.TYPE_GMAIL ? (
+          <SelectField
+            fullWidth
+            value={mailbox.google.unreadMode}
+            onChange={(evt, index, unreadMode) => {
+              mailboxActions.updateGoogleConfig(this.props.mailbox.id, { unreadMode: unreadMode })
+            }}
+            floatingLabelText='Unread Mode'>
+            <MenuItem
+              key={Google.UNREAD_MODES.INBOX_UNREAD}
+              value={Google.UNREAD_MODES.INBOX_UNREAD}
+              primaryText='All Unread Messages' />
+            <MenuItem
+              key={Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD}
+              value={Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD}
+              primaryText='Unread Messages in Primary Category' />
+            <MenuItem
+              key={Google.UNREAD_MODES.INBOX_UNREAD_IMPORTANT}
+              value={Google.UNREAD_MODES.INBOX_UNREAD_IMPORTANT}
+              primaryText='Unread Important Messages' />
+            <MenuItem
+              key={Google.UNREAD_MODES.INBOX}
+              value={Google.UNREAD_MODES}
+              primaryText='All Messages in inbox' />
+          </SelectField>
+        ) : undefined}
       </Paper>
     )
   }

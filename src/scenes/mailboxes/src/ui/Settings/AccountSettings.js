@@ -4,13 +4,11 @@ const {
   Grid: { Container, Row, Col }
 } = require('../../Components')
 const mailboxStore = require('../../stores/mailbox/mailboxStore')
-const Mailbox = require('shared/Models/Mailbox/Mailbox')
 const styles = require('./settingStyles')
 
-const GoogleInboxAccountSettings = require('./Accounts/GoogleInboxAccountSettings')
-const GoogleMailAccountSettings = require('./Accounts/GoogleMailAccountSettings')
 const AccountAvatarSettings = require('./Accounts/AccountAvatarSettings')
 const AccountUnreadSettings = require('./Accounts/AccountUnreadSettings')
+const AccountCustomCodeSettings = require('./Accounts/AccountCustomCodeSettings')
 
 module.exports = React.createClass({
   displayName: 'AccountSettings',
@@ -74,13 +72,6 @@ module.exports = React.createClass({
   renderMailboxes () {
     const selected = this.state.selected
 
-    let accountSpecific
-    if (selected.type === Mailbox.TYPE_GINBOX) {
-      accountSpecific = <GoogleInboxAccountSettings mailbox={selected} />
-    } else if (selected.type === Mailbox.TYPE_GMAIL) {
-      accountSpecific = <GoogleMailAccountSettings mailbox={selected} />
-    }
-
     let avatarSrc = ''
     if (selected.hasCustomAvatar) {
       avatarSrc = mailboxStore.getState().getAvatar(selected.customAvatarId)
@@ -122,10 +113,10 @@ module.exports = React.createClass({
             </Col>
             <Col md={6}>
               <AccountAvatarSettings mailbox={selected} />
+              <AccountCustomCodeSettings mailbox={selected} />
             </Col>
           </Row>
         </Container>
-        {accountSpecific}
       </div>
     )
   },
