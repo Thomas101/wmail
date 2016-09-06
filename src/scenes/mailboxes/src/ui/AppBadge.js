@@ -3,11 +3,31 @@ const shallowCompare = require('react-addons-shallow-compare')
 const { remote } = window.nativeRequire('electron')
 const {nativeImage, app} = remote
 
-module.exports = React.createClass({
+const AppBadge = React.createClass({
   displayName: 'AppBadge',
 
   propTypes: {
     unreadCount: React.PropTypes.number.isRequired
+  },
+  statics: {
+    /**
+    * @return true if the current platform supports app badges
+    */
+    supportsAppBadge () {
+      if (process.platform === 'darwin') {
+        return true
+      } else if (process.platform === 'linux' && app.isUnityRunning()) {
+        return true
+      } else {
+        return false
+      }
+    },
+    /**
+    * @return true if this platform supports overlay icons
+    */
+    supportsAppOverlayIcon () {
+      return process.platform === 'win32'
+    }
   },
 
   /* **************************************************************************/
@@ -15,9 +35,9 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   componentWillUnmount () {
-    if (process.platform === 'darwin') {
-      app.dock.setBadge('')
-    } else if (process.platform === 'win32') {
+    if (AppBadge.supportsAppBadge()) {
+      app.setBadgeCount(0)
+    } else if (AppBadge.supportsAppOverlayIcon()) {
       const win = remote.getCurrentWindow()
       win.setOverlayIcon(null, '')
     }
@@ -34,9 +54,9 @@ module.exports = React.createClass({
   render () {
     const { unreadCount } = this.props
 
-    if (process.platform === 'darwin') {
-      app.dock.setBadge(unreadCount === 0 ? '' : unreadCount.toString())
-    } else if (process.platform === 'win32') {
+    if (AppBadge.supportsAppBadge()) {
+      app.setBadgeCount(unreadCount)
+    } else if (AppBadge.supportsAppOverlayIcon()) {
       const win = remote.getCurrentWindow()
       if (unreadCount === 0) {
         win.setOverlayIcon(null, '')
@@ -74,3 +94,5 @@ module.exports = React.createClass({
     return (<div />)
   }
 })
+
+module.exports = AppBadge

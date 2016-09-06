@@ -1,0 +1,2 @@
+sudo chmod 755 /opt/wmail-desktop/WMail
+sudo desktop-file-install /usr/share/applications/wmail.desktop

@@ -19,7 +19,12 @@
     "dev:assets": "webpack --task=assets; electron bin/app/index.js"
   },
   "keywords": [],
-  "author": "Thomas Beverley",
+  "author": {
+    "name": "Thomas Beverley",
+    "email": "tom.beverley.wmail@gmail.com",
+    "url": "https://github.com/Thomas101/"
+  },
+  "homepage": "https://thomas101.github.io/wmail/",
   "license": "BSD-2-Clause",
   "repository": "https://github.com/Thomas101/wmail",
   "main": "bin/app/index.js",
@@ -36,8 +41,8 @@
     "clean-webpack-plugin": "0.1.10",
     "copy-webpack-plugin": "3.0.1",
     "css-loader": "0.24.0",
-    "electron-prebuilt": "1.3.4",
     "electron-packager": "7.7.0",
+    "electron-prebuilt": "1.3.4",
     "extract-text-webpack-plugin": "1.0.1",
     "file-loader": "0.9.0",
     "json-loader": "0.5.4",
@@ -46,8 +51,11 @@
     "less-loader": "2.2.3",
     "msi-packager": "1.3.0",
     "nlf": "1.4.2",
+    "nobin-debian-installer": "0.0.10",
     "style-loader": "0.13.1",
+    "temp": "0.8.3",
     "url-loader": "0.5.7",
+    "uuid": "^2.0.2",
     "webpack": "1.13.2",
     "webpack-target-electron-renderer": "0.4.0",
     "yargs": "5.0.0"

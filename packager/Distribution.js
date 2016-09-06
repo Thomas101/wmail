@@ -4,6 +4,10 @@ const path = require('path')
 const fs = require('fs-extra')
 const childProcess = require('child_process')
 const TaskLogger = require('./TaskLogger')
+const uuid = require('uuid')
+const debianInstaller = require('nobin-debian-installer')
+const temp = require('temp')
+temp.track()
 
 const { ROOT_PATH } = require('./constants')
 const { WINDOWS_UPGRADE_CODE } = require('../src/shared/credentials')
@@ -164,6 +168,62 @@ class Distribution {
   }
 
   /**
+  * Distributes the app for linux (.deb package)
+  * @param pkg: the package info
+  * @param arch: one of 'x86' or 'x64'
+  * @return promise
+  */
+  static distributeLinuxDeb (pkg, arch) {
+    const ARCH_MAPPING = { x86: 'i386', x64: 'amd64' }
+    const CWD_MAPPING = {
+      x86: path.join(ROOT_PATH, 'WMail-linux-ia32'),
+      x64: path.join(ROOT_PATH, 'WMail-linux-x64')
+    }
+
+    return new Promise((resolve, reject) => {
+      const task = TaskLogger.start(`Linux deb (${arch})`)
+      temp.mkdir('wmail_distribution_' + uuid.v4(), (err, tempPath) => {
+        if (err) { task.fail(); reject(err); return }
+
+        fs.writeFileSync(path.join(tempPath, 'wmail.desktop'), [
+          '[Desktop Entry]',
+          'Version=1.0',
+          'Name=WMail',
+          'Comment=' + pkg.description,
+          'Exec=/opt/wmail-desktop/WMail',
+          'Icon=/opt/wmail-desktop/icon.png',
+          'Terminal=false',
+          'Type=Application',
+          'Categories=Application;Network;Email;'
+        ].join('\n'))
+
+        debianInstaller().pack({
+          'package': pkg,
+          info: {
+            name: 'wmail-desktop',
+            arch: ARCH_MAPPING[arch],
+            targetDir: path.join(ROOT_PATH, 'dist'),
+            scripts: {
+              postinst: path.join(__dirname, 'deb/postinst')
+            }
+          }
+        }, [
+          { cwd: CWD_MAPPING[arch], expand: true, src: ['./**'], dest: '/opt/wmail-desktop' },
+          { cwd: tempPath, src: ['./wmail.desktop'], dest: '/usr/share/applications' }
+        ], function (err) {
+          if (err) {
+            task.fail()
+            reject(err)
+          } else {
+            task.finish()
+            resolve()
+          }
+        })
+      })
+    })
+  }
+
+  /**
   * Distributes the app for the given platforms
   * @param platforms: the platforms to distribute for
   * @param pkg: the package info
@@ -180,7 +240,9 @@ class Distribution {
       } else if (platform === 'linux') {
         return acc
           .then(() => Distribution.distributeLinuxTar(pkg, ARCH.X86))
+          .then(() => Distribution.distributeLinuxDeb(pkg, ARCH.X86))
           .then(() => Distribution.distributeLinuxTar(pkg, ARCH.X64))
+          .then(() => Distribution.distributeLinuxDeb(pkg, ARCH.X64))
       } else {
         return acc
       }
