@@ -8,6 +8,13 @@ class TraySettings extends Model {
   get isReadColorDefault () { return !this._value_('readColor', undefined) }
   get unreadColor () { return this._value_('unreadColor', '#C82018') }
   get unreadBackgroundColor () { return this._value_('unreadBackgroundColor', 'transparent') }
+  get dpiMultiplier () {
+    let defaultValue = 1
+    try {
+      defaultValue = window.devicePixelRatio
+    } catch (ex) { }
+    return this._value_('dpiMultiplier', defaultValue)
+  }
 }
 
 module.exports = TraySettings

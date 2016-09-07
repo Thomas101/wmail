@@ -8,13 +8,21 @@ const { BLANK_PNG } = require('shared/b64Assets')
 const { TrayRenderer } = require('../Components')
 
 module.exports = React.createClass({
+  /* **************************************************************************/
+  // Class
+  /* **************************************************************************/
   displayName: 'Tray',
 
-  // Pretty strict on updating. If you're chaning these, change shouldComponentUpdate :)
+  // Pretty strict on updating. If you're changing these, change shouldComponentUpdate :)
   propTypes: {
     unreadCount: React.PropTypes.number.isRequired,
     unreadMessages: React.PropTypes.object.isRequired,
     traySettings: React.PropTypes.object.isRequired
+  },
+  statics: {
+    platformSupportsDpiMultiplier: () => {
+      return process.platform === 'darwin' || process.platform === 'linux'
+    }
   },
 
   /* **************************************************************************/
@@ -116,7 +124,8 @@ module.exports = React.createClass({
       'readColor',
       'readBackgroundColor',
       'showUnreadCount',
-      'isReadColorDefault'
+      'isReadColorDefault',
+      'dpiMultiplier'
     ].findIndex((k) => {
       return this.props.traySettings[k] !== nextProps.traySettings[k]
     }) !== -1
@@ -165,12 +174,25 @@ module.exports = React.createClass({
     return Menu.buildFromTemplate(template)
   },
 
+  /**
+  * @return the tray icon size
+  */
   trayIconSize () {
     switch (process.platform) {
       case 'darwin': return 22
       case 'win32': return 16
-      case 'linux': return 32
+      case 'linux': return 32 * this.props.traySettings.dpiMultiplier
       default: return 32
+    }
+  },
+
+  /**
+  * @return the pixel ratio
+  */
+  trayIconPixelRatio () {
+    switch (process.platform) {
+      case 'darwin': return this.props.traySettings.dpiMultiplier
+      default: return 1
     }
   },
 
@@ -185,7 +207,8 @@ module.exports = React.createClass({
       readColor: TrayRenderer.themedReadColor(traySettings.readColor, traySettings.isReadColorDefault),
       unreadBackgroundColor: traySettings.unreadBackgroundColor,
       readBackgroundColor: traySettings.readBackgroundColor,
-      size: this.trayIconSize()
+      size: this.trayIconSize(),
+      pixelRatio: this.trayIconPixelRatio()
     }).then((image) => {
       this.appTray.setImage(image)
       this.appTray.setToolTip(this.renderTooltip())

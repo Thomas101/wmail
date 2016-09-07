@@ -230,6 +230,13 @@ class SettingsActions {
   setTrayUnreadBackgroundColor (col) {
     return this.update(SEGMENTS.TRAY, 'unreadBackgroundColor', col)
   }
+
+  /**
+  * @param val: the multiplier to apply to the tray icon
+  */
+  setDpiMultiplier (val) {
+    return this.update(SEGMENTS.TRAY, 'dpiMultiplier', parseInt(val))
+  }
 }
 
 const actions = alt.createActions(SettingsActions)
