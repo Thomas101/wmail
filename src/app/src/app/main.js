@@ -23,16 +23,23 @@
   const constants = require('../shared/constants')
   const storage = require('./storage')
   const settingStore = require('./stores/settingStore')
+  const OSSettings = require('../shared/models/settings/OSSettings')
+  const argv = require('yargs').parse(process.argv)
 
   Object.keys(storage).forEach((k) => storage[k].checkAwake())
 
   /* ****************************************************************************/
-  // Commandline switches
+  // Commandline switches & launch args
   /* ****************************************************************************/
 
   if (settingStore.app.ignoreGPUBlacklist) {
     app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true')
   }
+  const openHidden = (function () {
+    if (process.platform === 'darwin' && app.getLoginItemSettings().wasOpenedAsHidden) { return true }
+    if (argv.hidden) { return true }
+    return false
+  })()
 
   /* ****************************************************************************/
   // Global objects
@@ -153,7 +160,7 @@
 
   app.on('ready', () => {
     appMenu.updateApplicationMenu()
-    windowManager.mailboxesWindow.start()
+    windowManager.mailboxesWindow.start(openHidden)
   })
 
   app.on('window-all-closed', function () {
@@ -164,6 +171,21 @@
 
   app.on('activate', function () {
     windowManager.mailboxesWindow.show()
+  })
+
+  /* ****************************************************************************/
+  // Store Events
+  /* ****************************************************************************/
+
+  settingStore.on('changed:os', (evt) => {
+    if (evt.prev.loginOpenMode !== evt.next.loginOpenMode && process.platform === 'darwin') {
+      const mode = evt.next.loginOpenMode
+      const MODES = OSSettings.LOGIN_OPEN_MODES
+      app.setLoginItemSettings({
+        openAtLogin: mode === MODES.ON || mode === MODES.ON_BACKGROUND,
+        openAsHidden: mode === MODES.ON_BACKGROUND
+      })
+    }
   })
 
   /* ****************************************************************************/

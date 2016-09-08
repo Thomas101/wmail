@@ -26,9 +26,10 @@ class WMailWindow extends EventEmitter {
   /**
   * Starts the app
   * @param url: the start url
+  * @param windowPreferences=undefined: additional window preferences to supply
   */
-  start (url) {
-    this.createWindow(this.defaultWindowPreferences(), url)
+  start (url, windowPreferences = undefined) {
+    this.createWindow(this.defaultWindowPreferences(windowPreferences), url)
   }
 
   /* ****************************************************************************/
@@ -37,9 +38,10 @@ class WMailWindow extends EventEmitter {
 
   /**
   * The default window preferences
+  * @param extraPreferences = undefined: extra preferences to merge into the prefs
   * @return the settings
   */
-  defaultWindowPreferences () {
+  defaultWindowPreferences (extraPreferences = undefined) {
     let icon
     if (process.platform === 'win32') {
       icon = path.join(__dirname, '/../../../icons/app.ico')
@@ -47,10 +49,10 @@ class WMailWindow extends EventEmitter {
       icon = path.join(__dirname, '/../../../icons/app.png')
     }
 
-    return {
+    return Object.assign({
       title: 'WMail',
       icon: icon
-    }
+    }, extraPreferences)
   }
 
   /**

@@ -28,16 +28,13 @@ class MailboxesWindow extends WMailWindow {
     this.sessionManager = new MailboxesSessionManager(this)
   }
 
-  start (url) {
-    super.start('file://' + path.join(MAILBOXES_DIR, 'mailboxes.html'))
-  }
-
-  /* ****************************************************************************/
-  // Creation & Closing
-  /* ****************************************************************************/
-
-  defaultWindowPreferences () {
-    return Object.assign(super.defaultWindowPreferences(), {
+  /**
+  * @param url: the url to load
+  * @param hidden=false: true to start the window hidden
+  */
+  start (hidden = false) {
+    super.start('file://' + path.join(MAILBOXES_DIR, 'mailboxes.html'), {
+      show: !hidden,
       minWidth: 770,
       minHeight: 300,
       fullscreenable: true,
@@ -49,6 +46,10 @@ class MailboxesWindow extends WMailWindow {
       }
     })
   }
+
+  /* ****************************************************************************/
+  // Creation & Closing
+  /* ****************************************************************************/
 
   createWindow () {
     super.createWindow.apply(this, Array.from(arguments))

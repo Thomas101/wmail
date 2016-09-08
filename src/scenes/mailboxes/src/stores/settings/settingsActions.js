@@ -107,6 +107,13 @@ class SettingsActions {
     return this.update(SEGMENTS.OS, 'openLinksInBackground', background)
   }
 
+  /**
+  * @param mode: the login open mode
+  */
+  setLoginOpenMode (mode) {
+    return this.update(SEGMENTS.OS, 'loginOpenMode', mode)
+  }
+
   /* **************************************************************************/
   // Proxy Server
   /* **************************************************************************/
