@@ -78,6 +78,21 @@ module.exports = React.createClass({
             return (<MenuItem key={info.lang} value={info.lang} primaryText={info.name} />)
           })}
         </SelectField>
+        <SelectField
+          floatingLabelText='Secondary Spell-checker language'
+          value={language.secondarySpellcheckerLanguage !== null ? language.secondarySpellcheckerLanguage : '__none__'}
+          fullWidth
+          onChange={(evt, index, value) => {
+            flux.settings.A.setSecondarySpellcheckerLanguage(value !== '__none__' ? value : null)
+          }}>
+          {[undefined].concat(installedDictionaries).map((info) => {
+            if (info === undefined) {
+              return (<MenuItem key='__none__' value='__none__' primaryText='None' />)
+            } else {
+              return (<MenuItem key={info.lang} value={info.lang} primaryText={info.name} />)
+            }
+          })}
+        </SelectField>
         <RaisedButton
           label='Install more Dictionaries'
           onTouchTap={() => { flux.dictionaries.A.startDictionaryInstall() }} />

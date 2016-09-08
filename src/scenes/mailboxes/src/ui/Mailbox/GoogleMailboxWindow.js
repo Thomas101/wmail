@@ -126,8 +126,11 @@ module.exports = React.createClass({
       const prevLanguage = this.state.language
       const nextLanguage = store.language
 
-      if (prevLanguage.spellcheckerLanguage !== nextLanguage.spellcheckerLanguage) {
-        this.refs.browser.send('start-spellcheck', { language: nextLanguage.spellcheckerLanguage })
+      if (prevLanguage.spellcheckerLanguage !== nextLanguage.spellcheckerLanguage || prevLanguage.secondarySpellcheckerLanguage !== nextLanguage.secondarySpellcheckerLanguage) {
+        this.refs.browser.send('start-spellcheck', {
+          language: nextLanguage.spellcheckerLanguage,
+          secondaryLanguage: nextLanguage.secondarySpellcheckerLanguage
+        })
       }
 
       this.setState({ language: nextLanguage })
@@ -211,7 +214,8 @@ module.exports = React.createClass({
     const languageSettings = flux.settings.S.getState().language
     if (languageSettings.spellcheckerEnabled) {
       this.refs.browser.send('start-spellcheck', {
-        language: languageSettings.spellcheckerLanguage
+        language: languageSettings.spellcheckerLanguage,
+        secondaryLanguage: languageSettings.secondarySpellcheckerLanguage
       })
     }
 

@@ -61,6 +61,13 @@ class SettingsActions {
     return this.update(SEGMENTS.LANGUAGE, 'spellcheckerLanguage', lang)
   }
 
+  /**
+  * @param lang: the language to set to
+  */
+  setSecondarySpellcheckerLanguage (lang) {
+    return this.update(SEGMENTS.LANGUAGE, 'secondarySpellcheckerLanguage', lang)
+  }
+
   /* **************************************************************************/
   // OS
   /* **************************************************************************/

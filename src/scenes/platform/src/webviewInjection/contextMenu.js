@@ -3,6 +3,7 @@
 
   const { remote, ipcRenderer } = require('electron')
   const { shell, clipboard, Menu } = remote
+  const dictInfo = require('../../../app/shared/remoteDictionaries.json')
 
   let spellchecker
   const textOnlyRE = new RegExp(/[^a-z]+/gi)
@@ -30,11 +31,35 @@
     return false
   }
 
+  /**
+  * Renders menu items for spelling suggestions
+  * @param suggestions: a list of text suggestions
+  * @param textSelection: the current text selection
+  * @return a list of menu items
+  */
+  const renderSuggestionMenuItems = function (suggestions, textSelection) {
+    const menuItems = []
+    if (suggestions.length) {
+      suggestions.forEach((suggestion) => {
+        menuItems.push({
+          label: suggestion,
+          click: () => {
+            const range = textSelection.getRangeAt(0)
+            range.deleteContents()
+            range.insertNode(document.createTextNode(suggestion))
+          }
+        })
+      })
+    } else {
+      menuItems.push({ label: 'No Spelling Suggestions', enabled: false })
+    }
+    return menuItems
+  }
+
   document.addEventListener('contextmenu', (evt) => {
     const selection = window.getSelection()
     const textSelection = selection.toString().trim()
     const menuTemplate = []
-    let menu
 
     // Spell check suggestions
     if (spellchecker && spellchecker.hasDictionary()) {
@@ -42,19 +67,18 @@
         if (textOnlyRE.exec(textSelection) === null) {
           if (!spellchecker.check(textSelection)) {
             const suggestions = spellchecker.suggestions(textSelection)
-            if (suggestions.length) {
-              suggestions.forEach((suggestion) => {
-                menuTemplate.push({
-                  label: suggestion,
-                  click: () => {
-                    const range = selection.getRangeAt(0)
-                    range.deleteContents()
-                    range.insertNode(document.createTextNode(suggestion))
-                  }
-                })
+            if (suggestions.primary && suggestions.secondary) {
+              menuTemplate.push({
+                label: (dictInfo[suggestions.primary.language] || {}).name || suggestions.primary.language,
+                submenu: renderSuggestionMenuItems(suggestions.primary.suggestions, selection)
+              })
+              menuTemplate.push({
+                label: (dictInfo[suggestions.secondary.language] || {}).name || suggestions.secondary.language,
+                submenu: renderSuggestionMenuItems(suggestions.secondary.suggestions, selection)
               })
             } else {
-              menuTemplate.push({ label: 'No Spelling Suggestions', enabled: false })
+              const suggList = (suggestions.primary.suggestions || suggestions.secondary.suggestions || [])
+              renderSuggestionMenuItems(suggList, selection).forEach((item) => menuTemplate.push(item))
             }
             menuTemplate.push({ type: 'separator' })
           }
@@ -111,7 +135,7 @@
         ipcRenderer.sendToHost({ type: 'open-settings' })
       }
     })
-    menu = Menu.buildFromTemplate(menuTemplate)
+    const menu = Menu.buildFromTemplate(menuTemplate)
     menu.popup(remote.getCurrentWindow())
   }, false)
 
