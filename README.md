@@ -1,5 +1,10 @@
 # Wmail
 
+[![Travis Build Status](https://img.shields.io/travis/Thomas101/wmail.svg)](http://travis-ci.org/Thomas101/wmail)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/ThomasBeverley)
+
+
 The missing desktop client for Gmail & Google Inbox. Bringing the Gmail & Google Inbox experience to your desktop in a neatly packaged app
 
 [Download the latest release](http://thomas101.github.io/wmail/download)
@@ -14,9 +19,6 @@ The missing desktop client for Gmail & Google Inbox. Bringing the Gmail & Google
 
 
 ### Building from source
-
-[![Travis Build Status](https://img.shields.io/travis/Thomas101/wmail.svg)](http://travis-ci.org/Thomas101/wmail)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 Feeling brave and want to build from source? Here's what you need to do
 
