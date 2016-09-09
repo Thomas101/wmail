@@ -1,9 +1,8 @@
 const React = require('react')
-const { Toggle, Paper, SelectField, MenuItem } = require('material-ui')
+const { Toggle, Paper } = require('material-ui')
 const settingsActions = require('../../../stores/settings/settingsActions')
 const styles = require('../settingStyles')
 const shallowCompare = require('react-addons-shallow-compare')
-const { OSSettings } = require('shared/Models/Settings')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -27,6 +26,20 @@ module.exports = React.createClass({
 
   render () {
     const {ui, os, showRestart, ...passProps} = this.props
+    // const { OSSettings } = require('shared/Models/Settings')
+    /**
+    {process.platform === 'darwin' ? (
+      <SelectField
+        fullWidth
+        floatingLabelText='Open at Login'
+        onChange={(evt, index, value) => settingsActions.setLoginOpenMode(value)}
+        value={os.loginOpenMode}>
+        <MenuItem value={OSSettings.LOGIN_OPEN_MODES.OFF} primaryText={'Don\'t open at login'} />
+        <MenuItem value={OSSettings.LOGIN_OPEN_MODES.ON} primaryText='Open at login' />
+        <MenuItem value={OSSettings.LOGIN_OPEN_MODES.ON_BACKGROUND} primaryText='Open at login (in background)' />
+      </SelectField>
+    ) : undefined}
+    **/
 
     return (
       <div {...passProps}>
@@ -64,17 +77,6 @@ module.exports = React.createClass({
             label='Open links in background'
             labelPosition='right'
             onToggle={(evt, toggled) => settingsActions.setOpenLinksInBackground(toggled)} />
-          {process.platform === 'darwin' ? (
-            <SelectField
-              fullWidth
-              floatingLabelText='Open at Login'
-              onChange={(evt, index, value) => settingsActions.setLoginOpenMode(value)}
-              value={os.loginOpenMode}>
-              <MenuItem value={OSSettings.LOGIN_OPEN_MODES.OFF} primaryText={'Don\'t open at login'} />
-              <MenuItem value={OSSettings.LOGIN_OPEN_MODES.ON} primaryText='Open at login' />
-              <MenuItem value={OSSettings.LOGIN_OPEN_MODES.ON_BACKGROUND} primaryText='Open at login (in background)' />
-            </SelectField>
-          ) : undefined}
         </Paper>
       </div>
     )
