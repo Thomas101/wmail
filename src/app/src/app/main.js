@@ -23,7 +23,7 @@
   const constants = require('../shared/constants')
   const storage = require('./storage')
   const settingStore = require('./stores/settingStore')
-  const OSSettings = require('../shared/models/settings/OSSettings')
+  const OSSettings = require('../shared/Models/Settings/OSSettings')
   const argv = require('yargs').parse(process.argv)
 
   Object.keys(storage).forEach((k) => storage[k].checkAwake())
