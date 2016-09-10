@@ -16,7 +16,7 @@ The missing desktop client for Gmail & Google Inbox. Bringing the Gmail & Google
 
 [Find out how you can contribute](https://github.com/Thomas101/wmail/wiki/Contributing)
 
-![Screenshot](https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/screenshot1.png "Screenshot")
+![Screenshot](https://raw.githubusercontent.com/Thomas101/wmail/master/.github/screenshot.png "Screenshot")
 
 
 ### Building from source
@@ -31,6 +31,8 @@ To create OAuth client ID & secret, under "API Manager", choose "Create Credenti
 For "Application type", select "Other", and choose some name for the application, as described in these screenshots:
 
 ![Create credentials](https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/gdc-create-credentials.png "Create Credentials")
+<br />
+<br />
 ![Create OAuth client ID](https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/gdc-oauth-client-id-creation.png "Create OAuth Client ID")
 
 Next create `src/shared/credentials.js` with your Google client ID and secret like so...
