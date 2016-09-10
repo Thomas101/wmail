@@ -30,10 +30,10 @@ You'll need to [setup your OAuth Client ID](https://console.developers.google.co
 To create OAuth client ID & secret, under "API Manager", choose "Create Credentials", then "OAuth client ID".
 For "Application type", select "Other", and choose some name for the application, as described in these screenshots:
 
-![Create credentials](https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/gdc-create-credentials.png "Create Credentials")
+![Create credentials](https://raw.githubusercontent.com/Thomas101/wmail/master/.github/gdc-create-credentials.png "Create Credentials")
 <br />
 <br />
-![Create OAuth client ID](https://raw.githubusercontent.com/Thomas101/wmail/master/github_images/gdc-oauth-client-id-creation.png "Create OAuth Client ID")
+![Create OAuth client ID](https://raw.githubusercontent.com/Thomas101/wmail/master/.github/gdc-oauth-client-id-creation.png "Create OAuth Client ID")
 
 Next create `src/shared/credentials.js` with your Google client ID and secret like so...
 
