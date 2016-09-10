@@ -215,8 +215,17 @@ class Distribution {
             task.fail()
             reject(err)
           } else {
-            task.finish()
-            resolve()
+            const outputFilename = `wmail-desktop_${pkg.version}-1_${ARCH_MAPPING[arch]}.deb`
+            const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_linux_${arch}.deb`
+            fs.move(path.join(ROOT_PATH, 'dist', outputFilename), path.join(ROOT_PATH, 'dist', filename), { clobber: true }, (err) => {
+              if (err) {
+                task.fail()
+                reject(err)
+              } else {
+                task.finish()
+                resolve()
+              }
+            })
           }
         })
       })
