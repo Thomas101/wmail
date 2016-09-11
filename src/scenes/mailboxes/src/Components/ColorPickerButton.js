@@ -14,6 +14,7 @@ module.exports = React.createClass({
     disabled: React.PropTypes.bool.isRequired,
     anchorOrigin: React.PropTypes.object.isRequired,
     targetOrigin: React.PropTypes.object.isRequired,
+    icon: React.PropTypes.node,
     onChange: React.PropTypes.func
   },
 
@@ -42,10 +43,11 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   render () {
-    const { label, disabled, onChange, anchorOrigin, targetOrigin, ...passProps } = this.props
+    const { label, disabled, onChange, anchorOrigin, targetOrigin, icon, ...passProps } = this.props
     return (
       <div {...passProps}>
         <RaisedButton
+          icon={icon}
           label={label}
           disabled={disabled}
           onClick={(evt) => this.setState({ open: true, anchor: evt.target })} />

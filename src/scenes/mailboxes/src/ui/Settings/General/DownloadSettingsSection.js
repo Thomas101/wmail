@@ -1,6 +1,6 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
-const { Toggle, Paper, RaisedButton } = require('material-ui')
+const { Toggle, Paper, RaisedButton, FontIcon } = require('material-ui')
 const settingsActions = require('../../../stores/settings/settingsActions')
 const styles = require('../settingStyles')
 const shallowCompare = require('react-addons-shallow-compare')
@@ -51,6 +51,7 @@ module.exports = React.createClass({
         <div style={Object.assign({}, styles.button, { display: 'flex', alignItems: 'center' })}>
           <RaisedButton
             label='Select location'
+            icon={<FontIcon className='material-icons'>folder</FontIcon>}
             className='file-button'
             disabled={os.alwaysAskDownloadLocation}
             style={styles.fileInputButton}>

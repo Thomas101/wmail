@@ -1,5 +1,5 @@
 const React = require('react')
-const { Toggle, Paper, SelectField, MenuItem, RaisedButton } = require('material-ui')
+const { Toggle, Paper, SelectField, MenuItem, RaisedButton, FontIcon } = require('material-ui')
 const flux = {
   settings: require('../../../stores/settings'),
   dictionaries: require('../../../stores/dictionaries')
@@ -95,6 +95,7 @@ module.exports = React.createClass({
         </SelectField>
         <RaisedButton
           label='Install more Dictionaries'
+          icon={<FontIcon className='material-icons'>language</FontIcon>}
           onTouchTap={() => { flux.dictionaries.A.startDictionaryInstall() }} />
       </Paper>
     )

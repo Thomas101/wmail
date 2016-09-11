@@ -1,5 +1,5 @@
 const React = require('react')
-const { Paper, RaisedButton } = require('material-ui')
+const { Paper, RaisedButton, FontIcon } = require('material-ui')
 const { ColorPickerButton } = require('../../../Components')
 const mailboxActions = require('../../../stores/mailbox/mailboxActions')
 const styles = require('../settingStyles')
@@ -65,6 +65,7 @@ module.exports = React.createClass({
         <div style={styles.button}>
           <RaisedButton
             label='Change Account Icon'
+            icon={<FontIcon className='material-icons'>insert_emoticon</FontIcon>}
             style={styles.fileInputButton}>
             <input
               type='file'
@@ -74,8 +75,15 @@ module.exports = React.createClass({
           </RaisedButton>
         </div>
         <div style={styles.button}>
+          <RaisedButton
+            icon={<FontIcon className='material-icons'>not_interested</FontIcon>}
+            onClick={() => mailboxActions.setCustomAvatar(mailbox.id, undefined)}
+            label='Reset Account Icon' />
+        </div>
+        <div style={styles.button}>
           <ColorPickerButton
             label='Account Colour'
+            icon={<FontIcon className='material-icons'>color_lens</FontIcon>}
             value={mailbox.color}
             onChange={(col) => mailboxActions.setColor(mailbox.id, col)} />
         </div>
