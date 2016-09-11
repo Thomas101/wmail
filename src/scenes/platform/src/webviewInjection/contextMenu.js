@@ -95,12 +95,14 @@
           shell.openExternal(linkTarget)
         }
       })
-      menuTemplate.push({
-        label: 'Open Link in Background',
-        click: () => {
-          shell.openExternal(linkTarget, { activate: false })
-        }
-      })
+      if (process.platform === 'darwin') {
+        menuTemplate.push({
+          label: 'Open Link in Background',
+          click: () => {
+            shell.openExternal(linkTarget, { activate: false })
+          }
+        })
+      }
       menuTemplate.push({
         label: 'Copy link Address',
         click: () => {

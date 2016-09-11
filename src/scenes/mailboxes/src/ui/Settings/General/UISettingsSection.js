@@ -72,11 +72,13 @@ module.exports = React.createClass({
             label='Show app unread badge'
             labelPosition='right'
             onToggle={(evt, toggled) => settingsActions.setShowAppBadge(toggled)} />
-          <Toggle
-            toggled={os.openLinksInBackground}
-            label='Open links in background'
-            labelPosition='right'
-            onToggle={(evt, toggled) => settingsActions.setOpenLinksInBackground(toggled)} />
+          {process.platform === 'darwin' ? (
+            <Toggle
+              toggled={os.openLinksInBackground}
+              label='Open links in background'
+              labelPosition='right'
+              onToggle={(evt, toggled) => settingsActions.setOpenLinksInBackground(toggled)} />
+            ) : undefined}
         </Paper>
       </div>
     )
