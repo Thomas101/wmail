@@ -75,12 +75,14 @@ module.exports = React.createClass({
   getInitialState (props = this.props) {
     const mailboxStore = flux.mailbox.S.getState()
     const mailbox = mailboxStore.getMailbox(props.mailboxId)
+    const settingStore = flux.settings.S.getState()
     return {
       mailbox: mailbox,
       isActive: mailboxStore.activeMailboxId() === props.mailboxId,
       isSearching: mailboxStore.isSearchingMailbox(props.mailboxId),
       browserSrc: mailbox.url,
-      language: flux.settings.S.getState().language,
+      language: settingStore.language,
+      ui: settingStore.ui,
       focusedUrl: null
     }
   },
@@ -134,6 +136,13 @@ module.exports = React.createClass({
       }
 
       this.setState({ language: nextLanguage })
+    }
+
+    if (store.ui !== this.state.ui) {
+      this.refs.browser.send('window-icons-in-screen', {
+        inscreen: !store.ui.sidebarEnabled && !store.ui.showTitlebar && process.platform === 'darwin'
+      })
+      this.setState({ ui: store.ui })
     }
   },
 
@@ -211,13 +220,20 @@ module.exports = React.createClass({
     // Push the settings across
     this.refs.browser.setZoomLevel(this.state.mailbox.zoomFactor)
 
-    const languageSettings = flux.settings.S.getState().language
+    // Language
+    const languageSettings = this.state.language
     if (languageSettings.spellcheckerEnabled) {
       this.refs.browser.send('start-spellcheck', {
         language: languageSettings.spellcheckerLanguage,
         secondaryLanguage: languageSettings.secondarySpellcheckerLanguage
       })
     }
+
+    // UI Fixes
+    const ui = this.state.ui
+    this.refs.browser.send('window-icons-in-screen', {
+      inscreen: !ui.sidebarEnabled && !ui.showTitlebar && process.platform === 'darwin'
+    })
 
     // Push the custom user content
     if (this.state.mailbox.hasCustomCSS || this.state.mailbox.hasCustomJS) {

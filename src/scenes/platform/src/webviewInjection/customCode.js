@@ -41,7 +41,6 @@
   }
 
   ipcRenderer.on('inject-custom-content', (evt, data) => {
-    console.log('in inject-custom-content')
     if (!data.js && !data.css) { return }
     tryInjectCustomCode(data.js, data.css)
   })

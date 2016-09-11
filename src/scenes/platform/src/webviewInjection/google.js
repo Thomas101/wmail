@@ -28,6 +28,36 @@
     }, 500)
   })()
 
+  /**
+  * Customize UI on settings
+  */
+  ;(() => {
+    const sidebarStylesheet = document.createElement('style')
+    sidebarStylesheet.innerHTML = `
+      [href="#inbox"][data-ved]>* {
+        max-height:33px;
+        margin-top: 22px;
+      }
+      [jsaction="global.toggle_main_menu"] {
+        margin-top: 5px;
+      }
+      [jsaction="global.toggle_main_menu"] ~ [data-action-data] {
+        margin-top: 21px;
+      }
+    `
+    ipc.on('window-icons-in-screen', (evt, data) => {
+      if (data.inscreen) {
+        if (!sidebarStylesheet.parentElement) {
+          document.head.appendChild(sidebarStylesheet)
+        }
+      } else {
+        if (sidebarStylesheet.parentElement) {
+          sidebarStylesheet.parentElement.removeChild(sidebarStylesheet)
+        }
+      }
+    })
+  })()
+
   // Listen for open message
   ipc.on('open-message', (evt, data) => {
     if (window.location.host.indexOf('mail.google') !== -1) {
