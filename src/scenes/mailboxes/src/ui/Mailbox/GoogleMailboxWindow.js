@@ -381,6 +381,7 @@ module.exports = React.createClass({
   */
   handleSearchCancel () {
     flux.mailbox.A.stopSearchingMailbox(this.props.mailboxId)
+    this.refs.browser.stopFindInPage('clearSelection')
   },
 
   /* **************************************************************************/
