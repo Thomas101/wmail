@@ -3,6 +3,7 @@ const {
   Grid: { Container, Row, Col }
 } = require('../../Components')
 const settingsStore = require('../../stores/settings/settingsStore')
+const platformStore = require('../../stores/platform/platformStore')
 
 const DownloadSettingsSection = require('./General/DownloadSettingsSection')
 const LanguageSettingsSection = require('./General/LanguageSettingsSection')
@@ -27,10 +28,12 @@ module.exports = React.createClass({
 
   componentDidMount () {
     settingsStore.listen(this.settingsChanged)
+    platformStore.listen(this.platformChanged)
   },
 
   componentWillUnmount () {
     settingsStore.unlisten(this.settingsChanged)
+    platformStore.unlisten(this.platformChanged)
   },
 
   /* **************************************************************************/
@@ -38,10 +41,10 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   /**
-  * Generates the state from the settings
+  * Generates the settings state from the settings
   * @param store=settingsStore: the store to use
   */
-  generateState (store = settingsStore.getState()) {
+  generateSettingsState (store = settingsStore.getState()) {
     return {
       ui: store.ui,
       os: store.os,
@@ -50,12 +53,29 @@ module.exports = React.createClass({
     }
   },
 
+  /**
+  * Generates the platform state from the settings
+  * @param store=platformStore: the store to use
+  */
+  generatePlatformState (store = platformStore.getState()) {
+    const loginPref = store.loginPrefAssumed()
+    return {
+      openAtLoginSupported: store.loginPrefSupported(),
+      openAtLogin: loginPref.openAtLogin,
+      openAsHiddenAtLogin: loginPref.openAsHidden
+    }
+  },
+
   getInitialState () {
-    return this.generateState()
+    return Object.assign({}, this.generateSettingsState(), this.generatePlatformState())
   },
 
   settingsChanged (store) {
-    this.setState(this.generateState(store))
+    this.setState(this.generateSettingsState(store))
+  },
+
+  platformChanged (store) {
+    this.setState(this.generatePlatformState(store))
   },
 
   /* **************************************************************************/
@@ -66,7 +86,7 @@ module.exports = React.createClass({
   * Renders the app
   */
   render () {
-    const {ui, os, language, tray} = this.state
+    const {ui, os, language, tray, openAtLoginSupported, openAtLogin, openAsHiddenAtLogin} = this.state
     const {showRestart, ...passProps} = this.props
 
     return (
@@ -74,7 +94,13 @@ module.exports = React.createClass({
         <Container fluid>
           <Row>
             <Col md={6}>
-              <UISettingsSection ui={ui} os={os} showRestart={showRestart} />
+              <UISettingsSection
+                ui={ui}
+                os={os}
+                showRestart={showRestart}
+                openAtLoginSupported={openAtLoginSupported}
+                openAtLogin={openAtLogin}
+                openAsHiddenAtLogin={openAsHiddenAtLogin} />
               <NotificationSettingsSection os={os} />
               <DownloadSettingsSection os={os} />
               <LanguageSettingsSection language={language} showRestart={showRestart} />

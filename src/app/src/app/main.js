@@ -23,7 +23,6 @@
   const constants = require('../shared/constants')
   const storage = require('./storage')
   const settingStore = require('./stores/settingStore')
-  const OSSettings = require('../shared/Models/Settings/OSSettings')
   const argv = require('yargs').parse(process.argv)
 
   Object.keys(storage).forEach((k) => storage[k].checkAwake())
@@ -171,21 +170,6 @@
 
   app.on('activate', function () {
     windowManager.mailboxesWindow.show()
-  })
-
-  /* ****************************************************************************/
-  // Store Events
-  /* ****************************************************************************/
-
-  settingStore.on('changed:os', (evt) => {
-    if (evt.prev.loginOpenMode !== evt.next.loginOpenMode && process.platform === 'darwin') {
-      const mode = evt.next.loginOpenMode
-      const MODES = OSSettings.LOGIN_OPEN_MODES
-      app.setLoginItemSettings({
-        openAtLogin: mode === MODES.ON || mode === MODES.ON_BACKGROUND,
-        openAsHidden: mode === MODES.ON_BACKGROUND
-      })
-    }
   })
 
   /* ****************************************************************************/
