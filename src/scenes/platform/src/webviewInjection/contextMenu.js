@@ -14,6 +14,7 @@
   */
   const isTexteditorTarget = function (evt) {
     if (evt.target.tagName === 'INPUT' || evt.target.tagName === 'TEXTAREA') { return true }
+    if (evt.target.getAttribute('contentEditable') === 'true') { return true }
     if (evt.path.findIndex((e) => e.getAttribute && e.getAttribute('contentEditable') === 'true') !== -1) { return true }
     return false
   }
@@ -56,11 +57,11 @@
     return menuItems
   }
 
-  document.addEventListener('contextmenu', (evt) => {
+  window.addEventListener('contextmenu', (evt) => {
     const selection = window.getSelection()
     const textSelection = selection.toString().trim()
     const menuTemplate = []
-
+console.log(spellchecker && spellchecker.hasDictionary(), isTexteditorTarget(evt), textOnlyRE.exec(textSelection))
     // Spell check suggestions
     if (spellchecker && spellchecker.hasDictionary()) {
       if (isTexteditorTarget(evt)) {

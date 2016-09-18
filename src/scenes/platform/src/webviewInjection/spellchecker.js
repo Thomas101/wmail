@@ -87,6 +87,16 @@ module.exports = (function () {
   }
 
   /**
+  * Updates the provider by giving the languages as the primary language
+  */
+  const updateProvider = function () {
+    const language = spellcheckers.primary.language || window.navigator.language
+    webFrame.setSpellCheckProvider(language, true, {
+      spellCheck: (text) => { return checkWord(text) }
+    })
+  }
+
+  /**
   * Updates the spellchecker with the correct language
   * @param primaryLanguage: the language to change the spellcheck to
   * @param secondaryLanguage: the secondary language to change the spellcheck to
@@ -102,6 +112,7 @@ module.exports = (function () {
         spellcheckers.primary.language = primaryLanguage
         dictionaryLoad(primaryLanguage).then((dic) => {
           spellcheckers.primary.nodehun = new Nodehun(dic.aff, dic.dic)
+          updateProvider()
         }, (err) => elconsole.error('Failed to load dictionary', err))
       }
     }
@@ -121,9 +132,6 @@ module.exports = (function () {
 
   ipcRenderer.on('start-spellcheck', (evt, data) => {
     updateSpellchecker(data.language, data.secondaryLanguage)
-  })
-  webFrame.setSpellCheckProvider('en-us', true, {
-    spellCheck: (text) => checkWord(text)
   })
 
   return {
