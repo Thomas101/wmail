@@ -9,18 +9,18 @@
     "appdirectory": "0.1.0",
     "dictionary-en-us": "1.0.2",
     "fs-extra": "0.30.0",
-    "googleapis": "12.4.0",
+    "googleapis": "13.0.0",
     "https-proxy-agent": "1.0.0",
     "minivents": "2.0.2",
     "mkdirp": "0.5.1",
-    "node-fetch": "1.6.0",
+    "node-fetch": "1.6.1",
     "os-locale": "1.4.0",
-    "request": "2.74.0",
+    "request": "2.75.0",
     "uuid": "2.0.2",
-    "wmail-spellchecker": "Thomas101/wmail-spellchecker#1.0.2",
+    "wmail-spellchecker": "Thomas101/wmail-spellchecker#1.0.3",
     "yargs": "5.0.0"
   },
   "devDependencies": {
-    "standard": "8.0.0"
+    "standard": "8.1.0"
   }
 }
