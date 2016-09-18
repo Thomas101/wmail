@@ -89,6 +89,12 @@
     "dic": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/es_ES/index.dic",
     "name": "Español - Spanish"
   },
+  "et_EE": {
+    "license": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Estonian.txt",
+    "aff": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Estonian.aff",
+    "dic": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Estonian.dic",
+    "name": "Eesti - Estonian"
+  },
   "eu_ES": {
     "license": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/eu_ES/LICENSE",
     "aff": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/eu_ES/index.aff",
@@ -113,6 +119,12 @@
     "dic": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/hr_HR/index.dic",
     "name": "Hrvatski - Croatian"
   },
+  "hu_HU": {
+    "license": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Hungarian.txt",
+    "aff": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Hungarian.aff",
+    "dic": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Hungarian.dic",
+    "name": "Magyar - Hungarian"
+  },
   "it_IT": {
     "license": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/it_IT/LICENSE",
     "aff": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/it_IT/index.aff",
@@ -125,11 +137,23 @@
     "dic": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/lb_LU/index.dic",
     "name": "Lëtzebuergesch - Luxembourgish"
   },
+  "lt_LT": {
+    "license": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Lithuanian.txt",
+    "aff": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Lithuanian.aff",
+    "dic": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Lithuanian.dic",
+    "name": "Lietuvos - Lithuanian"
+  },
   "mn_MN": {
     "license": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/mn_MN/LICENSE",
     "aff": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/mn_MN/index.aff",
     "dic": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/mn_MN/index.dic",
     "name": "Монгол - Mongolian"
+  },
+  "ms_MY": {
+    "license": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Malays.txt",
+    "aff": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Malays.aff",
+    "dic": "https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Malays.dic",
+    "name": "Melayu - Malay"
   },
   "nb_NO": {
     "license": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/nb_NO/LICENSE",
@@ -209,7 +233,7 @@
     "dic": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/sv_SE/index.dic",
     "name": "Svenska - Swedish"
   },
-  "tr-TR": {
+  "tr_TR": {
     "license": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/tr-TR/LICENSE",
     "aff": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/tr-TR/index.aff",
     "dic": "https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/tr-TR/index.dic",
