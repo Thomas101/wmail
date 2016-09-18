@@ -16,6 +16,7 @@ class MailboxesSessionManager {
   constructor (mailboxWindow) {
     this.mailboxWindow = mailboxWindow
     this.downloadsInProgress = { }
+    this.persistCookieThrottle = { }
 
     this.__managed__ = new Set()
   }
@@ -35,6 +36,7 @@ class MailboxesSessionManager {
     ses.setDownloadPath(electron.app.getPath('downloads'))
     ses.on('will-download', (evt, item) => this.handleDownload(evt, item))
     ses.setPermissionRequestHandler(this.handlePermissionRequest)
+    ses.webRequest.onCompleted((evt) => this.handleRequestCompleted(evt, ses, partition))
 
     this.__managed__.add(partition)
   }
@@ -152,6 +154,60 @@ class MailboxesSessionManager {
     this.updateWindowProgressBar()
   }
 
+  /* ****************************************************************************/
+  // Requests
+  /* ****************************************************************************/
+
+  /**
+  * Handles a request completing
+  * @param evt: the event that fired
+  * @param session: the session this request was for
+  * @param partition: the partition string for this session
+  */
+  handleRequestCompleted (evt, session, partition) {
+    this.artificiallyPersistCookies(session, partition)
+  }
+
+  /* ****************************************************************************/
+  // Cookies
+  /* ****************************************************************************/
+
+  /**
+  * Forces the cookies to persist artifically. This helps users using saml signin
+  * @param session: the session this request was for
+  * @param partition: the partition string for this session
+  */
+  artificiallyPersistCookies (session, partition) {
+    if (!settingStore.app.artificiallyPersistCookies) { return }
+    if (this.persistCookieThrottle[partition] !== undefined) {
+      clearTimeout(this.persistCookieThrottle[partition])
+    }
+
+    this.persistCookieThrottle[partition] = setTimeout(() => {
+      session.cookies.get({ session: true }, (error, cookies) => {
+        if (error || !cookies.length) { return }
+        cookies.forEach((cookie) => {
+          const url = (cookie.secure ? 'https://' : 'http://') + cookie.domain + cookie.path
+          session.cookies.remove(url, cookie.name, (error) => {
+            if (error) { return }
+            const expire = new Date()
+            expire.setYear(expire.getFullYear() + 1)
+            const persistentCookie = {
+              url: url,
+              name: cookie.name,
+              value: cookie.value,
+              domain: cookie.domain,
+              path: cookie.path,
+              secure: cookie.secure,
+              httpOnly: cookie.httpOnly,
+              expirationDate: expire.getTime()
+            }
+            session.cookies.set(persistentCookie, (_) => { })
+          })
+        })
+      })
+    }, 250)
+  }
 }
 
 module.exports = MailboxesSessionManager

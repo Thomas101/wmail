@@ -199,6 +199,13 @@ class SettingsActions {
     return this.update(SEGMENTS.APP, 'ignoreGPUBlacklist', ignore)
   }
 
+  /**
+  * @param persist: true to persist all cookies
+  */
+  artificiallyPersistCookies (persist) {
+    return this.update(SEGMENTS.APP, 'artificiallyPersistCookies', persist)
+  }
+
   /* **************************************************************************/
   // Tray
   /* **************************************************************************/
