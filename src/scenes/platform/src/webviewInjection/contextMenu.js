@@ -61,7 +61,7 @@
     const selection = window.getSelection()
     const textSelection = selection.toString().trim()
     const menuTemplate = []
-console.log(spellchecker && spellchecker.hasDictionary(), isTexteditorTarget(evt), textOnlyRE.exec(textSelection))
+
     // Spell check suggestions
     if (spellchecker && spellchecker.hasDictionary()) {
       if (isTexteditorTarget(evt)) {
