@@ -1,54 +1,25 @@
 ;(function () {
   'use strict'
 
-  const { remote, ipcRenderer } = require('electron')
+  const { remote, ipcRenderer, webFrame } = require('electron')
   const { shell, clipboard, Menu } = remote
+  const webContents = remote.getCurrentWebContents()
   const dictInfo = require('../../../app/shared/remoteDictionaries.json')
 
   let spellchecker
-  const textOnlyRE = new RegExp(/[^a-z]+/gi)
-
-  /**
-  * @param evt: the event that triggered
-  * @return true if the target is in a text editor
-  */
-  const isTexteditorTarget = function (evt) {
-    if (evt.target.tagName === 'INPUT' || evt.target.tagName === 'TEXTAREA') { return true }
-    if (evt.target.getAttribute('contentEditable') === 'true') { return true }
-    if (evt.path.findIndex((e) => e.getAttribute && e.getAttribute('contentEditable') === 'true') !== -1) { return true }
-    return false
-  }
-
-  /**
-  * @param evt: the event that triggered
-  * @return the url if the event is in a link false otherwise
-  */
-  const isLinkTarget = function (evt) {
-    if (evt.target.tagName === 'A') { return evt.target.getAttribute('href') }
-    const parentLink = evt.path.find((e) => e.tagName === 'A')
-    if (parentLink) {
-      return parentLink.getAttribute('href')
-    }
-    return false
-  }
 
   /**
   * Renders menu items for spelling suggestions
   * @param suggestions: a list of text suggestions
-  * @param textSelection: the current text selection
   * @return a list of menu items
   */
-  const renderSuggestionMenuItems = function (suggestions, textSelection) {
+  const renderSuggestionMenuItems = function (suggestions) {
     const menuItems = []
     if (suggestions.length) {
       suggestions.forEach((suggestion) => {
         menuItems.push({
           label: suggestion,
-          click: () => {
-            const range = textSelection.getRangeAt(0)
-            range.deleteContents()
-            range.insertNode(document.createTextNode(suggestion))
-          }
+          click: () => { webFrame.insertText(suggestion) }
         })
       })
     } else {
@@ -57,94 +28,88 @@
     return menuItems
   }
 
-  window.addEventListener('contextmenu', (evt) => {
-    const selection = window.getSelection()
-    const textSelection = selection.toString().trim()
+  webContents.removeAllListeners('context-menu') // Failure to do this will cause an error on reload
+  webContents.on('context-menu', (evt, params) => {
     const menuTemplate = []
 
-    // Spell check suggestions
-    if (spellchecker && spellchecker.hasDictionary()) {
-      if (isTexteditorTarget(evt)) {
-        if (textOnlyRE.exec(textSelection) === null) {
-          if (!spellchecker.check(textSelection)) {
-            const suggestions = spellchecker.suggestions(textSelection)
-            if (suggestions.primary && suggestions.secondary) {
-              menuTemplate.push({
-                label: (dictInfo[suggestions.primary.language] || {}).name || suggestions.primary.language,
-                submenu: renderSuggestionMenuItems(suggestions.primary.suggestions, selection)
-              })
-              menuTemplate.push({
-                label: (dictInfo[suggestions.secondary.language] || {}).name || suggestions.secondary.language,
-                submenu: renderSuggestionMenuItems(suggestions.secondary.suggestions, selection)
-              })
-            } else {
-              const suggList = (suggestions.primary.suggestions || suggestions.secondary.suggestions || [])
-              renderSuggestionMenuItems(suggList, selection).forEach((item) => menuTemplate.push(item))
-            }
-            menuTemplate.push({ type: 'separator' })
-          }
-        }
+    // Spelling suggestions
+    if (params.isEditable && params.misspelledWord && spellchecker && spellchecker.hasDictionary()) {
+      const suggestions = spellchecker.suggestions(params.misspelledWord)
+      if (suggestions.primary && suggestions.secondary) {
+        menuTemplate.push({
+          label: (dictInfo[suggestions.primary.language] || {}).name || suggestions.primary.language,
+          submenu: renderSuggestionMenuItems(suggestions.primary.suggestions)
+        })
+        menuTemplate.push({
+          label: (dictInfo[suggestions.secondary.language] || {}).name || suggestions.secondary.language,
+          submenu: renderSuggestionMenuItems(suggestions.secondary.suggestions)
+        })
+      } else {
+        const suggList = (suggestions.primary.suggestions || suggestions.secondary.suggestions || [])
+        renderSuggestionMenuItems(suggList).forEach((item) => menuTemplate.push(item))
       }
+      menuTemplate.push({ type: 'separator' })
     }
 
-    // Link
-    const linkTarget = isLinkTarget(evt)
-    if (linkTarget && linkTarget.indexOf('://') !== -1) {
+    // URLS
+    if (params.linkURL) {
       menuTemplate.push({
         label: 'Open Link',
-        click: () => {
-          shell.openExternal(linkTarget)
-        }
+        click: () => { shell.openExternal(params.linkURL) }
       })
       if (process.platform === 'darwin') {
         menuTemplate.push({
           label: 'Open Link in Background',
-          click: () => {
-            shell.openExternal(linkTarget, { activate: false })
-          }
+          click: () => { shell.openExternal(params.linkURL, { activate: false }) }
         })
       }
       menuTemplate.push({
         label: 'Copy link Address',
-        click: () => {
-          clipboard.writeText(linkTarget)
-        }
+        click: () => { clipboard.writeText(params.linkURL) }
       })
       menuTemplate.push({ type: 'separator' })
     }
 
-    // Undo / redo
-    menuTemplate.push({ label: 'Undo', role: 'undo' })
-    menuTemplate.push({ label: 'Redo', role: 'redo' })
-    menuTemplate.push({ type: 'separator' })
+    // Editing
+    const {
+      canUndo,
+      canRedo,
+      canCut,
+      canCopy,
+      canPaste,
+      canSelectAll
+    } = params.editFlags
 
-    // Text editor / text selection
-    if (isTexteditorTarget(evt)) {
-      menuTemplate.push({ label: 'Cut', role: 'cut' })
-      menuTemplate.push({ label: 'Copy', role: 'copy' })
-      menuTemplate.push({ label: 'Paste', role: 'paste' })
-      menuTemplate.push({ label: 'Paste and match style', role: 'pasteandmatchstyle' })
-      menuTemplate.push({ type: 'separator' })
-    } else if (textSelection) {
-      menuTemplate.push({ label: 'Copy', role: 'copy' })
+    // Undo / redo
+    if (canUndo || canRedo) {
+      menuTemplate.push({ label: 'Undo', role: 'undo', enabled: canUndo })
+      menuTemplate.push({ label: 'Redo', role: 'redo', enabled: canRedo })
       menuTemplate.push({ type: 'separator' })
     }
 
-    menuTemplate.push({ label: 'Select all', role: 'selectall' })
-    menuTemplate.push({ type: 'separator' })
+    // Text editing
+    const textEditingMenu = [
+      canCut ? { label: 'Cut', role: 'cut' } : null,
+      canCopy ? { label: 'Copy', role: 'copy' } : null,
+      canPaste ? { label: 'Paste', role: 'paste' } : null,
+      canPaste ? { label: 'Paste and match style', role: 'pasteandmatchstyle' } : null,
+      canSelectAll ? { label: 'Select all', role: 'selectall' } : null
+    ].filter((item) => item !== null)
+    if (textEditingMenu.length) {
+      textEditingMenu.forEach((item) => menuTemplate.push(item))
+      menuTemplate.push({ type: 'separator' })
+    }
+
+    // WMail
     menuTemplate.push({
       label: 'WMail Settings',
-      click: () => {
-        ipcRenderer.sendToHost({ type: 'open-settings' })
-      }
+      click: () => { ipcRenderer.sendToHost({ type: 'open-settings' }) }
     })
     const menu = Menu.buildFromTemplate(menuTemplate)
     menu.popup(remote.getCurrentWindow())
-  }, false)
+  })
 
   module.exports = {
-    setSpellchecker: (sc) => {
-      spellchecker = sc
-    }
+    setSpellchecker: (sc) => { spellchecker = sc }
   }
 })()
