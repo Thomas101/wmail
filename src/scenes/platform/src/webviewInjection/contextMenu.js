@@ -4,7 +4,7 @@
   const { remote, ipcRenderer } = require('electron')
   const { shell, clipboard, Menu } = remote
   const webContents = remote.getCurrentWebContents()
-  const dictInfo = require('../../../app/shared/remoteDictionaries.json')
+  const dictInfo = require('../../../app/shared/dictionaries.js')
 
   let spellchecker
 

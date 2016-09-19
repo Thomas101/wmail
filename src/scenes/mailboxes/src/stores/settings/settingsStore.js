@@ -1,6 +1,7 @@
 const alt = require('../alt')
 const actions = require('./settingsActions')
 const persistence = require('./settingsPersistence')
+const dictionaries = require('shared/dictionaries.js')
 const {
   Settings: {
     AppSettings,
@@ -30,7 +31,10 @@ class SettingsStore {
     this.bindListeners({
       handleLoad: actions.LOAD,
       handleUpdate: actions.UPDATE,
-      handleToggleBool: actions.TOGGLE
+      handleToggleBool: actions.TOGGLE,
+
+      handleSetSpellcheckerLanguage: actions.SET_SPELLCHECKER_LANGUAGE,
+      handleSetSecondarySpellcheckerLanguage: actions.SET_SECONDARY_SPELLCHECKER_LANGUAGE
     })
   }
 
@@ -129,6 +133,48 @@ class SettingsStore {
     js[key] = !js[key]
     persistence.setJSONItem(persistenceKey, js)
     this[storeKey] = new StoreClass(js)
+  }
+
+  /* **************************************************************************/
+  // Changing : Spellchecker
+  /* **************************************************************************/
+
+  handleSetSpellcheckerLanguage ({ lang }) {
+    const primaryInfo = dictionaries[lang]
+    const secondaryInfo = (dictionaries[this.language.secondarySpellcheckerLanguage] || {})
+
+    if (primaryInfo.charset !== secondaryInfo.charset) {
+      this.handleUpdate({
+        segment: SettingsIdent.SEGMENTS.LANGUAGE,
+        updates: {
+          spellcheckerLanguage: lang,
+          secondarySpellcheckerLanguage: null
+        }
+      })
+    } else {
+      this.handleUpdate({
+        segment: SettingsIdent.SEGMENTS.LANGUAGE,
+        updates: { spellcheckerLanguage: lang }
+      })
+    }
+  }
+
+  handleSetSecondarySpellcheckerLanguage ({ lang }) {
+    if (!lang) {
+      this.handleUpdate({
+        segment: SettingsIdent.SEGMENTS.LANGUAGE,
+        updates: { secondarySpellcheckerLanguage: null }
+      })
+    } else {
+      const primaryInfo = (dictionaries[this.language.spellcheckerLanguage] || {})
+      const secondaryInfo = (dictionaries[lang] || {})
+      if (primaryInfo.charset === secondaryInfo.charset) {
+        this.handleUpdate({
+          segment: SettingsIdent.SEGMENTS.LANGUAGE,
+          updates: { secondarySpellcheckerLanguage: lang }
+        })
+      }
+    }
   }
 }
 

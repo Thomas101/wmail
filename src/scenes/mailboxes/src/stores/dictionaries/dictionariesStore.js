@@ -1,6 +1,6 @@
 const alt = require('../alt')
 const actions = require('./dictionariesActions')
-const remoteDictionaries = require('shared/remoteDictionaries.json')
+const dictionaries = require('shared/dictionaries.js')
 const LanguageSettings = require('shared/Models/Settings/LanguageSettings')
 
 const fs = require('fs')
@@ -56,7 +56,7 @@ class DictionariesStore {
     /**
     * @return a list of all available dictionaries
     */
-    this.getAllDictionaries = () => { return Object.keys(remoteDictionaries) }
+    this.getAllDictionaries = () => { return Object.keys(dictionaries) }
 
     /**
     * @return a list of not installed dictionaries
@@ -73,7 +73,7 @@ class DictionariesStore {
     * @param lang: the language to get the info for
     * @return the information about this dictionary
     */
-    this.getDictionaryInfo = (lang) => { return Object.assign({ lang: lang }, remoteDictionaries[lang]) }
+    this.getDictionaryInfo = (lang) => { return Object.assign({ lang: lang }, dictionaries[lang]) }
 
     /**
     * @return a list of uninstalled dictionary infos, sorted by name
@@ -183,7 +183,7 @@ class DictionariesStore {
     if (this.install.id !== id) { return }
     this.install.inflight = true
 
-    const info = remoteDictionaries[this.install.lang]
+    const info = dictionaries[this.install.lang]
 
     Promise.all([
       Promise.resolve()

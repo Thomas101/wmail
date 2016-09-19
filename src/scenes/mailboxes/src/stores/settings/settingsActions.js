@@ -57,16 +57,12 @@ class SettingsActions {
   /**
   * @param lang: the language to set to
   */
-  setSpellcheckerLanguage (lang) {
-    return this.update(SEGMENTS.LANGUAGE, 'spellcheckerLanguage', lang)
-  }
+  setSpellcheckerLanguage (lang) { return {lang: lang} }
 
   /**
   * @param lang: the language to set to
   */
-  setSecondarySpellcheckerLanguage (lang) {
-    return this.update(SEGMENTS.LANGUAGE, 'secondarySpellcheckerLanguage', lang)
-  }
+  setSecondarySpellcheckerLanguage (lang) { return {lang: lang} }
 
   /* **************************************************************************/
   // OS

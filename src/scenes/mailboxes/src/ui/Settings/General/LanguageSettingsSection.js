@@ -57,6 +57,8 @@ module.exports = React.createClass({
   render () {
     const {language, showRestart, ...passProps} = this.props
     const { installedDictionaries } = this.state
+    const dictionaryState = flux.dictionaries.S.getState()
+    const primaryDictionaryInfo = dictionaryState.getDictionaryInfo(language.spellcheckerLanguage)
 
     return (
       <Paper zDepth={1} style={styles.paper} {...passProps}>
@@ -89,7 +91,8 @@ module.exports = React.createClass({
             if (info === undefined) {
               return (<MenuItem key='__none__' value='__none__' primaryText='None' />)
             } else {
-              return (<MenuItem key={info.lang} value={info.lang} primaryText={info.name} />)
+              const disabled = primaryDictionaryInfo.charset !== info.charset
+              return (<MenuItem key={info.lang} value={info.lang} primaryText={info.name} disabled={disabled} />)
             }
           })}
         </SelectField>
