@@ -195,7 +195,7 @@ class MailboxesSessionManager {
   artificiallyPersistCookies (session, partition) {
     if (this.persistCookieThrottle[partition] !== undefined) { return }
     const mailbox = this.getMailboxFromPartition(partition)
-    if (!mailbox.artificiallyPersistCookies) { return }
+    if (!mailbox || !mailbox.artificiallyPersistCookies) { return }
 
     this.persistCookieThrottle[partition] = setTimeout(() => {
       session.cookies.get({ session: true }, (error, cookies) => {
