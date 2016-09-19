@@ -4,6 +4,10 @@ const Mailbox = require('../../shared/Models/Mailbox/Mailbox')
 const { MAILBOX_INDEX_KEY } = require('../../shared/constants')
 
 class MailboxStore {
+  /* ****************************************************************************/
+  // Lifecycle
+  /* ****************************************************************************/
+
   constructor () {
     Minivents(this)
 
@@ -36,10 +40,25 @@ class MailboxStore {
     })
   }
 
+  /* ****************************************************************************/
+  // Getters
+  /* ****************************************************************************/
+
+  /**
+  * @return the mailboxes in an ordered list
+  */
   orderedMailboxes () {
     return this.index
       .map(id => this.mailboxes.get(id))
       .filter((mailbox) => !!mailbox)
+  }
+
+  /**
+  * @param id: the id of the mailbox
+  * @return the mailbox record
+  */
+  getMailbox (id) {
+    return this.mailboxes.get(id)
   }
 }
 

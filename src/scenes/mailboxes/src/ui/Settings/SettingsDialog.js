@@ -88,7 +88,7 @@ module.exports = React.createClass({
 
     const tabInfo = [
       { label: 'General', value: 'general', component: (<GeneralSettings showRestart={this.handleShowRestart} />) },
-      { label: 'Accounts', value: 'accounts', component: (<AccountSettings />) },
+      { label: 'Accounts', value: 'accounts', component: (<AccountSettings showRestart={this.handleShowRestart} />) },
       { label: 'Advanced', value: 'advanced', component: (<AdvancedSettings showRestart={this.handleShowRestart} />) }
     ]
     const heading = (

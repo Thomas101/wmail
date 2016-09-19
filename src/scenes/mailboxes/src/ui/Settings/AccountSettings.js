@@ -9,9 +9,13 @@ const styles = require('./settingStyles')
 const AccountAvatarSettings = require('./Accounts/AccountAvatarSettings')
 const AccountUnreadSettings = require('./Accounts/AccountUnreadSettings')
 const AccountCustomCodeSettings = require('./Accounts/AccountCustomCodeSettings')
+const AccountAdvancedSettings = require('./Accounts/AccountAdvancedSettings')
 
 module.exports = React.createClass({
   displayName: 'AccountSettings',
+  propTypes: {
+    showRestart: React.PropTypes.func.isRequired
+  },
 
   /* **************************************************************************/
   // Lifecycle
@@ -60,8 +64,11 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   renderNoMailboxes () {
+    const passProps = Object.assign({}, this.props)
+    delete passProps['showRestart']
+
     return (
-      <div {...this.props}>
+      <div {...passProps}>
         <Paper zDepth={1} style={styles.paper}>
           <small>No accounts available</small>
         </Paper>
@@ -70,7 +77,8 @@ module.exports = React.createClass({
   },
 
   renderMailboxes () {
-    const selected = this.state.selected
+    const {selected} = this.state
+    const {showRestart, ...passProps} = this.props
 
     let avatarSrc = ''
     if (selected.hasCustomAvatar) {
@@ -80,7 +88,7 @@ module.exports = React.createClass({
     }
 
     return (
-      <div {...this.props}>
+      <div {...passProps}>
         <div style={styles.accountPicker}>
           <Avatar
             src={avatarSrc}
@@ -110,10 +118,11 @@ module.exports = React.createClass({
           <Row>
             <Col md={6}>
               <AccountUnreadSettings mailbox={selected} />
+              <AccountAvatarSettings mailbox={selected} />
             </Col>
             <Col md={6}>
-              <AccountAvatarSettings mailbox={selected} />
               <AccountCustomCodeSettings mailbox={selected} />
+              <AccountAdvancedSettings mailbox={selected} showRestart={showRestart} />
             </Col>
           </Row>
         </Container>

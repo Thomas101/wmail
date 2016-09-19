@@ -115,6 +115,15 @@ class MailboxActions {
     return this.update(id, { customJS: js })
   }
 
+  /**
+  * Artificially persist the cookies for this mailbox
+  * @param id: the mailbox id
+  * @param persist: whether to persist the cookies
+  */
+  artificiallyPersistCookies (id, persist) {
+    return this.update(id, { artificiallyPersistCookies: persist })
+  }
+
   /* **************************************************************************/
   // Updating: Zoom
   /* **************************************************************************/

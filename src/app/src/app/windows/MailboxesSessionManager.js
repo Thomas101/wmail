@@ -3,6 +3,9 @@ const uuid = require('uuid')
 const fs = require('fs-extra')
 const path = require('path')
 const settingStore = require('../stores/settingStore')
+const mailboxStore = require('../stores/mailboxStore')
+
+const COOKIE_PERSIST_PERIOD = 1000 * 30 // 30 secs
 
 class MailboxesSessionManager {
 
@@ -19,6 +22,18 @@ class MailboxesSessionManager {
     this.persistCookieThrottle = { }
 
     this.__managed__ = new Set()
+  }
+
+  /* ****************************************************************************/
+  // Utils
+  /* ****************************************************************************/
+
+  /**
+  * @param partition: the partition id
+  * @return the mailbox model for the partition
+  */
+  getMailboxFromPartition (partition) {
+    return mailboxStore.getMailbox(partition.replace('persist:', ''))
   }
 
   /* ****************************************************************************/
@@ -178,18 +193,23 @@ class MailboxesSessionManager {
   * @param partition: the partition string for this session
   */
   artificiallyPersistCookies (session, partition) {
-    if (!settingStore.app.artificiallyPersistCookies) { return }
-    if (this.persistCookieThrottle[partition] !== undefined) {
-      clearTimeout(this.persistCookieThrottle[partition])
-    }
+    if (this.persistCookieThrottle[partition] !== undefined) { return }
+    const mailbox = this.getMailboxFromPartition(partition)
+    if (!mailbox.artificiallyPersistCookies) { return }
 
     this.persistCookieThrottle[partition] = setTimeout(() => {
       session.cookies.get({ session: true }, (error, cookies) => {
-        if (error || !cookies.length) { return }
+        if (error || !cookies.length) {
+          delete this.persistCookieThrottle[partition]
+          return
+        }
         cookies.forEach((cookie) => {
           const url = (cookie.secure ? 'https://' : 'http://') + cookie.domain + cookie.path
           session.cookies.remove(url, cookie.name, (error) => {
-            if (error) { return }
+            if (error) {
+              delete this.persistCookieThrottle[partition]
+              return
+            }
             const expire = new Date()
             expire.setYear(expire.getFullYear() + 1)
             const persistentCookie = {
@@ -202,11 +222,13 @@ class MailboxesSessionManager {
               httpOnly: cookie.httpOnly,
               expirationDate: expire.getTime()
             }
-            session.cookies.set(persistentCookie, (_) => { })
+            session.cookies.set(persistentCookie, (_) => {
+              delete this.persistCookieThrottle[partition]
+            })
           })
         })
       })
-    }, 250)
+    }, COOKIE_PERSIST_PERIOD)
   }
 }
 

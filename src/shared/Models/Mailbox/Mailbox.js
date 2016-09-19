@@ -62,6 +62,7 @@ class Mailbox extends Model {
   get showUnreadBadge () { return this._value_('showUnreadBadge', true) }
   get unreadCountsTowardsAppUnread () { return this._value_('unreadCountsTowardsAppUnread', true) }
   get showNotifications () { return this._value_('showNotifications', true) }
+  get artificiallyPersistCookies () { return this._value_('artificiallyPersistCookies', false) }
 
   /* **************************************************************************/
   // Properties : Account Details

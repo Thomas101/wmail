@@ -126,14 +126,6 @@ module.exports = React.createClass({
               showRestart()
               flux.settings.A.ignoreGPUBlacklist(toggled)
             }} />
-          <Toggle
-            toggled={app.artificiallyPersistCookies}
-            label='Artificially Persist Cookies (Requires Restart)'
-            labelPosition='right'
-            onToggle={(evt, toggled) => {
-              showRestart()
-              flux.settings.A.artificiallyPersistCookies(toggled)
-            }} />
         </Paper>
       </div>
     )
