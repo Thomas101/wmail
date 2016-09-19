@@ -1,7 +1,7 @@
 ;(function () {
   'use strict'
 
-  const { remote, ipcRenderer, webFrame } = require('electron')
+  const { remote, ipcRenderer } = require('electron')
   const { shell, clipboard, Menu } = remote
   const webContents = remote.getCurrentWebContents()
   const dictInfo = require('../../../app/shared/remoteDictionaries.json')
@@ -19,7 +19,7 @@
       suggestions.forEach((suggestion) => {
         menuItems.push({
           label: suggestion,
-          click: () => { webFrame.insertText(suggestion) }
+          click: () => { webContents.replaceMisspelling(suggestion) }
         })
       })
     } else {
