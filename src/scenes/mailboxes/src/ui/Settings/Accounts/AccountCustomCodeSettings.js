@@ -5,6 +5,11 @@ const mailboxActions = require('../../../stores/mailbox/mailboxActions')
 const styles = require('../settingStyles')
 const shallowCompare = require('react-addons-shallow-compare')
 const {mailboxDispatch} = require('../../../Dispatch')
+const { USER_SCRIPTS_WEB_URL } = require('shared/constants')
+const Colors = require('material-ui/styles/colors')
+const {
+  remote: {shell}
+} = window.nativeRequire('electron')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -76,6 +81,12 @@ module.exports = React.createClass({
             label='Custom JavaScript'
             icon={<FontIcon className='material-icons'>code</FontIcon>}
             onTouchTap={() => this.setState({ editingCSS: false, editingJS: true })} />
+        </div>
+        <div style={styles.button}>
+          <a
+            style={{color: Colors.blue700, fontSize: '85%', marginBottom: 10, display: 'block'}}
+            onClick={(evt) => { evt.preventDefault(); shell.openExternal(USER_SCRIPTS_WEB_URL) }}
+            href={USER_SCRIPTS_WEB_URL}>Find custom userscripts</a>
         </div>
         <CustomCodeEditingModal
           open={this.state.editingCSS || this.state.editingJS}
