@@ -35,7 +35,7 @@
     const sidebarStylesheet = document.createElement('style')
     sidebarStylesheet.innerHTML = `
       [href="#inbox"][data-ved]>* {
-        max-height:33px;
+        max-height:33px !important;
         margin-top: 22px;
       }
       [jsaction="global.toggle_main_menu"] {
