@@ -65,6 +65,7 @@ module.exports = React.createClass({
         <div style={styles.button}>
           <RaisedButton
             label='Change Account Icon'
+            containerElement='label'
             icon={<FontIcon className='material-icons'>insert_emoticon</FontIcon>}
             style={styles.fileInputButton}>
             <input

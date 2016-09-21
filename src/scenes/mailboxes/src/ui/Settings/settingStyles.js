@@ -41,12 +41,13 @@ module.exports = {
   },
   fileInput: {
     position: 'absolute',
-    top: -100,
-    left: -100,
-    right: -100,
-    bottom: -100,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     opacity: 0,
-    zIndex: 100
+    width: '100%',
+    cursor: 'pointer'
   },
   button: {
     marginTop: 5,

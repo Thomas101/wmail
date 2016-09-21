@@ -52,7 +52,7 @@ module.exports = React.createClass({
           <RaisedButton
             label='Select location'
             icon={<FontIcon className='material-icons'>folder</FontIcon>}
-            className='file-button'
+            containerElement='label'
             disabled={os.alwaysAskDownloadLocation}
             style={styles.fileInputButton}>
             <input
