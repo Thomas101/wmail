@@ -372,6 +372,13 @@ module.exports = {
     name: 'Lietuvos - Lithuanian',
     charset: 'USCRIPT_LATIN'
   },
+  'lv_LV': {
+    license: 'https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Latvian.txt',
+    aff: 'https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Latvian.aff',
+    dic: 'https://raw.githubusercontent.com/Thomas101/Dictionaries-1/master/Latvian.dic',
+    name: 'Latvijas - Latvian',
+    charset: 'USCRIPT_LATIN'
+  },
   'mn_MN': {
     license: 'https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/mn_MN/LICENSE',
     aff: 'https://raw.githubusercontent.com/Thomas101/dictionaries/master/dictionaries/mn_MN/index.aff',
