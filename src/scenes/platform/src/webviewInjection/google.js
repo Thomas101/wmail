@@ -37,6 +37,7 @@
       [href="#inbox"][data-ved]>* {
         max-height:33px !important;
         margin-top: 22px;
+        background-position-x: center;
       }
       [jsaction="global.toggle_main_menu"] {
         margin-top: 5px;
