@@ -16,9 +16,9 @@
     "node-fetch": "1.6.1",
     "os-locale": "1.4.0",
     "request": "2.75.0",
-    "uuid": "2.0.2",
+    "uuid": "2.0.3",
     "wmail-spellchecker": "Thomas101/wmail-spellchecker#1.0.3",
-"windows-shortcuts": "Thomas101/windows-shortcuts#0.1.4",
+    "windows-shortcuts": "Thomas101/windows-shortcuts#0.1.4",
     "yargs": "5.0.0"
   },
   "devDependencies": {

@@ -42,7 +42,7 @@
     "copy-webpack-plugin": "3.0.1",
     "css-loader": "0.25.0",
     "electron-packager": "8.0.0",
-    "electron-prebuilt": "1.4.0",
+    "electron-prebuilt": "1.4.1",
     "extract-text-webpack-plugin": "1.0.1",
     "file-loader": "0.9.0",
     "json-loader": "0.5.4",
@@ -55,7 +55,7 @@
     "style-loader": "0.13.1",
     "temp": "0.8.3",
     "url-loader": "0.5.7",
-    "uuid": "^2.0.2",
+    "uuid": "2.0.3",
     "webpack": "1.13.2",
     "webpack-target-electron-renderer": "0.4.0",
     "yargs": "5.0.0"

@@ -124,7 +124,7 @@ module.exports = React.createClass({
       body: req.filename
     })
     notification.onclick = function () {
-      shell.showItemInFolder(req.path)
+      shell.openItem(req.path) || shell.showItemInFolder(req.path)
     }
   },
 
