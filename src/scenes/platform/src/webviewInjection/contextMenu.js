@@ -105,6 +105,10 @@
       label: 'WMail Settings',
       click: () => { ipcRenderer.sendToHost({ type: 'open-settings' }) }
     })
+    menuTemplate.push({
+      label: 'Inspect',
+      click: () => { webContents.inspectElement(params.x, params.y) }
+    })
     const menu = Menu.buildFromTemplate(menuTemplate)
     menu.popup(remote.getCurrentWindow())
   })
