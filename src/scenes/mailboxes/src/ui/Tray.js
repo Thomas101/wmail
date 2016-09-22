@@ -35,6 +35,14 @@ module.exports = React.createClass({
       this.appTray.on('double-click', () => {
         ipcRenderer.send('focus-app')
       })
+    } else if (process.platform === 'linux') {
+      // On platforms that have app indicator support - i.e. ubuntu clicking on the
+      // icon will launch the context menu. On other linux platforms the context
+      // menu is opened on right click. For app indicator platforms click event
+      // is ignored
+      this.appTray.on('click', () => {
+        ipcRenderer.send('focus-app')
+      })
     }
   },
 
