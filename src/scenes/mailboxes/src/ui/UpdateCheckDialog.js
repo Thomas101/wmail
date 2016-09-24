@@ -40,6 +40,9 @@ module.exports = React.createClass({
   // Checking
   /* **************************************************************************/
 
+  /**
+  * Checks with the server for an update
+  */
   checkNow () {
     Promise.resolve()
       .then(() => window.fetch(UPDATE_CHECK_URL))
@@ -68,22 +71,40 @@ module.exports = React.createClass({
           this.clearTimeout(this.recheckTO)
         } else {
           this.setState({ newerVersion: null })
-          this.clearTimeout(this.recheckTO)
-          this.recheckTO = this.setTimeout(() => {
-            this.checkNow()
-          }, UPDATE_CHECK_INTERVAL)
+          this.scheduleNextCheck()
         }
       })
   },
 
-  recheckLater () {
-    this.setState({ newerVersion: null })
+  /**
+  * Schedules the next check
+  */
+  scheduleNextCheck () {
     this.clearTimeout(this.recheckTO)
     this.recheckTO = this.setTimeout(() => {
       this.checkNow()
     }, UPDATE_CHECK_INTERVAL)
   },
 
+  /**
+  * Dismisses the modal an waits for the next check
+  */
+  recheckLater () {
+    this.setState({ newerVersion: null })
+    this.scheduleNextCheck()
+  },
+
+  /**
+  * Cancels the recheck and rechecks after reboot
+  */
+  recheckRestart () {
+    this.setState({ newerVersion: null })
+    this.clearTimeout(this.recheckTO)
+  },
+
+  /**
+  * Opens the download link
+  */
   downloadNow () {
     shell.openExternal(UPDATE_DOWNLOAD_URL)
     this.recheckLater()
@@ -100,8 +121,13 @@ module.exports = React.createClass({
   render () {
     const buttons = [
       (<FlatButton
+        key='restart'
+        label='After Restart'
+        style={{ marginRight: 16 }}
+        onClick={this.recheckRestart} />),
+      (<FlatButton
         key='later'
-        label='Download Later'
+        label='Later'
         style={{ marginRight: 16 }}
         onClick={this.recheckLater} />),
       (<RaisedButton
