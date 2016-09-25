@@ -104,6 +104,11 @@ module.exports = React.createClass({
               labelPosition='right'
               onToggle={(evt, toggled) => settingsActions.setOpenLinksInBackground(toggled)} />
             ) : undefined}
+          <Toggle
+            toggled={ui.openHidden}
+            label='Always Start minimized'
+            labelPosition='right'
+            onToggle={(evt, toggled) => settingsActions.setOpenHidden(toggled)} />
           {openAtLoginSupported ? (
             <SelectField
               fullWidth

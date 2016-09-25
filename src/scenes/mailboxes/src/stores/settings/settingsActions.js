@@ -184,6 +184,13 @@ class SettingsActions {
     return this.toggle(SEGMENTS.UI, 'sidebarEnabled')
   }
 
+  /**
+  * Opens the app hidden by default
+  */
+  setOpenHidden (toggled) {
+    return this.update(SEGMENTS.UI, 'openHidden', toggled)
+  }
+
   /* **************************************************************************/
   // App
   /* **************************************************************************/

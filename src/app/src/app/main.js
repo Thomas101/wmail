@@ -35,6 +35,7 @@
     app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true')
   }
   const openHidden = (function () {
+    if (settingStore.ui.openHidden) { return true }
     if (process.platform === 'darwin' && app.getLoginItemSettings().wasOpenedAsHidden) { return true }
     if (argv.hidden) { return true }
     return false
