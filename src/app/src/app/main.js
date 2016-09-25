@@ -3,9 +3,15 @@
 
   let windowManager
   const quitting = app.makeSingleInstance(function (commandLine, workingDirectory) {
+    const argv = require('yargs').parse(commandLine)
+    console.log(argv)
     if (windowManager) {
-      windowManager.mailboxesWindow.show()
-      windowManager.mailboxesWindow.focus()
+      if (argv.hidden || argv.hide) {
+        windowManager.mailboxesWindow.hide()
+      } else {
+        windowManager.mailboxesWindow.show()
+        windowManager.mailboxesWindow.focus()
+      }
     }
     return true
   })
@@ -14,6 +20,7 @@
     return
   }
 
+  const argv = require('yargs').parse(process.argv)
   const AppAnalytics = require('./AppAnalytics')
   const MailboxesWindow = require('./windows/MailboxesWindow')
   const ContentWindow = require('./windows/ContentWindow')
@@ -23,7 +30,6 @@
   const constants = require('../shared/constants')
   const storage = require('./storage')
   const settingStore = require('./stores/settingStore')
-  const argv = require('yargs').parse(process.argv)
 
   Object.keys(storage).forEach((k) => storage[k].checkAwake())
 
@@ -37,7 +43,7 @@
   const openHidden = (function () {
     if (settingStore.ui.openHidden) { return true }
     if (process.platform === 'darwin' && app.getLoginItemSettings().wasOpenedAsHidden) { return true }
-    if (argv.hidden) { return true }
+    if (argv.hidden || argv.hide) { return true }
     return false
   })()
 
