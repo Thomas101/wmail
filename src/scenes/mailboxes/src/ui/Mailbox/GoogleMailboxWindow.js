@@ -280,12 +280,28 @@ module.exports = React.createClass({
   * @param webview: the webview element the event came from
   */
   handleBrowserOpenNewWindow (evt) {
-    const url = URL.parse(evt.url, true)
+    this.handleOpenNewWindow(evt.url)
+  },
+
+  /**
+  * Handles a new JS browser window
+  * @Param evt: the event that fired
+  */
+  handleBrowserJSNewWindow (evt) {
+    this.handleOpenNewWindow(evt.channel.url)
+  },
+
+  /**
+  * Opens a new url in the correct way
+  * @param url: the url to open
+  */
+  handleOpenNewWindow (url) {
+    const purl = URL.parse(url, true)
     let mode = 'external'
-    if (url.host === 'inbox.google.com') {
+    if (purl.host === 'inbox.google.com') {
       mode = 'source'
-    } else if (url.host === 'mail.google.com') {
-      if (url.query.ui === '2' || url.query.view === 'om') {
+    } else if (purl.host === 'mail.google.com') {
+      if (purl.query.ui === '2' || purl.query.view === 'om') {
         mode = 'tab'
       } else {
         mode = 'source'
@@ -294,23 +310,15 @@ module.exports = React.createClass({
 
     switch (mode) {
       case 'external':
-        shell.openExternal(evt.url, { activate: !flux.settings.S.getState().os.openLinksInBackground })
+        shell.openExternal(url, { activate: !flux.settings.S.getState().os.openLinksInBackground })
         break
       case 'source':
-        this.setState({ browserSrc: evt.url })
+        this.setState({ browserSrc: url })
         break
       case 'tab':
-        ipcRenderer.send('new-window', { partition: 'persist:' + this.props.mailboxId, url: evt.url })
+        ipcRenderer.send('new-window', { partition: 'persist:' + this.props.mailboxId, url: url })
         break
     }
-  },
-
-  /**
-  * Handles a new JS browser window
-  * @Param evt: the event that fired
-  */
-  handleBrowserJSNewWindow (evt) {
-    shell.openExternal(evt.channel.url, { activate: !flux.settings.S.getState().os.openLinksInBackground })
   },
 
   /* **************************************************************************/
