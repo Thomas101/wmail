@@ -1,19 +1,34 @@
-;(function () {
-  'use strict'
+const { remote, ipcRenderer } = require('electron')
+const { shell, clipboard, Menu } = remote
+const webContents = remote.getCurrentWebContents()
+const dictInfo = require('../../../../app/shared/dictionaries.js')
 
-  const { remote, ipcRenderer } = require('electron')
-  const { shell, clipboard, Menu } = remote
-  const webContents = remote.getCurrentWebContents()
-  const dictInfo = require('../../../app/shared/dictionaries.js')
+class ContextMenu {
 
-  let spellchecker
+  /* **************************************************************************/
+  // Lifecycle
+  /* **************************************************************************/
+
+  /**
+  * @param spellchecker=undefined: the spellchecker to use for suggestions
+  */
+  constructor (spellchecker = undefined) {
+    this.spellchecker = spellchecker
+
+    webContents.removeAllListeners('context-menu') // Failure to do this will cause an error on reload
+    webContents.on('context-menu', this.launchMenu.bind(this))
+  }
+
+  /* **************************************************************************/
+  // Menu
+  /* **************************************************************************/
 
   /**
   * Renders menu items for spelling suggestions
   * @param suggestions: a list of text suggestions
   * @return a list of menu items
   */
-  const renderSuggestionMenuItems = function (suggestions) {
+  _renderSuggestionMenuItems_ (suggestions) {
     const menuItems = []
     if (suggestions.length) {
       suggestions.forEach((suggestion) => {
@@ -28,25 +43,29 @@
     return menuItems
   }
 
-  webContents.removeAllListeners('context-menu') // Failure to do this will cause an error on reload
-  webContents.on('context-menu', (evt, params) => {
+  /**
+  * Launches the context menu
+  * @param evt: the event that fired
+  * @param params: the parameters passed alongisde the event
+  */
+  launchMenu (evt, params) {
     const menuTemplate = []
 
     // Spelling suggestions
-    if (params.isEditable && params.misspelledWord && spellchecker && spellchecker.hasDictionary()) {
-      const suggestions = spellchecker.suggestions(params.misspelledWord)
+    if (params.isEditable && params.misspelledWord && this.spellchecker && this.spellchecker.hasSpellchecker) {
+      const suggestions = this.spellchecker.suggestions(params.misspelledWord)
       if (suggestions.primary && suggestions.secondary) {
         menuTemplate.push({
           label: (dictInfo[suggestions.primary.language] || {}).name || suggestions.primary.language,
-          submenu: renderSuggestionMenuItems(suggestions.primary.suggestions)
+          submenu: this._renderSuggestionMenuItems_(suggestions.primary.suggestions)
         })
         menuTemplate.push({
           label: (dictInfo[suggestions.secondary.language] || {}).name || suggestions.secondary.language,
-          submenu: renderSuggestionMenuItems(suggestions.secondary.suggestions)
+          submenu: this._renderSuggestionMenuItems_(suggestions.secondary.suggestions)
         })
       } else {
         const suggList = (suggestions.primary.suggestions || suggestions.secondary.suggestions || [])
-        renderSuggestionMenuItems(suggList).forEach((item) => menuTemplate.push(item))
+        this._renderSuggestionMenuItems_(suggList).forEach((item) => menuTemplate.push(item))
       }
       menuTemplate.push({ type: 'separator' })
     }
@@ -111,9 +130,7 @@
     })
     const menu = Menu.buildFromTemplate(menuTemplate)
     menu.popup(remote.getCurrentWindow())
-  })
-
-  module.exports = {
-    setSpellchecker: (sc) => { spellchecker = sc }
   }
-})()
+}
+
+module.exports = ContextMenu
