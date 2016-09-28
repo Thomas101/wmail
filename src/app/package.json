@@ -15,7 +15,7 @@
     "jquery": "3.1.1",
     "minivents": "2.0.2",
     "mkdirp": "0.5.1",
-    "node-fetch": "1.6.1",
+    "node-fetch": "1.6.3",
     "os-locale": "1.4.0",
     "request": "2.75.0",
     "unused-filename": "0.1.0",
@@ -25,6 +25,6 @@
     "yargs": "5.0.0"
   },
   "devDependencies": {
-    "standard": "8.1.0"
+    "standard": "8.2.0"
   }
 }

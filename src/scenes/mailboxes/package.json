@@ -9,7 +9,7 @@
     "bootstrap-grid": "2.0.1",
     "camelcase": "3.0.0",
     "compare-version": "0.1.2",
-    "fbjs": "0.8.4",
+    "fbjs": "0.8.5",
     "https-proxy-agent": "1.0.0",
     "material-ui": "0.15.4",
     "minivents": "2.0.2",
@@ -22,6 +22,6 @@
     "uuid": "2.0.3"
   },
   "devDependencies": {
-    "standard": "8.1.0"
+    "standard": "8.2.0"
   }
 }
