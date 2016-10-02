@@ -76,7 +76,6 @@ module.exports = React.createClass({
     return {
       activeMailboxId: mailboxStore.activeMailboxId(),
       messagesUnreadCount: mailboxStore.totalUnreadCountForAppBadge(),
-      unreadMessages: mailboxStore.unreadMessagesForAppBadge(),
       uiSettings: settingsStore.ui,
       traySettings: settingsStore.tray
     }
@@ -89,8 +88,7 @@ module.exports = React.createClass({
 
     this.setState({
       activeMailboxId: store.activeMailboxId(),
-      messagesUnreadCount: store.totalUnreadCountForAppBadge(),
-      unreadMessages: store.unreadMessagesForAppBadge()
+      messagesUnreadCount: store.totalUnreadCountForAppBadge()
     })
     ipcRenderer.send('mailboxes-changed', {
       mailboxes: store.allMailboxes().map((mailbox) => {
@@ -185,7 +183,6 @@ module.exports = React.createClass({
     const {
       traySettings,
       uiSettings,
-      unreadMessages,
       messagesUnreadCount
     } = this.state
 
@@ -196,7 +193,6 @@ module.exports = React.createClass({
         </MuiThemeProvider>
         {!traySettings.show ? undefined : (
           <Tray
-            unreadMessages={unreadMessages}
             unreadCount={messagesUnreadCount}
             traySettings={traySettings} />
         )}

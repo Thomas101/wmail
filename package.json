@@ -33,16 +33,16 @@
   },
   "dependencies": {
     "babel": "6.5.2",
-    "babel-core": "6.16.0",
+    "babel-core": "6.17.0",
     "babel-loader": "6.2.5",
     "babel-preset-es2015": "6.16.0",
-    "babel-preset-react": "6.11.1",
-    "babel-preset-stage-0": "6.5.0",
+    "babel-preset-react": "6.16.0",
+    "babel-preset-stage-0": "6.16.0",
     "clean-webpack-plugin": "0.1.10",
     "copy-webpack-plugin": "3.0.1",
     "css-loader": "0.25.0",
-    "electron-packager": "8.0.0",
-    "electron-prebuilt": "1.4.1",
+    "electron-packager": "8.1.0",
+    "electron-prebuilt": "1.4.2",
     "extract-text-webpack-plugin": "1.0.1",
     "file-loader": "0.9.0",
     "json-loader": "0.5.4",
@@ -58,10 +58,10 @@
     "uuid": "2.0.3",
     "webpack": "1.13.2",
     "webpack-target-electron-renderer": "0.4.0",
-    "yargs": "5.0.0"
+    "yargs": "6.0.0"
   },
   "devDependencies": {
-    "standard": "8.2.0"
+    "standard": "8.3.0"
   },
   "standard": {
     "ignore": [
