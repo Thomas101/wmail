@@ -124,57 +124,6 @@ module.exports = React.createClass({
     return { menuUnreadMessages: menuItems, menuUnreadMessagesSig: sig }
   },
 
-  /**
-  * Generates the unread message data for the context menu in a way that it
-  * can be rendered and diffed
-  * @param unreadMessages: the raw unread messages to generate from
-  * @return { ctxMenuUnreadMessages, ctxMenuUnreadMessagesSig } with ctxMenuUnreadMessages containing
-  * the up to date message headers and ctxMenuUnreadMessagesSig containing a string hash of them
-  */
-/* generateCtxMenuUnreadMessages (unreadMessages) {
-    const messageInfos = Object.keys(unreadMessages)
-      .reduce((acc, mailboxId) => {
-        const messages = Object.keys(unreadMessages[mailboxId])
-          .map((id) => unreadMessages[mailboxId][id])
-          .map((info) => {
-            info.mailboxId = mailboxId
-            return info
-          })
-        return acc.concat(messages)
-      }, [])
-      .filter((info) => info.message !== undefined)
-      .sort((a, b) => {
-        return parseInt(b.message.internalDate) - parseInt(a.message.internalDate)
-      })
-      .slice(0, 5)
-      .map((info) => {
-        const headers = info.message.payload.headers
-        const subject = (headers.find((h) => h.name === 'Subject') || {}).value || 'No Subject'
-        const fromEmail = (headers.find((h) => h.name === 'From') || {}).value || ''
-        const fromEmailMatch = fromEmail.match('(.+)<(.+)@(.+)>$')
-        if (fromEmailMatch) {
-          info.snippet = fromEmailMatch[1].trim() + ' : ' + subject
-        } else {
-          info.snippet = fromEmail + ' : ' + subject
-        }
-        return info
-      })
-      .map((info) => {
-        return {
-          label: info.snippet,
-          mailboxId: info.mailboxId,
-          threadId: info.message.threadId,
-          messageId: info.message.id,
-          id: `${info.mailboxId}:${info.message.threadId}:${info.message.id}` // used for update tracking
-        }
-      })
-
-    return {
-      ctxMenuUnreadMessages: messageInfos,
-      ctxMenuUnreadMessagesSig: messageInfos.map((info) => info.id).join('|')
-    }
-  },*/
-
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
