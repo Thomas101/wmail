@@ -202,6 +202,13 @@ class SettingsActions {
     return this.update(SEGMENTS.APP, 'ignoreGPUBlacklist', ignore)
   }
 
+  /**
+  * @param toggled: true to check for updates
+  */
+  checkForUpdates (toggled) {
+    return this.update(SEGMENTS.APP, 'checkForUpdates', toggled)
+  }
+
   /* **************************************************************************/
   // Tray
   /* **************************************************************************/

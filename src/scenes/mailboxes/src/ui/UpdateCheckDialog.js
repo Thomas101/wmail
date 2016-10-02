@@ -4,6 +4,7 @@ const TimerMixin = require('react-timer-mixin')
 const compareVersion = require('compare-version')
 const { UPDATE_CHECK_URL, UPDATE_CHECK_INTERVAL, UPDATE_DOWNLOAD_URL } = require('shared/constants')
 const { FlatButton, RaisedButton, Dialog } = require('material-ui')
+const settingsStore = require('../stores/settings/settingsStore')
 const pkg = window.appPackage()
 const {
   remote: {shell}
@@ -44,6 +45,7 @@ module.exports = React.createClass({
   * Checks with the server for an update
   */
   checkNow () {
+    if (settingsStore.getState().app.checkForUpdates === false) { return }
     Promise.resolve()
       .then(() => window.fetch(UPDATE_CHECK_URL))
       .then((res) => res.ok ? Promise.resolve(res) : Promise.reject(res))

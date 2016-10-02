@@ -126,6 +126,14 @@ module.exports = React.createClass({
               showRestart()
               flux.settings.A.ignoreGPUBlacklist(toggled)
             }} />
+          <Toggle
+            toggled={app.checkForUpdates}
+            label='Check for updates'
+            labelPosition='right'
+            onToggle={(evt, toggled) => {
+              showRestart()
+              flux.settings.A.checkForUpdates(toggled)
+            }} />
         </Paper>
       </div>
     )
