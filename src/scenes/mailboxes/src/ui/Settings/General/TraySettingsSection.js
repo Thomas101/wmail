@@ -1,7 +1,7 @@
 const React = require('react')
 const { Toggle, Paper, SelectField, MenuItem, FontIcon } = require('material-ui')
 const {
-  ColorPickerButton, TrayPreview, TrayRenderer,
+  ColorPickerButton, TrayPreview,
   Grid: { Row, Col }
 } = require('../../../Components')
 const settingsActions = require('../../../stores/settings/settingsActions')
@@ -88,7 +88,7 @@ module.exports = React.createClass({
                 unreadCount: 0,
                 showUnreadCount: tray.showUnreadCount,
                 unreadColor: tray.unreadColor,
-                readColor: TrayRenderer.themedReadColor(tray.readColor, tray.isReadColorDefault),
+                readColor: tray.readColor,
                 unreadBackgroundColor: tray.readBackgroundColor,
                 readBackgroundColor: tray.readBackgroundColor,
                 size: 100
@@ -121,7 +121,7 @@ module.exports = React.createClass({
                 unreadCount: 1,
                 showUnreadCount: tray.showUnreadCount,
                 unreadColor: tray.unreadColor,
-                readColor: TrayRenderer.themedReadColor(tray.readColor, tray.isReadColorDefault),
+                readColor: tray.readColor,
                 unreadBackgroundColor: tray.unreadBackgroundColor,
                 readBackgroundColor: tray.readBackgroundColor,
                 size: 100

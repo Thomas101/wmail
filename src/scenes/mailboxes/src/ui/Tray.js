@@ -138,7 +138,6 @@ module.exports = React.createClass({
       'readColor',
       'readBackgroundColor',
       'showUnreadCount',
-      'isReadColorDefault',
       'dpiMultiplier'
     ].findIndex((k) => {
       return this.props.traySettings[k] !== nextProps.traySettings[k]
@@ -214,7 +213,7 @@ module.exports = React.createClass({
       unreadCount: unreadCount,
       showUnreadCount: traySettings.showUnreadCount,
       unreadColor: traySettings.unreadColor,
-      readColor: TrayRenderer.themedReadColor(traySettings.readColor, traySettings.isReadColorDefault),
+      readColor: traySettings.readColor,
       unreadBackgroundColor: traySettings.unreadBackgroundColor,
       readBackgroundColor: traySettings.readBackgroundColor,
       size: this.trayIconSize(),

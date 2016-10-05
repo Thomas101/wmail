@@ -11,6 +11,7 @@
     "fs-extra": "0.30.0",
     "gmail-js": "0.5.2",
     "googleapis": "13.0.0",
+    "home-dir": "1.0.0",
     "https-proxy-agent": "1.0.0",
     "jquery": "3.1.1",
     "minivents": "2.0.2",

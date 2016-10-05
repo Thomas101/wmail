@@ -1,22 +1,8 @@
-const {nativeImage, systemPreferences} = window.nativeRequire('electron').remote
+const {nativeImage} = window.nativeRequire('electron').remote
 const B64_SVG_PREFIX = 'data:image/svg+xml;base64,'
 const MAIL_SVG = window.atob(require('shared/b64Assets').MAIL_SVG.replace(B64_SVG_PREFIX, ''))
 
 class TrayRenderer {
-
-  /**
-  * The themed read color
-  * @param col: the colour from the store
-  * @param isDefault: true if this is the default color
-  * @return a themed colour if the default is provided
-  */
-  static themedReadColor (col, isDefault) {
-    if (isDefault) {
-      return process.platform === 'darwin' && systemPreferences.isDarkMode() ? '#FFFFFF' : '#000000'
-    } else {
-      return col
-    }
-  }
 
   /**
   * @param config: the config to merge into the default config
@@ -32,8 +18,8 @@ class TrayRenderer {
         showUnreadCount: true,
         unreadColor: '#000000',
         readColor: '#C82018',
-        unreadBackgroundColor: 'transparent',
-        readBackgroundColor: 'transparent',
+        unreadBackgroundColor: '#FFFFFF',
+        readBackgroundColor: '#FFFFFF',
         size: 100,
         thick: process.platform === 'win32',
         __defaultMerged__: true

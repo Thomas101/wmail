@@ -14,8 +14,62 @@ const {
   }
 } = require('shared/Models')
 const migration = require('./migration')
+const homeDir = window.appNodeModulesRequire('home-dir') // pull this from main thread
+const {systemPreferences} = window.nativeRequire('electron').remote
+const fs = require('fs')
 
 class SettingsStore {
+  /* **************************************************************************/
+  // Class
+  /* **************************************************************************/
+
+  /**
+  * Generates the themed defaults for the tray
+  * @return the defaults
+  */
+  static generateTrayThemedDefaults () {
+    if (process.platform === 'darwin') {
+      return {
+        readColor: systemPreferences.isDarkMode() ? '#FFFFFF' : '#000000',
+        readBackgroundColor: 'transparent',
+        unreadColor: '#C82018',
+        unreadBackgroundColor: 'transparent'
+      }
+    } else if (process.platform === 'win32') {
+      // Windows is predominantely dark themed, but with no way to check assume it is
+      return {
+        readColor: '#FFFFFF',
+        readBackgroundColor: 'transparent',
+        unreadColor: '#C82018',
+        unreadBackgroundColor: 'transparent'
+      }
+    } else if (process.platform === 'linux') {
+      let isDark = false
+      // GTK
+      try {
+        const gtkConf = fs.readFileSync(homeDir('.config/gtk-3.0/settings.ini'), 'utf8')
+        if (gtkConf.indexOf('gtk-application-prefer-dark-theme=1') !== -1) {
+          isDark = true
+        }
+      } catch (ex) { }
+
+      return {
+        readColor: isDark ? '#FFFFFF' : '#000000',
+        readBackgroundColor: 'transparent',
+        unreadColor: '#C82018',
+        unreadBackgroundColor: 'transparent'
+      }
+    }
+
+    // Catch all
+    return {
+      readColor: '#000000',
+      readBackgroundColor: 'transparent',
+      unreadColor: '#C82018',
+      unreadBackgroundColor: 'transparent'
+    }
+  }
+
   /* **************************************************************************/
   // Lifecycle
   /* **************************************************************************/
@@ -45,13 +99,14 @@ class SettingsStore {
   handleLoad () {
     // Migrate
     migration.from_1_3_1()
+    this.trayDefaults = SettingsStore.generateTrayThemedDefaults()
 
     // Load everything
     this.app = new AppSettings(persistence.getJSONItemSync('app', {}))
     this.language = new LanguageSettings(persistence.getJSONItemSync('language', {}))
     this.os = new OSSettings(persistence.getJSONItemSync('os', {}))
     this.proxy = new ProxySettings(persistence.getJSONItemSync('proxy', {}))
-    this.tray = new TraySettings(persistence.getJSONItemSync('tray', {}))
+    this.tray = new TraySettings(persistence.getJSONItemSync('tray', {}), this.trayDefaults)
     this.ui = new UISettings(persistence.getJSONItemSync('ui', {}))
   }
 
@@ -116,7 +171,11 @@ class SettingsStore {
 
     const js = this[storeKey].changeData(updates)
     persistence.setJSONItem(persistenceKey, js)
-    this[storeKey] = new StoreClass(js)
+    if (segment === SettingsIdent.SEGMENTS.TRAY) {
+      this[storeKey] = new StoreClass(js, this.trayDefaults)
+    } else {
+      this[storeKey] = new StoreClass(js)
+    }
   }
 
   /**
@@ -132,7 +191,11 @@ class SettingsStore {
     const js = this[storeKey].cloneData()
     js[key] = !js[key]
     persistence.setJSONItem(persistenceKey, js)
-    this[storeKey] = new StoreClass(js)
+    if (segment === SettingsIdent.SEGMENTS.TRAY) {
+      this[storeKey] = new StoreClass(js, this.trayDefaults)
+    } else {
+      this[storeKey] = new StoreClass(js)
+    }
   }
 
   /* **************************************************************************/
