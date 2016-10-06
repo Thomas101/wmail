@@ -12,10 +12,8 @@ temp.track()
 const { ROOT_PATH } = require('./constants')
 const { WINDOWS_UPGRADE_CODE } = require('../src/shared/credentials')
 
-const ARCH = {
-  X86: 'x86',
-  X64: 'x64'
-}
+const ARCH = { X86: 'x86', X64: 'x64' }
+const ARCH_FILENAME = { 'x86': 'ia32', 'x64': 'x86_64' }
 
 class Distribution {
 
@@ -83,7 +81,7 @@ class Distribution {
       const task = TaskLogger.start(`Windows MSI (${arch})`)
 
       // Pre-calc all the needed paths
-      const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_windows_${arch}`
+      const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_windows_${ARCH_FILENAME[arch]}`
       const distPath = path.join(ROOT_PATH, 'dist')
       const builtPath = path.join(ROOT_PATH, arch === ARCH.X64 ? 'WMail-win32-x64' : 'WMail-win32-ia32')
       const msiTargetPath = path.join(distPath, filename + '.msi')
@@ -145,7 +143,7 @@ class Distribution {
     return new Promise((resolve, reject) => {
       const task = TaskLogger.start(`Linux tar (${arch})`)
 
-      const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_linux_${arch}.tar.gz`
+      const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_linux_${ARCH_FILENAME[arch]}.tar.gz`
       const targetPath = path.join(ROOT_PATH, 'dist', filename)
       const builtDirectory = arch === ARCH.X64 ? 'WMail-linux-x64' : 'WMail-linux-ia32'
 
@@ -216,7 +214,7 @@ class Distribution {
             reject(err)
           } else {
             const outputFilename = `wmail-desktop_${pkg.version}-1_${ARCH_MAPPING[arch]}.deb`
-            const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_linux_${arch}.deb`
+            const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_linux_${ARCH_FILENAME[arch]}.deb`
             fs.move(path.join(ROOT_PATH, 'dist', outputFilename), path.join(ROOT_PATH, 'dist', filename), { clobber: true }, (err) => {
               if (err) {
                 task.fail()
