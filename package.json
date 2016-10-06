@@ -16,7 +16,8 @@
     "dev:platform": "webpack --task=platform; electron bin/app/index.js",
     "dev:app": "webpack --task=app; electron bin/app/index.js",
     "dev:mailboxes": "webpack --task=mailboxes; electron bin/app/index.js",
-    "dev:assets": "webpack --task=assets; electron bin/app/index.js"
+    "dev:assets": "webpack --task=assets; electron bin/app/index.js",
+    "dev:run": "electron bin/app/index.js"
   },
   "keywords": [],
   "author": {

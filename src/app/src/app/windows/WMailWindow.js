@@ -65,7 +65,7 @@ class WMailWindow extends EventEmitter {
 
     // Load up the window location & last state
     this.window = new BrowserWindow(Object.assign(settings, screenLocation))
-    if (screenLocation.maximized) {
+    if (screenLocation.maximized && settings.show !== false) {
       this.window.maximize()
     }
     if (this.options.screenLocationNS) {
@@ -106,20 +106,18 @@ class WMailWindow extends EventEmitter {
   saveWindowScreenLocation () {
     clearTimeout(this.windowScreenLocationSaver)
     this.windowScreenLocationSaver = setTimeout(() => {
-      const state = {
-        fullscreen: this.window.isFullScreen(),
-        maximized: this.window.isMaximized()
-      }
-      if (!this.window.isMaximized() && !this.window.isMinimized()) {
-        const position = this.window.getPosition()
-        const size = this.window.getSize()
-        state.x = position[0]
-        state.y = position[1]
-        state.width = size[0]
-        state.height = size[1]
-      }
+      if (this.window.isMinimized()) { return }
+      const position = this.window.getPosition()
+      const size = this.window.getSize()
 
-      appStorage.setJSONItem(this.options.screenLocationNS, state)
+      appStorage.setJSONItem(this.options.screenLocationNS, {
+        fullscreen: this.window.isFullScreen(),
+        maximized: this.window.isMaximized(),
+        x: position[0],
+        y: position[1],
+        width: size[0],
+        height: size[1]
+      })
     }, 2000)
   }
 

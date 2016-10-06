@@ -4,7 +4,6 @@
   let windowManager
   const quitting = app.makeSingleInstance(function (commandLine, workingDirectory) {
     const argv = require('yargs').parse(commandLine)
-    console.log(argv)
     if (windowManager) {
       if (argv.hidden || argv.hide) {
         windowManager.mailboxesWindow.hide()
