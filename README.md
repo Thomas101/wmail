@@ -1,4 +1,4 @@
-# Wmail
+# WMail
 
 [![Join the chat at https://gitter.im/wmail-desktop/Lobby](https://badges.gitter.im/wmail-desktop/Lobby.svg)](https://gitter.im/wmail-desktop/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Download](https://img.shields.io/github/downloads/Thomas101/wmail/total.svg)](https://github.com/Thomas101/wmail/releases)
