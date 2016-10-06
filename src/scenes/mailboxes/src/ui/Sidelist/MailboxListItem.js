@@ -132,6 +132,14 @@ module.exports = React.createClass({
     this.setState({ popover: false })
   },
 
+  /**
+  * Handles the user requesting an account reauthentication
+  */
+  handeReAuthenticate () {
+    flux.mailbox.A.reauthenticateBrowserSession(this.props.mailboxId)
+    this.setState({ popover: false })
+  },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
@@ -160,21 +168,23 @@ module.exports = React.createClass({
   */
   renderMenuItems () {
     const menuItems = []
-    if (!this.props.isFirst) {
+    const {isFirst, isLast} = this.props
+    const {mailbox} = this.state
+    if (!isFirst) {
       menuItems.push(<MenuItem
         key='moveup'
         primaryText='Move Up'
         onClick={this.handleMoveUp}
         leftIcon={<FontIcon className='material-icons'>arrow_upward</FontIcon>} />)
     }
-    if (!this.props.isLast) {
+    if (!isLast) {
       menuItems.push(<MenuItem
         key='movedown'
         primaryText='Move Down'
         onClick={this.handleMoveDown}
         leftIcon={<FontIcon className='material-icons'>arrow_downward</FontIcon>} />)
     }
-    if (!this.props.isFirst || !this.props.isLast) {
+    if (!isFirst || !isLast) {
       menuItems.push(<Divider key='div-0' />)
     }
     menuItems.push(
@@ -183,6 +193,14 @@ module.exports = React.createClass({
         primaryText='Delete'
         onClick={this.handleDelete}
         leftIcon={<FontIcon className='material-icons'>delete</FontIcon>} />)
+    if (mailbox.artificiallyPersistCookies) {
+      menuItems.push(
+        <MenuItem
+          key='reauthenticate'
+          primaryText='Re-Authenticate'
+          onClick={this.handeReAuthenticate}
+          leftIcon={<FontIcon className='material-icons'>lock_outline</FontIcon>} />)
+    }
     menuItems.push(<Divider key='div-1' />)
     menuItems.push(
       <MenuItem

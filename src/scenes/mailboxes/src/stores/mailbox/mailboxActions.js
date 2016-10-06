@@ -1,5 +1,7 @@
 const alt = require('../alt')
-const {ipcRenderer} = window.nativeRequire('electron')
+const { ipcRenderer, remote } = window.nativeRequire('electron')
+const { session } = remote
+const mailboxDispatch = require('../../Dispatch/mailboxDispatch')
 
 class MailboxActions {
 
@@ -254,6 +256,35 @@ class MailboxActions {
   * @param id: the id of the mailbox
   */
   moveDown (id) { return { id: id } }
+
+  /* **************************************************************************/
+  // Auth
+  /* **************************************************************************/
+
+  /**
+  * Reauthenticates the user by logging them out of the webview
+  * @param id: the id of the mailbox
+  */
+  reauthenticateBrowserSession (id) {
+    const ses = session.fromPartition('persist:' + id)
+    const promise = Promise.resolve()
+      .then(() => {
+        return new Promise((resolve) => {
+          ses.clearStorageData(resolve)
+        })
+      })
+      .then(() => {
+        return new Promise((resolve) => {
+          ses.clearCache(resolve)
+        })
+      })
+      .then(() => {
+        mailboxDispatch.reload(id)
+        return Promise.resolve()
+      })
+
+    return { promise: promise }
+  }
 
 }
 
