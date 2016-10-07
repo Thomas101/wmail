@@ -54,8 +54,8 @@ class AppPrimaryMenu {
           { label: 'Cut', accelerator: 'CmdOrCtrl+X', role: 'cut' },
           { label: 'Copy', accelerator: 'CmdOrCtrl+C', role: 'copy' },
           { label: 'Paste', accelerator: 'CmdOrCtrl+V', role: 'paste' },
-          { label: 'Paste and match style', accelerator: 'CmdOrCtrl+Shift+V', role: 'pasteAndMatchStyle' },
-          { label: 'Select All', accelerator: 'CmdOrCtrl+A', role: 'selectAll' },
+          { label: 'Paste and match style', accelerator: 'CmdOrCtrl+Shift+V', role: 'pasteandmatchstyle' },
+          { label: 'Select All', accelerator: 'CmdOrCtrl+A', role: 'selectall' },
           { type: 'separator' },
           { label: 'Find', accelerator: 'CmdOrCtrl+F', click: this._selectors.find },
           { label: 'Find Next', accelerator: 'CmdOrCtrl+G', click: this._selectors.findNext }
