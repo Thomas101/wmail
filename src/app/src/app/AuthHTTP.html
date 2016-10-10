@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>WMail Authentication Required</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        padding: 20px;
+        font-family: sans-serif;
+        color: rgb(98, 98, 98);
+      }
+      h1 {
+        font-size: 22px;
+        margin-top: 0px;
+        margin-bottom: 20px;
+        font-weight: normal;
+      }
+      h2 {
+        font-size: 16px;
+        font-weight: normal;
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input {
+        width: 100%;
+        font-size: 14px;
+        padding: 3px 2px;
+      }
+      button {
+        border: 1px solid rgb(212, 212, 212);
+        background-color: white;
+        font-size: 14px;
+        padding: 5px 10px;
+        cursor: pointer;
+        color: rgb(83, 83, 83);
+      }
+      button:active {
+        background-color: rgb(245, 245, 245);
+        color: rgb(98, 98, 98);
+      }
+      button.primary {
+        font-weight: bold;
+      }
+      .form-group {
+        margin-bottom: 10px;
+      }
+      .submit-group {
+        margin-top: 20px;
+        text-align: right;
+      }
+    </style>
+
+    <script type="text/javascript">
+    const { ipcRenderer } = require('electron')
+    ipcRenderer.on('requestor', (event, message) => {
+      document.getElementById('requestor').textContent = message
+    })
+
+    function cancel () {
+      ipcRenderer.send('cancel', {})
+    }
+
+    function login () {
+      const username = document.querySelector('[name="username"]').value
+      const password = document.querySelector('[name="password"]').value
+      if (username && password) {
+        ipcRenderer.send('login', { username: username, password: password })
+      }
+    }
+  </script>
+  </head>
+  <body>
+    <h1>WMail Authentication Required</h1>
+    <h2>
+      <span id="requestor"></span> requires a username and password
+    </h2>
+    <form>
+      <div class="form-group">
+        <label>User Name:</label>
+        <input type="text" name="username">
+      </div>
+      <div class="form-group">
+        <label>Password:</label>
+        <input type="password" name="password">
+      </div>
+      <div class="submit-group">
+        <button type="button" onclick="cancel()">Cancel</button>
+        <button type="button" onclick="login()" class="primary">Log In</button>
+      </div>
+    </form>
+  </body>
+</html>
