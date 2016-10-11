@@ -2,7 +2,7 @@ const Browser = require('../Browser/Browser')
 const WMail = require('../WMail/WMail')
 const injector = require('../injector')
 const {ipcRenderer} = require('electron')
-const GmailWindowOpen = require('./GmailWindowOpen')
+const GoogleWindowOpen = require('./GoogleWindowOpen')
 const path = require('path')
 const fs = require('fs')
 
@@ -15,6 +15,7 @@ class Google {
   constructor () {
     this.browser = new Browser()
     this.wmail = new WMail()
+    this.googleWindowOpen = new GoogleWindowOpen()
 
     this.sidebarStylesheet = document.createElement('style')
     this.sidebarStylesheet.innerHTML = `
@@ -62,7 +63,6 @@ class Google {
   * Loads the GMail API
   */
   loadGmailAPI () {
-    this.gmailWindowOpen = new GmailWindowOpen(undefined)
     this.gmailApi = undefined
 
     const jqueryPath = path.join(__dirname, '../../../../app/node_modules/jquery/dist/jquery.min.js')
@@ -71,7 +71,7 @@ class Google {
     injector.injectJavaScript(fs.readFileSync(jqueryPath, 'utf8'))
     injector.injectJavaScript(fs.readFileSync(apiPath, 'utf8'), () => {
       this.gmailApi = new window.Gmail()
-      this.gmailWindowOpen.gmailApi = this.gmailApi
+      this.googleWindowOpen.gmailApi = this.gmailApi
     })
   }
 

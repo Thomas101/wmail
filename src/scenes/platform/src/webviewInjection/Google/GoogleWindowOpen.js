@@ -1,15 +1,12 @@
 const ipcRenderer = require('electron').ipcRenderer
 
-class GmailWindowOpen {
+class GoogleWindowOpen {
   /* **************************************************************************/
   // Lifecycle
   /* **************************************************************************/
 
-  /**
-  * @param gmailApi=undefined: the gmail api
-  */
-  constructor (gmailApi) {
-    this.gmailApi = gmailApi
+  constructor () {
+    this.gmailApi = undefined
 
     // Inject into the main window
     this.injectWindow(window)
@@ -53,16 +50,14 @@ class GmailWindowOpen {
             }
           }
         }
-      } else if (arguments[0].indexOf('ui=2') !== -1 && arguments[0].indexOf('view=btop') !== -1) {
+      } else if (gmailWindowOpen.gmailApi && arguments[0].indexOf('ui=2') !== -1 && arguments[0].indexOf('view=btop') !== -1) {
         // Open message in new window
-        if (gmailWindowOpen.gmailApi) {
-          const ik = gmailWindowOpen.gmailApi.tracker.ik
-          const msgId = window.location.hash.split('/').pop().replace(/#/, '').split('?')[0]
-          ipcRenderer.sendToHost({
-            type: 'js-new-window',
-            url: 'https://mail.google.com/mail?ui=2&view=lg&ik=' + ik + '&msg=' + msgId
-          })
-        }
+        const ik = gmailWindowOpen.gmailApi.tracker.ik
+        const msgId = window.location.hash.split('/').pop().replace(/#/, '').split('?')[0]
+        ipcRenderer.sendToHost({
+          type: 'js-new-window',
+          url: 'https://mail.google.com/mail?ui=2&view=lg&ik=' + ik + '&msg=' + msgId
+        })
         return { closed: false, focus: function () { } }
       } else {
         return defaultfn.apply(this, Array.from(arguments))
@@ -71,4 +66,4 @@ class GmailWindowOpen {
   }
 }
 
-module.exports = GmailWindowOpen
+module.exports = GoogleWindowOpen
