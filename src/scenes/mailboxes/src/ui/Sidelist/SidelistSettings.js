@@ -19,7 +19,8 @@ module.exports = React.createClass({
         <IconButton
           iconClassName='material-icons'
           tooltip='Settings'
-          tooltipPosition='top-center'
+          tooltipPosition='top-right'
+          tooltipStyles={{ left: 43, top: 26 }}
           onClick={() => navigationDispatch.openSettings()}
           iconStyle={{ color: Colors.blueGrey400 }}>
           settings

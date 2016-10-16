@@ -65,7 +65,8 @@ module.exports = React.createClass({
         <IconButton
           iconClassName='material-icons'
           tooltip='Add Mailbox'
-          tooltipPosition='top-center'
+          tooltipPosition='top-right'
+          tooltipStyles={{ left: 43, top: 26 }}
           onClick={this.handleOpenPopover}
           iconStyle={{ color: Colors.blueGrey400 }}>
           add_circle
