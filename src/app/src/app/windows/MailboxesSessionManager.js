@@ -6,7 +6,7 @@ const settingStore = require('../stores/settingStore')
 const mailboxStore = require('../stores/mailboxStore')
 const unusedFilename = require('unused-filename')
 
-const COOKIE_PERSIST_PERIOD = 1000 * 5 // 5 secs
+const COOKIE_PERSIST_PERIOD = 1000 * 30 // 30 secs
 
 class MailboxesSessionManager {
 
@@ -48,18 +48,11 @@ class MailboxesSessionManager {
   startManagingSession (partition) {
     if (this.__managed__.has(partition)) { return }
 
-    const mailbox = this.getMailboxFromPartition(partition)
     const ses = session.fromPartition(partition)
     ses.setDownloadPath(app.getPath('downloads'))
     ses.on('will-download', (evt, item) => this.handleDownload(evt, item))
     ses.setPermissionRequestHandler(this.handlePermissionRequest)
-
-    // Triggering the actual changed cookie causes some weirdness so we do a re-run
-    // on every change
-    if (mailbox && mailbox.artificiallyPersistCookies) {
-      this.artificiallyPersistCookies(ses, partition)
-      ses.cookies.on('change', () => this.artificiallyPersistCookies(ses, partition))
-    }
+    ses.webRequest.onCompleted((evt) => this.handleRequestCompleted(evt, ses, partition))
 
     this.__managed__.add(partition)
   }
@@ -197,6 +190,20 @@ class MailboxesSessionManager {
   }
 
   /* ****************************************************************************/
+  // Requests
+  /* ****************************************************************************/
+
+  /**
+  * Handles a request completing
+  * @param evt: the event that fired
+  * @param session: the session this request was for
+  * @param partition: the partition string for this session
+  */
+  handleRequestCompleted (evt, session, partition) {
+    this.artificiallyPersistCookies(session, partition)
+  }
+
+  /* ****************************************************************************/
   // Cookies
   /* ****************************************************************************/
 
@@ -207,6 +214,8 @@ class MailboxesSessionManager {
   */
   artificiallyPersistCookies (session, partition) {
     if (this.persistCookieThrottle[partition] !== undefined) { return }
+    const mailbox = this.getMailboxFromPartition(partition)
+    if (!mailbox || !mailbox.artificiallyPersistCookies) { return }
 
     this.persistCookieThrottle[partition] = setTimeout(() => {
       session.cookies.get({ session: true }, (error, cookies) => {
