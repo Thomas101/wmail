@@ -6,7 +6,8 @@ const settingStore = require('../stores/settingStore')
 const mailboxStore = require('../stores/mailboxStore')
 const unusedFilename = require('unused-filename')
 
-const COOKIE_PERSIST_PERIOD = 1000 * 30 // 30 secs
+const COOKIE_PERSIST_WAIT = 1000 * 30 // 30 secs
+const COOKIE_PERSIST_PERIOD = 30 * 24 * 60 * 60 * 1000 // 30 days
 
 class MailboxesSessionManager {
 
@@ -226,12 +227,8 @@ class MailboxesSessionManager {
         cookies.forEach((cookie) => {
           const url = (cookie.secure ? 'https://' : 'http://') + cookie.domain + cookie.path
           session.cookies.remove(url, cookie.name, (error) => {
-            if (error) {
-              delete this.persistCookieThrottle[partition]
-              return
-            }
-            const expire = new Date()
-            expire.setYear(expire.getFullYear() + 1)
+            if (error) { return }
+            const expire = new Date().getTime() + COOKIE_PERSIST_PERIOD
             const persistentCookie = {
               url: url,
               name: cookie.name,
@@ -240,15 +237,14 @@ class MailboxesSessionManager {
               path: cookie.path,
               secure: cookie.secure,
               httpOnly: cookie.httpOnly,
-              expirationDate: expire.getTime()
+              expirationDate: expire
             }
-            session.cookies.set(persistentCookie, (_) => {
-              delete this.persistCookieThrottle[partition]
-            })
+            session.cookies.set(persistentCookie, (_) => { })
           })
         })
+        delete this.persistCookieThrottle[partition]
       })
-    }, COOKIE_PERSIST_PERIOD)
+    }, COOKIE_PERSIST_WAIT)
   }
 }
 
