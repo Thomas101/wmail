@@ -136,10 +136,7 @@ module.exports = React.createClass({
 
   selectAll () { this.getWebviewNode().selectAll() },
 
-  setZoomLevel (level) {
-    this.getWebviewNode().setZoomFactor(level)
-    this.getWebviewNode().send('set-zoom-factor', { level: level })
-  },
+  setZoomLevel (level) { this.getWebviewNode().setZoomFactor(level) },
 
   reload () { this.getWebviewNode().reloadIgnoringCache() },
 
