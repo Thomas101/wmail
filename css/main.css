@@ -1,13 +1,47 @@
+/**
+* Layout
+*/
 body {
-   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
-   font-weight: 300;
+  font-family: 'Quattrocento Sans', sans-serif;
 }
 
+/**
+* Navbar
+*/
 #page-navbar {
   margin-bottom: 0px;
 }
+#page-navbar .navbar-brand {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-family: 'Short Stack', cursive;
+}
+#page-navbar .navbar-brand>img {
+  display: inline-block;
+  height: 100%;
+  margin-right: 5px;
+}
 
+/**
+* Utils
+*/
+.wmail-styled-text {
+  font-family: 'Short Stack', cursive;
+}
+.drop-image {
+  -webkit-box-shadow: 0px 2px 10px 0px rgba(199,197,199,1);
+  -moz-box-shadow: 0px 2px 10px 0px rgba(199,197,199,1);
+  box-shadow: 0px 2px 10px 0px rgba(199,197,199,1);
+}
+
+/**
+* Sections
+*/
 .page-section {
   padding-top: 50px;
   padding-bottom: 50px;
+}
+.page-sm-section {
+  padding-top: 20px;
+  padding-bottom: 20px;
 }

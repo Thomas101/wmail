@@ -1,23 +1,11 @@
-I was hoping to make 1.4.0 the next full release but there's still some outstanding bugs so 1.4.0 is coming out as a prerelease :-/
+This contains all the great features of the full 2.0.0 release. The fixes over 1.4.0 are...
 
-# Breaking changes
-
-Windows uses upgrading from **1.3.6** earlier will need to uninstall WMail before upgrading. Not doing this will result in two WMail installs
-
-# Changes
-Here's what's made it into the release...
-
-- Fixed file upload button styles
-- Added Latvian dictionary
-- Updated electron & React
-- Download notifications now open the file when selecting
-- Downloads now download to a temporary file before completion
-- Downloads now add the file extension even if the user omits it
-- Update check always happens daily now. Option to disable this
-- Make WMail respond to `--hidden` command whilst running
-- Refactored the webview injection code to be more modular and extensible
-- Removed multiple instances of dom thrashing in the webview injection code. This should speed up start times
-- Updated some deprecated electron functions
-- Changed Tray menu to have submenus for each mailbox
-- Tray icon now tries to detect OS theme
-- Update cookie persistence code to make it more efficient, thanks to some added electron features
+* Option to nuke account that artificially persists cookies
+* Fix to installer when upgrading wmail on windows
+* Fix launching WMail with hidden flag when it was maximised last
+* Fix for windows forgetting window position after being maximised
+* Change name of 32bit builds to have ia32 suffix and 64bit builds to have x86_64 suffix
+* Fix for opening links in inbox
+* Fix for deb installer where `desktop-file-install` isn’t available
+* Update libraries and electron
+* Try to keep mailboxes zoomed to deal with electron bug

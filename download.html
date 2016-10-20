@@ -1,69 +1,105 @@
 ---
 layout: default
-release_v: "v1.3.1"
-release_s: "1_3_1"
-prerelease_v: "v1.4.0"
-prerelease_s: "1_4_0"
+release_v: "v2.0.0"
+release_s: "2_0_0"
+prerelease_v: "v2.0.1"
+prerelease_s: "2_0_1"
 ---
 {% capture release_notes %}{% include release_notes.md %}{% endcapture %}
 {% capture prerelease_notes %}{% include prerelease_notes.md %}{% endcapture %}
 
-<section class="bg-red-600 color-red-50 page-section">
+<section class="page-section">
   <div class="container">
     <div class="row">
       <div class="col-md-12 text-center">
-        <h1>WMail</h1>
-        <p class="lead">The missing desktop client for Gmail & Google Inbox</p>
+        <h1>Download <span class="wmail-styled-text">WMail</span></h1>
+        <p class="lead color-grey-600">The missing desktop client for Gmail &amp; Google Inbox</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="page-section">
+
+<section class="page-section bg-grey-200">
   <div class="container">
     <div class="row">
-      <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-body text-center">
-            <h1>Choose your flavour</h1>
-            <p>You download the latest stable version of WMail or if you prefer you can test some new features by downloading the latest pre-release. <a href="https://github.com/Thomas101/wmail/releases" target="_blank">View all releases</a></p>
-          </div>
-        </div>
+      <div class="col-md-12 text-center">
+        <h2 class="color-red-600">Choose your channel...</h2>
+        <p><small>Release or Pre-Release</small></p>
       </div>
     </div>
     <div class="row">
       <div class="col-md-6">
         <div class="panel panel-default">
           <div class="panel-body">
-            <h2>{{ page.release_v }}</h2>
-            <p><span class="label label-success">Latest Release</span></p>
+            <h2>Release Channel</h2>
             <p>
-              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_osx.zip" class="btn btn-default">
-                <span class="fa fa-apple"></span> Download OSX
+              Tested by the community and ready to go. Generally more stable
+              than the Pre-Release channel but missing some of the latest features
+            </p>
+            <h4><span class="label label-success">Latest Release</span> {{ page.release_v }}</h4>
+
+            <p>
+              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_osx.dmg" class="btn btn-default">
+                <span class="fa fa-apple"></span> Download for OSX
               </a>
             </p>
 
             <p>
-              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_windows.zip" class="btn btn-default">
-                <span class="fa fa-windows"></span> Download Windows
-              </a>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  <span class="fa fa-windows"></span> Download for Windows <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_windows_x86_64.zip">
+                      <strong>64-bit</strong>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_windows_ia32.zip">
+                      32-bit
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </p>
 
             <p>
-              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_linux32.zip" class="btn btn-default">
-                <span class="fa fa-linux"></span> Download Linux 32-bit
-              </a>
-            </p>
-
-            <p>
-              <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_linux64.zip" class="btn btn-default">
-                <span class="fa fa-linux"></span> Download Linux 64-bit
-              </a>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  <span class="fa fa-linux"></span> Download for Linux <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_linux_x86_64.tar.gz">
+                      <strong>64-bit tar</strong>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_linux_ia32.tar.gz">
+                      32-bit tar
+                    </a>
+                  </li>
+                  <li role="separator" class="divider"></li>
+                  <li>
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_linux_x86_64.deb">
+                      <strong>64-bit deb</strong>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_linux_ia32.deb">
+                      32-bit deb
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </p>
             <p>
               Made with ♥ by Thomas Beverley. <a href="https://www.paypal.me/ThomasBeverley" target="_blank">Buy me a beer 🍺</a>
             </p>
-            <br />
+            <hr />
+            <h2 class="color-red-600">Release Notes</h2>
             {{ release_notes | markdownify }}
           </div>
         </div>
@@ -71,11 +107,17 @@ prerelease_s: "1_4_0"
       <div class="col-md-6">
         <div class="panel panel-default">
           <div class="panel-body">
-            <h2>{{ page.prerelease_v }}</h2>
-            <p><span class="label label-danger">Latest Pre-Release</span></p>
+            <h2>Pre-Release Channel</h2>
+            <p>
+              Released more often than the Release channel with all the cutting
+              edge features ready for testing
+            </p>
+            <h4><span class="label label-danger">Latest Pre-Release</span> {{ page.prerelease_v }}</h4>
 
             <p>
-              <a href="https://github.com/Thomas101/wmail/wiki/Installing-Prereleases" target="_blank">Information on Installing Prereleases</a>
+              <a href="https://github.com/Thomas101/wmail/wiki/Installing-Prereleases" target="_blank">
+                Information on Installing Prereleases
+              </a>
             </p>
 
             <p>
@@ -91,12 +133,12 @@ prerelease_s: "1_4_0"
                 </button>
                 <ul class="dropdown-menu">
                   <li>
-                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_windows_x64.zip">
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_windows_x86_64.zip">
                       <strong>64-bit</strong>
                     </a>
                   </li>
                   <li>
-                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_windows_x86.zip">
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_windows_ia32.zip">
                       32-bit
                     </a>
                   </li>
@@ -111,23 +153,23 @@ prerelease_s: "1_4_0"
                 </button>
                 <ul class="dropdown-menu">
                   <li>
-                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_linux_x64.tar.gz">
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_linux_x86_64.tar.gz">
                       <strong>64-bit tar</strong>
                     </a>
                   </li>
                   <li>
-                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_linux_x86.tar.gz">
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_linux_ia32.tar.gz">
                       32-bit tar
                     </a>
                   </li>
                   <li role="separator" class="divider"></li>
                   <li>
-                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_linux_x64.deb">
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_linux_x86_64.deb">
                       <strong>64-bit deb</strong>
                     </a>
                   </li>
                   <li>
-                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_linux_x86.deb">
+                    <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.prerelease_v }}/WMail_{{ page.prerelease_s }}_prerelease_linux_ia32.deb">
                       32-bit deb
                     </a>
                   </li>
@@ -138,11 +180,24 @@ prerelease_s: "1_4_0"
             <p>
               Made with ♥ by Thomas Beverley. <a href="https://www.paypal.me/ThomasBeverley" target="_blank">Buy me a beer 🍺</a>
             </p>
-            <br />
+            <hr />
+            <h2 class="color-red-600">Release Notes</h2>
             {{ prerelease_notes | markdownify }}
           </div>
         </div>
       </div>
     </div>
   </div>
+</section>
+
+<section class="bg-grey-200">
+  <br />
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        You came this far down? Perhaps you were looking for an <a href="https://github.com/Thomas101/wmail/releases" target="_blank">older release...</a>
+      </div>
+    </div>
+  </div>
+  <br />
 </section>
