@@ -455,7 +455,7 @@ module.exports = React.createClass({
   */
   render () {
     if (!this.state.mailbox) { return false }
-    const { isActive, browserSrc, focusedUrl, isSearching } = this.state
+    const { isActive, browserSrc, focusedUrl, isSearching, mailbox } = this.state
 
     const className = [
       'mailbox-window',
@@ -469,6 +469,10 @@ module.exports = React.createClass({
     return (
       <div className={className}>
         <WebView
+          loadCommit={mailbox.zoomFactor === 1 ? undefined : this.handleZoomFixEvent}
+          didGetResponseDetails={mailbox.zoomFactor === 1 ? undefined : this.handleZoomFixEvent}
+          didNavigate={mailbox.zoomFactor === 1 ? undefined : this.handleZoomFixEvent}
+          didNavigateInPage={mailbox.zoomFactor === 1 ? undefined : this.handleZoomFixEvent}
           ref='browser'
           preload='../platform/webviewInjection/google'
           partition={'persist:' + this.props.mailboxId}
@@ -477,13 +481,9 @@ module.exports = React.createClass({
           ipcMessage={this.dispatchBrowserIPCMessage}
           newWindow={this.handleBrowserOpenNewWindow}
           willNavigate={(evt) => {
-            this.handleZoomFixEvent()
+            if (mailbox.zoomFactor !== 1) { this.handleZoomFixEvent() }
             this.handleBrowserWillNavigate(evt)
           }}
-          loadCommit={this.handleZoomFixEvent}
-          didGetResponseDetails={this.handleZoomFixEvent}
-          didNavigate={this.handleZoomFixEvent}
-          didNavigateInPage={this.handleZoomFixEvent}
           focus={this.handleBrowserFocused}
           blur={this.handleBrowserBlurred}
           updateTargetUrl={(evt) => this.setState({ focusedUrl: evt.url !== '' ? evt.url : null })} />
