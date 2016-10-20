@@ -11,6 +11,8 @@ const WEBVIEW_EVENTS = [
   'did-stop-loading',
   'did-get-response-details',
   'did-get-redirect-request',
+  'did-navigate',
+  'did-navigate-in-page',
   'dom-ready',
   'page-title-set',
   'page-favicon-updated',
@@ -134,7 +136,10 @@ module.exports = React.createClass({
 
   selectAll () { this.getWebviewNode().selectAll() },
 
-  setZoomLevel (level) { this.getWebviewNode().setZoomFactor(level) },
+  setZoomLevel (level) {
+    this.getWebviewNode().setZoomFactor(level)
+    this.getWebviewNode().send('set-zoom-factor', { level: level })
+  },
 
   reload () { this.getWebviewNode().reloadIgnoringCache() },
 

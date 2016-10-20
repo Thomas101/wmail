@@ -113,7 +113,7 @@ module.exports = React.createClass({
 
       // Apply any actions
       if (zoomChanged) {
-        this.refs.browser.setZoomLevel(this.state.mailbox.zoomFactor)
+        this.refs.browser.setZoomLevel(mailbox.zoomFactor)
       }
     } else {
       this.setState({ mailbox: null })
@@ -242,6 +242,14 @@ module.exports = React.createClass({
         js: this.state.mailbox.customJS
       })
     }
+  },
+
+  /**
+  * Until https://github.com/electron/electron/issues/6958 is fixed we need to
+  * be really agressive about setting zoom levels
+  */
+  handleZoomFixEvent () {
+    this.refs.browser.setZoomLevel(this.state.mailbox.zoomFactor)
   },
 
   /* **************************************************************************/
@@ -468,7 +476,14 @@ module.exports = React.createClass({
           domReady={this.handleBrowserDomReady}
           ipcMessage={this.dispatchBrowserIPCMessage}
           newWindow={this.handleBrowserOpenNewWindow}
-          willNavigate={this.handleBrowserWillNavigate}
+          willNavigate={(evt) => {
+            this.handleZoomFixEvent()
+            this.handleBrowserWillNavigate(evt)
+          }}
+          loadCommit={this.handleZoomFixEvent}
+          didGetResponseDetails={this.handleZoomFixEvent}
+          didNavigate={this.handleZoomFixEvent}
+          didNavigateInPage={this.handleZoomFixEvent}
           focus={this.handleBrowserFocused}
           blur={this.handleBrowserBlurred}
           updateTargetUrl={(evt) => this.setState({ focusedUrl: evt.url !== '' ? evt.url : null })} />
