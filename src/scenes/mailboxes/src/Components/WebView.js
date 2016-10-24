@@ -60,6 +60,8 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   componentDidMount () {
+    this.ipcPromises = {}
+
     const node = this.getWebviewNode()
     WEBVIEW_EVENTS.forEach((name) => {
       node.addEventListener(name, (evt) => {
@@ -93,7 +95,35 @@ module.exports = React.createClass({
   */
   dispatchWebViewEvent (name, evt) {
     if (this.props[camelCase(name)]) {
+      if (name === 'ipc-message') {
+        const didSiphon = this.siphonIPCMessage(evt)
+        if (didSiphon) { return }
+      }
+
       this.props[camelCase(name)](evt)
+    }
+  },
+
+  /**
+  * Siphons IPC messages
+  * @param evt: the event that occured
+  * @return true if the event was handled in the siphon
+  */
+  siphonIPCMessage (evt) {
+    if (evt.channel.type === 'respond-process-memory-info') {
+      if (this.ipcPromises[evt.channel.id]) {
+        this.ipcPromises[evt.channel.id](evt.channel.data)
+        delete this.ipcPromises[evt.channel.id]
+      }
+      return true
+    } else if (evt.channel.type === 'elevated-log') {
+      console.log.apply(this, ['[ELEVATED LOG]', this.getWebviewNode()].concat(evt.channel.messages))
+      return true
+    } else if (evt.channel.type === 'elevated-error') {
+      console.error.apply(this, ['[ELEVATED ERROR]', this.getWebviewNode()].concat(evt.channel.messages))
+      return true
+    } else {
+      return false
     }
   },
 
@@ -139,6 +169,22 @@ module.exports = React.createClass({
   setZoomLevel (level) { this.getWebviewNode().setZoomFactor(level) },
 
   reload () { this.getWebviewNode().reloadIgnoringCache() },
+
+  /* **************************************************************************/
+  // IPC Utils
+  /* **************************************************************************/
+
+  /**
+  * Calls into the webview to get process memory info
+  * @return promise
+  */
+  getProcessMemoryInfo () {
+    return new Promise((resolve) => {
+      const id = Math.random().toString()
+      this.ipcPromises[id] = resolve
+      this.getWebviewNode().send('get-process-memory-info', { id: id })
+    })
+  },
 
   /* **************************************************************************/
   // Rendering

@@ -1,6 +1,61 @@
 const Minivents = require('minivents')
 
 class MailboxDispatch {
+
+  /* **************************************************************************/
+  // Lifecycle
+  /* **************************************************************************/
+
+  constructor () {
+    this.__responders__ = {}
+    Minivents(this)
+  }
+
+  /* **************************************************************************/
+  // Responders
+  /* **************************************************************************/
+
+  /**
+  * Adds a responder
+  * @param name: the name of the responder
+  * @param fn: the function to respond with
+  */
+  respond (name, fn) {
+    if (this.__responders__[name]) {
+      this.__responders__[name].push(fn)
+    } else {
+      this.__responders__[name] = [fn]
+    }
+  }
+
+  /**
+  * Unregisteres a responder
+  * @param name: the name of the responder
+  * @param fn: the function to remove
+  */
+  unrespond (name, fn) {
+    if (this.__responders__[name]) {
+      this.__responders__[name] = this.__responders__[name].filter((f) => f !== fn)
+    }
+  }
+
+  /**
+  * Makes a fetch to a set of responders
+  * @param name: the name of the responder to call
+  * @param args=undefined: arguments to pass to the responders
+  * @return promise
+  */
+  request (name, args = undefined) {
+    if (!this.__responders__[name] || this.__responders__[name].length === 0) {
+      return Promise.resolve([])
+    }
+    return Promise.all(this.__responders__[name].map((fn) => fn(args)))
+  }
+
+  /* **************************************************************************/
+  // Event Fires
+  /* **************************************************************************/
+
   /**
   * Emits a open dev tools command
   * @param mailboxId: the id of the mailbox
@@ -54,9 +109,6 @@ class MailboxDispatch {
       messageId: messageId
     })
   }
-
 }
 
-const mailboxDispatch = new MailboxDispatch()
-Minivents(mailboxDispatch)
-module.exports = mailboxDispatch
+module.exports = new MailboxDispatch()

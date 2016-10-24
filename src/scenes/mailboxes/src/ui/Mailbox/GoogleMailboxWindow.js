@@ -42,6 +42,7 @@ module.exports = React.createClass({
     mailboxDispatch.on('refocus', this.handleRefocus)
     mailboxDispatch.on('reload', this.handleReload)
     mailboxDispatch.on('openMessage', this.handleOpenMessage)
+    mailboxDispatch.respond('fetch-process-memory-info', this.handleFetchProcessMemoryInfo)
     ipcRenderer.on('mailbox-window-find-start', this.handleIPCSearchStart)
     ipcRenderer.on('mailbox-window-find-next', this.handleIPCSearchNext)
     ipcRenderer.on('mailbox-window-navigate-back', this.handleIPCNavigateBack)
@@ -61,7 +62,9 @@ module.exports = React.createClass({
     // Handle dispatch events
     mailboxDispatch.off('devtools', this.handleOpenDevTools)
     mailboxDispatch.off('refocus', this.handleRefocus)
+    mailboxDispatch.off('reload', this.handleReload)
     mailboxDispatch.off('openMessage', this.handleOpenMessage)
+    mailboxDispatch.unrespond('fetch-process-memory-info', this.handleFetchProcessMemoryInfo)
     ipcRenderer.removeListener('mailbox-window-find-start', this.handleIPCSearchStart)
     ipcRenderer.removeListener('mailbox-window-find-next', this.handleIPCSearchNext)
     ipcRenderer.removeListener('mailbox-window-navigate-back', this.handleIPCNavigateBack)
@@ -190,6 +193,19 @@ module.exports = React.createClass({
     }
   },
 
+  /**
+  * Fetches the webviews process memory info
+  * @return promise
+  */
+  handleFetchProcessMemoryInfo () {
+    return this.refs.browser.getProcessMemoryInfo().then((memoryInfo) => {
+      return Promise.resolve({
+        mailboxId: this.props.mailboxId,
+        memoryInfo: memoryInfo
+      })
+    })
+  },
+
   /* **************************************************************************/
   // Browser Events : Dispatcher
   /* **************************************************************************/
@@ -203,8 +219,6 @@ module.exports = React.createClass({
       case 'page-click': this.handleBrowserPageClick(evt); break
       case 'open-settings': navigationDispatch.openSettings(); break
       case 'js-new-window': this.handleBrowserJSNewWindow(evt); break
-      case 'elevated-log': this.elevatedLog(evt); break
-      case 'elevated-error': this.elevatedError(evt); break
       default:
     }
   },
@@ -345,26 +359,6 @@ module.exports = React.createClass({
   */
   handleBrowserBlurred () {
     mailboxDispatch.blurred(this.props.mailboxId)
-  },
-
-  /* **************************************************************************/
-  // Browser Events : Logging
-  /* **************************************************************************/
-
-  /**
-  * Handles an elevated log from the client
-  * @param evt: the event that fired
-  */
-  elevatedLog (evt) {
-    console.log.apply(this, ['[ELEVATED LOG ' + this.props.mailboxId + ']'].concat(evt.channel.messages))
-  },
-
-  /**
-  * Handles an elevated error from the client
-  * @param evt: the event that fired
-  */
-  elevatedError (evt) {
-    console.error.apply(this, ['[ELEVATED ERROR ' + this.props.mailboxId + ']'].concat(evt.channel.messages))
   },
 
   /* **************************************************************************/
