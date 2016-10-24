@@ -97,6 +97,11 @@ module.exports = React.createClass({
             label='Show app unread badge'
             labelPosition='right'
             onToggle={(evt, toggled) => settingsActions.setShowAppBadge(toggled)} />
+          <Toggle
+            toggled={ui.showTitlebarCount}
+            label='Show titlebar unread count'
+            labelPosition='right'
+            onToggle={(evt, toggled) => settingsActions.setShowTitlebarUnreadCount(toggled)} />
           {process.platform === 'darwin' ? (
             <Toggle
               toggled={os.openLinksInBackground}

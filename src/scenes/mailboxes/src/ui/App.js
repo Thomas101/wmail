@@ -186,6 +186,17 @@ module.exports = React.createClass({
       messagesUnreadCount
     } = this.state
 
+    // Update the app title
+    if (uiSettings.showTitlebarCount) {
+      if (messagesUnreadCount === 0) {
+        document.title = 'WMail'
+      } else {
+        document.title = `WMail (${messagesUnreadCount})`
+      }
+    } else {
+      document.title = 'WMail'
+    }
+
     return (
       <div>
         <MuiThemeProvider muiTheme={appTheme}>

@@ -157,6 +157,13 @@ class SettingsActions {
   }
 
   /**
+  * @param show: true to show the unread count in the titlebar
+  */
+  setShowTitlebarUnreadCount (show) {
+    return this.update(SEGMENTS.UI, 'showTitlebarCount', show)
+  }
+
+  /**
   * @param show: true to show the app menu, false otherwise
   */
   setShowAppMenu (show) {
