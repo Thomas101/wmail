@@ -200,6 +200,10 @@ class Distribution {
           info: {
             name: 'wmail-desktop',
             arch: ARCH_MAPPING[arch],
+            depends: [
+              'lsb-base (>= 3.2)',
+              'libappindicator1 (>= 12.10.1)'
+            ].join(','),
             targetDir: path.join(ROOT_PATH, 'dist'),
             scripts: {
               postinst: path.join(__dirname, 'deb/postinst')
