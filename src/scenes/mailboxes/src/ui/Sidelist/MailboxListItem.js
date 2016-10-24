@@ -265,7 +265,12 @@ module.exports = React.createClass({
           className='unread-badge'
           badgeStyle={{
             backgroundColor: 'rgba(238, 54, 55, 0.95)',
-            color: Colors.red50
+            color: Colors.red50,
+            width: 'auto',
+            minWidth: 24,
+            paddingLeft: 4,
+            paddingRight: 4,
+            borderRadius: 12
           }} />
       )
     }
