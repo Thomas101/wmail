@@ -1,9 +1,7 @@
 const google = window.appNodeModulesRequire('googleapis')
 const gPlus = google.plus('v1')
 const gmail = google.gmail('v1')
-const flux = {
-  settings: require('../settings')
-}
+const flux = { settings: require('../settings') }
 
 class GoogleHTTP {
 
@@ -12,14 +10,14 @@ class GoogleHTTP {
   /* **************************************************************************/
 
   /**
-  * @return the proxy information
+  * Ensures the proxy is setup
   */
-  proxyInformation () {
+  ensureProxy () {
     const store = flux.settings.S.getState()
     if (store.proxy.enabled) {
-      return store.proxy.url
+      google.options({ proxy: store.proxy.url })
     } else {
-      return undefined
+      google.options({ proxy: '' })
     }
   }
 
@@ -48,10 +46,10 @@ class GoogleHTTP {
     if (!auth) { return this.rejectWithNoAuth() }
 
     return new Promise((resolve, reject) => {
+      this.ensureProxy()
       gPlus.people.get({
         userId: 'me',
-        auth: auth,
-        proxy: this.proxyInformation()
+        auth: auth
       }, (err, response) => {
         if (err) {
           reject({ err: err })
@@ -73,11 +71,11 @@ class GoogleHTTP {
     if (!auth) { return this.rejectWithNoAuth(userEmail) }
 
     return new Promise((resolve, reject) => {
+      this.ensureProxy()
       gmail.users.labels.get({
         userId: userEmail,
         id: labelId,
-        auth: auth,
-        proxy: this.proxyInformation()
+        auth: auth
       }, (err, response) => {
         if (err) {
           reject({ err: err })
@@ -103,11 +101,11 @@ class GoogleHTTP {
     if (!auth) { return this.rejectWithNoAuth(email) }
 
     return new Promise((resolve, reject) => {
+      this.ensureProxy()
       gmail.users.messages.list({
         userId: email,
         q: query,
-        auth: auth,
-        proxy: this.proxyInformation()
+        auth: auth
       }, (err, response) => {
         if (err) {
           reject({ err: err })
@@ -129,11 +127,11 @@ class GoogleHTTP {
     if (!auth) { return this.rejectWithNoAuth(email) }
 
     return new Promise((resolve, reject) => {
+      this.ensureProxy()
       gmail.users.messages.get({
         userId: email,
         id: messageId,
-        auth: auth,
-        proxy: this.proxyInformation()
+        auth: auth
       }, (err, response) => {
         if (err) {
           reject({ err: err })
