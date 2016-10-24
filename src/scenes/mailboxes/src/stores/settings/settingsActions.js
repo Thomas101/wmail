@@ -210,6 +210,13 @@ class SettingsActions {
   }
 
   /**
+  * @param disable: true to disable smooth scrolling
+  */
+  disableSmoothScrolling (disable) {
+    return this.update(SEGMENTS.APP, 'disableSmoothScrolling', disable)
+  }
+
+  /**
   * @param toggled: true to check for updates
   */
   checkForUpdates (toggled) {

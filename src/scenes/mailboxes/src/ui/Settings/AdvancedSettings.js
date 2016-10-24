@@ -127,6 +127,14 @@ module.exports = React.createClass({
               flux.settings.A.ignoreGPUBlacklist(toggled)
             }} />
           <Toggle
+            toggled={app.disableSmoothScrolling}
+            label='Disable Smooth Scrolling (Requires Restart)'
+            labelPosition='right'
+            onToggle={(evt, toggled) => {
+              showRestart()
+              flux.settings.A.disableSmoothScrolling(toggled)
+            }} />
+          <Toggle
             toggled={app.checkForUpdates}
             label='Check for updates'
             labelPosition='right'
