@@ -32,9 +32,10 @@ module.exports = React.createClass({
 
   componentWillReceiveProps (nextProps) {
     if (this.props.initialMailboxId !== nextProps.initialMailboxId) {
-      this.setState({
-        selected: mailboxStore.getState().getMailbox(nextProps.initialMailboxId)
-      })
+      const mailbox = mailboxStore.getState().getMailbox(nextProps.initialMailboxId)
+      if (mailbox) {
+        this.setState({ selected: mailbox })
+      }
     }
   },
 
@@ -48,14 +49,17 @@ module.exports = React.createClass({
     const all = store.allMailboxes()
     return {
       mailboxes: all,
-      selected: initialMailboxId ? store.getMailbox(initialMailboxId) : all[0]
+      selected: (initialMailboxId ? store.getMailbox(initialMailboxId) : all[0]) || all[0]
     }
   },
 
   mailboxesChanged (store) {
     const all = store.allMailboxes()
     if (this.state.selected) {
-      this.setState({ mailboxes: all, selected: store.getMailbox(this.state.selected.id) })
+      this.setState({
+        mailboxes: all,
+        selected: store.getMailbox(this.state.selected.id) || all[0]
+      })
     } else {
       this.setState({ mailboxes: all, selected: all[0] })
     }
@@ -109,7 +113,8 @@ module.exports = React.createClass({
           <div style={styles.accountPickerContainer}>
             <SelectField
               value={selected.id}
-              className='picker'
+              style={{marginTop: -14}}
+              floatingLabelText='Pick your account'
               fullWidth
               onChange={this.handleAccountChange}>
               {
