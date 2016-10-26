@@ -46,40 +46,25 @@ class UnreadNotifications {
     if (this.__dispatching__) { return }
     if (flux.settings.S.getState().os.notificationsEnabled === false) { return }
     const firstRun = new Date().getTime() - this.__constructTime__ < constants.GMAIL_NOTIFICATION_FIRST_RUN_GRACE_MS
-    const firedList = {}
-    let fired = false
 
     store.allMailboxes().forEach((mailbox, k) => {
       if (!mailbox.showNotifications) { return }
-      const unread = mailbox.google.unreadUnotifiedMessages
 
-      for (var messageId in unread) {
-        // Fire the notification
+      const lastHistoryId = mailbox.google.unnotifiedMessages.reduce((acc, message) => {
         if (!firstRun) {
-          this.showNotification(mailbox, unread[messageId].message)
+          this.showNotification(mailbox, message)
         }
+        if (acc === undefined) {
+          return parseInt(message.historyId)
+        } else {
+          return parseInt(message.historyId) > acc ? parseInt(message.historyId) : acc
+        }
+      }, undefined)
 
-        // Set that we've fired
-        fired = true
-        if (!firedList[mailbox.id]) {
-          firedList[mailbox.id] = []
-        }
-        firedList[mailbox.id].push(messageId)
+      if (lastHistoryId !== undefined) {
+        flux.mailbox.A.setGoogleLastNotifiedHistoryId.defer(mailbox.id, lastHistoryId)
       }
     })
-
-    // We're in a dispatch cycle so requeue this in its own context
-    if (fired) {
-      this.__dispatching__ = true
-      const classThis = this
-      setTimeout(function () {
-        Object.keys(firedList).forEach((mailboxId) => {
-          flux.mailbox.A.setGoogleUnreadNotificationsShown(mailboxId, firedList[mailboxId])
-        })
-        classThis.__dispatching__ = false
-        classThis.mailboxesUpdated(flux.mailbox.S.getState())
-      })
-    }
   }
 
   /**

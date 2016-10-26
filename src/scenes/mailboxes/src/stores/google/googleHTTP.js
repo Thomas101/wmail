@@ -34,7 +34,7 @@ class GoogleHTTP {
   }
 
   /* **************************************************************************/
-  // Fetch Profile and overview
+  // Fetch Profile
   /* **************************************************************************/
 
   /**
@@ -60,8 +60,13 @@ class GoogleHTTP {
     })
   }
 
+  /* **************************************************************************/
+  // Label
+  /* **************************************************************************/
+
   /**
-  * Syncs the label for a mailbox
+  * Syncs the label for a mailbox. The label is a cheap call which can be used
+  * to decide if the mailbox has changed
   * @param auth: the auth to access google with
   * @param labelId: the id of the label to sync
   * @return promise
@@ -96,7 +101,7 @@ class GoogleHTTP {
   * @param query: the query to ask the server for
   * @return promise
   */
-  fetchEmailSummaries (auth, query) {
+  fetchEmailIds (auth, query) {
     if (!auth) { return this.rejectWithNoAuth() }
 
     return new Promise((resolve, reject) => {
@@ -109,7 +114,14 @@ class GoogleHTTP {
         if (err) {
           reject({ err: err })
         } else {
-          resolve({ response: response })
+          // Do a pre-count for unread messages and threads
+          resolve({
+            response: response,
+            unreadMessageCount: response.messages.length,
+            unreadThreadCount: response.messages.reduce((acc, message) => {
+              return acc.add(message.threadId)
+            }, new Set()).size
+          })
         }
       })
     })

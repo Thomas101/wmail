@@ -157,53 +157,48 @@ class MailboxActions {
   updateGoogleConfig (id, updates) { return { id: id, updates: updates } }
 
   /**
-  * Updates the google unread threads
+  * Updates the label unread count for google
   * @param id: the id of the mailbox
-  * @param messageIdsOrMessageId: the ids of the messages or a single id
-  * @param updates: the updates to merge in
+  * @param count: the count
   */
-  updateGoogleUnread (id, messageIdsOrMessageId, updates) {
-    if (Array.isArray(messageIdsOrMessageId)) {
-      return { id: id, messageIds: messageIdsOrMessageId, updates: updates }
-    } else {
-      return { id: id, messageIds: [messageIdsOrMessageId], updates: updates }
+  setGoogleLabelUnreadCount (id, count) { return { id: id, count: count } }
+
+  /**
+  * Updates the unread count for google
+  * @param id: the id of the mailbox
+  * @param count: the count
+  */
+  setGoogleUnreadCount (id, count) { return { id: id, count: count } }
+
+  /**
+  * Sets the unread message ids for google
+  * @param id: the id of the mailbox
+  * @param messageIds: the message ids that are unread
+  */
+  setGoogleUnreadMessageIds (id, messageIds) { return { id: id, messageIds: messageIds } }
+
+  /**
+  * Updates the messages
+  * @param id: the id of the mailbox
+  * @param messages: the messages to update
+  */
+  updateGoogleMessages (id, messages) {
+    return {
+      id: id,
+      updates: Array.isArray(messages) ? messages.reduce((acc, message) => {
+        acc[message.id] = message
+        return acc
+      }, {}) : messages
     }
   }
 
   /**
-  * Sets the current list of unread messages. Also marks the list as seen
+  * Sets the last fired history id
   * @param id: the id of the mailbox
-  * @param messageIds: the ids of the messages that are currently unread
+  * @param historyId: the last historyId
   */
-  setGoogleUnreadMessageIds (id, messageIds) {
-    return { id: id, messageIds: messageIds }
-  }
-
-  /**
-  * Sets all the google messages as read
-  * @param id: the id of the mailbox
-  */
-  setAllGoogleMessagesRead (id) {
-    return { id: id }
-  }
-
-  /**
-  * Sets that a thread has sent a notification
-  * @param id: the id of the mailbox
-  * @param messageIds: the ids of the messages
-  */
-  setGoogleUnreadNotificationsShown (id, messageIds) { return { id: id, messageIds: messageIds } }
-
-  /**
-  * Sets the unread count for the google tracking label
-  * @param id: the id of the mailbox
-  * @param count: the count to set
-  */
-  setGoogleLabelUnreadCount (id, count) {
-    if (count === 0) {
-      this.setAllGoogleMessagesRead.defer(id)
-    }
-    return { id: id, count: count }
+  setGoogleLastNotifiedHistoryId (id, historyId) {
+    return { id: id, historyId: parseInt(historyId) }
   }
 
   /* **************************************************************************/

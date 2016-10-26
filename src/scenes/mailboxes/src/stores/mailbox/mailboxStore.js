@@ -145,11 +145,11 @@ class MailboxStore {
 
       // Google
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
-      handleSetGoogleUnreadMessageIds: actions.SET_GOOGLE_UNREAD_MESSAGE_IDS,
-      handleUpdateGoogleUnread: actions.UPDATE_GOOGLE_UNREAD,
-      handleSetAllGoogleMessagesRead: actions.SET_ALL_GOOGLE_MESSAGES_READ,
-      handleSetGoogleUnreadNotificationsShown: actions.SET_GOOGLE_UNREAD_NOTIFICATIONS_SHOWN,
       handleSetGoogleLabelUnreadCount: actions.SET_GOOGLE_LABEL_UNREAD_COUNT,
+      handleSetGoogleUnreadCount: actions.SET_GOOGLE_UNREAD_COUNT,
+      handleSetGoogleUnreadMessageIds: actions.SET_GOOGLE_UNREAD_MESSAGE_IDS,
+      handleUpdateGoogleMessages: actions.UPDATE_GOOGLE_MESSAGES,
+      handleSetGoogleLastNotifiedHistoryId: actions.SET_GOOGLE_LAST_NOTIFIED_HISTORY_ID,
 
       // Active & Ordering
       handleChangeActive: actions.CHANGE_ACTIVE,
@@ -305,7 +305,7 @@ class MailboxStore {
 
   /**
   * Handles the google config updating
-  * @param id: the id of the tem
+  * @param id: the id of the mailbox
   * @param updates: the updates to merge in
   */
   handleUpdateGoogleConfig ({id, updates}) {
@@ -316,146 +316,80 @@ class MailboxStore {
   }
 
   /**
-  * Marks the unread messages as seen & also marks any un-included messages
-  * as read
-  * @param id: the id of mailbox
-  * @param messageIds: the complete lis of unread message ids
-  */
-  handleSetGoogleUnreadMessageIds ({id, messageIds}) {
-    const data = this.mailboxes.get(id).cloneData()
-    data.googleUnreadMessages = data.googleUnreadMessages || {}
-
-    // Run through all the messages google has given us and mark them as unread
-    // and also mark them as seen
-    const now = new Date().getTime()
-    const messageIdIndex = {}
-    messageIds.forEach((messageId) => {
-      messageIdIndex[messageId] = true
-      if (data.googleUnreadMessages[messageId]) {
-        data.googleUnreadMessages[messageId] = Object.assign(
-          data.googleUnreadMessages[messageId],
-          { seen: now, unread: true }
-        )
-      } else {
-        data.googleUnreadMessages[messageId] = {
-          recordCreated: now, seen: now, unread: true
-        }
-      }
-    })
-
-    // If we haven't seen a message from google, then it must be read, but
-    // we might want to keep the record around to prevent duplicate notificiations
-    Object.keys(data.googleUnreadMessages).forEach((messageId) => {
-      if (!messageIdIndex[messageId]) {
-        data.googleUnreadMessages[messageId].unread = false
-      }
-    })
-
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
-  }
-
-  /**
-  * Merges the google unread items and removes any flags for updated ites
+  * Handles the google label unread count updating
   * @param id: the id of the mailbox
-  * @param messageIds: the ids of the messages
-  * @param updates: the updates to apply
-  */
-  handleUpdateGoogleUnread ({id, messageIds, updates}) {
-    const data = this.mailboxes.get(id).cloneData()
-    data.googleUnreadMessages = data.googleUnreadMessages || {}
-
-    // Add the update
-    const now = new Date().getTime()
-    messageIds.forEach((messageId) => {
-      if (data.googleUnreadMessages[messageId]) {
-        data.googleUnreadMessages[messageId] = Object.assign(
-          data.googleUnreadMessages[messageId],
-          { seen: now },
-          updates)
-      } else {
-        data.googleUnreadMessages[messageId] = Object.assign({
-          recordCreated: now, seen: now
-        }, updates)
-      }
-    })
-
-    // Clean up old records
-    data.googleUnreadMessages = Object.keys(data.googleUnreadMessages).reduce((acc, messageId) => {
-      const rec = data.googleUnreadMessages[messageId]
-      if (now - rec.seen < GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS) {
-        acc[messageId] = rec
-      }
-      return acc
-    }, {})
-
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
-  }
-
-  /**
-  * Sets all the unread messages in the mailbox to be read
-  * @param id: the id of the mailbox
-  */
-  handleSetAllGoogleMessagesRead ({ id }) {
-    const data = this.mailboxes.get(id).cloneData()
-    data.googleUnreadMessages = data.googleUnreadMessages || {}
-
-    const now = new Date().getTime()
-    let didUpdate = false
-    Object.keys(data.googleUnreadMessages).forEach((messageId) => {
-      if (data.googleUnreadMessages[messageId].unread) {
-        didUpdate = true
-        data.googleUnreadMessages[messageId] = Object.assign(
-          data.googleUnreadMessages[messageId],
-          { seen: now, unread: false }
-        )
-      }
-    })
-
-    if (didUpdate) {
-      persistence.mailbox.setJSONItem(id, data)
-      this.mailboxes.set(id, new Mailbox(id, data))
-    }
-  }
-
-  /**
-  * Sets that the given thread ids have sent notifications
-  * @param id: the id of the mailbox
-  * @param messageId: the id of the message to mark
-  */
-  handleSetGoogleUnreadNotificationsShown ({id, messageIds}) {
-    const data = this.mailboxes.get(id).cloneData()
-    data.googleUnreadMessages = data.googleUnreadMessages || {}
-
-    const now = new Date().getTime()
-    messageIds.forEach((messageId) => {
-      if (data.googleUnreadMessages[messageId]) {
-        data.googleUnreadMessages[messageId].notified = now
-        data.googleUnreadMessages[messageId].seen = now
-      }
-    })
-
-    // Clean up old records
-    data.googleUnreadMessages = Object.keys(data.googleUnreadMessages).reduce((acc, messageId) => {
-      const rec = data.googleUnreadMessages[messageId]
-      if (now - rec.seen < GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS) {
-        acc[messageId] = rec
-      }
-      return acc
-    }, {})
-
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
-  }
-
-  /**
-  * Sets the unread count for the google label
+  * @param count: the new count
   */
   handleSetGoogleLabelUnreadCount ({ id, count }) {
     const data = this.mailboxes.get(id).cloneData()
-    data.googleLabelUnread = data.googleLabelUnread || {}
-    data.googleLabelUnread.count = count
+    data.googleUnreadCounts = Object.assign(data.googleUnreadCounts || {}, { label: count })
+    persistence.mailbox.setJSONItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
+  }
+
+  /**
+  * Handles the google unread count updating
+  * @param id: the id of the mailbox
+  * @param count: the new count
+  */
+  handleSetGoogleUnreadCount ({ id, count }) {
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleUnreadCounts = Object.assign(data.googleUnreadCounts || {}, { count: count })
+    persistence.mailbox.setJSONItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
+  }
+
+  /**
+  * Handles setting the google unread message ids
+  * @param id: the id of the mailbox
+  * @param messageIds: the ids of the messages that are not read
+  */
+  handleSetGoogleUnreadMessageIds ({ id, messageIds }) {
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleUnreadMessageInfo = Object.assign(data.googleUnreadMessageInfo || {}, { messageIds: messageIds })
+    persistence.mailbox.setJSONItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
+  }
+
+  /**
+  * Updates the google messages that are stored
+  * @param id: the id of the mailbox
+  * @param updates: a map of messages to store
+  */
+  handleUpdateGoogleMessages ({ id, updates }) {
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleMessages = data.googleMessages || {}
+    const now = new Date().getTime()
+
+    // Add new messages
+    Object.keys(updates).forEach((messageId) => {
+      data.googleMessages[messageId] = Object.assign({
+        recordCreated: now
+      }, updates[messageId])
+    })
+
+    // Clean up old messages
+    data.googleMessages = Object.keys(data.googleMessages)
+      .reduce((acc, messageId) => {
+        const rec = data.googleMessages[messageId]
+        if (now - rec.recordCreated < GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS) {
+          acc[messageId] = rec
+        }
+        return acc
+      }, {})
+
+    persistence.mailbox.setJSONItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
+  }
+
+  /**
+  * Updates the last notified history id
+  * @param id: the id of the mailbox
+  * @param historyId: the history id that was reported
+  */
+  handleSetGoogleLastNotifiedHistoryId ({ id, historyId }) {
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleUnreadMessageInfo = Object.assign(data.googleUnreadMessageInfo || {}, { lastNotifiedHistoryId: historyId })
     persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }

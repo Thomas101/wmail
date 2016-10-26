@@ -1,5 +1,4 @@
 const Model = require('../Model')
-const { GMAIL_NOTIFICATION_MAX_MESSAGE_AGE_MS } = require('../../constants')
 
 const UNREAD_MODES = {
   INBOX: 'inbox',
@@ -20,12 +19,13 @@ class Google extends Model {
   // Lifecycle
   /* **************************************************************************/
 
-  constructor (auth, config, unread, labelUnread) {
+  constructor (auth, config, unreadCounts, unreadMessages, messages) {
     super({
       auth: auth || {},
       config: config || {},
-      unread: unread || {},
-      labelUnread: labelUnread || {}
+      unreadCounts: unreadCounts || {},
+      unreadMessages: unreadMessages || {},
+      messages: messages || {}
     })
   }
 
@@ -60,9 +60,6 @@ class Google extends Model {
       case UNREAD_MODES.INBOX_UNREAD_IMPORTANT: return 'IMPORTANT'
     }
   }
-  get unreadLabelField () {
-    return this.unreadCountIncludesReadMessages ? 'threadsTotal' : 'threadsUnread'
-  }
   get unreadCountIncludesReadMessages () {
     switch (this.unreadMode) {
       case UNREAD_MODES.INBOX: return true
@@ -73,49 +70,43 @@ class Google extends Model {
   }
 
   /* **************************************************************************/
-  // Properties : Google Unread
+  // Properties : Unread Counts
   /* **************************************************************************/
 
-  get labelUnreadCount () { return this.__data__.labelUnread.count || -1 }
+  get labelUnreadCount () { return this.__data__.unreadCounts.label || -1 }
+  get unreadCount () { return this.__data__.unreadCounts.count || 0 }
 
-  get unreadMessages () {
-    return Object.keys(this.__data__.unread)
-      .reduce((acc, k) => {
-        if (this.__data__.unread[k].unread) {
-          acc[k] = this.__data__.unread[k]
-        }
-        return acc
-      }, {})
+  /* **************************************************************************/
+  // Properties : Messages
+  /* **************************************************************************/
+
+  get messages () { return this.__data__.messages }
+
+  /**
+  * @param messageId: the id of the message
+  * @return true if the model has a message with the given id, false otherwise
+  */
+  hasMessage (messageId) { return this.messages[messageId] !== undefined }
+
+  /* **************************************************************************/
+  // Properties : Unread Messages
+  /* **************************************************************************/
+
+  get latestUnreadMessageIds () {
+    return this.__data__.unreadMessages.messageIds || []
   }
-
-  get unreadMessageCount () {
-    // Make sure messages are reduced by their thread too
-    return Object.keys(this.__data__.unread)
-      .reduce((acc, messageId) => {
-        const rec = this.__data__.unread[messageId]
-        if ((this.unreadCountIncludesReadMessages || rec.unread) && rec.message) {
-          return acc.add(rec.message.threadId)
-        } else {
-          return acc
-        }
-      }, new Set()).size
+  get latestUnreadMessages () {
+    return this.latestUnreadMessageIds
+      .map((messageId) => this.messages[messageId])
+      .filter((message) => !!message)
   }
-
-  get unreadUnotifiedMessages () {
-    const unotified = {}
-    const unread = this.unreadMessages
-    const now = new Date().getTime()
-
-    for (var k in unread) {
-      const info = unread[k]
-      if (info.notified === undefined && info.message) {
-        const messageDate = new Date(parseInt(info.message.internalDate, 10)).getTime()
-        if (now - messageDate < GMAIL_NOTIFICATION_MAX_MESSAGE_AGE_MS) {
-          unotified[k] = info
-        }
-      }
-    }
-    return unotified
+  get unnotifiedMessages () {
+    return this.latestUnreadMessages.filter((message) => {
+      return parseInt(message.historyId) > this.lastNotifiedHistoryId
+    })
+  }
+  get lastNotifiedHistoryId () {
+    return this.__data__.unreadMessages.lastNotifiedHistoryId || 0
   }
 }
 

@@ -42,8 +42,6 @@ module.exports = React.createClass({
     flux.mailbox.S.listen(this.mailboxesChanged)
     flux.settings.S.listen(this.settingsChanged)
     flux.google.A.startPollingUpdates()
-    flux.google.A.syncAllMailboxes()
-    flux.google.A.syncAllMailboxUnreadMessages()
 
     mailboxDispatch.on('blurred', this.mailboxBlurred)
 

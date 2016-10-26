@@ -79,27 +79,21 @@ module.exports = React.createClass({
   generateMenuUnreadMessages (store = mailboxStore.getState()) {
     const menuItems = store.mailboxIds().map((mailboxId) => {
       const mailbox = store.getMailbox(mailboxId)
-      const messages = Object.assign({}, mailbox.google.unreadMessages)
-      const menuItems = Object.keys(messages).map((messageId) => {
-        const info = messages[messageId]
-        if (info.message === undefined) {
-          return undefined
-        } else {
-          const headers = info.message.payload.headers
-          const subject = (headers.find((h) => h.name === 'Subject') || {}).value || 'No Subject'
-          const fromEmail = (headers.find((h) => h.name === 'From') || {}).value || ''
-          const fromEmailMatch = fromEmail.match('(.+)<(.+)@(.+)>$')
-          const sender = fromEmailMatch ? fromEmailMatch[1].trim() : fromEmail
+      const menuItems = mailbox.google.latestUnreadMessages.map((message) => {
+        const headers = message.payload.headers
+        const subject = (headers.find((h) => h.name === 'Subject') || {}).value || 'No Subject'
+        const fromEmail = (headers.find((h) => h.name === 'From') || {}).value || ''
+        const fromEmailMatch = fromEmail.match('(.+)<(.+)@(.+)>$')
+        const sender = fromEmailMatch ? fromEmailMatch[1].trim() : fromEmail
 
-          return {
-            id: `${mailboxId}:${info.message.threadId}:${messageId}`, // used for update tracking
-            label: `${sender} : ${subject}`,
-            date: parseInt(info.message.internalDate),
-            click: (e) => {
-              ipcRenderer.send('focus-app', { })
-              mailboxActions.changeActive(mailboxId)
-              mailboxDispatch.openMessage(mailboxId, info.message.threadId, messageId)
-            }
+        return {
+          id: `${mailboxId}:${message.threadId}:${message.id}`, // used for update tracking
+          label: `${sender} : ${subject}`,
+          date: parseInt(message.internalDate),
+          click: (e) => {
+            ipcRenderer.send('focus-app', { })
+            mailboxActions.changeActive(mailboxId)
+            mailboxDispatch.openMessage(mailboxId, message.threadId, message.id)
           }
         }
       })
