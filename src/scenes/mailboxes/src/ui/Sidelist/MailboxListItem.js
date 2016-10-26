@@ -259,9 +259,10 @@ module.exports = React.createClass({
     // Generate badge
     let badgeElement
     if (mailbox.showUnreadBadge && mailbox.unread) {
+      const badgeContent = mailbox.unread >= 1000 ? Math.floor(mailbox.unread / 1000) + 'K+' : mailbox.unread
       badgeElement = (
         <Badge
-          badgeContent={mailbox.unread}
+          badgeContent={badgeContent}
           className='unread-badge'
           badgeStyle={{
             backgroundColor: 'rgba(238, 54, 55, 0.95)',
