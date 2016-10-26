@@ -38,9 +38,16 @@ class MailboxActions {
   /**
   * Updates a mailbox
   * @param id: the id of the mailbox
-  * @param updates: the updates to apply
+  * @param updatesOrPath: an object indicating the updates to apply or the path string to apply to
+  * @param valueOrUndef: if path is set, the value to set
   */
-  update (id, updates) { return { id: id, updates: updates } }
+  update (id, updatesOrPath, valueOrUndef) {
+    if (typeof (updatesOrPath) === 'string') {
+      return { id: id, updates: undefined, path: updatesOrPath, value: valueOrUndef }
+    } else {
+      return { id: id, updates: updatesOrPath, path: undefined, value: undefined }
+    }
+  }
 
   /**
   * Sets a custom avatar
@@ -161,14 +168,18 @@ class MailboxActions {
   * @param id: the id of the mailbox
   * @param count: the count
   */
-  setGoogleLabelUnreadCount (id, count) { return { id: id, count: count } }
+  setGoogleLabelUnreadCount (id, count) {
+    return this.update(id, 'googleUnreadCounts.label', count)
+  }
 
   /**
   * Updates the unread count for google
   * @param id: the id of the mailbox
   * @param count: the count
   */
-  setGoogleUnreadCount (id, count) { return { id: id, count: count } }
+  setGoogleUnreadCount (id, count) {
+    return this.update(id, 'googleUnreadCounts.count', count)
+  }
 
   /**
   * Sets the unread message ids for google
@@ -198,7 +209,7 @@ class MailboxActions {
   * @param historyId: the last historyId
   */
   setGoogleLastNotifiedHistoryId (id, historyId) {
-    return { id: id, historyId: parseInt(historyId) }
+    return this.update(id, 'googleUnreadMessageInfo.lastNotifiedHistoryId', parseInt(historyId))
   }
 
   /* **************************************************************************/

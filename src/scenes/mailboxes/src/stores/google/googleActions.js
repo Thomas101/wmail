@@ -256,8 +256,8 @@ class GoogleActions {
         return Promise.resolve()
           .then(() => googleHTTP.fetchMailboxLabel(auth, label))
           .then((response) => {
-            if (mailbox && mailbox.google.labelUnreadCount !== response[labelField]) {
-              mailboxActions.setGoogleLabelUnreadCount(mailboxId, response[labelField])
+            if (mailbox && mailbox.google.labelUnreadCount !== response.response[labelField]) {
+              mailboxActions.setGoogleLabelUnreadCount(mailboxId, response.response[labelField])
               return Promise.resolve({ changed: true })
             } else {
               return Promise.resolve({ changed: false })

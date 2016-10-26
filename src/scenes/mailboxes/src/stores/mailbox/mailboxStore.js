@@ -145,11 +145,8 @@ class MailboxStore {
 
       // Google
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
-      handleSetGoogleLabelUnreadCount: actions.SET_GOOGLE_LABEL_UNREAD_COUNT,
-      handleSetGoogleUnreadCount: actions.SET_GOOGLE_UNREAD_COUNT,
       handleSetGoogleUnreadMessageIds: actions.SET_GOOGLE_UNREAD_MESSAGE_IDS,
       handleUpdateGoogleMessages: actions.UPDATE_GOOGLE_MESSAGES,
-      handleSetGoogleLastNotifiedHistoryId: actions.SET_GOOGLE_LAST_NOTIFIED_HISTORY_ID,
 
       // Active & Ordering
       handleChangeActive: actions.CHANGE_ACTIVE,
@@ -234,10 +231,28 @@ class MailboxStore {
   * @param id: the id of the tem
   * @param updates: the updates to merge in
   */
-  handleUpdate ({id, updates}) {
-    const mailboxJS = this.mailboxes.get(id).changeData(updates)
-    persistence.mailbox.setJSONItem(id, mailboxJS)
-    this.mailboxes.set(id, new Mailbox(id, mailboxJS))
+  handleUpdate ({id, updates, path, value}) {
+    if (updates !== undefined) {
+      const mailboxJS = this.mailboxes.get(id).changeData(updates)
+      persistence.mailbox.setJSONItem(id, mailboxJS)
+      this.mailboxes.set(id, new Mailbox(id, mailboxJS))
+    } else {
+      const mailboxJS = this.mailboxes.get(id).cloneData()
+      let pointer = mailboxJS
+      path.split('.').forEach((fragment, index, fragments) => {
+        if (index === fragments.length - 1) {
+          pointer[fragment] = value
+        } else {
+          if (!pointer[fragment]) {
+            pointer[fragment] = {}
+          }
+          pointer = pointer[fragment]
+        }
+      })
+
+      persistence.mailbox.setJSONItem(id, mailboxJS)
+      this.mailboxes.set(id, new Mailbox(id, mailboxJS))
+    }
   }
 
   /**
@@ -316,30 +331,6 @@ class MailboxStore {
   }
 
   /**
-  * Handles the google label unread count updating
-  * @param id: the id of the mailbox
-  * @param count: the new count
-  */
-  handleSetGoogleLabelUnreadCount ({ id, count }) {
-    const data = this.mailboxes.get(id).cloneData()
-    data.googleUnreadCounts = Object.assign(data.googleUnreadCounts || {}, { label: count })
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
-  }
-
-  /**
-  * Handles the google unread count updating
-  * @param id: the id of the mailbox
-  * @param count: the new count
-  */
-  handleSetGoogleUnreadCount ({ id, count }) {
-    const data = this.mailboxes.get(id).cloneData()
-    data.googleUnreadCounts = Object.assign(data.googleUnreadCounts || {}, { count: count })
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
-  }
-
-  /**
   * Handles setting the google unread message ids
   * @param id: the id of the mailbox
   * @param messageIds: the ids of the messages that are not read
@@ -378,18 +369,6 @@ class MailboxStore {
         return acc
       }, {})
 
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
-  }
-
-  /**
-  * Updates the last notified history id
-  * @param id: the id of the mailbox
-  * @param historyId: the history id that was reported
-  */
-  handleSetGoogleLastNotifiedHistoryId ({ id, historyId }) {
-    const data = this.mailboxes.get(id).cloneData()
-    data.googleUnreadMessageInfo = Object.assign(data.googleUnreadMessageInfo || {}, { lastNotifiedHistoryId: historyId })
     persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }
