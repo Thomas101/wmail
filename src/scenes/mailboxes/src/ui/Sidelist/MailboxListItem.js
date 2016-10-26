@@ -6,7 +6,7 @@ const flux = {
 }
 const { Badge, Popover, Menu, MenuItem, Divider, FontIcon } = require('material-ui')
 const Colors = require('material-ui/styles/colors')
-const {mailboxDispatch} = require('../../Dispatch')
+const {mailboxDispatch, navigationDispatch} = require('../../Dispatch')
 const shallowCompare = require('react-addons-shallow-compare')
 
 module.exports = React.createClass({
@@ -74,7 +74,11 @@ module.exports = React.createClass({
   */
   handleClick (evt) {
     evt.preventDefault()
-    flux.mailbox.A.changeActive(this.props.mailboxId)
+    if (evt.metaKey) {
+      navigationDispatch.openMailboxSettings(this.props.mailboxId)
+    } else {
+      flux.mailbox.A.changeActive(this.props.mailboxId)
+    }
   },
 
   /**
@@ -140,6 +144,14 @@ module.exports = React.createClass({
     this.setState({ popover: false })
   },
 
+  /**
+  * Handles opening the account settings
+  */
+  handleAccountSettings () {
+    navigationDispatch.openMailboxSettings(this.props.mailboxId)
+    this.setState({ popover: false })
+  },
+
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
@@ -167,53 +179,53 @@ module.exports = React.createClass({
   * @return array of jsx elements
   */
   renderMenuItems () {
-    const menuItems = []
     const {isFirst, isLast} = this.props
     const {mailbox} = this.state
-    if (!isFirst) {
-      menuItems.push(<MenuItem
+    const menuItems = [
+      // Ordering controls
+      isFirst ? undefined : (<MenuItem
         key='moveup'
         primaryText='Move Up'
         onClick={this.handleMoveUp}
-        leftIcon={<FontIcon className='material-icons'>arrow_upward</FontIcon>} />)
-    }
-    if (!isLast) {
-      menuItems.push(<MenuItem
+        leftIcon={<FontIcon className='material-icons'>arrow_upward</FontIcon>} />),
+      isLast ? undefined : (<MenuItem
         key='movedown'
         primaryText='Move Down'
         onClick={this.handleMoveDown}
-        leftIcon={<FontIcon className='material-icons'>arrow_downward</FontIcon>} />)
-    }
-    if (!isFirst || !isLast) {
-      menuItems.push(<Divider key='div-0' />)
-    }
-    menuItems.push(
-      <MenuItem
+        leftIcon={<FontIcon className='material-icons'>arrow_downward</FontIcon>} />),
+      isFirst && isLast ? undefined : (<Divider key='div-0' />),
+
+      // Account Actions
+      (<MenuItem
         key='delete'
         primaryText='Delete'
         onClick={this.handleDelete}
-        leftIcon={<FontIcon className='material-icons'>delete</FontIcon>} />)
-    if (mailbox.artificiallyPersistCookies) {
-      menuItems.push(
-        <MenuItem
-          key='reauthenticate'
-          primaryText='Re-Authenticate'
-          onClick={this.handeReAuthenticate}
-          leftIcon={<FontIcon className='material-icons'>lock_outline</FontIcon>} />)
-    }
-    menuItems.push(<Divider key='div-1' />)
-    menuItems.push(
-      <MenuItem
+        leftIcon={<FontIcon className='material-icons'>delete</FontIcon>} />),
+      (<MenuItem
+        key='settings'
+        primaryText='Account Settings'
+        onClick={this.handleAccountSettings}
+        leftIcon={<FontIcon className='material-icons'>settings</FontIcon>} />),
+      !mailbox.artificiallyPersistCookies ? undefined : (<MenuItem
+        key='reauthenticate'
+        primaryText='Re-Authenticate'
+        onClick={this.handeReAuthenticate}
+        leftIcon={<FontIcon className='material-icons'>lock_outline</FontIcon>} />),
+      (<Divider key='div-1' />),
+
+      // Advanced Actions
+      (<MenuItem
         key='reload'
         primaryText='Reload'
         onClick={this.handleReload}
-        leftIcon={<FontIcon className='material-icons'>refresh</FontIcon>} />)
-    menuItems.push(
-      <MenuItem
+        leftIcon={<FontIcon className='material-icons'>refresh</FontIcon>} />),
+      (<MenuItem
         key='insepct'
         primaryText='Inspect'
         onClick={this.handleInspect}
         leftIcon={<FontIcon className='material-icons'>bug_report</FontIcon>} />)
+    ].filter((item) => !!item)
+
     return menuItems
   },
 

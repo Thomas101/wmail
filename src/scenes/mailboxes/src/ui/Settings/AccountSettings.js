@@ -14,7 +14,8 @@ const AccountAdvancedSettings = require('./Accounts/AccountAdvancedSettings')
 module.exports = React.createClass({
   displayName: 'AccountSettings',
   propTypes: {
-    showRestart: React.PropTypes.func.isRequired
+    showRestart: React.PropTypes.func.isRequired,
+    initialMailboxId: React.PropTypes.string
   },
 
   /* **************************************************************************/
@@ -29,16 +30,25 @@ module.exports = React.createClass({
     mailboxStore.unlisten(this.mailboxesChanged)
   },
 
+  componentWillReceiveProps (nextProps) {
+    if (this.props.initialMailboxId !== nextProps.initialMailboxId) {
+      this.setState({
+        selected: mailboxStore.getState().getMailbox(nextProps.initialMailboxId)
+      })
+    }
+  },
+
   /* **************************************************************************/
   // Data lifecycle
   /* **************************************************************************/
 
   getInitialState () {
+    const { initialMailboxId } = this.props
     const store = mailboxStore.getState()
     const all = store.allMailboxes()
     return {
       mailboxes: all,
-      selected: all[0]
+      selected: initialMailboxId ? store.getMailbox(initialMailboxId) : all[0]
     }
   },
 
@@ -79,6 +89,7 @@ module.exports = React.createClass({
   renderMailboxes () {
     const {selected} = this.state
     const {showRestart, ...passProps} = this.props
+    delete passProps.initialMailboxId
 
     let avatarSrc = ''
     if (selected.hasCustomAvatar) {

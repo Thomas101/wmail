@@ -18,7 +18,8 @@ module.exports = React.createClass({
   displayName: 'SettingsDialog',
   propTypes: {
     open: React.PropTypes.bool.isRequired,
-    onRequestClose: React.PropTypes.func.isRequired
+    onRequestClose: React.PropTypes.func.isRequired,
+    initialRoute: React.PropTypes.object
   },
 
   /* **************************************************************************/
@@ -27,7 +28,11 @@ module.exports = React.createClass({
 
   componentWillReceiveProps (nextProps) {
     if (this.props.open !== nextProps.open) {
-      this.setState({ showRestart: false })
+      const updates = { showRestart: false }
+      if (nextProps.open) {
+        updates.currentTab = (nextProps.initialRoute || {}).tab || 'general'
+      }
+      this.setState(updates)
     }
   },
 
@@ -37,7 +42,7 @@ module.exports = React.createClass({
 
   getInitialState () {
     return {
-      currentTab: 'general',
+      currentTab: (this.props.initialRoute || {}).tab || 'general',
       showRestart: false
     }
   },
@@ -75,34 +80,38 @@ module.exports = React.createClass({
   },
 
   render () {
-    const buttons = this.state.showRestart ? (
+    const { showRestart, currentTab } = this.state
+    const { onRequestClose, initialRoute, open } = this.props
+
+    const buttons = showRestart ? (
       <div style={{ textAlign: 'right' }}>
-        <RaisedButton label='Close' style={{ marginRight: 16 }} onClick={() => this.props.onRequestClose()} />
+        <RaisedButton label='Close' style={{ marginRight: 16 }} onClick={onRequestClose} />
         <RaisedButton label='Restart' primary onClick={() => ipcRenderer.send('relaunch-app', { })} />
       </div>
     ) : (
       <div style={{ textAlign: 'right' }}>
-        <RaisedButton label='Close' primary onClick={() => this.props.onRequestClose()} />
+        <RaisedButton label='Close' primary onClick={onRequestClose} />
       </div>
     )
 
-    const tabInfo = [
-      { label: 'General', value: 'general', component: (<GeneralSettings showRestart={this.handleShowRestart} />) },
-      { label: 'Accounts', value: 'accounts', component: (<AccountSettings showRestart={this.handleShowRestart} />) },
-      { label: 'Advanced', value: 'advanced', component: (<AdvancedSettings showRestart={this.handleShowRestart} />) }
+    const tabHeadings = [
+      ['General', 'general'],
+      ['Accounts', 'accounts'],
+      ['Advanced', 'advanced']
     ]
+
     const heading = (
       <div style={styles.tabToggles}>
-        {tabInfo.map(({label, value}) => {
+        {tabHeadings.map(([label, value]) => {
           return (
             <FlatButton
               key={value}
               label={label}
               style={Object.assign({}, styles.tabToggle, {
-                borderBottomColor: this.state.currentTab === value ? Colors.redA200 : 'transparent'
+                borderBottomColor: currentTab === value ? Colors.redA200 : 'transparent'
               })}
               labelStyle={{
-                color: this.state.currentTab === value ? Colors.white : Colors.lightBlue100
+                color: currentTab === value ? Colors.white : Colors.lightBlue100
               }}
               backgroundColor={Colors.lightBlue600}
               hoverColor={Colors.lightBlue600}
@@ -119,24 +128,34 @@ module.exports = React.createClass({
         contentStyle={styles.dialog}
         title={heading}
         actions={buttons}
-        open={this.props.open}
+        open={open}
         bodyStyle={{ padding: 0 }}
         titleStyle={{ padding: 0 }}
         autoScrollBodyContent
-        onRequestClose={this.props.onRequestClose}>
+        onRequestClose={onRequestClose}>
         <Tabs
           inkBarStyle={{ display: 'none' }}
           tabItemContainerStyle={{ display: 'none' }}
-          value={this.state.currentTab}
+          value={currentTab}
           onChange={this.handleTabChange}
           contentContainerStyle={{ padding: 24 }}>
-          {tabInfo.map((tab) => {
-            return (
-              <Tab label={tab.label} value={tab.value} key={tab.value}>
-                {tab.component}
-              </Tab>
-            )
-          })}
+          <Tab label='General' value='general'>
+            {currentTab !== 'general' ? undefined : (
+              <GeneralSettings showRestart={this.handleShowRestart} />
+            )}
+          </Tab>
+          <Tab label='Accounts' value='accounts'>
+            {currentTab !== 'accounts' ? undefined : (
+              <AccountSettings
+                showRestart={this.handleShowRestart}
+                initialMailboxId={(initialRoute || {}).mailboxId} />
+            )}
+          </Tab>
+          <Tab label='Advanced' value='advanced'>
+            {currentTab !== 'advanced' ? undefined : (
+              <AdvancedSettings showRestart={this.handleShowRestart} />
+            )}
+          </Tab>
         </Tabs>
       </Dialog>
     )

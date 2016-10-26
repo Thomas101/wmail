@@ -41,7 +41,8 @@ module.exports = React.createClass({
     return {
       sidebar: settingsStore.ui.sidebarEnabled,
       titlebar: settingsStore.ui.showTitlebar,
-      settingsDialog: false
+      settingsDialog: false,
+      settingsRoute: null
     }
   },
 
@@ -62,13 +63,17 @@ module.exports = React.createClass({
 
   /**
   * Opens the settings dialog
+  * @param evt: the event that fired if any
   */
-  handleOpenSettings () {
-    this.setState({ settingsDialog: true })
+  handleOpenSettings (evt) {
+    this.setState({
+      settingsDialog: true,
+      settingsRoute: evt && evt.route ? evt.route : null
+    })
   },
 
   handleCloseSettings () {
-    this.setState({ settingsDialog: false })
+    this.setState({ settingsDialog: false, settingsRoute: null })
   },
 
   /* **************************************************************************/
@@ -88,7 +93,10 @@ module.exports = React.createClass({
         <div className='detail' style={{ left: this.state.sidebar ? 70 : 0 }}>
           <MailboxWindows />
         </div>
-        <SettingsDialog open={this.state.settingsDialog} onRequestClose={this.handleCloseSettings} />
+        <SettingsDialog
+          open={this.state.settingsDialog}
+          onRequestClose={this.handleCloseSettings}
+          initialRoute={this.state.settingsRoute} />
         <DictionaryInstallHandler />
         <UpdateCheckDialog />
       </div>

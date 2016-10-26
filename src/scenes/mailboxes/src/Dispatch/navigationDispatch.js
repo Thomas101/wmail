@@ -30,6 +30,19 @@ class NavigationDispatch {
     this.emit('opensettings', {})
   }
 
+  /**
+  * Opens the settings at a mailbox
+  * @param mailboxId: the id of the mailbox
+  */
+  openMailboxSettings (mailboxId) {
+    this.emit('opensettings', {
+      route: {
+        tab: 'accounts',
+        mailboxId: mailboxId
+      }
+    })
+  }
+
 }
 
 module.exports = new NavigationDispatch()
