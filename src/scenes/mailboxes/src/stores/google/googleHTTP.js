@@ -117,8 +117,8 @@ class GoogleHTTP {
           // Do a pre-count for unread messages and threads
           resolve({
             response: response,
-            unreadMessageCount: response.messages.length,
-            unreadThreadCount: response.messages.reduce((acc, message) => {
+            unreadMessageCount: (response.messages || []).length,
+            unreadThreadCount: (response.messages || []).reduce((acc, message) => {
               return acc.add(message.threadId)
             }, new Set()).size
           })
