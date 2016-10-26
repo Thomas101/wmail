@@ -1,11 +1,13 @@
-This contains all the great features of the full 2.0.0 release. The fixes over 1.4.0 are...
+This version contains a number of improvements over the previous release; in particular the code that communicates with Google fetching the unread counts and notifications has been overhauled to fix some bugs and quota problems. It would be awesome if anyone testing this release could keep a close eye open for any problems or issues with this and reports them so I can jump on them. If any serious issues crop up this release is backwards compatible with 2.0.1 so don't hesitate to downgrade
 
-* Option to nuke account that artificially persists cookies
-* Fix to installer when upgrading wmail on windows
-* Fix launching WMail with hidden flag when it was maximised last
-* Fix for windows forgetting window position after being maximised
-* Change name of 32bit builds to have ia32 suffix and 64bit builds to have x86_64 suffix
-* Fix for opening links in inbox
-* Fix for deb installer where `desktop-file-install` isn’t available
-* Update libraries and electron
-* Try to keep mailboxes zoomed to deal with electron bug
+### Here's the full list of what's new...
+
+* Fixes to unread count reporting higher number than actually unread
+* Fixes to unread count not reporting correctly for users with more than 100 unread messages
+* Fix notifications and unread counts not being retrieved when proxy settings are set
+* Atomically write databases protecting against instances where the os force quits
+* Added delete account button to settings
+* Added cmd+click for account icons
+* Added unread count in window titlebar
+* Fix missing `libtrayindicator1` dependency for ubuntu 16+
+* Option to disable smooth scrolling
