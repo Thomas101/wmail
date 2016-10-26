@@ -39,7 +39,7 @@ class TrayRenderer {
       const SIZE = config.size * config.pixelRatio
       const PADDING = SIZE * 0.15
       const CENTER = SIZE / 2
-      const HAS_COUNT = config.showUnreadCount && config.unreadCount && config.unreadCount < 99
+      const HAS_COUNT = config.showUnreadCount && config.unreadCount
       const color = config.unreadCount ? config.unreadColor : config.readColor
       const backgroundColor = config.unreadCount ? config.unreadBackgroundColor : config.readBackgroundColor
 
@@ -63,7 +63,10 @@ class TrayRenderer {
       if (HAS_COUNT) {
         ctx.fillStyle = color
         ctx.textAlign = 'center'
-        if (config.unreadCount < 10) {
+        if (config.unreadCount > 99) {
+          ctx.font = `${config.thick ? 'bold ' : ''}${SIZE * 0.6}px Helvetica`
+          ctx.fillText('+', CENTER, CENTER + (SIZE * 0.16))
+        } else if (config.unreadCount < 10) {
           ctx.font = `${config.thick ? 'bold ' : ''}${SIZE * 0.5}px Helvetica`
           ctx.fillText(config.unreadCount, CENTER, CENTER + (SIZE * 0.20))
         } else {
