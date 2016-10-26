@@ -210,7 +210,7 @@ module.exports = React.createClass({
 
     // Not great that this happens in a promise, but it's pretty quick so should be okay
     TrayRenderer.renderNativeImage({
-      unreadCount: 100,//unreadCount,
+      unreadCount: unreadCount,
       showUnreadCount: traySettings.showUnreadCount,
       unreadColor: traySettings.unreadColor,
       readColor: traySettings.readColor,
