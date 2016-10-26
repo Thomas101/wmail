@@ -23,6 +23,7 @@
     "uuid": "2.0.3",
     "windows-shortcuts": "Thomas101/windows-shortcuts#0.1.4",
     "wmail-spellchecker": "Thomas101/wmail-spellchecker#1.0.3",
+    "write-file-atomic": "1.2.0",
     "yargs": "6.2.0"
   },
   "devDependencies": {

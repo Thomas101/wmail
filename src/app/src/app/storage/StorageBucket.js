@@ -4,7 +4,8 @@ const pkg = require('../../package.json')
 const mkdirp = require('mkdirp')
 const path = require('path')
 const Minivents = require('minivents')
-const fs = require('fs-extra')
+const fs = require('fs')
+const writeFileAtomic = require('write-file-atomic')
 const { DB_WRITE_DELAY_MS } = require('../../shared/constants')
 
 // Setup
@@ -70,7 +71,7 @@ class StorageBucket {
         return
       } else {
         this.__writeLock__ = true
-        fs.writeFile(this.__path__, JSON.stringify(this.__data__), 'utf8', () => {
+        writeFileAtomic(this.__path__, JSON.stringify(this.__data__), () => {
           this.__writeLock__ = false
         })
       }
