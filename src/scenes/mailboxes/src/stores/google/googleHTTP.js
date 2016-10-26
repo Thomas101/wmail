@@ -63,17 +63,16 @@ class GoogleHTTP {
   /**
   * Syncs the label for a mailbox
   * @param auth: the auth to access google with
-  * @param userEmail: the email address of the user
   * @param labelId: the id of the label to sync
   * @return promise
   */
-  fetchMailboxLabel (auth, userEmail, labelId) {
-    if (!auth) { return this.rejectWithNoAuth(userEmail) }
+  fetchMailboxLabel (auth, labelId) {
+    if (!auth) { return this.rejectWithNoAuth() }
 
     return new Promise((resolve, reject) => {
       this.ensureProxy()
       gmail.users.labels.get({
-        userId: userEmail,
+        userId: 'me',
         id: labelId,
         auth: auth
       }, (err, response) => {
@@ -97,13 +96,13 @@ class GoogleHTTP {
   * @param query: the query to ask the server for
   * @return promise
   */
-  fetchEmailSummaries (auth, email, query) {
-    if (!auth) { return this.rejectWithNoAuth(email) }
+  fetchEmailSummaries (auth, query) {
+    if (!auth) { return this.rejectWithNoAuth() }
 
     return new Promise((resolve, reject) => {
       this.ensureProxy()
       gmail.users.messages.list({
-        userId: email,
+        userId: 'me',
         q: query,
         auth: auth
       }, (err, response) => {
@@ -123,13 +122,13 @@ class GoogleHTTP {
   * @param emailId: the id of the email
   * @return promise
   */
-  fetchEmail (auth, email, messageId) {
-    if (!auth) { return this.rejectWithNoAuth(email) }
+  fetchEmail (auth, messageId) {
+    if (!auth) { return this.rejectWithNoAuth() }
 
     return new Promise((resolve, reject) => {
       this.ensureProxy()
       gmail.users.messages.get({
-        userId: email,
+        userId: 'me',
         id: messageId,
         auth: auth
       }, (err, response) => {
