@@ -85,7 +85,7 @@ module.exports = React.createClass({
               primaryText='Unread Important Messages' />
             <MenuItem
               key={Google.UNREAD_MODES.INBOX}
-              value={Google.UNREAD_MODES}
+              value={Google.UNREAD_MODES.INBOX}
               primaryText='All Messages in inbox' />
           </SelectField>
         ) : undefined}
