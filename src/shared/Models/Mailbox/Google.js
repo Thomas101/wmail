@@ -61,11 +61,14 @@ class Google extends Model {
     }
   }
   get unreadLabelField () {
+    return this.unreadCountIncludesReadMessages ? 'threadsTotal' : 'threadsUnread'
+  }
+  get unreadCountIncludesReadMessages () {
     switch (this.unreadMode) {
-      case UNREAD_MODES.INBOX: return 'threadsTotal'
-      case UNREAD_MODES.INBOX_UNREAD: return 'threadsUnread'
-      case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return 'threadsUnread'
-      case UNREAD_MODES.INBOX_UNREAD_IMPORTANT: return 'threadsUnread'
+      case UNREAD_MODES.INBOX: return true
+      case UNREAD_MODES.INBOX_UNREAD: return false
+      case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return false
+      case UNREAD_MODES.INBOX_UNREAD_IMPORTANT: return false
     }
   }
 
@@ -86,9 +89,16 @@ class Google extends Model {
   }
 
   get unreadMessageCount () {
+    // Make sure messages are reduced by their thread too
     return Object.keys(this.__data__.unread)
-      .filter((k) => this.__data__.unread[k].unread)
-      .length
+      .reduce((acc, messageId) => {
+        const rec = this.__data__.unread[messageId]
+        if ((this.unreadCountIncludesReadMessages || rec.unread) && rec.message) {
+          return acc.add(rec.message.threadId)
+        } else {
+          return acc
+        }
+      }, new Set()).size
   }
 
   get unreadUnotifiedMessages () {
