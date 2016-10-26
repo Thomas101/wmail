@@ -2,6 +2,7 @@ This version contains a number of improvements over the previous release; in par
 
 ### Here's the full list of what's new...
 
+* Better handling of lossy data returned from Google compared to 2.0.2
 * Fixes to unread count reporting higher number than actually unread
 * Fixes to unread count not reporting correctly for users with more than 100 unread messages
 * Fix notifications and unread counts not being retrieved when proxy settings are set
