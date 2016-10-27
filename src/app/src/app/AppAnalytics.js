@@ -44,6 +44,7 @@ class AppAnalytics {
       vp: windowSize,
       ul: osLanguage,
       an: pkg.name,
+      ua: window.webContents.getUserAgent(),
       av: process.platform + '-' + pkg.version
     }, args)
 

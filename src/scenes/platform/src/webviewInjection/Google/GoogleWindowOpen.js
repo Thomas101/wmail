@@ -21,6 +21,22 @@ class GoogleWindowOpen {
   }
 
   /* **************************************************************************/
+  // Utils
+  /* **************************************************************************/
+
+  /**
+  * @param url: the url to get the qs argument from
+  * @param key: the key of the value to get
+  * @param defaultValue=undefined: the default value to return
+  * @return the string value
+  */
+  getQSArg (url, key, defaultValue = undefined) {
+    const regex = new RegExp('[\\?&]' + key + '=([^&#]*)')
+    const results = regex.exec(url)
+    return results === null ? defaultValue : results[1]
+  }
+
+  /* **************************************************************************/
   // Injection
   /* **************************************************************************/
 
@@ -33,7 +49,7 @@ class GoogleWindowOpen {
   */
   injectWindow (w) {
     const defaultfn = w.open
-    const gmailWindowOpen = this
+    const handlerInst = this
     w.open = function () {
       // Open message in new window -- old style
       if (arguments[0] === '' && arguments[1] === '_blank') {
@@ -50,13 +66,14 @@ class GoogleWindowOpen {
             }
           }
         }
-      } else if (gmailWindowOpen.gmailApi && arguments[0].indexOf('ui=2') !== -1 && arguments[0].indexOf('view=btop') !== -1) {
-        // Open message in new window
-        const ik = gmailWindowOpen.gmailApi.tracker.ik
-        const msgId = window.location.hash.split('/').pop().replace(/#/, '').split('?')[0]
+      } else if (handlerInst.gmailApi && arguments[0].indexOf('ui=2') !== -1 && arguments[0].indexOf('view=btop') !== -1) {
+        const ik = handlerInst.gmailApi.tracker.ik
+        const currentUrlMsgId = window.location.hash.split('/').pop().replace(/#/, '').split('?')[0]
+        const th = handlerInst.getQSArg(arguments[0], 'th', currentUrlMsgId)
+
         ipcRenderer.sendToHost({
           type: 'js-new-window',
-          url: 'https://mail.google.com/mail?ui=2&view=lg&ik=' + ik + '&msg=' + msgId
+          url: 'https://mail.google.com/mail?ui=2&view=lg&ik=' + ik + '&msg=' + th
         })
         return { closed: false, focus: function () { } }
       } else {
