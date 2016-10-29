@@ -333,6 +333,10 @@ class GoogleActions {
             })
           })
       })
+      .then(
+        () => this.syncMailboxUnreadCountSuccess(mailboxId),
+        (err) => this.syncMailboxUnreadCountFailure(mailboxId, err)
+      )
 
     return { mailboxId: mailboxId, promise: promise }
   }
