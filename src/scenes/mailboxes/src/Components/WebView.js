@@ -33,6 +33,8 @@ const WEBVIEW_EVENTS = [
 
 const WEBVIEW_PROPS = {
   autosize: React.PropTypes.bool,
+  blinkfeatures: React.PropTypes.string,
+  disableblinkfeatures: React.PropTypes.string,
   disablewebsecurity: React.PropTypes.bool,
   httpreferrer: React.PropTypes.string,
   nodeintegration: React.PropTypes.bool,

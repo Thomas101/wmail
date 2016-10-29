@@ -86,6 +86,7 @@ module.exports = React.createClass({
       browserSrc: mailbox.url,
       language: settingStore.language,
       ui: settingStore.ui,
+      app: settingStore.app,
       focusedUrl: null
     }
   },
@@ -124,6 +125,7 @@ module.exports = React.createClass({
   },
 
   settingsChanged (store) {
+    const updates = {}
     // Not strictly the react way to do this here, but we need a point to push
     // changes down to the webview and this seems like the most sensible place
     // to do that
@@ -138,14 +140,23 @@ module.exports = React.createClass({
         })
       }
 
-      this.setState({ language: nextLanguage })
+      updates.language = nextLanguage
     }
 
     if (store.ui !== this.state.ui) {
       this.refs.browser.send('window-icons-in-screen', {
         inscreen: !store.ui.sidebarEnabled && !store.ui.showTitlebar && process.platform === 'darwin'
       })
-      this.setState({ ui: store.ui })
+
+      updates.ui = store.ui
+    }
+
+    if (store.app !== this.state.app) {
+      updates.app = store.app
+    }
+
+    if (Object.keys(updates).length) {
+      this.setState(updates)
     }
   },
 
@@ -449,7 +460,7 @@ module.exports = React.createClass({
   */
   render () {
     if (!this.state.mailbox) { return false }
-    const { isActive, browserSrc, focusedUrl, isSearching, mailbox } = this.state
+    const { isActive, browserSrc, focusedUrl, isSearching, mailbox, app } = this.state
 
     const className = [
       'mailbox-window',
@@ -480,7 +491,10 @@ module.exports = React.createClass({
           }}
           focus={this.handleBrowserFocused}
           blur={this.handleBrowserBlurred}
-          updateTargetUrl={(evt) => this.setState({ focusedUrl: evt.url !== '' ? evt.url : null })} />
+          updateTargetUrl={(evt) => this.setState({ focusedUrl: evt.url !== '' ? evt.url : null })}
+          disableblinkfeatures={[
+            app.disableSmoothScrolling ? 'CSSOMSmoothScroll' : undefined
+          ].filter((s) => !!s).join(',')} />
         <MailboxTargetUrl url={focusedUrl} />
         <MailboxSearch
           ref='search'
