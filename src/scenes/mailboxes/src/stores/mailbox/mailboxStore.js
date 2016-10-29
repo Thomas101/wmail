@@ -6,10 +6,7 @@ const persistence = {
   mailbox: require('./mailboxPersistence'),
   avatar: require('./avatarPersistence')
 }
-const {
-  GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS,
-  MAILBOX_INDEX_KEY
-} = require('shared/constants')
+const { MAILBOX_INDEX_KEY } = require('shared/constants')
 const { BLANK_PNG } = require('shared/b64Assets')
 const migration = require('./migration')
 
@@ -145,7 +142,6 @@ class MailboxStore {
 
       // Google
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
-      //handleUpdateGoogleMessages: actions.UPDATE_GOOGLE_MESSAGES,
 
       // Active & Ordering
       handleChangeActive: actions.CHANGE_ACTIVE,
@@ -325,37 +321,6 @@ class MailboxStore {
   handleUpdateGoogleConfig ({id, updates}) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleConf = Object.assign(data.googleConf || {}, updates)
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
-  }
-
-  /**
-  * Updates the google messages that are stored
-  * @param id: the id of the mailbox
-  * @param updates: a map of messages to store
-  */
-  handleUpdateGoogleMessages ({ id, updates }) {
-    const data = this.mailboxes.get(id).cloneData()
-    data.googleMessages = data.googleMessages || {}
-    const now = new Date().getTime()
-
-    // Add new messages
-    Object.keys(updates).forEach((messageId) => {
-      data.googleMessages[messageId] = Object.assign({
-        recordCreated: now
-      }, updates[messageId])
-    })
-
-    // Clean up old messages
-    data.googleMessages = Object.keys(data.googleMessages)
-      .reduce((acc, messageId) => {
-        const rec = data.googleMessages[messageId]
-        if (now - rec.recordCreated < GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS) {
-          acc[messageId] = rec
-        }
-        return acc
-      }, {})
-
     persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }
