@@ -54,7 +54,9 @@
   const mailboxesWindow = new MailboxesWindow(analytics)
   windowManager = new WindowManager(mailboxesWindow)
   const appMenu = new AppPrimaryMenu({
-    fullQuit: () => { windowManager.quit() },
+    fullQuit: () => {
+      windowManager.quit()
+    },
     closeWindow: () => {
       const focused = windowManager.focused()
       focused ? focused.close() : undefined
@@ -172,10 +174,12 @@
     app.quit()
   })
 
-  app.on('quit', function () { })
-
   app.on('activate', function () {
     windowManager.mailboxesWindow.show()
+  })
+
+  app.on('before-quit', () => {
+    windowManager.forceQuit = true
   })
 
   /* ****************************************************************************/

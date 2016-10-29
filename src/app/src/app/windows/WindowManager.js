@@ -30,7 +30,7 @@ class WindowManager {
   * @param evt: the event that occured
   */
   handleClose (evt) {
-    if (this.focused() && !this.forceQuit) {
+    if (!this.forceQuit) {
       this.contentWindows.forEach((w) => w.close())
       if (process.platform === 'darwin' || settingStore.tray.show) {
         this.mailboxesWindow.hide()
