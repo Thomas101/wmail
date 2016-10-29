@@ -97,34 +97,25 @@ class GoogleHTTP {
   /**
   * Fetches the unread summaries for a mailbox
   * @param auth: the auth to access google with
-  * @param email: the email address to use
   * @param query: the query to ask the server for
+  * @param limit=10: the limit on results to fetch
   * @return promise
   */
-  fetchEmailIds (auth, query) {
+  fetchThreadIds (auth, query, limit = 25) {
     if (!auth) { return this.rejectWithNoAuth() }
 
     return new Promise((resolve, reject) => {
       this.ensureProxy()
-      gmail.users.messages.list({
+      gmail.users.threads.list({
         userId: 'me',
         q: query,
-        maxResults: 65535, // bombs out at 500 normally
+        maxResults: limit,
         auth: auth
       }, (err, response) => {
         if (err) {
           reject({ err: err })
         } else {
-          console.log(response)
-          // Do a pre-count for unread messages and threads
-          response.messages = response.messages || []
-          resolve({
-            response: response,
-            unreadMessageCount: response.messages.length,
-            unreadThreadCount: response.messages.reduce((acc, message) => {
-              return acc.add(message.threadId)
-            }, new Set()).size
-          })
+          resolve({ response: response })
         }
       })
     })
@@ -133,18 +124,17 @@ class GoogleHTTP {
   /**
   * Fetches an email from a given id
   * @param auth: the auth to access google with
-  * @param email: the email address of the account
-  * @param emailId: the id of the email
+  * @param threadId: the id of the thread
   * @return promise
   */
-  fetchEmail (auth, messageId) {
+  fetchThread (auth, threadId) {
     if (!auth) { return this.rejectWithNoAuth() }
 
     return new Promise((resolve, reject) => {
       this.ensureProxy()
-      gmail.users.messages.get({
+      gmail.users.threads.get({
         userId: 'me',
-        id: messageId,
+        id: threadId,
         auth: auth
       }, (err, response) => {
         if (err) {

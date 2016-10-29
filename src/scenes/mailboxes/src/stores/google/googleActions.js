@@ -252,7 +252,7 @@ class GoogleActions {
 
         const mailbox = mailboxStore.getState().getMailbox(mailboxId)
         const label = mailbox.google.unreadLabel
-        const labelField = mailbox.google.unreadCountIncludesReadMessages ? 'threadsTotal' : 'threadsUnread'
+        const labelField = mailbox.google.unreadCountIncludesReadMessages ? 'messagesTotal' : 'messagesUnread'
         return Promise.resolve()
           .then(() => googleHTTP.fetchMailboxLabel(auth, label))
           .then((response) => {
@@ -273,64 +273,80 @@ class GoogleActions {
             // Step 2.1: Fetch the unread email ids
             const mailbox = mailboxStore.getState().getMailbox(mailboxId)
             const unreadQuery = mailbox.google.unreadQuery
-            return googleHTTP.fetchEmailIds(auth, unreadQuery)
+            return googleHTTP.fetchThreadIds(auth, unreadQuery)
           })
-          .then(({ response, unreadMessageCount, unreadThreadCount }) => {
-            // Step 2.2: Store the unread email ids and update unread counts
-            const mailbox = mailboxStore.getState().getMailbox(mailboxId)
-            if (mailbox.google.unreadCountIncludesReadMessages) {
-              mailboxActions.setGoogleUnreadCount(mailboxId, unreadMessageCount)
-            } else {
-              mailboxActions.setGoogleUnreadCount(mailboxId, unreadThreadCount)
-            }
+          .then(({ response }) => {
+            // Step 2.2: Save the count
+            mailboxActions.setGoogleUnreadCount(mailboxId, response.resultSizeEstimate)
+            return response.threads || []
+          })
+          .then((threads) => {
+            // Step 2.3: find the changed threads
+            if (threads.length === 0) { return { threads: threads, changedThreads: [] } }
 
-            const allMessageIds = response.messages.map((item) => item.id)
-            mailboxActions.setGoogleUnreadMessageIds(mailboxId, allMessageIds)
-            return Promise.resolve({ messages: response.messages })
-          })
-          .then(({ messages }) => {
-            // Step 2.3: Filter the top messages from the unread items to show notifications
             const mailbox = mailboxStore.getState().getMailbox(mailboxId)
-            const fetchMessageIds = messages
-              .reduce((acc, item) => {
-                if (!acc.threads.has(item.threadId)) {
-                  acc.filtered.push(item)
-                  acc.threads.add(item.threadId)
-                }
-                return acc
-              }, { filtered: [], threads: new Set() })
-              .filtered
-              .slice(0, 10)
-              .filter((item) => !mailbox.google.hasMessage(item.id))
-              .map((item) => item.id)
+            const currentThreadsIndex = mailbox.google.latestUnreadThreads.reduce((acc, thread) => {
+              acc[thread.id] = thread
+              return acc
+            }, {})
+            const changedThreads = threads.reduce((acc, thread) => {
+              if (!currentThreadsIndex[thread.id]) {
+                acc.push(thread)
+              } else if (currentThreadsIndex[thread.id].historyId !== thread.historyId) {
+                acc.push(thread)
+              } else if ((currentThreadsIndex[thread.id].messages || []).length === 0) {
+                acc.push(thread)
+              }
+              return acc
+            }, [])
 
-            return Promise.resolve({ fetchMessageIds: fetchMessageIds })
+            return { threads: threads, changedThreads: changedThreads }
           })
-          .then(({ fetchMessageIds }) => {
-            // Step 2.4: Fetch the top messages that we've yet to see
-            if (fetchMessageIds.length === 0) { return Promise.resolve() }
-            return Promise.all(fetchMessageIds.map((messageId) => {
+          .then(({ threads, changedThreads }) => {
+            // Step 2.4: Grab the full threads
+            if (changedThreads.length === 0) { return { threads: threads, changedThreads: [] } }
+
+            return Promise.all(threads.map((thread) => {
               return Promise.resolve()
-                .then(() => googleHTTP.fetchEmail(auth, messageId))
-                .then((response) => {
-                  const message = {
-                    id: response.response.id,
-                    threadId: response.response.threadId,
-                    historyId: response.response.historyId,
-                    internalDate: response.response.internalDate,
-                    snippet: response.response.snippet,
+                .then(() => googleHTTP.fetchThread(auth, thread.id))
+                .then(({response}) => response)
+            }))
+            .then((changedThreads) => {
+              return { threads: threads, changedThreads: changedThreads }
+            })
+          })
+          .then(({threads, changedThreads}) => {
+            // Step 2.5: Store the grabbed threads
+            if (changedThreads.length !== 0) {
+              const changedIndexed = changedThreads.reduce((acc, thread) => {
+                thread.messages = (thread.messages || []).map((message) => {
+                  return {
+                    id: message.id,
+                    threadId: message.threadId,
+                    historyId: message.historyId,
+                    internalDate: message.internalDate,
+                    snippet: message.snippet,
+                    labelIds: message.labelIds,
                     payload: {
-                      headers: response.response.payload.headers.filter((header) => {
+                      headers: message.payload.headers.filter((header) => {
                         return header.name === 'Subject' || header.name === 'From' || header.name === 'To'
                       })
                     }
                   }
-                  return Promise.resolve(message)
                 })
-            }))
-            .then((messages) => {
-              mailboxActions.updateGoogleMessages(mailboxId, messages)
-            })
+                acc[thread.id] = thread
+                return acc
+              }, {})
+
+              const allThreads = threads.map((thread) => {
+                return changedIndexed[thread.id] ? changedIndexed[thread.id] : thread
+              })
+              mailboxActions.setGoogleLatestUnreadThreads(mailboxId, allThreads)
+              return allThreads
+            } else {
+              mailboxActions.setGoogleLatestUnreadThreads(mailboxId, threads)
+              return threads
+            }
           })
       })
       .then(

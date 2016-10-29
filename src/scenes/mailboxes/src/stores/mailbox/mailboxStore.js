@@ -145,7 +145,6 @@ class MailboxStore {
 
       // Google
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
-      handleSetGoogleUnreadMessageIds: actions.SET_GOOGLE_UNREAD_MESSAGE_IDS,
       handleUpdateGoogleMessages: actions.UPDATE_GOOGLE_MESSAGES,
 
       // Active & Ordering
@@ -326,18 +325,6 @@ class MailboxStore {
   handleUpdateGoogleConfig ({id, updates}) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleConf = Object.assign(data.googleConf || {}, updates)
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
-  }
-
-  /**
-  * Handles setting the google unread message ids
-  * @param id: the id of the mailbox
-  * @param messageIds: the ids of the messages that are not read
-  */
-  handleSetGoogleUnreadMessageIds ({ id, messageIds }) {
-    const data = this.mailboxes.get(id).cloneData()
-    data.googleUnreadMessageInfo = Object.assign(data.googleUnreadMessageInfo || {}, { messageIds: messageIds })
     persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }

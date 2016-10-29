@@ -77,28 +77,23 @@ class Google extends Model {
   get unreadCount () { return this.__data__.unreadCounts.count || 0 }
 
   /* **************************************************************************/
-  // Properties : Messages
-  /* **************************************************************************/
-
-  get messages () { return this.__data__.messages }
-
-  /**
-  * @param messageId: the id of the message
-  * @return true if the model has a message with the given id, false otherwise
-  */
-  hasMessage (messageId) { return this.messages[messageId] !== undefined }
-
-  /* **************************************************************************/
   // Properties : Unread Messages
   /* **************************************************************************/
 
-  get latestUnreadMessageIds () {
-    return this.__data__.unreadMessages.messageIds || []
+  get latestUnreadThreads () {
+    return this.__data__.unreadMessages.latestUnreadThreads || []
   }
+
   get latestUnreadMessages () {
-    return this.latestUnreadMessageIds
-      .map((messageId) => this.messages[messageId])
-      .filter((message) => !!message)
+    return this.latestUnreadThreads.map((thread) => {
+      const messages = thread.messages || []
+      for (var i = messages.length - 1; i >= 0; i--) {
+        const message = messages[i]
+        const wasSent = (message.labelIds || []).findIndex((label) => label === 'SENT') !== -1
+        if (!wasSent) { return message }
+      }
+      return undefined
+    }).filter((m) => !!m)
   }
   get unnotifiedMessages () {
     return this.latestUnreadMessages.filter((message) => {

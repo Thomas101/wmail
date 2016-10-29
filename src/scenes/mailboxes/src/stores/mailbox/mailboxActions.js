@@ -182,11 +182,13 @@ class MailboxActions {
   }
 
   /**
-  * Sets the unread message ids for google
+  * Sets the latest unread thread list
   * @param id: the id of the mailbox
-  * @param messageIds: the message ids that are unread
+  * @param threads: the threads to set
   */
-  setGoogleUnreadMessageIds (id, messageIds) { return { id: id, messageIds: messageIds } }
+  setGoogleLatestUnreadThreads (id, threads) {
+    return this.update(id, 'googleUnreadMessageInfo.latestUnreadThreads', threads)
+  }
 
   /**
   * Updates the messages
