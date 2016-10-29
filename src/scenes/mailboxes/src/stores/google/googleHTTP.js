@@ -109,11 +109,13 @@ class GoogleHTTP {
       gmail.users.messages.list({
         userId: 'me',
         q: query,
+        maxResults: 65535, // bombs out at 500 normally
         auth: auth
       }, (err, response) => {
         if (err) {
           reject({ err: err })
         } else {
+          console.log(response)
           // Do a pre-count for unread messages and threads
           response.messages = response.messages || []
           resolve({

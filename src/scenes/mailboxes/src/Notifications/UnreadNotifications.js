@@ -16,6 +16,7 @@ class UnreadNotifications {
     this.__s_mailboxesUpdated = (store) => this.mailboxesUpdated(store)
     this.__constructTime__ = new Date().getTime()
     this.__dispatching__ = false
+// window.NNotification = require('./Notification')
   }
 
   /**

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        width: 325px;
+        height: 65px;
+        position: relative;
+        overflow: hidden;
+      }
+      #app-icon {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 45px;
+      }
+      #app-icon-image {
+        position: absolute;
+        top: 10;
+        bottom: 10;
+        left: 5;
+        right: 5;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-image: url("../../icons/app.svg");
+      }
+      #close-button {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 30px;
+        text-align: center;
+        line-height: 65px;
+        vertical-align: middle;
+        border-left: 1px solid #CCC;
+      }
+      #content {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 45px;
+        right: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app-icon">
+      <div id="app-icon-image"></div>
+    </div>
+    <div id="content">
+      <div id="title">Test title 1234 goes here and goes on and on about stuff</div>
+      <div id="body">Test body is here are it is my body and it is about some stuff and stuff and stuff that just seems to go on and on</div>
+    </div>
+    <div id="close-button">x</div>
+
+    <script type="text/javascript">
+      const remote = require('electron').remote
+      const screenSize = remote.screen.getPrimaryDisplay().workAreaSize
+      const browserWindow = remote.getCurrentWindow()
+      browser.setSize(325, 65)
+      browser.setPosition(screenSize.width - browserWindow.getSize()[0] - 5, screenSize.height - browserWindow.getSize()[1] - 5)
+    </script>
+  </body>
+</html>

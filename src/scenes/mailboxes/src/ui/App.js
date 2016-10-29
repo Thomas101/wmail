@@ -13,7 +13,7 @@ const {
 const AppContent = require('./AppContent')
 const TimerMixin = require('react-timer-mixin')
 const constants = require('shared/constants')
-const UnreadNotifications = require('../daemons/UnreadNotifications')
+const UnreadNotifications = require('../Notifications/UnreadNotifications')
 const shallowCompare = require('react-addons-shallow-compare')
 const Tray = require('./Tray')
 const AppBadge = require('./AppBadge')
