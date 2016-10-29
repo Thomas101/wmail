@@ -247,25 +247,21 @@ class GoogleActions {
 
     const promise = Promise.resolve()
       .then(() => {
-        // Step 1: Fetch the mailbox label to see if we should run a sync
-        if (forceFullSync) { return Promise.resolve({ changed: true }) }
-
+        // Step 1. Counts: Fetch the mailbox label
         const mailbox = mailboxStore.getState().getMailbox(mailboxId)
         const label = mailbox.google.unreadLabel
-        const labelField = mailbox.google.unreadCountIncludesReadMessages ? 'messagesTotal' : 'messagesUnread'
         return Promise.resolve()
           .then(() => googleHTTP.fetchMailboxLabel(auth, label))
           .then((response) => {
-            if (mailbox && mailbox.google.labelUnreadCount !== response.response[labelField]) {
-              mailboxActions.setGoogleLabelUnreadCount(mailboxId, response.response[labelField])
-              return Promise.resolve({ changed: true })
-            } else {
-              return Promise.resolve({ changed: false })
-            }
+            const mailbox = mailboxStore.getState().getMailbox(mailboxId)
+            mailboxActions.setGoogleLabelInfo(mailboxId, response.response)
+            return Promise.resolve({
+              changed: forceFullSync || mailbox.messagesTotal !== response.response.messagesTotal
+            })
           })
       })
       .then(({changed}) => {
-        // Step 2: if we did change run a query to get the unread message count
+        // Step 2. Message info: if we did change run a query to get the unread message count
         if (!changed) { return Promise.resolve() }
 
         return Promise.resolve()
@@ -276,12 +272,8 @@ class GoogleActions {
             return googleHTTP.fetchThreadIds(auth, unreadQuery)
           })
           .then(({ response }) => {
-            // Step 2.2: Save the count
-            mailboxActions.setGoogleUnreadCount(mailboxId, response.resultSizeEstimate)
-            return response.threads || []
-          })
-          .then((threads) => {
             // Step 2.3: find the changed threads
+            const threads = response.threads || []
             if (threads.length === 0) { return { threads: threads, changedThreads: [] } }
 
             const mailbox = mailboxStore.getState().getMailbox(mailboxId)

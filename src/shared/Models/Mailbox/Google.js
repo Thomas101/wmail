@@ -19,13 +19,12 @@ class Google extends Model {
   // Lifecycle
   /* **************************************************************************/
 
-  constructor (auth, config, unreadCounts, unreadMessages, messages) {
+  constructor (auth, config, labelInfo, unreadMessageInfo) {
     super({
       auth: auth || {},
       config: config || {},
-      unreadCounts: unreadCounts || {},
-      unreadMessages: unreadMessages || {},
-      messages: messages || {}
+      labelInfo: labelInfo,
+      unreadMessages: unreadMessageInfo || {}
     })
   }
 
@@ -70,11 +69,17 @@ class Google extends Model {
   }
 
   /* **************************************************************************/
-  // Properties : Unread Counts
+  // Properties : Label info
   /* **************************************************************************/
 
-  get labelUnreadCount () { return this.__data__.unreadCounts.label || -1 }
-  get unreadCount () { return this.__data__.unreadCounts.count || 0 }
+  get labelInfo () { return this.__data__.labelInfo || {} }
+  get messagesTotal () { return this.labelInfo.messagesTotal || 0 }
+  get messagesUnread () { return this.labelInfo.messagesUnread || 0 }
+  get threadsTotal () { return this.labelInfo.threadsTotal || 0 }
+  get threadsUnread () { return this.labelInfo.threadsUnread || 0 }
+  get unreadCount () {
+    return this.unreadCountIncludesReadMessages ? this.threadsTotal : this.threadsUnread
+  }
 
   /* **************************************************************************/
   // Properties : Unread Messages

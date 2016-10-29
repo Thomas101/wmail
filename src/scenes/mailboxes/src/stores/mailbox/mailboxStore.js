@@ -145,7 +145,7 @@ class MailboxStore {
 
       // Google
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
-      handleUpdateGoogleMessages: actions.UPDATE_GOOGLE_MESSAGES,
+      //handleUpdateGoogleMessages: actions.UPDATE_GOOGLE_MESSAGES,
 
       // Active & Ordering
       handleChangeActive: actions.CHANGE_ACTIVE,

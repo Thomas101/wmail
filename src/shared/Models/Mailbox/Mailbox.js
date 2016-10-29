@@ -21,9 +21,8 @@ class Mailbox extends Model {
     this.__google__ = new Google(
       this.__data__.googleAuth,
       this.__data__.googleConf,
-      this.__data__.googleUnreadCounts,
-      this.__data__.googleUnreadMessageInfo,
-      this.__data__.googleMessages
+      this.__data__.googleLabelInfo_v2,
+      this.__data__.googleUnreadMessageInfo_v2
     )
   }
 

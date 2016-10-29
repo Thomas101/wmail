@@ -164,21 +164,12 @@ class MailboxActions {
   updateGoogleConfig (id, updates) { return { id: id, updates: updates } }
 
   /**
-  * Updates the label unread count for google
+  * Sets the google unread count info
   * @param id: the id of the mailbox
-  * @param count: the count
+  * @param countInfo: the info provided by google
   */
-  setGoogleLabelUnreadCount (id, count) {
-    return this.update(id, 'googleUnreadCounts.label', count)
-  }
-
-  /**
-  * Updates the unread count for google
-  * @param id: the id of the mailbox
-  * @param count: the count
-  */
-  setGoogleUnreadCount (id, count) {
-    return this.update(id, 'googleUnreadCounts.count', count)
+  setGoogleLabelInfo (id, info) {
+    return this.update(id, 'googleLabelInfo_v2', info)
   }
 
   /**
@@ -187,22 +178,7 @@ class MailboxActions {
   * @param threads: the threads to set
   */
   setGoogleLatestUnreadThreads (id, threads) {
-    return this.update(id, 'googleUnreadMessageInfo.latestUnreadThreads', threads)
-  }
-
-  /**
-  * Updates the messages
-  * @param id: the id of the mailbox
-  * @param messages: the messages to update
-  */
-  updateGoogleMessages (id, messages) {
-    return {
-      id: id,
-      updates: Array.isArray(messages) ? messages.reduce((acc, message) => {
-        acc[message.id] = message
-        return acc
-      }, {}) : messages
-    }
+    return this.update(id, 'googleUnreadMessageInfo_v2.latestUnreadThreads', threads)
   }
 
   /**
@@ -211,7 +187,7 @@ class MailboxActions {
   * @param historyId: the last historyId
   */
   setGoogleLastNotifiedHistoryId (id, historyId) {
-    return this.update(id, 'googleUnreadMessageInfo.lastNotifiedHistoryId', parseInt(historyId))
+    return this.update(id, 'googleUnreadMessageInfo_v2.lastNotifiedHistoryId', parseInt(historyId))
   }
 
   /* **************************************************************************/
