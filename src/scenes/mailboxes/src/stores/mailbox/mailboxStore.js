@@ -142,6 +142,7 @@ class MailboxStore {
 
       // Google
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
+      handleSetGoogleLatestUnreadThreads: actions.SET_GOOGLE_LATEST_UNREAD_THREADS,
 
       // Active & Ordering
       handleChangeActive: actions.CHANGE_ACTIVE,
@@ -321,6 +322,37 @@ class MailboxStore {
   handleUpdateGoogleConfig ({id, updates}) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleConf = Object.assign(data.googleConf || {}, updates)
+    persistence.mailbox.setJSONItem(id, data)
+    this.mailboxes.set(id, new Mailbox(id, data))
+  }
+
+  /**
+  * Updates the google unread threads
+  * @param id: the id of the mailbox
+  * @param threadList: the complete thread list as an array
+  * @param fetchedThreads: the threads that were fetched in an object by id
+  */
+  handleSetGoogleLatestUnreadThreads ({ id, threadList, fetchedThreads }) {
+    const prevThreads = this.mailboxes.get(id).google.latestUnreadThreads.reduce((acc, thread) => {
+      acc[thread.id] = thread
+      return acc
+    }, {})
+
+    // Merge changes
+    const nextThreads = threadList.map((threadHead) => {
+      if (fetchedThreads[threadHead.id]) {
+        return fetchedThreads[threadHead.id]
+      } else if (prevThreads[threadHead.id]) {
+        return prevThreads[threadHead.id]
+      } else {
+        return undefined
+      }
+    }).filter((thread) => !!thread)
+
+    // Write it
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleUnreadMessageInfo_v2 = data.googleUnreadMessageInfo_v2 || {}
+    data.googleUnreadMessageInfo_v2.latestUnreadThreads = nextThreads
     persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
   }

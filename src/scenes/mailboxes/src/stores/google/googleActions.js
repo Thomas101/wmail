@@ -330,14 +330,11 @@ class GoogleActions {
                 return acc
               }, {})
 
-              const allThreads = threads.map((thread) => {
-                return changedIndexed[thread.id] ? changedIndexed[thread.id] : thread
-              })
-              mailboxActions.setGoogleLatestUnreadThreads(mailboxId, allThreads)
-              return allThreads
+              mailboxActions.setGoogleLatestUnreadThreads(mailboxId, threads, changedIndexed)
+              return { threads: threads, changedIndex: changedIndexed }
             } else {
-              mailboxActions.setGoogleLatestUnreadThreads(mailboxId, threads)
-              return threads
+              mailboxActions.setGoogleLatestUnreadThreads(mailboxId, threads, {})
+              return { threads: threads, changedIndex: {} }
             }
           })
       })

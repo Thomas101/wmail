@@ -175,10 +175,11 @@ class MailboxActions {
   /**
   * Sets the latest unread thread list
   * @param id: the id of the mailbox
-  * @param threads: the threads to set
+  * @param threadList: the list of threads as an array
+  * @param fetchedThreads: the full threads that have been fetched sent as an object keyed by id
   */
-  setGoogleLatestUnreadThreads (id, threads) {
-    return this.update(id, 'googleUnreadMessageInfo_v2.latestUnreadThreads', threads)
+  setGoogleLatestUnreadThreads (id, threadList, fetchedThreads) {
+    return { id: id, threadList: threadList, fetchedThreads: fetchedThreads }
   }
 
   /**
