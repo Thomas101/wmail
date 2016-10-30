@@ -86,7 +86,6 @@ module.exports = React.createClass({
       browserSrc: mailbox.url,
       language: settingStore.language,
       ui: settingStore.ui,
-      app: settingStore.app,
       focusedUrl: null
     }
   },
@@ -149,10 +148,6 @@ module.exports = React.createClass({
       })
 
       updates.ui = store.ui
-    }
-
-    if (store.app !== this.state.app) {
-      updates.app = store.app
     }
 
     if (Object.keys(updates).length) {
@@ -460,7 +455,7 @@ module.exports = React.createClass({
   */
   render () {
     if (!this.state.mailbox) { return false }
-    const { isActive, browserSrc, focusedUrl, isSearching, mailbox, app } = this.state
+    const { isActive, browserSrc, focusedUrl, isSearching, mailbox } = this.state
 
     const className = [
       'mailbox-window',
@@ -491,10 +486,7 @@ module.exports = React.createClass({
           }}
           focus={this.handleBrowserFocused}
           blur={this.handleBrowserBlurred}
-          updateTargetUrl={(evt) => this.setState({ focusedUrl: evt.url !== '' ? evt.url : null })}
-          disableblinkfeatures={[
-            app.disableSmoothScrolling ? 'CSSOMSmoothScroll' : undefined
-          ].filter((s) => !!s).join(',')} />
+          updateTargetUrl={(evt) => this.setState({ focusedUrl: evt.url !== '' ? evt.url : null })} />
         <MailboxTargetUrl url={focusedUrl} />
         <MailboxSearch
           ref='search'

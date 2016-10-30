@@ -39,9 +39,6 @@ class MailboxesWindow extends WMailWindow {
       minHeight: 300,
       fullscreenable: true,
       titleBarStyle: settingStore.ui.showTitlebar ? 'default' : 'hidden',
-      disableBlinkFeatures: [
-        settingStore.app.disableSmoothScrolling ? 'CSSOMSmoothScroll' : undefined
-      ].filter((s) => !!s).join(','),
       title: 'WMail',
       backgroundColor: '#f2f2f2',
       webPreferences: {
