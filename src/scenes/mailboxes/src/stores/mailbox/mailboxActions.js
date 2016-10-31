@@ -187,8 +187,8 @@ class MailboxActions {
   * @param id: the id of the mailbox
   * @param historyId: the last historyId
   */
-  setGoogleLastNotifiedHistoryId (id, historyId) {
-    return this.update(id, 'googleUnreadMessageInfo_v2.lastNotifiedHistoryId', parseInt(historyId))
+  setGoogleLastNotifiedInternalDate (id, internalDate) {
+    return this.update(id, 'googleUnreadMessageInfo_v2.lastNotifiedInternalDate', parseInt(internalDate))
   }
 
   /* **************************************************************************/

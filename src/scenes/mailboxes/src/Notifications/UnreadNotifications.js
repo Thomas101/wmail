@@ -50,20 +50,19 @@ class UnreadNotifications {
 
     store.allMailboxes().forEach((mailbox, k) => {
       if (!mailbox.showNotifications) { return }
-
-      const lastHistoryId = mailbox.google.unnotifiedMessages.reduce((acc, message) => {
+      const lastInternalDate = mailbox.google.unnotifiedMessages.reduce((acc, message) => {
         if (!firstRun) {
           this.showNotification(mailbox, message)
         }
         if (acc === undefined) {
-          return parseInt(message.historyId)
+          return parseInt(message.internalDate)
         } else {
-          return parseInt(message.historyId) > acc ? parseInt(message.historyId) : acc
+          return parseInt(message.internalDate) > acc ? parseInt(message.internalDate) : acc
         }
       }, undefined)
 
-      if (lastHistoryId !== undefined) {
-        flux.mailbox.A.setGoogleLastNotifiedHistoryId.defer(mailbox.id, lastHistoryId)
+      if (lastInternalDate !== undefined) {
+        flux.mailbox.A.setGoogleLastNotifiedInternalDate.defer(mailbox.id, lastInternalDate)
       }
     })
   }
