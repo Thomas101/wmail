@@ -259,19 +259,15 @@ class GoogleActions {
             return googleHTTP.fetchMailboxLabel(auth, label)
           })
           .then(({ response }) => {
-            // Step 2.2: Some mailbox types need to update the response by what's in the UI
+            // Step 1.2: Some mailbox types need to update the response by what's in the UI
             if (unreadMode === Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD || unreadMode === Google.UNREAD_MODES.INBOX_UNREAD_IMPORTANT) {
               return Promise.resolve()
                 .then(() => mailboxDispatch.fetchGmailUnreadCountWithRetry(mailboxId, forceFullSync ? 30 : 5))
                 .then((count) => {
-                  if (count === undefined) {
-                    return response
-                  } else {
-                    return Object.assign(response, {
-                      threadsUnread: count,
-                      artificalThreadsUnread: true
-                    })
-                  }
+                  return Object.assign(response, {
+                    threadsUnread: count || 0,
+                    artificalThreadsUnread: true
+                  })
                 })
             } else {
               return response
