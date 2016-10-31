@@ -42,6 +42,7 @@ class Google {
     // Bind our listeners
     ipcRenderer.on('window-icons-in-screen', this.handleWindowIconsInScreenChange.bind(this))
     ipcRenderer.on('open-message', this.handleOpenMesage.bind(this))
+    ipcRenderer.on('get-gmail-unread-count', this.handleFetchUnreadCount.bind(this))
 
     if (this.isGmail) {
       this.loadGmailAPI()
@@ -105,6 +106,20 @@ class Google {
     if (this.isGmail) {
       window.location.hash = 'inbox/' + data.messageId
     }
+  }
+
+  /**
+  * Handles fetching the unread count out the dom
+  * @param evt: the event that fired
+  * @param data: the data that was sent with the event
+  */
+  handleFetchUnreadCount (evt, data) {
+    ipcRenderer.sendToHost({
+      type: data.__respond__,
+      data: {
+        count: !this.gmailApi ? undefined : this.gmailApi.get.unread_inbox_emails()
+      }
+    })
   }
 }
 

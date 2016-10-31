@@ -16,9 +16,8 @@ class Browser {
 
     ipcRenderer.on('get-process-memory-info', (evt, data) => {
       ipcRenderer.sendToHost({
-        id: data.id,
         data: process.getProcessMemoryInfo(),
-        type: 'respond-process-memory-info'
+        type: data.__respond__
       })
     })
   }

@@ -33,6 +33,8 @@ module.exports = React.createClass({
   },
 
   componentDidMount () {
+    this.gmailCountPromises = {}
+
     // Stores
     flux.mailbox.S.listen(this.mailboxesChanged)
     flux.settings.S.listen(this.settingsChanged)
@@ -43,6 +45,7 @@ module.exports = React.createClass({
     mailboxDispatch.on('reload', this.handleReload)
     mailboxDispatch.on('openMessage', this.handleOpenMessage)
     mailboxDispatch.respond('fetch-process-memory-info', this.handleFetchProcessMemoryInfo)
+    mailboxDispatch.respond('get-gmail-unread-count:' + this.props.mailboxId, this.handleGetGmailUnreadCount)
     ipcRenderer.on('mailbox-window-find-start', this.handleIPCSearchStart)
     ipcRenderer.on('mailbox-window-find-next', this.handleIPCSearchNext)
     ipcRenderer.on('mailbox-window-navigate-back', this.handleIPCNavigateBack)
@@ -65,10 +68,22 @@ module.exports = React.createClass({
     mailboxDispatch.off('reload', this.handleReload)
     mailboxDispatch.off('openMessage', this.handleOpenMessage)
     mailboxDispatch.unrespond('fetch-process-memory-info', this.handleFetchProcessMemoryInfo)
+    mailboxDispatch.unrespond('get-gmail-unread-count:' + this.props.mailboxId, this.handleGetGmailUnreadCount)
     ipcRenderer.removeListener('mailbox-window-find-start', this.handleIPCSearchStart)
     ipcRenderer.removeListener('mailbox-window-find-next', this.handleIPCSearchNext)
     ipcRenderer.removeListener('mailbox-window-navigate-back', this.handleIPCNavigateBack)
     ipcRenderer.removeListener('mailbox-window-navigate-forward', this.handleIPCNavigateForward)
+  },
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.mailboxId !== nextProps.mailboxId) {
+      mailboxDispatch.unrespond('get-gmail-unread-count:' + this.props.mailboxId, this.handleGetGmailUnreadCount)
+      mailboxDispatch.respond('get-gmail-unread-count:' + nextProps.mailboxId, this.handleGetGmailUnreadCount)
+      ipcRenderer.send('prepare-webview-session', {
+        partition: 'persist:' + nextProps.mailboxId
+      })
+      this.setState(this.getInitialState(nextProps))
+    }
   },
 
   /* **************************************************************************/
@@ -87,15 +102,6 @@ module.exports = React.createClass({
       language: settingStore.language,
       ui: settingStore.ui,
       focusedUrl: null
-    }
-  },
-
-  componentWillReceiveProps (nextProps) {
-    if (this.props.mailboxId !== nextProps.mailboxId) {
-      ipcRenderer.send('prepare-webview-session', {
-        partition: 'persist:' + nextProps.mailboxId
-      })
-      this.setState(this.getInitialState(nextProps))
     }
   },
 
@@ -212,6 +218,16 @@ module.exports = React.createClass({
     })
   },
 
+  /**
+  * Fetches the gmail unread count
+  * @return promise
+  */
+  handleGetGmailUnreadCount () {
+    return this.refs.browser.sendWithResponse('get-gmail-unread-count', {}, 1000).then((res) => {
+      return Promise.resolve({ count: res.count })
+    })
+  },
+
   /* **************************************************************************/
   // Browser Events : Dispatcher
   /* **************************************************************************/
@@ -225,7 +241,7 @@ module.exports = React.createClass({
       case 'page-click': this.handleBrowserPageClick(evt); break
       case 'open-settings': navigationDispatch.openSettings(); break
       case 'js-new-window': this.handleBrowserJSNewWindow(evt); break
-      default:
+      default: break
     }
   },
 
