@@ -28,7 +28,7 @@ module.exports = React.createClass({
 
     const sizeToMb = (size) => { return Math.round(size / 1024) }
 
-    mailboxDispatch.request('fetch-process-memory-info').then((mailboxesProc) => {
+    mailboxDispatch.fetchProcessMemoryInfo().then((mailboxesProc) => {
       const mailboxProcIndex = mailboxesProc.reduce((acc, info) => {
         acc[info.mailboxId] = info.memoryInfo
         return acc

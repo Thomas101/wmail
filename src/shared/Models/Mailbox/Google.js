@@ -102,11 +102,11 @@ class Google extends Model {
   }
   get unnotifiedMessages () {
     return this.latestUnreadMessages.filter((message) => {
-      return parseInt(message.historyId) > this.lastNotifiedHistoryId
+      return parseInt(message.internalDate) > this.lastNotifiedInternalDate
     })
   }
-  get lastNotifiedHistoryId () {
-    return this.__data__.unreadMessages.lastNotifiedHistoryId || 0
+  get lastNotifiedInternalDate () {
+    return this.__data__.unreadMessages.lastNotifiedInternalDate || 0
   }
 }
 

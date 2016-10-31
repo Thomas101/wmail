@@ -2,6 +2,7 @@ const React = require('react')
 const ReactDOM = require('react-dom')
 const camelCase = require('camelcase')
 
+const SEND_RESPOND_PREFIX = '__SEND_RESPOND__'
 const WEBVIEW_EVENTS = [
   'load-commit',
   'did-finish-load',
@@ -112,10 +113,11 @@ module.exports = React.createClass({
   * @return true if the event was handled in the siphon
   */
   siphonIPCMessage (evt) {
-    if (evt.channel.type === 'respond-process-memory-info') {
-      if (this.ipcPromises[evt.channel.id]) {
-        this.ipcPromises[evt.channel.id](evt.channel.data)
-        delete this.ipcPromises[evt.channel.id]
+    if (evt.channel.type.indexOf(SEND_RESPOND_PREFIX) === 0) {
+      if (this.ipcPromises[evt.channel.type]) {
+        clearTimeout(this.ipcPromises[evt.channel.type].timeout)
+        this.ipcPromises[evt.channel.type].resolve(evt.channel.data)
+        delete this.ipcPromises[evt.channel.type]
       }
       return true
     } else if (evt.channel.type === 'elevated-log') {
@@ -181,10 +183,26 @@ module.exports = React.createClass({
   * @return promise
   */
   getProcessMemoryInfo () {
-    return new Promise((resolve) => {
+    return this.sendWithResponse('get-process-memory-info')
+  },
+
+  /**
+  * Calls into the webview to get some data
+  * @param sendName: the name to send to the webview
+  * @param obj={}: the object to send into the webview. Note __respond__ is reserved
+  * @param timeout=5000: the timeout before rejection
+  * @return promise
+  */
+  sendWithResponse (sendName, obj = {}, timeout = 5000) {
+    return new Promise((resolve, reject) => {
       const id = Math.random().toString()
-      this.ipcPromises[id] = resolve
-      this.getWebviewNode().send('get-process-memory-info', { id: id })
+      const respondName = SEND_RESPOND_PREFIX + ':' + sendName + ':' + id
+      const rejectTimeout = setTimeout(() => {
+        delete this.ipcPromises[respondName]
+        reject({ timeout: true })
+      }, timeout)
+      this.ipcPromises[respondName] = { resolve: resolve, timeout: rejectTimeout }
+      this.getWebviewNode().send(sendName, Object.assign({}, obj, { __respond__: respondName }))
     })
   },
 

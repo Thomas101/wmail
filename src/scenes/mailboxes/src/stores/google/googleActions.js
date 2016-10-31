@@ -6,9 +6,10 @@ const credentials = require('shared/credentials')
 const googleHTTP = require('./googleHTTP')
 const mailboxStore = require('../mailbox/mailboxStore')
 const mailboxActions = require('../mailbox/mailboxActions')
-const Mailbox = require('shared/Models/Mailbox/Mailbox')
+const {Mailbox, Google} = require('shared/Models/Mailbox')
 const {ipcRenderer} = window.nativeRequire('electron')
 const reporter = require('../../reporter')
+const {mailboxDispatch} = require('../../Dispatch')
 
 const cachedAuths = new Map()
 
@@ -245,18 +246,43 @@ class GoogleActions {
   syncMailboxUnreadCount (mailboxId, forceFullSync = false) {
     const { auth } = this.getAPIAuth(mailboxId)
 
+    const mailbox = mailboxStore.getState().getMailbox(mailboxId)
+    const label = mailbox.google.unreadLabel
+    const unreadMode = mailbox.google.unreadMode
+
     const promise = Promise.resolve()
       .then(() => {
         // Step 1. Counts: Fetch the mailbox label
-        const mailbox = mailboxStore.getState().getMailbox(mailboxId)
-        const label = mailbox.google.unreadLabel
         return Promise.resolve()
-          .then(() => googleHTTP.fetchMailboxLabel(auth, label))
+          .then(() => {
+            // Step 1.1: call out to google
+            return googleHTTP.fetchMailboxLabel(auth, label)
+          })
+          .then(({ response }) => {
+            // Step 2.2: Some mailbox types need to update the response by what's in the UI
+            if (unreadMode === Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD || unreadMode === Google.UNREAD_MODES.INBOX_UNREAD_IMPORTANT) {
+              return Promise.resolve()
+                .then(() => mailboxDispatch.fetchGmailUnreadCountWithRetry(mailboxId, forceFullSync ? 30 : 5))
+                .then((count) => {
+                  if (count === undefined) {
+                    return response
+                  } else {
+                    return Object.assign(response, {
+                      threadsUnread: count,
+                      artificalThreadsUnread: true
+                    })
+                  }
+                })
+            } else {
+              return response
+            }
+          })
           .then((response) => {
+            // Step 1.3: Update the models. Decide if we changed
             const mailbox = mailboxStore.getState().getMailbox(mailboxId)
-            mailboxActions.setGoogleLabelInfo(mailboxId, response.response)
+            mailboxActions.setGoogleLabelInfo(mailboxId, response)
             return Promise.resolve({
-              changed: forceFullSync || mailbox.messagesTotal !== response.response.messagesTotal
+              changed: forceFullSync || mailbox.messagesTotal !== response.messagesTotal
             })
           })
       })
