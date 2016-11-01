@@ -1,11 +1,11 @@
 const appdmg = process.platform === 'darwin' ? require('appdmg') : undefined
-const msiPackager = require('msi-packager')
 const path = require('path')
 const fs = require('fs-extra')
 const childProcess = require('child_process')
 const TaskLogger = require('./TaskLogger')
 const uuid = require('uuid')
 const debianInstaller = require('nobin-debian-installer')
+const recursiveReaddir = require('recursive-readdir')
 const temp = require('temp')
 temp.track()
 
@@ -33,9 +33,9 @@ class Distribution {
       const distPath = path.join(ROOT_PATH, 'dist')
       const targetPath = path.join(distPath, filename)
       fs.mkdirsSync(distPath)
-      try {
-        fs.unlinkSync(targetPath)
-      } catch (ex) { /* no-op */ }
+      if (fs.existsSync(targetPath)) {
+        fs.removeSync(targetPath)
+      }
 
       const dmgCreate = appdmg({
         target: targetPath,
@@ -85,80 +85,70 @@ class Distribution {
       const distPath = path.join(ROOT_PATH, 'dist')
       const builtPath = path.join(ROOT_PATH, arch === ARCH.X64 ? 'WMail-win32-x64' : 'WMail-win32-ia32')
       const targetPath = path.join(distPath, filename)
+      const aipName = `WMail_${ARCH_FILENAME[arch]}.aip`
+      const aipPath = path.join(__dirname, 'msi', aipName)
 
-      // Clean-up old
-      try {
-        fs.unlinkSync(targetPath)
-      } catch (ex) { }
-
-      // Copy Across
+      // Clean-up old & Copy across
+      if (fs.existsSync(targetPath)) {
+        fs.removeSync(targetPath)
+      }
       try {
         fs.copySync(builtPath, targetPath)
+      } catch (ex) { task.fail(); reject(ex); return }
+
+      // Validate the installer file
+      recursiveReaddir(targetPath, (error, filePaths) => {
+        if (error) { task.fail(error); reject(error); return }
+        filePaths = filePaths.map((filePath) => path.relative(targetPath, filePath).split(path.sep).join('\\'))
+
+        const aipContent = fs.readFileSync(aipPath, 'utf8')
+        const missingAsset = filePaths.find((filePath) => aipContent.indexOf(filePath) === -1)
+        if (missingAsset) {
+          task.fail()
+          reject('Windows api is missing the following asset: ' + missingAsset)
+          return
+        }
+
+        const patchedAipContent = aipContent
+          .replace('__WMAIL_OUTPUTFILENAME__', filename)
+          .replace('__WMAIL_VERSION__', pkg.version)
+          .replace('__WMAIL_UPGRADECODE__', WINDOWS_UPGRADE_CODE)
+          .replace('__WMAIL_PRODUCTCODE__', uuid.v4().toUpperCase())
+
+        fs.copySync(path.join(__dirname, 'msi/installer_icon.ico'), path.join(targetPath, 'installer_icon.ico'))
+        fs.writeFileSync(path.join(targetPath, aipName), patchedAipContent)
+
         task.finish()
         resolve()
-      } catch (ex) {
-        task.fail()
-        reject(ex)
-      }
+      })
     })
   }
 
-  /*static distributeWindows (pkg, arch) {
+  /**
+  * Extracts the built windows MSI files
+  * @param pkg: the package info
+  * @param arch: one of 'x86' or 'x64'
+  * @return promise
+  */
+  static finaliseWindowsDistribution (pkg, arch) {
     return new Promise((resolve, reject) => {
-      const task = TaskLogger.start(`Windows MSI (${arch})`)
+      const task = TaskLogger.start(`Windows MSI Finalise (${arch})`)
 
-      // Pre-calc all the needed paths
       const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_windows_${ARCH_FILENAME[arch]}`
       const distPath = path.join(ROOT_PATH, 'dist')
-      const builtPath = path.join(ROOT_PATH, arch === ARCH.X64 ? 'WMail-win32-x64' : 'WMail-win32-ia32')
-      const msiTargetPath = path.join(distPath, filename + '.msi')
-      const zipTargetPath = path.join(distPath, filename + '.zip')
-      const zipExtraPaths = [
-        path.join(builtPath, 'LICENSE')
-      ].concat(
-        fs.readdirSync(path.join(builtPath, 'vendor-licenses')).map((f) => {
-          return path.join(builtPath, 'vendor-licenses', f)
-        })
-      )
+      const prepPath = path.join(distPath, filename)
+      const setupFilesPath = `WMail_${ARCH_FILENAME[arch]}-SetupFiles`
 
-      // Clean-up old
-      try {
-        fs.unlinkSync(msiTargetPath)
-      } catch (ex) {  }
-      try {
-        fs.unlinkSync(zipTargetPath)
-      } catch (ex) {  }
+      const msiPath = path.join(prepPath, setupFilesPath, filename + '.msi')
+      const outputPath = path.join(distPath, filename + '.msi')
 
-      // Package
-      msiPackager({
-        source: builtPath,
-        output: msiTargetPath,
-        name: 'WMail',
-        upgradeCode: WINDOWS_UPGRADE_CODE,
-        version: pkg.version,
-        manufacturer: 'http://thomas101.github.io/wmail',
-        iconPath: path.join(ROOT_PATH, 'assets/icons/app.ico'),
-        executable: 'WMail.exe',
-        arch: arch
-      }, (err) => {
-        if (err) { task.fail(); reject(err); return }
+      fs.copySync(msiPath, outputPath)
+      fs.removeSync(prepPath)
 
-        // Zip
-        const cmd = `zip -X -r -q -j "${zipTargetPath}" "${msiTargetPath}" ${zipExtraPaths.map((p) => '"' + p + '"').join(' ')}`
-        childProcess.exec(cmd, {}, (error, stdout, stderr) => {
-          if (error) { console.error(error) }
-          if (stdout) { console.log(`stdout: ${stdout}`) }
-          if (stderr) { console.log(`stderr: ${stderr}`) }
-
-          if (error) { task.fail(); reject(); return }
-
-          fs.unlinkSync(msiTargetPath)
-          task.finish()
-          resolve()
-        })
-      })
+      task.finish()
+      resolve()
     })
-  }*/
+  }
 
   /**
   * Distributes the app for linux
@@ -174,9 +164,9 @@ class Distribution {
       const targetPath = path.join(ROOT_PATH, 'dist', filename)
       const builtDirectory = arch === ARCH.X64 ? 'WMail-linux-x64' : 'WMail-linux-ia32'
 
-      try {
-        fs.unlinkSync(targetPath)
-      } catch (ex) { /* no-op */ }
+      if (fs.existsSync(targetPath)) {
+        fs.removeSync(targetPath)
+      }
 
       const cmd = `cd ${ROOT_PATH}; tar czf "${targetPath}" "${builtDirectory}"`
       childProcess.exec(cmd, {}, (error, stdout, stderr) => {
@@ -281,6 +271,24 @@ class Distribution {
           .then(() => Distribution.distributeLinuxDeb(pkg, ARCH.X86))
           .then(() => Distribution.distributeLinuxTar(pkg, ARCH.X64))
           .then(() => Distribution.distributeLinuxDeb(pkg, ARCH.X64))
+      } else {
+        return acc
+      }
+    }, Promise.resolve())
+  }
+
+  /**
+  * Finalises the distrubiton of the apps for the given platforms
+  * @param platforms: the platforms to finalise for
+  * @param pkg: the package info
+  * @return promise
+  */
+  static finaliseDistribute (platforms, pkg) {
+    return platforms.reduce((acc, platform) => {
+      if (platform === 'win32') {
+        return acc
+          .then(() => Distribution.finaliseWindowsDistribution(pkg, ARCH.X86))
+          .then(() => Distribution.finaliseWindowsDistribution(pkg, ARCH.X64))
       } else {
         return acc
       }
