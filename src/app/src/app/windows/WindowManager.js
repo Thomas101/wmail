@@ -102,16 +102,27 @@ class WindowManager {
   /**
   * Toggles the mailboxes window visibility by hiding or showing the mailboxes windoww
   */
-  toggleMailboxWindowVisibility () {
-    if (this.mailboxesWindow.isVisible()) {
-      if (this.focused() === this.mailboxesWindow) {
-        this.mailboxesWindow.hide()
+  toggleMailboxWindowVisibilityFromTray () {
+    if (process.platform === 'win32') {
+      // On windows clicking on non-window elements (e.g. tray) causes window
+      // to lose focus, so the window will never have focus
+      if (this.mailboxesWindow.isVisible()) {
+        this.mailboxesWindow.close()
       } else {
+        this.mailboxesWindow.show()
         this.mailboxesWindow.focus()
       }
     } else {
-      this.mailboxesWindow.show()
-      this.mailboxesWindow.focus()
+      if (this.mailboxesWindow.isVisible()) {
+        if (this.focused() === this.mailboxesWindow) {
+          this.mailboxesWindow.hide()
+        } else {
+          this.mailboxesWindow.focus()
+        }
+      } else {
+        this.mailboxesWindow.show()
+        this.mailboxesWindow.focus()
+      }
     }
   }
 
