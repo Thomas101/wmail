@@ -78,6 +78,33 @@ class Distribution {
   */
   static distributeWindows (pkg, arch) {
     return new Promise((resolve, reject) => {
+      const task = TaskLogger.start(`Windows MSI Prep (${arch})`)
+
+      // Pre-calc all the needed paths
+      const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_windows_${ARCH_FILENAME[arch]}`
+      const distPath = path.join(ROOT_PATH, 'dist')
+      const builtPath = path.join(ROOT_PATH, arch === ARCH.X64 ? 'WMail-win32-x64' : 'WMail-win32-ia32')
+      const targetPath = path.join(distPath, filename)
+
+      // Clean-up old
+      try {
+        fs.unlinkSync(targetPath)
+      } catch (ex) { }
+
+      // Copy Across
+      try {
+        fs.copySync(builtPath, targetPath)
+        task.finish()
+        resolve()
+      } catch (ex) {
+        task.fail()
+        reject(ex)
+      }
+    })
+  }
+
+  /*static distributeWindows (pkg, arch) {
+    return new Promise((resolve, reject) => {
       const task = TaskLogger.start(`Windows MSI (${arch})`)
 
       // Pre-calc all the needed paths
@@ -97,10 +124,10 @@ class Distribution {
       // Clean-up old
       try {
         fs.unlinkSync(msiTargetPath)
-      } catch (ex) { /* no-op */ }
+      } catch (ex) {  }
       try {
         fs.unlinkSync(zipTargetPath)
-      } catch (ex) { /* no-op */ }
+      } catch (ex) {  }
 
       // Package
       msiPackager({
@@ -131,7 +158,7 @@ class Distribution {
         })
       })
     })
-  }
+  }*/
 
   /**
   * Distributes the app for linux
