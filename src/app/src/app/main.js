@@ -151,6 +151,10 @@
     windowManager.focusMailboxesWindow()
   })
 
+  ipcMain.on('toggle-mailbox-focus', (evt, body) => {
+    windowManager.toggleMailboxWindowVisibility()
+  })
+
   ipcMain.on('quit-app', (evt, body) => {
     windowManager.quit()
   })

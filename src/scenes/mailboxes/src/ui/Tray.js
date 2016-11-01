@@ -35,7 +35,7 @@ module.exports = React.createClass({
     this.appTray = new Tray(nativeImage.createFromDataURL(BLANK_PNG))
     if (process.platform === 'win32') {
       this.appTray.on('double-click', () => {
-        ipcRenderer.send('focus-app')
+        ipcRenderer.send('toggle-mailbox-focus')
       })
     } else if (process.platform === 'linux') {
       // On platforms that have app indicator support - i.e. ubuntu clicking on the
@@ -43,7 +43,7 @@ module.exports = React.createClass({
       // menu is opened on right click. For app indicator platforms click event
       // is ignored
       this.appTray.on('click', () => {
-        ipcRenderer.send('focus-app')
+        ipcRenderer.send('toggle-mailbox-focus')
       })
     }
   },

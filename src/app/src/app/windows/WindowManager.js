@@ -89,15 +89,30 @@ class WindowManager {
   * Focuses the main mailboxes window and shows it if it's hidden
   */
   focusMailboxesWindow () {
-    if (this.focused()) {
-      // If there's already a focused window, do nothing
-      return
+    if (this.focused() === this.mailboxesWindow) {
+      return // If there's already a focused window, do nothing
     }
 
     if (!this.mailboxesWindow.isVisible()) {
       this.mailboxesWindow.show()
     }
     this.mailboxesWindow.focus()
+  }
+
+  /**
+  * Toggles the mailboxes window visibility by hiding or showing the mailboxes windoww
+  */
+  toggleMailboxWindowVisibility () {
+    if (this.mailboxesWindow.isVisible()) {
+      if (this.focused() === this.mailboxesWindow) {
+        this.mailboxesWindow.hide()
+      } else {
+        this.mailboxesWindow.focus()
+      }
+    } else {
+      this.mailboxesWindow.show()
+      this.mailboxesWindow.focus()
+    }
   }
 
   /* ****************************************************************************/
