@@ -6,7 +6,7 @@ const credentials = require('shared/credentials')
 const googleHTTP = require('./googleHTTP')
 const mailboxStore = require('../mailbox/mailboxStore')
 const mailboxActions = require('../mailbox/mailboxActions')
-const {Mailbox, Google} = require('shared/Models/Mailbox')
+const {Mailbox} = require('shared/Models/Mailbox')
 const {ipcRenderer} = window.nativeRequire('electron')
 const reporter = require('../../reporter')
 const {mailboxDispatch} = require('../../Dispatch')
@@ -248,7 +248,7 @@ class GoogleActions {
 
     const mailbox = mailboxStore.getState().getMailbox(mailboxId)
     const label = mailbox.google.unreadLabel
-    const unreadMode = mailbox.google.unreadMode
+    const mailboxType = mailbox.type
 
     const promise = Promise.resolve()
       .then(() => {
@@ -259,8 +259,8 @@ class GoogleActions {
             return googleHTTP.fetchMailboxLabel(auth, label)
           })
           .then(({ response }) => {
-            // Step 1.2: Some mailbox types need to update the response by what's in the UI
-            if (unreadMode === Google.UNREAD_MODES.PRIMARY_INBOX_UNREAD || unreadMode === Google.UNREAD_MODES.INBOX_UNREAD_IMPORTANT) {
+            // Step 1.2: Gmail works better with grabbing the unread count out of the UI. Inbox has to come off the api label
+            if (mailboxType === Mailbox.TYPE_GMAIL) {
               return Promise.resolve()
                 .then(() => mailboxDispatch.fetchGmailUnreadCountWithRetry(mailboxId, forceFullSync ? 30 : 5))
                 .then((count) => {
