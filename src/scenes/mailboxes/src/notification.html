@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title></title>
     <style>
+      /* Layout */
       html, body {
         margin: 0;
         padding: 0;
@@ -15,6 +16,13 @@
         position: relative;
         overflow: hidden;
       }
+      * {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      /* Icon */
       #app-icon {
         position: absolute;
         top: 0;
@@ -22,7 +30,7 @@
         left: 0;
         width: 45px;
       }
-      #app-icon-image {
+      #app-icon>.image {
         position: absolute;
         top: 10;
         bottom: 10;
@@ -33,42 +41,75 @@
         background-position: center;
         background-image: url("../../icons/app.svg");
       }
+
+      /* Controls */
       #close-button {
         position: absolute;
         top: 0;
-        bottom: 0;
         right: 0;
-        width: 30px;
-        text-align: center;
+        bottom: 0;
+        width: 20px;
         line-height: 65px;
         vertical-align: middle;
-        border-left: 1px solid #CCC;
+        font-size: 20px;
+        text-align: center;
+        color: rgb(64, 64, 63);
+        cursor: pointer;
       }
+
+      /* Content */
       #content {
         position: absolute;
         top: 0;
         bottom: 0;
         left: 45px;
-        right: 30px;
+        right: 20px;
+      }
+      #content>.title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 30px;
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 30px;
+        vertical-align: middle;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      #content>.body {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 30px;
+        font-size: 14px;
+        line-height: 17px;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     </style>
   </head>
   <body>
     <div id="app-icon">
-      <div id="app-icon-image"></div>
+      <div class="image"></div>
     </div>
     <div id="content">
-      <div id="title">Test title 1234 goes here and goes on and on about stuff</div>
-      <div id="body">Test body is here are it is my body and it is about some stuff and stuff and stuff that just seems to go on and on</div>
+      <div class="title">Test title 1234 goes here and goes on and on about stuff</div>
+      <div class="body">Test body is here are it is my body and it is about some stuff and stuff and stuff that just seems to go on and on</div>
     </div>
-    <div id="close-button">x</div>
+    <div id="close-button">×</div>
 
     <script type="text/javascript">
       const remote = require('electron').remote
       const screenSize = remote.screen.getPrimaryDisplay().workAreaSize
       const browserWindow = remote.getCurrentWindow()
-      browser.setSize(325, 65)
-      browser.setPosition(screenSize.width - browserWindow.getSize()[0] - 5, screenSize.height - browserWindow.getSize()[1] - 5)
+      const width = 325
+      const height = 65
+      browserWindow.setSize(width, height)
+      browserWindow.setPosition(screenSize.width - width - 5, 30)
     </script>
   </body>
 </html>

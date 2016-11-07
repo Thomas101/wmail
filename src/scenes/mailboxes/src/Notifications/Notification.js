@@ -26,6 +26,7 @@ class Notification {
     this.browserWindow.once('ready-to-show', () => {
       // this.browserWindow.webContents.executeJavaScript('document.body.textContent="test"')
       this.browserWindow.show()
+      this.browserWindow.webContents.openDevTools()
     })
 
     setTimeout(() => {

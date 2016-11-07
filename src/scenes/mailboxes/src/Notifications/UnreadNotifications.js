@@ -17,6 +17,7 @@ class UnreadNotifications {
     this.__constructTime__ = new Date().getTime()
     this.__dispatching__ = false
 // window.NNotification = require('./Notification')
+// window.nn = new window.NNotification()
   }
 
   /**
