@@ -343,7 +343,8 @@ class GoogleActions {
                     labelIds: message.labelIds,
                     payload: {
                       headers: message.payload.headers.filter((header) => {
-                        return header.name === 'Subject' || header.name === 'From' || header.name === 'To'
+                        const name = header.name.toLowerCase()
+                        return name === 'subject' || name === 'from' || name === 'to'
                       })
                     }
                   }

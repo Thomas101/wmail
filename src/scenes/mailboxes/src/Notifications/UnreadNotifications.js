@@ -75,8 +75,8 @@ class UnreadNotifications {
   * @return the notification
   */
   showNotification (mailbox, message) {
-    const subject = (message.payload.headers.find((h) => h.name === 'Subject') || {}).value || 'No Subject'
-    const fromEmail = (message.payload.headers.find((h) => h.name === 'From') || {}).value || ''
+    const subject = (message.payload.headers.find((h) => h.name.toLowerCase() === 'subject') || {}).value || 'No Subject'
+    const fromEmail = (message.payload.headers.find((h) => h.name.toLowerCase() === 'from') || {}).value || ''
 
     // Extract the body
     let snippet = 'No Body'
