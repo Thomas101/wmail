@@ -278,7 +278,7 @@ class GoogleActions {
             const mailbox = mailboxStore.getState().getMailbox(mailboxId)
             mailboxActions.setGoogleLabelInfo(mailboxId, response)
             return Promise.resolve({
-              changed: forceFullSync || mailbox.messagesTotal !== response.messagesTotal
+              changed: forceFullSync || mailbox.google.messagesTotal !== response.messagesTotal
             })
           })
       })
