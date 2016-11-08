@@ -15,11 +15,14 @@
         height: 65px;
         position: relative;
         overflow: hidden;
+        background-color: rgb(240, 240, 240);
+        color: rgb(77, 77, 77);
       }
       * {
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         user-select: none;
+        cursor: default;
       }
 
       /* Icon */
@@ -32,10 +35,10 @@
       }
       #app-icon>.image {
         position: absolute;
-        top: 10;
-        bottom: 10;
-        left: 5;
-        right: 5;
+        top: 10px;
+        bottom: 10px;
+        left: 5px;
+        right: 5px;
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
@@ -48,47 +51,43 @@
         top: 0;
         right: 0;
         bottom: 0;
-        width: 20px;
+        width: 25px;
         line-height: 65px;
         vertical-align: middle;
         font-size: 20px;
         text-align: center;
-        color: rgb(64, 64, 63);
+        color: rgb(190, 190, 190);
         cursor: pointer;
+      }
+      #close-button:active {
+        color: rgb(210, 210, 210);
       }
 
       /* Content */
       #content {
         position: absolute;
-        top: 0;
-        bottom: 0;
+        display: flex;
+        align-items: center;
+        top: 10px;
+        bottom: 10px;
         left: 45px;
-        right: 20px;
+        right: 25px;
+        font-size: 12px;
       }
-      #content>.title {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        height: 30px;
+      #content>.inner>.title, #content>.inner>.body {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      #content>.inner>.title {
+        -webkit-line-clamp: 1;
         font-weight: bold;
-        font-size: 16px;
-        line-height: 30px;
-        vertical-align: middle;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        line-height: 1.2em;
+        margin-bottom: 3px;
       }
-      #content>.body {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        top: 30px;
-        font-size: 14px;
-        line-height: 17px;
-        overflow: hidden;
-        text-overflow: ellipsis;
+      #content>.inner>.body {
+        -webkit-line-clamp: 2;
       }
     </style>
   </head>
@@ -97,8 +96,10 @@
       <div class="image"></div>
     </div>
     <div id="content">
-      <div class="title">Test title 1234 goes here and goes on and on about stuff</div>
-      <div class="body">Test body is here are it is my body and it is about some stuff and stuff and stuff that just seems to go on and on</div>
+      <div class="inner">
+        <div class="title"></div>
+        <div class="body"></div>
+      </div>
     </div>
     <div id="close-button">×</div>
 
@@ -109,7 +110,22 @@
       const width = 325
       const height = 65
       browserWindow.setSize(width, height)
-      browserWindow.setPosition(screenSize.width - width - 5, 30)
+      browserWindow.setPosition(screenSize.width - width - 10, 30)
+
+      window.renderNotification = (text, options) => {
+        document.querySelector('#content .title').textContent = text || ''
+        document.querySelector('#content .body').textContent = options.body || ''
+      }
+
+      document.getElementById('close-button').addEventListener('click', (evt) => {
+        evt.preventDefault()
+        browserWindow.close()
+        //TODO maybe propogate this to the main renderer?
+      }, false)
+      document.body.addEventListener('click', (evt) => {
+        evt.preventDefault()
+        //TODO handle main click event
+      }, false)
     </script>
   </body>
 </html>

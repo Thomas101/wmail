@@ -19,19 +19,17 @@ class Notification {
         nodeIntegration: true
       }
     })
-    console.log(__dirname)
-    const lp = 'file://' + path.join(path.dirname(window.location.href.replace('file://', '')), 'notification.html')
-    this.browserWindow.loadURL(lp)
-
+    const htmlPath = 'file://' + path.join(path.dirname(window.location.href.replace('file://', '')), 'notification.html')
+    this.browserWindow.loadURL(htmlPath)
     this.browserWindow.once('ready-to-show', () => {
-      // this.browserWindow.webContents.executeJavaScript('document.body.textContent="test"')
+      this.browserWindow.webContents.executeJavaScript(`window.renderNotification.apply(this, ${JSON.stringify([text, options])})`)
       this.browserWindow.show()
       this.browserWindow.webContents.openDevTools()
     })
 
     setTimeout(() => {
       this.close()
-    }, 30000)
+    }, 3000)
   }
 
   close () {

@@ -16,8 +16,10 @@ class UnreadNotifications {
     this.__s_mailboxesUpdated = (store) => this.mailboxesUpdated(store)
     this.__constructTime__ = new Date().getTime()
     this.__dispatching__ = false
-// window.NNotification = require('./Notification')
-// window.nn = new window.NNotification()
+ /* window.NNotification = require('./Notification')
+ window.nn = new window.NNotification('my test title', {
+   body: 'Test body is here are it is my body and it is about some stuff and stuff and stuff that just seems to go on and on'
+ }) */
   }
 
   /**
