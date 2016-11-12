@@ -127,6 +127,14 @@ module.exports = React.createClass({
               flux.settings.A.ignoreGPUBlacklist(toggled)
             }} />
           <Toggle
+            toggled={app.enableUseZoomForDSF}
+            label='Use Zoom For DSF (Requires Restart)'
+            labelPosition='right'
+            onToggle={(evt, toggled) => {
+              showRestart()
+              flux.settings.A.enableUseZoomForDSF(toggled)
+            }} />
+          <Toggle
             toggled={app.disableSmoothScrolling}
             label='Disable Smooth Scrolling (Requires Restart)'
             labelPosition='right'

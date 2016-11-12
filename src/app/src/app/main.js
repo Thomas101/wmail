@@ -42,6 +42,9 @@
   if (settingStore.app.disableSmoothScrolling) {
     app.commandLine.appendSwitch('disable-smooth-scrolling', 'true')
   }
+  if (!settingStore.app.enableUseZoomForDSF) {
+    app.commandLine.appendSwitch('enable-use-zoom-for-dsf', 'false')
+  }
   const openHidden = (function () {
     if (settingStore.ui.openHidden) { return true }
     if (process.platform === 'darwin' && app.getLoginItemSettings().wasOpenedAsHidden) { return true }

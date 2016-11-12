@@ -210,6 +210,13 @@ class SettingsActions {
   }
 
   /**
+  * @param enable: true to enable using zoom for dsf
+  */
+  enableUseZoomForDSF (enable) {
+    return this.update(SEGMENTS.APP, 'enableUseZoomForDSF', enable)
+  }
+
+  /**
   * @param disable: true to disable smooth scrolling
   */
   disableSmoothScrolling (disable) {
