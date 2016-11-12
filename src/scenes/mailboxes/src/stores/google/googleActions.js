@@ -259,16 +259,22 @@ class GoogleActions {
             return googleHTTP.fetchMailboxLabel(auth, label)
           })
           .then(({ response }) => {
-            // Step 1.2: Gmail works better with grabbing the unread count out of the UI. Inbox has to come off the api label
+            const mailbox = mailboxStore.getState().getMailbox(mailboxId)
+
+            // Step 1.2: Gmail can work better with grabbing the unread count out of the UI. Inbox has to come off the api label
             if (mailboxType === Mailbox.TYPE_GMAIL) {
-              return Promise.resolve()
-                .then(() => mailboxDispatch.fetchGmailUnreadCountWithRetry(mailboxId, forceFullSync ? 30 : 5))
-                .then((count) => {
-                  return Object.assign(response, {
-                    threadsUnread: count || 0,
-                    artificalThreadsUnread: true
+              if (mailbox.google.takeLabelCountFromUI) {
+                return Promise.resolve()
+                  .then(() => mailboxDispatch.fetchGmailUnreadCountWithRetry(mailboxId, forceFullSync ? 30 : 5))
+                  .then((count) => {
+                    return Object.assign(response, {
+                      threadsUnread: count || 0,
+                      artificalThreadsUnread: true
+                    })
                   })
-                })
+              } else {
+                return response
+              }
             } else {
               return response
             }

@@ -89,6 +89,16 @@ module.exports = React.createClass({
               primaryText='All Messages in inbox' />
           </SelectField>
         ) : undefined}
+        {mailbox.type === Mailbox.TYPE_GMAIL ? (
+          <Toggle
+            defaultToggled={mailbox.google.takeLabelCountFromUI}
+            label='Take unread count directly from Gmail UI'
+            labelPosition='right'
+            disabled={!mailbox.google.canChangeTakeLabelCountFromUI}
+            onToggle={(evt, toggled) => {
+              mailboxActions.updateGoogleConfig(this.props.mailbox.id, { takeLabelCountFromUI: toggled })
+            }} />
+        ) : undefined}
       </Paper>
     )
   }

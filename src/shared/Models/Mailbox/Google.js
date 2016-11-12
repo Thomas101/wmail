@@ -68,6 +68,25 @@ class Google extends Model {
     }
   }
 
+  get takeLabelCountFromUI () {
+    if (this.unreadMode === UNREAD_MODES.INBOX || this.unreadMode === UNREAD_MODES.INBOX_UNREAD) {
+      if (this.__data__.config.takeLabelCountFromUI === undefined) {
+        return false
+      } else {
+        return this.__data__.config.takeLabelCountFromUI
+      }
+    } else {
+      return true
+    }
+  }
+  get canChangeTakeLabelCountFromUI () {
+    if (this.unreadMode === UNREAD_MODES.INBOX || this.unreadMode === UNREAD_MODES.INBOX_UNREAD) {
+      return true
+    } else {
+      return false
+    }
+  }
+
   /* **************************************************************************/
   // Properties : Label info
   /* **************************************************************************/
