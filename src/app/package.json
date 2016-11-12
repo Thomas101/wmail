@@ -9,7 +9,7 @@
     "appdirectory": "0.1.0",
     "dictionary-en-us": "1.0.2",
     "fs-extra": "0.30.0",
-    "gmail-js": "0.5.2",
+    "gmail-js": "Thomas101/gmail.js#2fa5ecca2c36de698f13b9b2eb06d06b2af76e56",
     "googleapis": "14.1.0",
     "home-dir": "1.0.0",
     "https-proxy-agent": "1.0.0",
