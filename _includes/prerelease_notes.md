@@ -1,7 +1,5 @@
-This release contains a number of fixes over 2.0.5
+This releases contains a number of fixes over 2.0.6
 
-- Further fixes to unread counts, especially on Gmail accounts
-- Fixed parsing email subjects that would fail under certain circumstances
-- Clicking on the Tray icon now toggles the visibility of the app between shown and hidden for platforms that support it
-- Fixes to the windows installer that was silently quitting for some users
-- Reduced the binary file size by stripping out some platform specific code
+- Fixed unread count parsing for important inboxes displaying a dual count in Gmail
+- Option to take unread count directly from the gmail ui when using some unread modes
+- Possible fix for windows users having highlighting and display issues
