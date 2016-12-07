@@ -2,7 +2,7 @@
   "name": "wmail-app",
   "keywords": [],
   "author": "Thomas Beverley",
-  "license": "BSD-2-Clause",
+  "license": "MPL-2.0",
   "repository": "https://github.com/Thomas101/wmail",
   "description": "The mail app code for the WMail app",
   "dependencies": {
@@ -27,6 +27,6 @@
     "yargs": "6.2.0"
   },
   "devDependencies": {
-    "standard": "8.4.0"
+    "standard": "8.6.0"
   }
 }

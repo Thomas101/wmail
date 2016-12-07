@@ -126,7 +126,7 @@ module.exports = React.createClass({
                       value={m.id}
                       key={m.id}
                       primaryText={(m.email || m.name || m.id) + ' (' + m.typeName + ')'} />
-                    )
+                  )
                 })
               }
             </SelectField>

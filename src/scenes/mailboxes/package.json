@@ -1,7 +1,7 @@
 {
   "name": "wmail-scenes-mailboxes",
   "author": "Thomas Beverley",
-  "license": "BSD-2-Clause",
+  "license": "MPL-2.0",
   "repository": "https://github.com/Thomas101/wmail",
   "description": "The mailboxes window for the WMail app",
   "dependencies": {
@@ -22,6 +22,6 @@
     "uuid": "2.0.3"
   },
   "devDependencies": {
-    "standard": "8.4.0"
+    "standard": "8.6.0"
   }
 }
