@@ -1,6 +1,7 @@
 # WMail
 
 [![Join the chat at https://gitter.im/wmail-desktop/Lobby](https://badges.gitter.im/wmail-desktop/Lobby.svg)](https://gitter.im/wmail-desktop/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+![](https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg)
 [![Download](https://img.shields.io/github/downloads/Thomas101/wmail/total.svg)](https://github.com/Thomas101/wmail/releases)
 [![Travis Build Status](https://img.shields.io/travis/Thomas101/wmail.svg)](http://travis-ci.org/Thomas101/wmail)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
