@@ -4,7 +4,7 @@
   "prerelease": true,
   "description": "The missing desktop client for Gmail and Google Inbox",
   "scripts": {
-    "prestart": "webpack",
+    "prestart": "node -e 'console.log(\"\\033[31mWMail is now licensed under MPL2.0. For more information contact the author available in package.json\\033[0m\")'; webpack",
     "start": "electron bin/app/index.js",
     "test": "standard",
     "package:darwin": "node packager --platform=darwin",
@@ -27,7 +27,7 @@
     "url": "https://github.com/Thomas101/"
   },
   "homepage": "https://thomas101.github.io/wmail/",
-  "license": "BSD-2-Clause",
+  "license": "MPL-2.0",
   "repository": "https://github.com/Thomas101/wmail",
   "main": "bin/app/index.js",
   "optionalDependencies": {
