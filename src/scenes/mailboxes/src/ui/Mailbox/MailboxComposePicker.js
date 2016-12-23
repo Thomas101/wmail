@@ -99,7 +99,7 @@ module.exports = React.createClass({
     const { mailboxes } = this.state
     const mailboxState = mailboxStore.getState()
     const actions = (
-      <RaisedButton label='Cancel' onClick={() => composeActions.clearCompose} />
+      <RaisedButton label='Cancel' onClick={this.handleCancel} />
     )
 
     return (

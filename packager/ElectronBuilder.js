@@ -86,6 +86,9 @@ class ElectronBuilder {
           OriginalFilename: pkg.name,
           ProductName: 'WMail'
         },
+        'extend-info': {
+          'CFBundleURLSchemes': ['mailto']
+        },
         ignore: ElectronBuilder.packagerIgnoreString(platform, arch)
       }, function (err, appPath) {
         if (err) {

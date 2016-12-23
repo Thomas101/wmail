@@ -13,6 +13,18 @@ class PlatformActions {
   changeLoginPref (openAtLogin, openAsHidden) {
     return { openAtLogin: openAtLogin, openAsHidden: openAsHidden }
   }
+
+  /* **************************************************************************/
+  // Mailto
+  /* **************************************************************************/
+
+  /**
+  * Sets if the app is the default mailto link handler
+  * @param isCurrentApp: true if this is the handler
+  */
+  changeMailtoLinkHandler (isCurrentApp) {
+    return { isCurrentApp: isCurrentApp }
+  }
 }
 
 module.exports = alt.createActions(PlatformActions)

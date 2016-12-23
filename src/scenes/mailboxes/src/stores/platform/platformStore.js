@@ -70,10 +70,31 @@ class PlatformStore {
     }
 
     /* ****************************************/
+    // Default Mail handler
+    /* ****************************************/
+
+    /**
+    * @return true if the platform supports mailto
+    */
+    this.mailtoLinkHandlerSupported = () => { return process.platform === 'darwin' || process.platform === 'win32' }
+
+    /**
+    * @return true if this app is the default mailto link handler
+    */
+    this.isMailtoLinkHandler = () => {
+      if (process.platform === 'darwin' || process.platform === 'win32') {
+        return remote.app.isDefaultProtocolClient('mailto')
+      } else {
+        return false
+      }
+    }
+
+    /* ****************************************/
     // Listeners
     /* ****************************************/
     this.bindListeners({
-      handleChangeLoginPref: actions.CHANGE_LOGIN_PREF
+      handleChangeLoginPref: actions.CHANGE_LOGIN_PREF,
+      handleChangeMailtoLinkHandler: actions.CHANGE_MAILTO_LINK_HANDLER
     })
   }
 
@@ -137,6 +158,18 @@ class PlatformStore {
           }
         })
       }
+    }
+  }
+
+  /* **************************************************************************/
+  // Handlers: Mailto
+  /* **************************************************************************/
+
+  handleChangeMailtoLinkHandler ({ isCurrentApp }) {
+    if (isCurrentApp) {
+      remote.app.setAsDefaultProtocolClient('mailto')
+    } else {
+      remote.app.removeAsDefaultProtocolClient('mailto')
     }
   }
 }

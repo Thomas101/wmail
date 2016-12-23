@@ -11,6 +11,7 @@ const NotificationSettingsSection = require('./General/NotificationSettingsSecti
 const TraySettingsSection = require('./General/TraySettingsSection')
 const UISettingsSection = require('./General/UISettingsSection')
 const InfoSettingsSection = require('./General/InfoSettingsSection')
+const PlatformSettingsSection = require('./General/PlatformSettingsSection')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -62,7 +63,9 @@ module.exports = React.createClass({
     return {
       openAtLoginSupported: store.loginPrefSupported(),
       openAtLogin: loginPref.openAtLogin,
-      openAsHiddenAtLogin: loginPref.openAsHidden
+      openAsHiddenAtLogin: loginPref.openAsHidden,
+      mailtoLinkHandlerSupported: store.mailtoLinkHandlerSupported(),
+      isMailtoLinkHandler: store.isMailtoLinkHandler()
     }
   },
 
@@ -86,7 +89,17 @@ module.exports = React.createClass({
   * Renders the app
   */
   render () {
-    const {ui, os, language, tray, openAtLoginSupported, openAtLogin, openAsHiddenAtLogin} = this.state
+    const {
+      ui,
+      os,
+      language,
+      tray,
+      openAtLoginSupported,
+      openAtLogin,
+      openAsHiddenAtLogin,
+      mailtoLinkHandlerSupported,
+      isMailtoLinkHandler
+    } = this.state
     const {showRestart, ...passProps} = this.props
 
     return (
@@ -97,15 +110,18 @@ module.exports = React.createClass({
               <UISettingsSection
                 ui={ui}
                 os={os}
-                showRestart={showRestart}
-                openAtLoginSupported={openAtLoginSupported}
-                openAtLogin={openAtLogin}
-                openAsHiddenAtLogin={openAsHiddenAtLogin} />
+                showRestart={showRestart} />
               <NotificationSettingsSection os={os} />
               <DownloadSettingsSection os={os} />
               <LanguageSettingsSection language={language} showRestart={showRestart} />
             </Col>
             <Col md={6}>
+              <PlatformSettingsSection
+                mailtoLinkHandlerSupported={mailtoLinkHandlerSupported}
+                isMailtoLinkHandler={isMailtoLinkHandler}
+                openAtLoginSupported={openAtLoginSupported}
+                openAtLogin={openAtLogin}
+                openAsHiddenAtLogin={openAsHiddenAtLogin} />
               <TraySettingsSection tray={tray} />
               <InfoSettingsSection />
             </Col>

@@ -49,7 +49,7 @@ class ComposeActions {
     if (mailtoLink.indexOf('mailto:') === 0) {
       const uri = URI(mailtoLink || '')
       const qs = uri.search(true)
-      return this.composeNewMessage(uri.pathname(), qs.subject, qs.body)
+      return this.composeNewMessage(uri.pathname(), qs.subject || qs.Subject, qs.body || qs.Body)
     } else {
       return { valid: false }
     }

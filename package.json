@@ -5,7 +5,7 @@
   "description": "The missing desktop client for Gmail and Google Inbox",
   "scripts": {
     "prestart": "node -e 'console.log(\"\\033[31mWMail is now licensed under MPL2.0. More information available in package.json\\033[0m\")'; webpack",
-    "start": "electron bin/app/index.js",
+    "start": "electron bin/app/index.js mailto:someone@example.com?Subject=Hello%20again",
     "test": "standard",
     "package:darwin": "node packager --platform=darwin",
     "package:linux": "node packager --platform=linux",

@@ -11,6 +11,11 @@
         if (argv.mailto) {
           windowManager.mailboxesWindow.openMailtoLink(argv.mailto)
         }
+        const index = argv._.findIndex((a) => a.indexOf('mailto') === 0)
+        if (index !== -1) {
+          windowManager.mailboxesWindow.openMailtoLink(argv._[index])
+          argv._.splice(1)
+        }
         windowManager.mailboxesWindow.show()
         windowManager.mailboxesWindow.focus()
       }
@@ -178,6 +183,12 @@
     if (argv.mailto) {
       windowManager.mailboxesWindow.openMailtoLink(argv.mailto)
       delete argv.mailto
+    } else {
+      const index = argv._.findIndex((a) => a.indexOf('mailto') === 0)
+      if (index !== -1) {
+        windowManager.mailboxesWindow.openMailtoLink(argv._[index])
+        argv._.splice(1)
+      }
     }
   })
 
@@ -200,6 +211,11 @@
 
   app.on('before-quit', () => {
     windowManager.forceQuit = true
+  })
+
+  app.on('open-url', (evt, url) => { // osx only
+    evt.preventDefault()
+    windowManager.mailboxesWindow.openMailtoLink(url)
   })
 
   /* ****************************************************************************/
