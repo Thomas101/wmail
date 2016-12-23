@@ -49,22 +49,24 @@ class UnreadNotifications {
   mailboxesUpdated (store) {
     if (this.__dispatching__) { return }
     if (flux.settings.S.getState().os.notificationsEnabled === false) { return }
-    const firstRun = new Date().getTime() - this.__constructTime__ < constants.GMAIL_NOTIFICATION_FIRST_RUN_GRACE_MS
+    const now = new Date().getTime()
+    const firstRun = now - this.__constructTime__ < constants.GMAIL_NOTIFICATION_FIRST_RUN_GRACE_MS
 
     store.allMailboxes().forEach((mailbox, k) => {
       if (!mailbox.showNotifications) { return }
+
       const lastInternalDate = mailbox.google.unnotifiedMessages.reduce((acc, message) => {
-        if (!firstRun) {
+        const messageDate = parseInt(message.internalDate)
+        const messageAge = now - messageDate
+
+        if (!firstRun && messageAge < constants.GMAIL_NOTIFICATION_MAX_MESSAGE_AGE_MS) {
           this.showNotification(mailbox, message)
         }
-        if (acc === undefined) {
-          return parseInt(message.internalDate)
-        } else {
-          return parseInt(message.internalDate) > acc ? parseInt(message.internalDate) : acc
-        }
-      }, undefined)
 
-      if (lastInternalDate !== undefined) {
+        return messageDate > acc ? messageDate : acc
+      }, 0)
+
+      if (lastInternalDate !== 0) {
         flux.mailbox.A.setGoogleLastNotifiedInternalDate.defer(mailbox.id, lastInternalDate)
       }
     })
