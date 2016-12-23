@@ -7,24 +7,24 @@
   "description": "The mail app code for the WMail app",
   "dependencies": {
     "appdirectory": "0.1.0",
-    "dictionary-en-us": "1.0.2",
-    "fs-extra": "0.30.0",
-    "gmail-js": "Thomas101/gmail.js#2fa5ecca2c36de698f13b9b2eb06d06b2af76e56",
-    "googleapis": "14.1.0",
+    "dictionary-en-us": "1.2.0",
+    "fs-extra": "1.0.0",
+    "gmail-js": "0.6.7",
+    "googleapis": "15.0.0",
     "home-dir": "1.0.0",
     "https-proxy-agent": "1.0.0",
     "jquery": "3.1.1",
     "minivents": "2.0.2",
     "mkdirp": "0.5.1",
     "node-fetch": "1.6.3",
-    "os-locale": "1.4.0",
-    "request": "2.75.0",
+    "os-locale": "2.0.0",
+    "request": "2.79.0",
     "unused-filename": "0.1.0",
-    "uuid": "2.0.3",
+    "uuid": "3.0.1",
     "windows-shortcuts": "Thomas101/windows-shortcuts#0.1.4",
     "wmail-spellchecker": "Thomas101/wmail-spellchecker#1.0.4",
     "write-file-atomic": "1.2.0",
-    "yargs": "6.2.0"
+    "yargs": "6.5.0"
   },
   "devDependencies": {
     "standard": "8.6.0"
