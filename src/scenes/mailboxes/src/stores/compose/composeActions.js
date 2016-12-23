@@ -43,12 +43,16 @@ class ComposeActions {
 
   /**
   * Opens a mailto link
-  * @param mailtoLink: the link to try to open
+  * @param mailtoLink='': the link to try to open
   */
-  processMailtoLink (mailtoLink) {
-    const uri = URI(mailtoLink || '')
-    const qs = uri.search(true)
-    return this.composeNewMessage(uri.pathname(), qs.subject, qs.body)
+  processMailtoLink (mailtoLink = '') {
+    if (mailtoLink.indexOf('mailto:') === 0) {
+      const uri = URI(mailtoLink || '')
+      const qs = uri.search(true)
+      return this.composeNewMessage(uri.pathname(), qs.subject, qs.body)
+    } else {
+      return { valid: false }
+    }
   }
 }
 
