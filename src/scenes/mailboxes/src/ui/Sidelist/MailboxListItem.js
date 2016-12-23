@@ -257,11 +257,12 @@ module.exports = React.createClass({
       if (mailbox.hasCustomAvatar) {
         innerElement = (
           <img
+            draggable={false}
             className='avatar'
             src={flux.mailbox.S.getState().getAvatar(mailbox.customAvatarId)} />
         )
       } else {
-        innerElement = <img className='avatar' src={mailbox.avatarURL} />
+        innerElement = <img className='avatar' src={mailbox.avatarURL} draggable={false} />
       }
     } else {
       containerProps.className += ' index'
