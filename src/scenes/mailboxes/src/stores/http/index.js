@@ -1,4 +1,6 @@
 module.exports = {
   A: require('./httpActions'),
-  S: require('./httpStore')
+  httpActions: require('./httpActions'),
+  S: require('./httpStore'),
+  httpStore: require('./httpStore')
 }

@@ -5,6 +5,7 @@ import './appContent.less'
 
 const React = require('react')
 const MailboxWindows = require('./Mailbox/MailboxWindows')
+const MailboxComposePicker = require('./Mailbox/MailboxComposePicker')
 const Sidelist = require('./Sidelist')
 const shallowCompare = require('react-addons-shallow-compare')
 const SettingsDialog = require('./Settings/SettingsDialog')
@@ -99,6 +100,7 @@ module.exports = React.createClass({
           initialRoute={this.state.settingsRoute} />
         <DictionaryInstallHandler />
         <UpdateCheckDialog />
+        <MailboxComposePicker />
       </div>
     )
   }

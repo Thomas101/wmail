@@ -1,9 +1,8 @@
 const React = require('react')
-const flux = {
-  mailbox: require('../../stores/mailbox'),
-  google: require('../../stores/google'),
-  settings: require('../../stores/settings')
-}
+const { mailboxStore, mailboxActions } = require('../../stores/mailbox')
+const { googleStore, googleActions } = require('../../stores/google')
+const { settingsStore } = require('../../stores/settings')
+const { composeStore, composeActions } = require('../../stores/compose')
 const {
   remote: {shell}, ipcRenderer
 } = window.nativeRequire('electron')
@@ -36,8 +35,9 @@ module.exports = React.createClass({
     this.gmailCountPromises = {}
 
     // Stores
-    flux.mailbox.S.listen(this.mailboxesChanged)
-    flux.settings.S.listen(this.settingsChanged)
+    mailboxStore.listen(this.mailboxesChanged)
+    settingsStore.listen(this.settingsChanged)
+    composeStore.listen(this.composeChanged)
 
     // Handle dispatch events
     mailboxDispatch.on('devtools', this.handleOpenDevTools)
@@ -55,12 +55,16 @@ module.exports = React.createClass({
     if (this.state.isActive) {
       this.setTimeout(() => { this.refs.browser.focus() })
     }
+
+    // Fire an artifical compose change in case the compose event is waiting
+    this.composeChanged(composeStore.getState())
   },
 
   componentWillUnmount () {
     // Stores
-    flux.mailbox.S.unlisten(this.mailboxesChanged)
-    flux.settings.S.unlisten(this.settingsChanged)
+    mailboxStore.unlisten(this.mailboxesChanged)
+    settingsStore.unlisten(this.settingsChanged)
+    composeStore.unlisten(this.composeChanged)
 
     // Handle dispatch events
     mailboxDispatch.off('devtools', this.handleOpenDevTools)
@@ -91,31 +95,34 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState (props = this.props) {
-    const mailboxStore = flux.mailbox.S.getState()
-    const mailbox = mailboxStore.getMailbox(props.mailboxId)
-    const settingStore = flux.settings.S.getState()
+    const mailboxState = mailboxStore.getState()
+    const mailbox = mailboxState.getMailbox(props.mailboxId)
+    const settingState = settingsStore.getState()
     return {
       mailbox: mailbox,
-      isActive: mailboxStore.activeMailboxId() === props.mailboxId,
-      isSearching: mailboxStore.isSearchingMailbox(props.mailboxId),
+      mailboxCount: mailboxState.mailboxCount(),
+      isActive: mailboxState.activeMailboxId() === props.mailboxId,
+      isSearching: mailboxState.isSearchingMailbox(props.mailboxId),
       browserSrc: mailbox.url,
-      language: settingStore.language,
-      ui: settingStore.ui,
+      language: settingState.language,
+      ui: settingState.ui,
+      os: settingState.os,
       focusedUrl: null
     }
   },
 
-  mailboxesChanged (store) {
-    const mailbox = store.getMailbox(this.props.mailboxId)
+  mailboxesChanged (mailboxState) {
+    const mailbox = mailboxState.getMailbox(this.props.mailboxId)
     if (mailbox) {
       // Precompute
       const zoomChanged = this.state.mailbox.zoomFactor !== mailbox.zoomFactor
-      const isSearching = store.isSearchingMailbox(this.props.mailboxId)
+      const isSearching = mailboxState.isSearchingMailbox(this.props.mailboxId)
 
       // Set the state
       this.setState({
         mailbox: mailbox,
-        isActive: store.activeMailboxId() === this.props.mailboxId,
+        mailboxCount: mailboxState.mailboxCount(),
+        isActive: mailboxState.activeMailboxId() === this.props.mailboxId,
         isSearching: isSearching,
         browserSrc: mailbox.url
       })
@@ -125,18 +132,24 @@ module.exports = React.createClass({
         this.refs.browser.setZoomLevel(mailbox.zoomFactor)
       }
     } else {
-      this.setState({ mailbox: null })
+      this.setState({
+        mailbox: null,
+        mailboxCount: mailboxState.mailboxCount()
+      })
     }
   },
 
-  settingsChanged (store) {
-    const updates = {}
+  settingsChanged (settingsState) {
+    const updates = {
+      os: settingsState.os
+    }
+
     // Not strictly the react way to do this here, but we need a point to push
     // changes down to the webview and this seems like the most sensible place
     // to do that
-    if (store.language !== this.state.language) {
+    if (settingsState.language !== this.state.language) {
       const prevLanguage = this.state.language
-      const nextLanguage = store.language
+      const nextLanguage = settingsState.language
 
       if (prevLanguage.spellcheckerLanguage !== nextLanguage.spellcheckerLanguage || prevLanguage.secondarySpellcheckerLanguage !== nextLanguage.secondarySpellcheckerLanguage) {
         this.refs.browser.send('start-spellcheck', {
@@ -148,16 +161,27 @@ module.exports = React.createClass({
       updates.language = nextLanguage
     }
 
-    if (store.ui !== this.state.ui) {
+    if (settingsState.ui !== this.state.ui) {
       this.refs.browser.send('window-icons-in-screen', {
-        inscreen: !store.ui.sidebarEnabled && !store.ui.showTitlebar && process.platform === 'darwin'
+        inscreen: !settingsState.ui.sidebarEnabled && !settingsState.ui.showTitlebar && process.platform === 'darwin'
       })
 
-      updates.ui = store.ui
+      updates.ui = settingsState.ui
     }
 
     if (Object.keys(updates).length) {
       this.setState(updates)
+    }
+  },
+
+  composeChanged (composeState) {
+    // Look to see if we should dispatch a compose event down to the UI
+    // We clear this directly here rather resetting state
+    if (composeState.composing) {
+      if (this.state.mailboxCount === 1 || composeState.targetMailbox === this.props.mailboxId) {
+        this.refs.browser.send('compose-message', composeState.getMessageInfo())
+        composeActions.clearCompose.defer()
+      }
     }
   },
 
@@ -297,8 +321,10 @@ module.exports = React.createClass({
   * @param evt: the event that fired
   */
   handleWebViewUnreadCountChange (evt) {
-    if (!flux.google.S.getState().hasOpenUnreadCountRequest(this.state.mailbox.id)) {
-      flux.google.A.syncMailboxUnreadCount(this.state.mailbox.id)
+    // @future: I shouldn't be in here. This is stateful logic in a component.
+    // Refactor the google store actions to be in the store so that can handle this
+    if (!googleStore.getState().hasOpenUnreadCountRequest(this.state.mailbox.id)) {
+      googleActions.syncMailboxUnreadCount(this.state.mailbox.id)
     }
   },
 
@@ -354,7 +380,7 @@ module.exports = React.createClass({
 
     switch (mode) {
       case 'external':
-        shell.openExternal(url, { activate: !flux.settings.S.getState().os.openLinksInBackground })
+        shell.openExternal(url, { activate: !this.state.os.openLinksInBackground })
         break
       case 'source':
         this.setState({ browserSrc: url })
@@ -412,7 +438,7 @@ module.exports = React.createClass({
   * Handles cancelling searching
   */
   handleSearchCancel () {
-    flux.mailbox.A.stopSearchingMailbox(this.props.mailboxId)
+    mailboxActions.stopSearchingMailbox(this.props.mailboxId)
     this.refs.browser.stopFindInPage('clearSelection')
   },
 

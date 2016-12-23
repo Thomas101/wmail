@@ -1,4 +1,6 @@
 module.exports = {
   A: require('./platformActions'),
-  S: require('./platformStore')
+  platformActions: require('./platformActions'),
+  S: require('./platformStore'),
+  platformStore: require('./platformStore')
 }

@@ -41,6 +41,11 @@ class MailboxStore {
     */
     this.getMailbox = (id) => { return this.mailboxes.get(id) || null }
 
+    /**
+    * @return the count of mailboxes
+    */
+    this.mailboxCount = () => { return this.mailboxes.size }
+
     /* ****************************************/
     // Avatar
     /* ****************************************/

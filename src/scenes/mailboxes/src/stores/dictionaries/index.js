@@ -1,4 +1,6 @@
 module.exports = {
   A: require('./dictionariesActions'),
-  S: require('./dictionariesStore')
+  dictionariesActions: require('./dictionariesActions'),
+  S: require('./dictionariesStore'),
+  dictionariesStore: require('./dictionariesStore')
 }

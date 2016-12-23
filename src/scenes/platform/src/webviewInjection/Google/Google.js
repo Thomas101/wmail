@@ -5,6 +5,7 @@ const {ipcRenderer} = require('electron')
 const GoogleWindowOpen = require('./GoogleWindowOpen')
 const path = require('path')
 const fs = require('fs')
+const escapeHTML = require('../../../../app/node_modules/escape-html')
 const GmailChangeEmitter = require('./GmailChangeEmitter')
 const GinboxChangeEmitter = require('./GinboxChangeEmitter')
 
@@ -46,8 +47,14 @@ class Google {
     ipcRenderer.on('open-message', this.handleOpenMesage.bind(this))
     ipcRenderer.on('get-gmail-unread-count', this.handleFetchUnreadCount.bind(this))
 
-    if (this.isGmail) { this.loadGmailAPI() }
-    if (this.isGinbox) { this.loadInboxAPI() }
+    if (this.isGmail) {
+      this.loadGmailAPI()
+      ipcRenderer.on('compose-message', this.handleComposeMessageGmail.bind(this))
+    }
+    if (this.isGinbox) {
+      this.loadInboxAPI()
+      ipcRenderer.on('compose-message', this.handleComposeMessageGinbox.bind(this))
+    }
   }
 
   /* **************************************************************************/
@@ -129,6 +136,98 @@ class Google {
       type: data.__respond__,
       data: {
         count: !this.gmailApi ? undefined : this.gmailApi.get.unread_inbox_emails()
+      }
+    })
+  }
+
+  /**
+  * Handles opening the compose ui and prefills relevant items
+  * @param evt: the event that fired
+  * @param data: the data that was sent with the event
+  */
+  handleComposeMessageGmail (evt, data) {
+    if (!this.gmailApi) { return }
+
+    this.gmailApi.compose.start_compose()
+
+    if (data.recipient || data.subject || data.body) {
+      setTimeout(() => {
+        // Grab elements
+        const subjectEl = Array.from(document.querySelectorAll('[name="subjectbox"]')).slice(-1)[0]
+        if (!subjectEl) { return }
+        const dialogEl = subjectEl.closest('[role="dialog"]')
+        if (!dialogEl) { return }
+        const bodyEl = dialogEl.querySelector('[g_editable="true"][role="textbox"]')
+        const recipientEl = dialogEl.querySelector('[name="to"]')
+        let focusableEl
+
+        // Recipient
+        if (data.recipient && recipientEl) {
+          recipientEl.value = escapeHTML(data.recipient)
+          focusableEl = subjectEl
+        }
+
+        // Subject
+        if (data.subject && subjectEl) {
+          subjectEl.value = escapeHTML(data.subject)
+          focusableEl = bodyEl
+        }
+
+        // Body
+        if (data.body && bodyEl) {
+          bodyEl.innerHTML = escapeHTML(data.body) + bodyEl.innerHTML
+          focusableEl = bodyEl
+        }
+
+        if (focusableEl) {
+          setTimeout(() => focusableEl.focus(), 500)
+        }
+      })
+    }
+  }
+
+  /**
+  * Handles opening the compose ui and prefills relevant items
+  * @param evt: the event that fired
+  * @param data: the data that was sent with the event
+  */
+  handleComposeMessageGinbox (evt, data) {
+    const composeButton = document.querySelector('button.y.hC') || document.querySelector('[jsaction="jsl._"]')
+    if (!composeButton) { return }
+    composeButton.click()
+
+    setTimeout(() => {
+      // Grab elements
+      const bodyEl = document.querySelector('[g_editable="true"][role="textbox"]')
+      if (!bodyEl) { return }
+      const dialogEl = bodyEl.closest('[role="dialog"]')
+      if (!dialogEl) { return }
+      const recipientEl = dialogEl.querySelector('input') // first input
+      const subjectEl = dialogEl.querySelector('[jsaction*="subject"]')
+      let focusableEl
+
+      // Recipient
+      if (data.recipient && recipientEl) {
+        recipientEl.value = escapeHTML(data.recipient)
+        focusableEl = subjectEl
+      }
+
+      // Subject
+      if (data.subject && subjectEl) {
+        subjectEl.value = escapeHTML(data.subject)
+        focusableEl = bodyEl
+      }
+
+      // Body
+      if (data.body && bodyEl) {
+        bodyEl.innerHTML = escapeHTML(data.body) + bodyEl.innerHTML
+        const labelEl = bodyEl.parentElement.querySelector('label')
+        if (labelEl) { labelEl.style.display = 'none' }
+        focusableEl = bodyEl
+      }
+
+      if (focusableEl) {
+        setTimeout(() => focusableEl.focus(), 500)
       }
     })
   }

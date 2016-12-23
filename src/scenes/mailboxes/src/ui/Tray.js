@@ -1,10 +1,10 @@
 const electron = window.nativeRequire('electron')
 const { ipcRenderer, remote } = electron
-const {Tray, Menu, nativeImage} = remote
+const { Tray, Menu, nativeImage } = remote
 const React = require('react')
-const {mailboxDispatch} = require('../Dispatch')
-const mailboxActions = require('../stores/mailbox/mailboxActions')
-const mailboxStore = require('../stores/mailbox/mailboxStore')
+const { mailboxDispatch } = require('../Dispatch')
+const { mailboxActions, mailboxStore } = require('../stores/mailbox')
+const { composeActions } = require('../stores/compose')
 const { BLANK_PNG } = require('shared/b64Assets')
 const { TrayRenderer } = require('../Components')
 
@@ -161,17 +161,36 @@ module.exports = React.createClass({
 
     // Build the template
     let template = [
+      {
+        label: 'Compose New Message',
+        click: (e) => {
+          ipcRenderer.send('focus-app')
+          composeActions.composeNewMessage()
+        }
+      },
       { label: this.renderTooltip(), enabled: false },
       { type: 'separator' }
     ]
+
     if (unreadItems.length) {
       template = template.concat(unreadItems)
       template.push({ type: 'separator' })
     }
+
     template = template.concat([
-      { label: 'Show / Hide', click: (e) => ipcRenderer.send('toggle-mailbox-visibility-from-tray') },
+      {
+        label: 'Show / Hide',
+        click: (e) => {
+          ipcRenderer.send('toggle-mailbox-visibility-from-tray')
+        }
+      },
       { type: 'separator' },
-      { label: 'Quit', click: (e) => ipcRenderer.send('quit-app') }
+      {
+        label: 'Quit',
+        click: (e) => {
+          ipcRenderer.send('quit-app')
+        }
+      }
     ])
 
     return Menu.buildFromTemplate(template)
