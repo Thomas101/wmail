@@ -5,6 +5,8 @@ const {ipcRenderer} = require('electron')
 const GoogleWindowOpen = require('./GoogleWindowOpen')
 const path = require('path')
 const fs = require('fs')
+const GmailChangeEmitter = require('./GmailChangeEmitter')
+const GinboxChangeEmitter = require('./GinboxChangeEmitter')
 
 class Google {
 
@@ -44,9 +46,8 @@ class Google {
     ipcRenderer.on('open-message', this.handleOpenMesage.bind(this))
     ipcRenderer.on('get-gmail-unread-count', this.handleFetchUnreadCount.bind(this))
 
-    if (this.isGmail) {
-      this.loadGmailAPI()
-    }
+    if (this.isGmail) { this.loadGmailAPI() }
+    if (this.isGinbox) { this.loadInboxAPI() }
   }
 
   /* **************************************************************************/
@@ -73,7 +74,17 @@ class Google {
     injector.injectJavaScript(fs.readFileSync(apiPath, 'utf8'), () => {
       this.gmailApi = new window.Gmail()
       this.googleWindowOpen.gmailApi = this.gmailApi
+      this.gmailApi.observe.on('load', () => {
+        this.changeEmitter = new GmailChangeEmitter(this.gmailApi)
+      })
     })
+  }
+
+  /**
+  * Loads the inbox API
+  */
+  loadInboxAPI () {
+    this.changeEmitter = new GinboxChangeEmitter()
   }
 
   /* **************************************************************************/

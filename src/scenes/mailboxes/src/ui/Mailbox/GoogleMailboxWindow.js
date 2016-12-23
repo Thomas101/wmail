@@ -238,7 +238,7 @@ module.exports = React.createClass({
   */
   dispatchBrowserIPCMessage (evt) {
     switch (evt.channel.type) {
-      case 'page-click': this.handleBrowserPageClick(evt); break
+      case 'unread-count-changed': this.handleWebViewUnreadCountChange(evt); break
       case 'open-settings': navigationDispatch.openSettings(); break
       case 'js-new-window': this.handleBrowserJSNewWindow(evt); break
       default: break
@@ -293,10 +293,10 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   /**
-  * Handles a browser receiving a click in the window
+  * Handles the webview indicating the unread count may have changed
   * @param evt: the event that fired
   */
-  handleBrowserPageClick (evt) {
+  handleWebViewUnreadCountChange (evt) {
     if (!flux.google.S.getState().hasOpenUnreadCountRequest(this.state.mailbox.id)) {
       flux.google.A.syncMailboxUnreadCount(this.state.mailbox.id)
     }
