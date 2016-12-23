@@ -8,6 +8,9 @@
       if (argv.hidden || argv.hide) {
         windowManager.mailboxesWindow.hide()
       } else {
+        if (argv.mailto) {
+          windowManager.mailboxesWindow.openMailtoLink(argv.mailto)
+        }
         windowManager.mailboxesWindow.show()
         windowManager.mailboxesWindow.focus()
       }
@@ -169,6 +172,13 @@
 
   ipcMain.on('prepare-webview-session', (evt, data) => {
     mailboxesWindow.sessionManager.startManagingSession(data.partition)
+  })
+
+  ipcMain.on('mailboxes-js-loaded', (evt, data) => {
+    if (argv.mailto) {
+      windowManager.mailboxesWindow.openMailtoLink(argv.mailto)
+      delete argv.mailto
+    }
   })
 
   /* ****************************************************************************/

@@ -1,6 +1,16 @@
 const alt = require('../alt')
+const { ipcRenderer } = window.nativeRequire('electron')
+const URI = require('urijs')
 
 class ComposeActions {
+
+  /* **************************************************************************/
+  // Lifecycle
+  /* **************************************************************************/
+
+  load () {
+    return {}
+  }
 
   /* **************************************************************************/
   // New Message
@@ -30,6 +40,18 @@ class ComposeActions {
   setTargetMailbox (mailboxId) {
     return { mailboxId: mailboxId }
   }
+
+  /**
+  * Opens a mailto link
+  * @param mailtoLink: the link to try to open
+  */
+  processMailtoLink (mailtoLink) {
+    const uri = URI(mailtoLink || '')
+    const qs = uri.search(true)
+    return this.composeNewMessage(uri.pathname(), qs.subject, qs.body)
+  }
 }
 
-module.exports = alt.createActions(ComposeActions)
+const actions = alt.createActions(ComposeActions)
+ipcRenderer.on('open-mailto-link', (evt, req) => actions.processMailtoLink(req.mailtoLink))
+module.exports = actions

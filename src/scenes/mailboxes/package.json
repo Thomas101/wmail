@@ -19,6 +19,7 @@
     "react-dom": "15.4.1",
     "react-tap-event-plugin": "2.0.1",
     "react-timer-mixin": "0.13.3",
+    "urijs": "1.18.4",
     "uuid": "3.0.1"
   },
   "devDependencies": {

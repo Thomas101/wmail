@@ -190,6 +190,14 @@ class MailboxesWindow extends WMailWindow {
     this.window.webContents.send('mailbox-window-navigate-forward', { })
   }
 
+  /**
+  * Opens a mailto link
+  * @param mailtoLink: the link to open
+  */
+  openMailtoLink (mailtoLink) {
+    this.window.webContents.send('open-mailto-link', { mailtoLink: mailtoLink })
+  }
+
 }
 
 module.exports = MailboxesWindow
