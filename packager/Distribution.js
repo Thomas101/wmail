@@ -205,8 +205,9 @@ class Distribution {
           'Version=1.0',
           'Name=WMail',
           'Comment=' + pkg.description,
-          'Exec=/opt/wmail-desktop/WMail',
+          'Exec=/opt/wmail-desktop/WMail --mailto=%u',
           'Icon=/opt/wmail-desktop/icon.png',
+          'MimeType=x-scheme-handler/mailto;',
           'Terminal=false',
           'Type=Application',
           'Categories=Application;Network;Email;'
