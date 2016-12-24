@@ -1,12 +1,9 @@
-'use strict'
-
-import './sidelist.less'
-
 const React = require('react')
-const Colors = require('material-ui/styles/colors')
-const MailboxList = require('./MailboxList')
-const SidelistAddMailbox = require('./SidelistAddMailbox')
-const SidelistSettings = require('./SidelistSettings')
+const SidelistMailboxes = require('./SidelistMailboxes')
+const SidelistItemAddMailbox = require('./SidelistItemAddMailbox')
+const SidelistItemSettings = require('./SidelistItemSettings')
+const { settingsStore } = require('../../stores/settings')
+const styles = require('./SidelistStyles')
 
 module.exports = React.createClass({
   displayName: 'Sidelist',
@@ -15,33 +12,38 @@ module.exports = React.createClass({
   // Data lifecyle
   /* **************************************************************************/
 
-  shouldComponentUpdate (nextProps, nextState) {
-    return false
+  getInitialState () {
+    return {
+      showTitlebar: settingsStore.getState().ui.showTitlebar // purposely don't update this, because effects are only seen after restart
+    }
   },
 
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
 
-  /**
-  * Renders the app
-  */
+  shouldComponentUpdate (nextProps, nextState) {
+    return false
+  },
+
   render () {
+    const { showTitlebar } = this.state
+    const isDarwin = process.platform === 'darwin'
     const { style, ...passProps } = this.props
+
     return (
       <div
         {...passProps}
-        style={Object.assign({
-          backgroundColor: Colors.blueGrey900,
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0
-        }, style)}>
-        <MailboxList />
-        <SidelistAddMailbox />
-        <SidelistSettings />
+        style={Object.assign({}, styles.container, style)}>
+        <div
+          style={Object.assign({}, styles.scroller, { top: isDarwin && !showTitlebar ? 25 : 0 })}
+          className='ReactComponent-Sidelist-Scroller'>
+          <SidelistMailboxes />
+        </div>
+        <div style={styles.footer}>
+          <SidelistItemAddMailbox />
+          <SidelistItemSettings />
+        </div>
       </div>
     )
   }

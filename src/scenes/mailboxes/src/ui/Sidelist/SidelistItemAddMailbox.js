@@ -1,14 +1,17 @@
 const React = require('react')
 const { IconButton, Popover, MenuItem, Menu } = require('material-ui')
 const Colors = require('material-ui/styles/colors')
-const flux = {
-  google: require('../../stores/google')
-}
-
-/* eslint-disable react/prop-types */
+const styles = require('./SidelistStyles')
+const ReactTooltip = require('react-tooltip')
+const { googleActions } = require('../../stores/google')
 
 module.exports = React.createClass({
-  displayName: 'SidelistAddMailbox',
+
+  /* **************************************************************************/
+  // Class
+  /* **************************************************************************/
+
+  displayName: 'SidelistItemAddMailbox',
 
   /* **************************************************************************/
   // Data lifecycle
@@ -40,7 +43,7 @@ module.exports = React.createClass({
   * Adds an inbox mail account
   */
   handleAddInbox () {
-    flux.google.A.authInboxMailbox()
+    googleActions.authInboxMailbox()
     this.setState({ popover: false })
   },
 
@@ -48,7 +51,7 @@ module.exports = React.createClass({
   * Adds a gmail mail account
   */
   handleAddGmail () {
-    flux.google.A.authGmailMailbox()
+    googleActions.authGmailMailbox()
     this.setState({popover: false})
   },
 
@@ -56,21 +59,20 @@ module.exports = React.createClass({
   // Rendering
   /* **************************************************************************/
 
-  /**
-  * Renders the app
-  */
   render () {
+    const { style, ...passProps } = this.props
     return (
-      <div className='add-mailbox-control'>
+      <div
+        {...passProps}
+        style={Object.assign({}, styles.itemContainer, style)}
+        data-tip='Add Mailbox'>
         <IconButton
           iconClassName='material-icons'
-          tooltip='Add Mailbox'
-          tooltipPosition='top-right'
-          tooltipStyles={{ left: 43, top: 26 }}
           onClick={this.handleOpenPopover}
           iconStyle={{ color: Colors.blueGrey400 }}>
           add_circle
         </IconButton>
+        <ReactTooltip place='right' type='dark' effect='solid' />
         <Popover open={this.state.popover}
           anchorEl={this.state.popoverAnchor}
           anchorOrigin={{ horizontal: 'middle', vertical: 'center' }}
