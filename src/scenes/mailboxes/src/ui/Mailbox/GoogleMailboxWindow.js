@@ -1,6 +1,6 @@
 const React = require('react')
 const { mailboxStore, mailboxActions } = require('../../stores/mailbox')
-const { googleStore, googleActions } = require('../../stores/google')
+const { googleActions } = require('../../stores/google')
 const { settingsStore } = require('../../stores/settings')
 const { composeStore, composeActions } = require('../../stores/compose')
 const {
@@ -321,11 +321,7 @@ module.exports = React.createClass({
   * @param evt: the event that fired
   */
   handleWebViewUnreadCountChange (evt) {
-    // @future: I shouldn't be in here. This is stateful logic in a component.
-    // Refactor the google store actions to be in the store so that can handle this
-    if (!googleStore.getState().hasOpenUnreadCountRequest(this.state.mailbox.id)) {
-      googleActions.syncMailboxUnreadCount(this.state.mailbox.id)
-    }
+    googleActions.suggestSyncMailboxUnreadCount(this.state.mailbox.id)
   },
 
   /**
