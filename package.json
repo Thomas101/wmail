@@ -56,6 +56,7 @@
     "recursive-readdir": "2.1.0",
     "style-loader": "0.13.1",
     "temp": "0.8.3",
+    "uglify-js": "mishoo/UglifyJS2#3ee46e91e802fb8bf20656bce115375c5f624052",
     "url-loader": "0.5.7",
     "uuid": "3.0.1",
     "webpack": "1.14.0",

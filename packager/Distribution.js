@@ -197,57 +197,41 @@ class Distribution {
 
     return new Promise((resolve, reject) => {
       const task = TaskLogger.start(`Linux deb (${arch})`)
-      temp.mkdir('wmail_distribution_' + uuid.v4(), (err, tempPath) => {
-        if (err) { task.fail(); reject(err); return }
 
-        fs.writeFileSync(path.join(tempPath, 'wmail.desktop'), [
-          '[Desktop Entry]',
-          'Version=1.0',
-          'Name=WMail',
-          'Comment=' + pkg.description,
-          'Exec=/opt/wmail-desktop/WMail --mailto=%u',
-          'Icon=/opt/wmail-desktop/icon.png',
-          'MimeType=x-scheme-handler/mailto;',
-          'Terminal=false',
-          'Type=Application',
-          'Categories=Application;Network;Email;'
-        ].join('\n'))
-
-        debianInstaller().pack({
-          'package': pkg,
-          info: {
-            name: 'wmail-desktop',
-            arch: ARCH_MAPPING[arch],
-            depends: [
-              'lsb-base (>= 3.2)',
-              'libappindicator1 (>= 12.10.1)'
-            ].join(','),
-            targetDir: path.join(ROOT_PATH, 'dist'),
-            scripts: {
-              postinst: path.join(__dirname, 'deb/postinst')
+      debianInstaller().pack({
+        'package': pkg,
+        info: {
+          name: 'wmail-desktop',
+          arch: ARCH_MAPPING[arch],
+          depends: [
+            'lsb-base (>= 3.2)',
+            'libappindicator1 (>= 12.10.1)'
+          ].join(','),
+          targetDir: path.join(ROOT_PATH, 'dist'),
+          scripts: {
+            postinst: path.join(__dirname, 'deb/postinst')
+          }
+        }
+      }, [
+        { cwd: CWD_MAPPING[arch], expand: true, src: ['./**'], dest: '/opt/wmail-desktop' },
+        { cwd: CWD_MAPPING[arch], src: ['./wmail.desktop'], dest: '/usr/share/applications' }
+      ], function (err) {
+        if (err) {
+          task.fail()
+          reject(err)
+        } else {
+          const outputFilename = `wmail-desktop_${pkg.version}-1_${ARCH_MAPPING[arch]}.deb`
+          const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_linux_${ARCH_FILENAME[arch]}.deb`
+          fs.move(path.join(ROOT_PATH, 'dist', outputFilename), path.join(ROOT_PATH, 'dist', filename), { clobber: true }, (err) => {
+            if (err) {
+              task.fail()
+              reject(err)
+            } else {
+              task.finish()
+              resolve()
             }
-          }
-        }, [
-          { cwd: CWD_MAPPING[arch], expand: true, src: ['./**'], dest: '/opt/wmail-desktop' },
-          { cwd: tempPath, src: ['./wmail.desktop'], dest: '/usr/share/applications' }
-        ], function (err) {
-          if (err) {
-            task.fail()
-            reject(err)
-          } else {
-            const outputFilename = `wmail-desktop_${pkg.version}-1_${ARCH_MAPPING[arch]}.deb`
-            const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_linux_${ARCH_FILENAME[arch]}.deb`
-            fs.move(path.join(ROOT_PATH, 'dist', outputFilename), path.join(ROOT_PATH, 'dist', filename), { clobber: true }, (err) => {
-              if (err) {
-                task.fail()
-                reject(err)
-              } else {
-                task.finish()
-                resolve()
-              }
-            })
-          }
-        })
+          })
+        }
       })
     })
   }
