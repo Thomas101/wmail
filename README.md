@@ -14,7 +14,7 @@ The missing desktop client for Gmail & Google Inbox. Bringing the Gmail & Google
 
 [Raise an issue or request a feature](https://github.com/Thomas101/wmail/issues) | [Contribute](https://github.com/Thomas101/wmail/wiki/Contributing)
 
-[Find out more in the WIKI](https://github.com/Thomas101/wmail/wiki) | [Official Homepage](http://thomas101.github.io/wmail/)
+[Find out more in the Wiki](https://github.com/Thomas101/wmail/wiki) | [Official Homepage](http://thomas101.github.io/wmail/)
 
 ![Screenshot](https://raw.githubusercontent.com/Thomas101/wmail/master/.github/screenshot.png "Screenshot")
 
