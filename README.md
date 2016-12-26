@@ -8,15 +8,13 @@
 [![Donate](https://img.shields.io/badge/Donate-Paypal-ff69b4.svg)](https://www.paypal.me/ThomasBeverley)
 
 
-The missing desktop client for Gmail & Google Inbox. Bringing the Gmail & Google Inbox experience to your desktop in a neatly packaged app
+The missing desktop client for Gmail & Google Inbox. Bringing the Gmail & Google Inbox experience to your desktop in a neatly packaged app. WMail was created to make your webmail feel right at home on your laptop or computer. It keeps the best of Gmail and Google Inbox whilst adding all those extra bits that you miss when using them in a web browser. Visit the [Official Homepage](http://thomas101.github.io/wmail/) for more information
 
-[Download the latest release](http://thomas101.github.io/wmail/download)
+[Download the latest release](http://thomas101.github.io/wmail/download) | [All releases](https://github.com/Thomas101/wmail/releases)
 
-[View all releases](https://github.com/Thomas101/wmail/releases)
+[Raise an issue or request a feature](https://github.com/Thomas101/wmail/issues) | [Contribute](https://github.com/Thomas101/wmail/wiki/Contributing)
 
-[Raise an issue or request a feature](https://github.com/Thomas101/wmail/issues)
-
-[Find out how you can contribute](https://github.com/Thomas101/wmail/wiki/Contributing)
+[Find out more in the WIKI](https://github.com/Thomas101/wmail/wiki) | [Official Homepage](http://thomas101.github.io/wmail/)
 
 ![Screenshot](https://raw.githubusercontent.com/Thomas101/wmail/master/.github/screenshot.png "Screenshot")
 
