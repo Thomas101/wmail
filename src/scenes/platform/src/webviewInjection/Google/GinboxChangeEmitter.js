@@ -1,5 +1,6 @@
 const {ipcRenderer} = require('electron')
 const injector = require('../injector')
+const GinboxApi = require('./GinboxApi')
 
 class GinboxChangeEmitter {
 
@@ -12,7 +13,7 @@ class GinboxChangeEmitter {
       messageHash: this.currentMessageHash
     }
 
-    this.latestMessageInterval = setInterval(this.recheckMessageHash.bind(this), 1000)
+    this.latestMessageInterval = setInterval(this.recheckMessageHash.bind(this), 2000)
     this.clickThrottle = null
     injector.injectBodyEvent('click', this.handleBodyClick)
   }
@@ -22,9 +23,10 @@ class GinboxChangeEmitter {
   /* **************************************************************************/
 
   get currentMessageHash () {
-    const items = document.querySelectorAll('[data-item-id]')
-    const topHash = items.length ? items[0].getAttribute('data-item-id') : '_'
-    return items.length + ':' + topHash
+    const topItem = document.querySelector('[data-item-id]')
+    const topHash = topItem ? topItem.getAttribute('data-item-id') : '_'
+    const unreadCount = GinboxApi.getVisibleUnreadCount()
+    return unreadCount + ':' + topHash
   }
 
   /* **************************************************************************/

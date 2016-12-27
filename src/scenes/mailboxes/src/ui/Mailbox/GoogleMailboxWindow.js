@@ -45,7 +45,7 @@ module.exports = React.createClass({
     mailboxDispatch.on('reload', this.handleReload)
     mailboxDispatch.on('openMessage', this.handleOpenMessage)
     mailboxDispatch.respond('fetch-process-memory-info', this.handleFetchProcessMemoryInfo)
-    mailboxDispatch.respond('get-gmail-unread-count:' + this.props.mailboxId, this.handleGetGmailUnreadCount)
+    mailboxDispatch.respond('get-google-unread-count:' + this.props.mailboxId, this.handleGetGoogleUnreadCount)
     ipcRenderer.on('mailbox-window-find-start', this.handleIPCSearchStart)
     ipcRenderer.on('mailbox-window-find-next', this.handleIPCSearchNext)
     ipcRenderer.on('mailbox-window-navigate-back', this.handleIPCNavigateBack)
@@ -72,7 +72,7 @@ module.exports = React.createClass({
     mailboxDispatch.off('reload', this.handleReload)
     mailboxDispatch.off('openMessage', this.handleOpenMessage)
     mailboxDispatch.unrespond('fetch-process-memory-info', this.handleFetchProcessMemoryInfo)
-    mailboxDispatch.unrespond('get-gmail-unread-count:' + this.props.mailboxId, this.handleGetGmailUnreadCount)
+    mailboxDispatch.unrespond('get-google-unread-count:' + this.props.mailboxId, this.handleGetGoogleUnreadCount)
     ipcRenderer.removeListener('mailbox-window-find-start', this.handleIPCSearchStart)
     ipcRenderer.removeListener('mailbox-window-find-next', this.handleIPCSearchNext)
     ipcRenderer.removeListener('mailbox-window-navigate-back', this.handleIPCNavigateBack)
@@ -81,8 +81,8 @@ module.exports = React.createClass({
 
   componentWillReceiveProps (nextProps) {
     if (this.props.mailboxId !== nextProps.mailboxId) {
-      mailboxDispatch.unrespond('get-gmail-unread-count:' + this.props.mailboxId, this.handleGetGmailUnreadCount)
-      mailboxDispatch.respond('get-gmail-unread-count:' + nextProps.mailboxId, this.handleGetGmailUnreadCount)
+      mailboxDispatch.unrespond('get-google-unread-count:' + this.props.mailboxId, this.handleGetGoogleUnreadCount)
+      mailboxDispatch.respond('get-google-unread-count:' + nextProps.mailboxId, this.handleGetGoogleUnreadCount)
       ipcRenderer.send('prepare-webview-session', {
         partition: 'persist:' + nextProps.mailboxId
       })
@@ -246,10 +246,8 @@ module.exports = React.createClass({
   * Fetches the gmail unread count
   * @return promise
   */
-  handleGetGmailUnreadCount () {
-    return this.refs.browser.sendWithResponse('get-gmail-unread-count', {}, 1000).then((res) => {
-      return Promise.resolve({ count: res.count })
-    })
+  handleGetGoogleUnreadCount () {
+    return this.refs.browser.sendWithResponse('get-google-unread-count', {}, 1000)
   },
 
   /* **************************************************************************/

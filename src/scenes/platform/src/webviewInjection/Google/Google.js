@@ -8,6 +8,8 @@ const fs = require('fs')
 const escapeHTML = require('../../../../app/node_modules/escape-html')
 const GmailChangeEmitter = require('./GmailChangeEmitter')
 const GinboxChangeEmitter = require('./GinboxChangeEmitter')
+const GinboxApi = require('./GinboxApi')
+const elconsole = require('../elconsole')
 
 class Google {
 
@@ -45,7 +47,7 @@ class Google {
     // Bind our listeners
     ipcRenderer.on('window-icons-in-screen', this.handleWindowIconsInScreenChange.bind(this))
     ipcRenderer.on('open-message', this.handleOpenMesage.bind(this))
-    ipcRenderer.on('get-gmail-unread-count', this.handleFetchUnreadCount.bind(this))
+    ipcRenderer.on('get-google-unread-count', this.handleFetchUnreadCount.bind(this))
 
     if (this.isGmail) {
       this.loadGmailAPI()
@@ -79,10 +81,11 @@ class Google {
 
     injector.injectJavaScript(fs.readFileSync(jqueryPath, 'utf8'))
     injector.injectJavaScript(fs.readFileSync(apiPath, 'utf8'), () => {
-      this.gmailApi = new window.Gmail()
-      this.googleWindowOpen.gmailApi = this.gmailApi
+      const unloadedApi = new window.Gmail()
       this.gmailApi.observe.on('load', () => {
-        this.changeEmitter = new GmailChangeEmitter(this.gmailApi)
+        this.gmailApi = unloadedApi
+        this.googleWindowOpen.gmailApi = unloadedApi
+        this.changeEmitter = new GmailChangeEmitter(unloadedApi)
       })
     })
   }
@@ -132,12 +135,25 @@ class Google {
   * @param data: the data that was sent with the event
   */
   handleFetchUnreadCount (evt, data) {
-    ipcRenderer.sendToHost({
-      type: data.__respond__,
-      data: {
-        count: !this.gmailApi ? undefined : this.gmailApi.get.unread_inbox_emails()
+    if (this.isGmail) {
+      const info = {
+        available: this.gmailApi !== undefined,
+        count: this.gmailApi ? this.gmailApi.get.unread_inbox_emails() : undefined
       }
-    })
+      ipcRenderer.sendToHost({ type: data.__respond__, data: info })
+    }
+    if (this.isGinbox) {
+      const info = { available: false, count: undefined }
+      try {
+        if (GinboxApi.isInboxTabVisible() && !GinboxApi.isInboxPinnedToggled()) {
+          info.count = GinboxApi.getVisibleUnreadCount()
+          info.available = true
+        }
+      } catch (ex) {
+        elconsole.error('Failed to read Google Inbox Unread count from Dom', ex)
+      }
+      ipcRenderer.sendToHost({ type: data.__respond__, data: info })
+    }
   }
 
   /**

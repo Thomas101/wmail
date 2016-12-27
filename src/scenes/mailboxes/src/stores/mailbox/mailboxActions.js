@@ -169,7 +169,10 @@ class MailboxActions {
   * @param countInfo: the info provided by google
   */
   setGoogleLabelInfo (id, info) {
-    return this.update(id, 'googleLabelInfo_v2', info)
+    return this.update(id, Object.keys(info).reduce((acc, key) => {
+      acc['googleLabelInfo_v2.' + key] = info[key]
+      return acc
+    }, {}))
   }
 
   /**

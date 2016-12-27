@@ -82,9 +82,9 @@ class MailboxDispatch {
   * @return promise with the unread count or undefined
   */
   fetchGmailUnreadCount (mailboxId) {
-    return this.request('get-gmail-unread-count:' + mailboxId, {}, 1000)
+    return this.request('get-google-unread-count:' + mailboxId, {}, 1000)
       .then((responses) => {
-        return Promise.resolve((responses[0] || {}).count)
+        return Promise.resolve((responses[0] || {}))
       })
   }
 

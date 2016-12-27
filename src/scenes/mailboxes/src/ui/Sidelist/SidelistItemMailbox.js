@@ -310,6 +310,7 @@ module.exports = React.createClass({
   },
 
   render () {
+    if (!this.state.mailbox) { return null }
     const { mailbox, isActive, popover, popoverAnchor } = this.state
     const { index, isFirst, isLast, style, ...passProps } = this.props
     delete passProps.mailboxId

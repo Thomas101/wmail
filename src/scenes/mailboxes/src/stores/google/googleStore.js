@@ -7,7 +7,6 @@ const { mailboxStore, mailboxActions } = require('../mailbox')
 const { ipcRenderer } = window.nativeRequire('electron')
 const reporter = require('../../reporter')
 const googleHTTP = require('./googleHTTP')
-const { Mailbox } = require('shared/Models/Mailbox')
 const { mailboxDispatch } = require('../../Dispatch')
 const constants = require('shared/constants')
 
@@ -111,6 +110,7 @@ class GoogleStore {
     this.profileSync = setInterval(() => {
       actions.syncAllMailboxProfiles()
     }, constants.GMAIL_PROFILE_SYNC_MS)
+
     clearInterval(this.unreadSync)
     this.unreadSync = (() => {
       let partialCount = 0
@@ -124,6 +124,9 @@ class GoogleStore {
         }
       }, constants.GMAIL_UNREAD_SYNC_MS)
     })()
+
+    actions.syncAllMailboxProfiles.defer()
+    actions.syncAllMailboxUnreadCounts.defer(true)
   }
 
   /**
@@ -212,7 +215,6 @@ class GoogleStore {
 
     const mailbox = mailboxStore.getState().getMailbox(mailboxId)
     const label = mailbox.google.unreadLabel
-    const mailboxType = mailbox.type
 
     Promise.resolve()
       .then(() => {
@@ -225,20 +227,24 @@ class GoogleStore {
           .then(({ response }) => {
             const mailbox = mailboxStore.getState().getMailbox(mailboxId)
 
-            // Step 1.2: Gmail can work better with grabbing the unread count out of the UI. Inbox has to come off the api label
-            if (mailboxType === Mailbox.TYPE_GMAIL) {
-              if (mailbox.google.takeLabelCountFromUI) {
-                return Promise.resolve()
-                  .then(() => mailboxDispatch.fetchGmailUnreadCountWithRetry(mailboxId, forceFullSync ? 30 : 5))
-                  .then((count) => {
+            // Step 1.2. see if we are configured to grab the unread count from the ui
+            if (mailbox.google.takeLabelCountFromUI) {
+              return Promise.resolve()
+                .then(() => mailboxDispatch.fetchGmailUnreadCountWithRetry(mailboxId, forceFullSync ? 30 : 5))
+                .then(({count, available}) => {
+                  if (available) {
                     return Object.assign(response, {
-                      threadsUnread: count || 0,
-                      artificalThreadsUnread: true
+                      unreadCountFromUI: true,
+                      threadsUnread: count
                     })
-                  })
-              } else {
-                return response
-              }
+                  } else {
+                    const passResponse = Object.assign(response, {
+                      unreadCountFromUI: true
+                    })
+                    delete passResponse.threadsUnread
+                    return passResponse
+                  }
+                })
             } else {
               return response
             }

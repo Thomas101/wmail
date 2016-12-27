@@ -5,6 +5,7 @@ const Google = require('shared/Models/Mailbox/Google')
 const mailboxActions = require('../../../stores/mailbox/mailboxActions')
 const styles = require('../settingStyles')
 const shallowCompare = require('react-addons-shallow-compare')
+const Colors = require('material-ui/styles/colors')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -50,7 +51,7 @@ module.exports = React.createClass({
             fullWidth
             value={mailbox.google.unreadMode}
             onChange={(evt, index, unreadMode) => {
-              mailboxActions.updateGoogleConfig(this.props.mailbox.id, { unreadMode: unreadMode })
+              mailboxActions.updateGoogleConfig(mailbox.id, { unreadMode: unreadMode })
             }}
             floatingLabelText='Unread Mode'>
             <MenuItem
@@ -68,7 +69,7 @@ module.exports = React.createClass({
             fullWidth
             value={mailbox.google.unreadMode}
             onChange={(evt, index, unreadMode) => {
-              mailboxActions.updateGoogleConfig(this.props.mailbox.id, { unreadMode: unreadMode })
+              mailboxActions.updateGoogleConfig(mailbox.id, { unreadMode: unreadMode })
             }}
             floatingLabelText='Unread Mode'>
             <MenuItem
@@ -89,16 +90,22 @@ module.exports = React.createClass({
               primaryText='All Messages in inbox' />
           </SelectField>
         ) : undefined}
-        {mailbox.type === Mailbox.TYPE_GMAIL ? (
-          <Toggle
-            defaultToggled={mailbox.google.takeLabelCountFromUI}
-            label='Take unread count directly from Gmail UI'
-            labelPosition='right'
-            disabled={!mailbox.google.canChangeTakeLabelCountFromUI}
-            onToggle={(evt, toggled) => {
-              mailboxActions.updateGoogleConfig(this.props.mailbox.id, { takeLabelCountFromUI: toggled })
-            }} />
+        <Toggle
+          defaultToggled={mailbox.google.takeLabelCountFromUI}
+          label='Take unread count directly from UI'
+          labelPosition='right'
+          disabled={!mailbox.google.canChangeTakeLabelCountFromUI}
+          onToggle={(evt, toggled) => {
+            mailboxActions.updateGoogleConfig(mailbox.id, { takeLabelCountFromUI: toggled })
+          }} />
+        {mailbox.type === Mailbox.TYPE_GINBOX ? (
+          <div style={{color: Colors.grey500}}>
+            <small><strong>Experimental:</strong> Works best with inbox zero</small>
+          </div>
         ) : undefined}
+        <div style={{color: Colors.grey500}}>
+          <small>This will take the unread count directly from the Gmail or Inbox user interface. This can improve unread count accuracy</small>
+        </div>
       </Paper>
     )
   }

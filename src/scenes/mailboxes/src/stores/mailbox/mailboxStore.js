@@ -228,32 +228,43 @@ class MailboxStore {
   /* **************************************************************************/
 
   /**
+  * Updates a mailboxJS object by taking the path and value
+  * @param mailboxJS: the mailbox js object to update in situ
+  * @param path: the path to update
+  * @param value: the value to update with
+  * @return the updated mailboxJS although this item has been updated in situ
+  */
+  _updateMailboxJSWithPath_ (mailboxJS, path, value) {
+    let pointer = mailboxJS
+    path.split('.').forEach((fragment, index, fragments) => {
+      if (index === fragments.length - 1) {
+        pointer[fragment] = value
+      } else {
+        if (!pointer[fragment]) {
+          pointer[fragment] = {}
+        }
+        pointer = pointer[fragment]
+      }
+    })
+    return mailboxJS
+  }
+
+  /**
   * Handles a mailbox updating
   * @param id: the id of the tem
   * @param updates: the updates to merge in
   */
   handleUpdate ({id, updates, path, value}) {
+    const mailboxJS = this.mailboxes.get(id).cloneData()
     if (updates !== undefined) {
-      const mailboxJS = this.mailboxes.get(id).changeData(updates)
-      persistence.mailbox.setJSONItem(id, mailboxJS)
-      this.mailboxes.set(id, new Mailbox(id, mailboxJS))
-    } else {
-      const mailboxJS = this.mailboxes.get(id).cloneData()
-      let pointer = mailboxJS
-      path.split('.').forEach((fragment, index, fragments) => {
-        if (index === fragments.length - 1) {
-          pointer[fragment] = value
-        } else {
-          if (!pointer[fragment]) {
-            pointer[fragment] = {}
-          }
-          pointer = pointer[fragment]
-        }
+      Object.keys(updates).forEach((path) => {
+        this._updateMailboxJSWithPath_(mailboxJS, path, updates[path])
       })
-
-      persistence.mailbox.setJSONItem(id, mailboxJS)
-      this.mailboxes.set(id, new Mailbox(id, mailboxJS))
+    } else {
+      this._updateMailboxJSWithPath_(mailboxJS, path, value)
     }
+    persistence.mailbox.setJSONItem(id, mailboxJS)
+    this.mailboxes.set(id, new Mailbox(id, mailboxJS))
   }
 
   /**
