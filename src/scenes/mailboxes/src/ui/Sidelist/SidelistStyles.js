@@ -37,7 +37,7 @@ module.exports = {
     cursor: 'pointer'
   },
   mailboxAvatar: {
-    borderWidth: 3,
+    borderWidth: 4,
     borderStyle: 'solid'
   },
   mailboxBadge: {

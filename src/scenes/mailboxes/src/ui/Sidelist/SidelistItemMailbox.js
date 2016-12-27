@@ -42,7 +42,8 @@ module.exports = React.createClass({
       mailbox: mailbox,
       isActive: mailboxState.activeMailboxId() === this.props.mailboxId,
       popover: false,
-      popoverAnchor: null
+      popoverAnchor: null,
+      hovering: false
     }
   },
 
@@ -228,12 +229,15 @@ module.exports = React.createClass({
   * Renders the avatar element
   * @param mailbox: the mailbox to render for
   * @param index: the index for the element
+  * @param isActive: true if this mailbox is active
+  * @param hovering: true if this element is being hovered over
   * @return jsx
   */
-  renderAvatar (mailbox, index) {
+  renderAvatar (mailbox, index, isActive, hovering) {
     let url
     let children
     let backgroundColor
+    const borderColor = isActive || hovering ? mailbox.color : 'white'
     if (mailbox.hasCustomAvatar) {
       url = mailboxStore.getState().getAvatar(mailbox.customAvatarId)
       backgroundColor = 'white'
@@ -252,7 +256,7 @@ module.exports = React.createClass({
         backgroundColor={backgroundColor}
         color='white'
         draggable={false}
-        style={Object.assign({ borderColor: mailbox.color }, styles.mailboxAvatar)}>
+        style={Object.assign({ borderColor: borderColor }, styles.mailboxAvatar)}>
         {children}
       </Avatar>)
   },
@@ -311,7 +315,7 @@ module.exports = React.createClass({
 
   render () {
     if (!this.state.mailbox) { return null }
-    const { mailbox, isActive, popover, popoverAnchor } = this.state
+    const { mailbox, isActive, popover, popoverAnchor, hovering } = this.state
     const { index, isFirst, isLast, style, ...passProps } = this.props
     delete passProps.mailboxId
 
@@ -320,11 +324,13 @@ module.exports = React.createClass({
         {...passProps}
         style={Object.assign({}, styles.itemContainer, styles.mailboxItemContainer, style)}
         onClick={this.handleClick}
+        onMouseEnter={() => this.setState({ hovering: true })}
+        onMouseLeave={() => this.setState({ hovering: false })}
         onContextMenu={this.handleOpenPopover}
         data-tip={this.renderTooltipContent(mailbox)}
         data-html>
         <ReactTooltip place='right' type='dark' effect='solid' />
-        {this.renderAvatar(mailbox, index)}
+        {this.renderAvatar(mailbox, index, isActive, hovering)}
         {this.renderBadge(mailbox)}
         {this.renderActiveIndicator(mailbox, isActive)}
         <Popover open={popover}
