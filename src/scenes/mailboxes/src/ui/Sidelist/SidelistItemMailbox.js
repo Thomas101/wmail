@@ -23,8 +23,11 @@ module.exports = React.createClass({
   // Lifecycle
   /* **************************************************************************/
 
-  componentWillMount () {
+  componentDidMount () {
     mailboxStore.listen(this.mailboxesChanged)
+    // Adding new items can cause the popover not to come up. Rebuild the tooltip
+    // after a little time. Bad but seems to fix
+    setTimeout(() => ReactTooltip.rebuild(), 1000)
   },
 
   componentWillUnmount () {
@@ -328,8 +331,13 @@ module.exports = React.createClass({
         onMouseLeave={() => this.setState({ hovering: false })}
         onContextMenu={this.handleOpenPopover}
         data-tip={this.renderTooltipContent(mailbox)}
+        data-for={`ReactComponent-Sidelist-Item-Mailbox-${mailbox.id}`}
         data-html>
-        <ReactTooltip place='right' type='dark' effect='solid' />
+        <ReactTooltip
+          id={`ReactComponent-Sidelist-Item-Mailbox-${mailbox.id}`}
+          place='right'
+          type='dark'
+          effect='solid' />
         {this.renderAvatar(mailbox, index, isActive, hovering)}
         {this.renderBadge(mailbox)}
         {this.renderActiveIndicator(mailbox, isActive)}

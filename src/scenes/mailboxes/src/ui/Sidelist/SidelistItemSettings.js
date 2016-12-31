@@ -26,14 +26,19 @@ module.exports = React.createClass({
       <div
         {...passProps}
         style={Object.assign({}, styles.itemContainer, style)}
-        data-tip='Settings'>
+        data-tip='Settings'
+        data-for='ReactComponent-Sidelist-Item-Settings'>
         <IconButton
           iconClassName='material-icons'
           onClick={() => navigationDispatch.openSettings()}
           iconStyle={{ color: Colors.blueGrey400 }}>
           settings
         </IconButton>
-        <ReactTooltip place='right' type='dark' effect='solid' />
+        <ReactTooltip
+          id='ReactComponent-Sidelist-Item-Settings'
+          place='right'
+          type='dark'
+          effect='solid' />
       </div>
     )
   }

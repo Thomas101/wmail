@@ -23,14 +23,19 @@ module.exports = React.createClass({
       <div
         {...passProps}
         style={Object.assign({}, styles.itemContainer, style)}
-        data-tip='Add Mailbox'>
+        data-tip='Add Mailbox'
+        data-for='ReactComponent-Sidelist-Item-Add-Mailbox'>
         <IconButton
           iconClassName='material-icons'
           onClick={() => mailboxWizardActions.openAddMailbox()}
           iconStyle={{ color: Colors.blueGrey400 }}>
           add_circle
         </IconButton>
-        <ReactTooltip place='right' type='dark' effect='solid' />
+        <ReactTooltip
+          data-for='ReactComponent-Sidelist-Item-Add-Mailbox'
+          place='right'
+          type='dark'
+          effect='solid' />
       </div>
     )
   }
