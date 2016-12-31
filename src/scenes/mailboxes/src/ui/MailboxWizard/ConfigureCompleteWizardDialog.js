@@ -72,9 +72,9 @@ module.exports = React.createClass({
         autoScrollBodyContent>
         <div style={styles.container}>
           <FontIcon className='material-icons' style={styles.tick}>check_circle</FontIcon>
-          <h3>Configuration Complete</h3>
+          <h3>All Done!</h3>
           <p style={styles.instruction}>
-            You can change your mailbox settings at any time by right clicking on your account
+            You can change your mailbox settings at any time in the settings
           </p>
         </div>
       </Dialog>

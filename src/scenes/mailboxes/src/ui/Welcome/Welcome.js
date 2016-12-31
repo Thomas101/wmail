@@ -97,25 +97,26 @@ module.exports = React.createClass({
         {showSetupWizard ? (
           <div style={styles.setupItem}>
             <RaisedButton
-              label='Setup WMail to work best for you'
+              label='Get Started'
               icon={(<FontIcon className='fa fa-fw fa-magic' />)}
               primary
               onClick={() => appWizardActions.startWizard()} />
             <p style={styles.setupItemExtended}>
-              This helps you setup how WMail works by customizing it best to work on your machine
+              Get started by configuring how WMail works and by adding your first Gmail or Google Inbox account
             </p>
           </div>
-        ) : undefined}
-        <div style={styles.setupItem}>
-          <RaisedButton
-            label='Add your first mailbox'
-            icon={(<FontIcon className='material-icons'>add_circle</FontIcon>)}
-            primary
-            onClick={() => mailboxWizardActions.openAddMailbox()} />
-          <p style={styles.setupItemExtended}>
-            Add your first Gmail or Google Inbox account and get started
-          </p>
-        </div>
+        ) : (
+          <div style={styles.setupItem}>
+            <RaisedButton
+              label='Add your first mailbox'
+              icon={(<FontIcon className='material-icons'>add_circle</FontIcon>)}
+              primary
+              onClick={() => mailboxWizardActions.openAddMailbox()} />
+            <p style={styles.setupItemExtended}>
+              Add your first Gmail or Google Inbox account and get started
+            </p>
+          </div>
+        )}
       </div>
     )
   }

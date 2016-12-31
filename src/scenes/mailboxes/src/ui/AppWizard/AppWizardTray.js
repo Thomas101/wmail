@@ -75,7 +75,9 @@ module.exports = React.createClass({
         autoScrollBodyContent
         onRequestClose={() => appWizardActions.cancelWizard()}>
         <p style={{ textAlign: 'center' }}>
-          Customise the the tray icon so that it fits in with the other icons in your taskbar
+          Customise the tray icon so that it fits in with the other icons in
+          your taskbar. You can change the way the icon appears when you have unread
+          mail and when you have no unread mail
         </p>
         <TrayIconEditor
           tray={tray}

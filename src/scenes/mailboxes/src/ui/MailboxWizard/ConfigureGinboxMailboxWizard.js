@@ -10,7 +10,7 @@ const styles = {
     textAlign: 'center',
     padding: 12,
     fontSize: '110%',
-    color: Colors.grey700
+    fontWeight: 'bold'
   },
   configurations: {
     display: 'flex',

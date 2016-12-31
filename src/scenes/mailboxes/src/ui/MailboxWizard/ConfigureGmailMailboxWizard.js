@@ -10,7 +10,7 @@ const styles = {
     textAlign: 'center',
     padding: 12,
     fontSize: '110%',
-    color: Colors.grey700
+    fontWeight: 'bold'
   },
   configurations: {
     display: 'flex',
@@ -62,7 +62,7 @@ module.exports = React.createClass({
     renderTitle () {
       return (
         <div style={styles.introduction}>
-          Pick the type of inbox that you use with Gmail to configure WMail
+          Pick the type of inbox that you use in Gmail to configure WMail
           notifications and unread counters
         </div>
       )
@@ -92,10 +92,10 @@ module.exports = React.createClass({
                 backgroundImage: `url("../../images/gmail_inbox_categories_small.png")`
               }, styles.configurationImage)} />
               <p>
-                Take unread messages from the primary category
+                I'm only interested in unread messages in the primary category
               </p>
               <p style={styles.configurationTechInfo}>
-                Unread Message in Primary Category
+                Unread Messages in Primary Category
               </p>
             </div>
           </Paper>
@@ -108,7 +108,7 @@ module.exports = React.createClass({
                 backgroundImage: `url("../../images/gmail_inbox_unread_small.png")`
               }, styles.configurationImage)} />
               <p>
-                Take only unread messages
+                I'm interested in all unread messages in my inbox
               </p>
               <p style={styles.configurationTechInfo}>
                 All Unread Messages
@@ -124,7 +124,7 @@ module.exports = React.createClass({
                 backgroundImage: `url("../../images/gmail_inbox_priority_small.png")`
               }, styles.configurationImage)} />
               <p>
-                Take unread messages only if they are marked as important
+                I'm only interested in unread messages if they are marked as important
               </p>
               <p style={styles.configurationTechInfo}>
                 Unread Important Messages

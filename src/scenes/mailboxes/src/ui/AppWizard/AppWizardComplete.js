@@ -1,5 +1,7 @@
 const React = require('react')
 const { appWizardActions } = require('../../stores/appWizard')
+const { mailboxStore } = require('../../stores/mailbox')
+const { mailboxWizardActions } = require('../../stores/mailboxWizard')
 const shallowCompare = require('react-addons-shallow-compare')
 const { Dialog, RaisedButton, FontIcon } = require('material-ui')
 const Colors = require('material-ui/styles/colors')
@@ -25,6 +27,34 @@ module.exports = React.createClass({
   },
 
   /* **************************************************************************/
+  // Component Lifecycle
+  /* **************************************************************************/
+
+  componentDidMount () {
+    mailboxStore.listen(this.mailboxesUpdated)
+  },
+
+  componentWillUnmount () {
+    mailboxStore.unlisten(this.mailboxesUpdated)
+  },
+
+  /* **************************************************************************/
+  // Data lifecycle
+  /* **************************************************************************/
+
+  getInitialState () {
+    return {
+      mailboxCount: mailboxStore.getState().mailboxCount()
+    }
+  },
+
+  mailboxesUpdated (mailboxState) {
+    this.setState({
+      mailboxCount: mailboxState.mailboxCount()
+    })
+  },
+
+  /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
 
@@ -34,6 +64,7 @@ module.exports = React.createClass({
 
   render () {
     const { isOpen } = this.props
+    const { mailboxCount } = this.state
     const actions = (
       <div>
         <RaisedButton
@@ -42,8 +73,18 @@ module.exports = React.createClass({
           onClick={() => appWizardActions.cancelWizard()} />
         <RaisedButton
           label='Finish'
-          primary
+          primary={mailboxCount !== 0}
           onClick={() => appWizardActions.progressNextStep()} />
+        {mailboxCount === 0 ? (
+          <RaisedButton
+            label='Add First Mailbox'
+            style={{marginLeft: 8}}
+            primary
+            onClick={() => {
+              appWizardActions.progressNextStep()
+              mailboxWizardActions.openAddMailbox()
+            }} />
+        ) : undefined}
       </div>
     )
 
@@ -58,7 +99,7 @@ module.exports = React.createClass({
           <FontIcon className='material-icons' style={styles.tick}>check_circle</FontIcon>
           <h3>All Done!</h3>
           <p>
-            You can customise the way WMail works at any time by opening the settings
+            You can go to settings at any time to update your preferences
           </p>
         </div>
       </Dialog>
