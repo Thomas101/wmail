@@ -144,13 +144,15 @@ class Google {
     }
     if (this.isGinbox) {
       const info = { available: false, count: undefined }
-      try {
-        if (GinboxApi.isInboxTabVisible() && !GinboxApi.isInboxPinnedToggled()) {
-          info.count = GinboxApi.getVisibleUnreadCount()
-          info.available = true
+      if (GinboxApi.isReady()) {
+        try {
+          if (GinboxApi.isInboxTabVisible() && !GinboxApi.isInboxPinnedToggled()) {
+            info.count = GinboxApi.getVisibleUnreadCount()
+            info.available = true
+          }
+        } catch (ex) {
+          elconsole.error('Failed to read Google Inbox Unread count from Dom', ex)
         }
-      } catch (ex) {
-        elconsole.error('Failed to read Google Inbox Unread count from Dom', ex)
       }
       ipcRenderer.sendToHost({ type: data.__respond__, data: info })
     }

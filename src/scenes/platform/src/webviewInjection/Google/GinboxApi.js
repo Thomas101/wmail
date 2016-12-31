@@ -3,6 +3,11 @@ const escapeHTML = require('../../../../app/node_modules/escape-html')
 class GinboxApi {
 
   /**
+  * @return true if the API is ready
+  */
+  static isReady () { return document.readyState === 'complete' }
+
+  /**
   * Gets the visible unread count. Ensures that clusters are only counted once/
   * May throw a dom exception if things go wrong
   * @return the unread count
