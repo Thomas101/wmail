@@ -59,7 +59,7 @@ module.exports = React.createClass({
             Customise WMail to work best for you by configuring a few common settings
           </p>
           <p>
-            Would you like to start now?
+            Would you like to start WMail setup now?
           </p>
         </div>
       </Dialog>

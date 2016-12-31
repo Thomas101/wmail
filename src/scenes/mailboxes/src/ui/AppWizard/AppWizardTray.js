@@ -75,7 +75,7 @@ module.exports = React.createClass({
         autoScrollBodyContent
         onRequestClose={() => appWizardActions.cancelWizard()}>
         <p style={{ textAlign: 'center' }}>
-          Customize the the tray icon so that it fits in with the other icons in your taskbar
+          Customise the the tray icon so that it fits in with the other icons in your taskbar
         </p>
         <TrayIconEditor
           tray={tray}

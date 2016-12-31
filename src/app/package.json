@@ -11,7 +11,7 @@
     "escape-html": "1.0.3",
     "fs-extra": "1.0.0",
     "gmail-js": "0.6.7",
-    "googleapis": "15.0.0",
+    "googleapis": "16.0.0",
     "home-dir": "1.0.0",
     "https-proxy-agent": "1.0.0",
     "jquery": "3.1.1",
@@ -25,7 +25,7 @@
     "windows-shortcuts": "Thomas101/windows-shortcuts#0.1.4",
     "wmail-spellchecker": "Thomas101/wmail-spellchecker#1.0.4",
     "write-file-atomic": "1.2.0",
-    "yargs": "6.5.0"
+    "yargs": "6.6.0"
   },
   "devDependencies": {
     "standard": "8.6.0"
