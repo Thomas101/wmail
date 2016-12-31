@@ -1,6 +1,7 @@
 import './SidelistStyles.less'
 const Colors = require('material-ui/styles/colors')
 const FOOTER_HEIGHT = 100
+const FOOTER_HEIGHT_WIZARD = 150
 
 module.exports = {
   container: {
@@ -18,6 +19,9 @@ module.exports = {
     left: 0,
     right: 0
   },
+  footerWithWizard: {
+    height: FOOTER_HEIGHT_WIZARD
+  },
   scroller: {
     position: 'absolute',
     top: 0,
@@ -26,6 +30,9 @@ module.exports = {
     bottom: FOOTER_HEIGHT,
     overflowY: 'auto',
     overflowX: 'hidden'
+  },
+  scrollerWithWizard: {
+    bottom: FOOTER_HEIGHT_WIZARD
   },
   itemContainer: {
     textAlign: 'center'

@@ -42,20 +42,23 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   render () {
+    const { size, style, ...passProps } = this.props
+    delete passProps.config
+
     return (
-      <div style={{
-        width: this.props.size,
-        height: this.props.size,
+      <div {...passProps} style={Object.assign({
+        width: size,
+        height: size,
         backgroundImage: 'linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC), linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC)',
         backgroundSize: '30px 30px',
         backgroundPosition: '0 0, 15px 15px',
         boxShadow: 'inset 0px 0px 10px 0px rgba(0,0,0,0.75)'
-      }}>
+      }, style)}>
         {!this.state.image ? undefined : (
           <img
             src={this.state.image}
-            width={this.props.size + 'px'}
-            height={this.props.size + 'px'} />
+            width={size + 'px'}
+            height={size + 'px'} />
         )}
       </div>
     )

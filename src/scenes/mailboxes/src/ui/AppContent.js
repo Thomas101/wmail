@@ -12,6 +12,7 @@ const {navigationDispatch} = require('../Dispatch')
 const UpdateCheckDialog = require('./UpdateCheckDialog')
 const { settingsStore } = require('../stores/settings')
 const MailboxWizard = require('./MailboxWizard')
+const AppWizard = require('./AppWizard')
 
 module.exports = React.createClass({
   displayName: 'AppContent',
@@ -93,9 +94,10 @@ module.exports = React.createClass({
           onRequestClose={this.handleCloseSettings}
           initialRoute={this.state.settingsRoute} />
         <DictionaryInstallHandler />
+        <AppWizard />
+        <MailboxWizard />
         <UpdateCheckDialog />
         <MailboxComposePicker />
-        <MailboxWizard />
       </div>
     )
   }

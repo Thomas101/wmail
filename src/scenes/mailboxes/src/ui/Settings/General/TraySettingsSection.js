@@ -1,9 +1,6 @@
 const React = require('react')
-const { Toggle, Paper, SelectField, MenuItem, FontIcon } = require('material-ui')
-const {
-  ColorPickerButton, TrayPreview,
-  Grid: { Row, Col }
-} = require('../../../Components')
+const { Toggle, Paper, SelectField, MenuItem } = require('material-ui')
+const { TrayIconEditor } = require('../../../Components')
 const settingsActions = require('../../../stores/settings/settingsActions')
 const styles = require('../settingStyles')
 const shallowCompare = require('react-addons-shallow-compare')
@@ -59,76 +56,7 @@ module.exports = React.createClass({
           ) : undefined }
         </div>
         <br />
-        <div>
-          <Row>
-            <Col xs={6}>
-              <h1 style={styles.subheading}>All Messages Read</h1>
-              <div style={styles.button}>
-                <ColorPickerButton
-                  label='Border'
-                  icon={<FontIcon className='material-icons'>border_color</FontIcon>}
-                  anchorOrigin={{horizontal: 'left', vertical: 'top'}}
-                  targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                  disabled={!tray.show}
-                  value={tray.readColor}
-                  onChange={(col) => settingsActions.setTrayReadColor(col.rgbaStr)} />
-              </div>
-              <div style={styles.button}>
-                <ColorPickerButton
-                  label='Background'
-                  icon={<FontIcon className='material-icons'>format_color_fill</FontIcon>}
-                  anchorOrigin={{horizontal: 'left', vertical: 'top'}}
-                  targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                  disabled={!tray.show}
-                  value={tray.readBackgroundColor}
-                  onChange={(col) => settingsActions.setTrayReadBackgroundColor(col.rgbaStr)} />
-              </div>
-              <TrayPreview size={100} config={{
-                pixelRatio: 1,
-                unreadCount: 0,
-                showUnreadCount: tray.showUnreadCount,
-                unreadColor: tray.unreadColor,
-                readColor: tray.readColor,
-                unreadBackgroundColor: tray.readBackgroundColor,
-                readBackgroundColor: tray.readBackgroundColor,
-                size: 100
-              }} />
-            </Col>
-            <Col xs={6}>
-              <h1 style={styles.subheading}>Unread Messages</h1>
-              <div style={styles.button}>
-                <ColorPickerButton
-                  label='Border'
-                  icon={<FontIcon className='material-icons'>border_color</FontIcon>}
-                  anchorOrigin={{horizontal: 'left', vertical: 'top'}}
-                  targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                  disabled={!tray.show}
-                  value={tray.unreadColor}
-                  onChange={(col) => settingsActions.setTrayUnreadColor(col.rgbaStr)} />
-              </div>
-              <div style={styles.button}>
-                <ColorPickerButton
-                  label='Background'
-                  icon={<FontIcon className='material-icons'>format_color_fill</FontIcon>}
-                  anchorOrigin={{horizontal: 'left', vertical: 'top'}}
-                  targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                  disabled={!tray.show}
-                  value={tray.unreadBackgroundColor}
-                  onChange={(col) => settingsActions.setTrayUnreadBackgroundColor(col.rgbaStr)} />
-              </div>
-              <TrayPreview size={100} config={{
-                pixelRatio: 1,
-                unreadCount: 1,
-                showUnreadCount: tray.showUnreadCount,
-                unreadColor: tray.unreadColor,
-                readColor: tray.readColor,
-                unreadBackgroundColor: tray.unreadBackgroundColor,
-                readBackgroundColor: tray.readBackgroundColor,
-                size: 100
-              }} />
-            </Col>
-          </Row>
-        </div>
+        <TrayIconEditor tray={tray} />
       </Paper>
     )
   }

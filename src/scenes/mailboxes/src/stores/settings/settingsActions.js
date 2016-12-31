@@ -230,6 +230,13 @@ class SettingsActions {
     return this.update(SEGMENTS.APP, 'checkForUpdates', toggled)
   }
 
+  /**
+  * @param hasSeen: true if the user has seen the app wizard
+  */
+  setHasSeenAppWizard (hasSeen) {
+    return this.update(SEGMENTS.APP, 'hasSeenAppWizard', hasSeen)
+  }
+
   /* **************************************************************************/
   // Tray
   /* **************************************************************************/
