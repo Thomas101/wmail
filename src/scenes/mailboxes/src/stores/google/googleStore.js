@@ -4,8 +4,6 @@ const google = window.appNodeModulesRequire('googleapis')
 const OAuth2 = google.auth.OAuth2
 const credentials = require('shared/credentials')
 const { mailboxStore, mailboxActions } = require('../mailbox')
-const { ipcRenderer } = window.nativeRequire('electron')
-const reporter = require('../../reporter')
 const googleHTTP = require('./googleHTTP')
 const { mailboxDispatch } = require('../../Dispatch')
 const constants = require('shared/constants')
@@ -42,11 +40,6 @@ class GoogleStore {
     this.bindListeners({
       handleStartPollSync: actions.START_POLLING_UPDATES,
       handleStopPollSync: actions.STOP_POLLING_UPDATES,
-
-      handleAuthInboxMailbox: actions.AUTH_INBOX_MAILBOX,
-      handleAuthGmailMailbox: actions.AUTH_GMAIL_MAILBOX,
-      handleAuthMailboxSuccess: actions.AUTH_MAILBOX_SUCCESS,
-      handleAuthMailboxFailure: actions.AUTH_MAILBOX_FAILURE,
 
       handleSyncMailboxProfile: actions.SYNC_MAILBOX_PROFILE,
       handleSyncMailboxProfileSuccess: actions.SYNC_MAILBOX_PROFILE_SUCCESS,
@@ -137,40 +130,6 @@ class GoogleStore {
     this.profileSync = null
     clearInterval(this.unreadSync)
     this.unreadSync = null
-  }
-
-  /* **************************************************************************/
-  // Handlers: User Auth
-  /* **************************************************************************/
-
-  handleAuthInboxMailbox ({ provisionalId }) {
-    ipcRenderer.send('auth-google', { id: provisionalId, type: 'ginbox' })
-  }
-
-  handleAuthGmailMailbox ({ provisionalId }) {
-    ipcRenderer.send('auth-google', { id: provisionalId, type: 'gmail' })
-  }
-
-  handleAuthMailboxSuccess ({ provisionalId, type, auth }) {
-    mailboxActions.create.defer(provisionalId, {
-      type: type,
-      googleAuth: auth
-    })
-    // Run the first sync
-    actions.syncMailboxProfile.defer(provisionalId)
-    actions.syncMailboxUnreadCount.defer(provisionalId)
-  }
-
-  handleAuthMailboxFailure ({ evt, data }) {
-    if (data.errorMessage.toLowerCase().indexOf('user') === 0) {
-      // User cancelled
-    } else {
-      // Really log wha we're getting here to try and resolve issue #2
-      console.error('[AUTH ERR]', data)
-      console.error(data.errorString)
-      console.error(data.errorStack)
-      reporter.reportError('[AUTH ERR]' + data.errorString)
-    }
   }
 
   /* **************************************************************************/

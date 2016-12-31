@@ -92,7 +92,7 @@ module.exports = React.createClass({
         ) : undefined}
         <Toggle
           defaultToggled={mailbox.google.takeLabelCountFromUI}
-          label='Take unread count directly from UI'
+          label='Scrape unread count directly from UI'
           labelPosition='right'
           disabled={!mailbox.google.canChangeTakeLabelCountFromUI}
           onToggle={(evt, toggled) => {

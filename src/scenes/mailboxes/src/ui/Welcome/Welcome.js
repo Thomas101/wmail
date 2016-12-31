@@ -3,6 +3,7 @@ const React = require('react')
 const flux = {
   google: require('../../stores/google')
 }
+const { mailboxWizardActions } = require('../../stores/mailboxWizard')
 
 module.exports = React.createClass({
   displayName: 'Welcome',
@@ -39,8 +40,7 @@ module.exports = React.createClass({
         </p>
         <br />
         <br />
-        <button type='button' className='btn' onClick={this.handleAddInbox}>Add Inbox Mailbox</button>
-        <button type='button' className='btn' onClick={this.handleAddGmail}>Add Gmail Mailbox</button>
+        <button type='button' className='btn' onClick={() => mailboxWizardActions.openAddMailbox()}>Add your first Mailbox</button>
       </div>
     )
   }

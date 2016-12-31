@@ -1,7 +1,5 @@
 const alt = require('../alt')
 const mailboxStore = require('../mailbox/mailboxStore')
-const { Mailbox } = require('shared/Models/Mailbox')
-const { ipcRenderer } = window.nativeRequire('electron')
 
 class GoogleActions {
 
@@ -21,42 +19,6 @@ class GoogleActions {
   */
   stopPollingUpdates () {
     return {}
-  }
-
-  /* **************************************************************************/
-  // User Auth
-  /* **************************************************************************/
-
-  /**
-  * Starts the auth process for google inbox
-  */
-  authInboxMailbox () {
-    return { provisionalId: Mailbox.provisionId() }
-  }
-
-  /**
-  * Starts the auth process for gmail
-  */
-  authGmailMailbox () {
-    return { provisionalId: Mailbox.provisionId() }
-  }
-
-  /**
-  * Handles a mailbox authenticating
-  * @param evt: the event that came over the ipc
-  * @param data: the data that came across the ipc
-  */
-  authMailboxSuccess (evt, data) {
-    return { provisionalId: data.id, type: data.type, auth: data.auth }
-  }
-
-  /**
-  * Handles a mailbox authenticating error
-  * @param evt: the ipc event that fired
-  * @param data: the data that came across the ipc
-  */
-  authMailboxFailure (evt, data) {
-    return { evt: evt, data: data }
   }
 
   /* **************************************************************************/
@@ -150,9 +112,4 @@ class GoogleActions {
   }
 }
 
-// Bind the IPC listeners
-const actions = alt.createActions(GoogleActions)
-ipcRenderer.on('auth-google-complete', actions.authMailboxSuccess)
-ipcRenderer.on('auth-google-error', actions.authMailboxFailure)
-
-module.exports = actions
+module.exports = alt.createActions(GoogleActions)

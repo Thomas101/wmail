@@ -1,5 +1,3 @@
-'use strict'
-
 import './layout.less'
 import './appContent.less'
 
@@ -12,9 +10,8 @@ const SettingsDialog = require('./Settings/SettingsDialog')
 const DictionaryInstallHandler = require('./DictionaryInstaller/DictionaryInstallHandler')
 const {navigationDispatch} = require('../Dispatch')
 const UpdateCheckDialog = require('./UpdateCheckDialog')
-const flux = {
-  settings: require('../stores/settings')
-}
+const { settingsStore } = require('../stores/settings')
+const MailboxWizard = require('./MailboxWizard')
 
 module.exports = React.createClass({
   displayName: 'AppContent',
@@ -24,12 +21,12 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   componentDidMount () {
-    flux.settings.S.listen(this.settingsDidUpdate)
+    settingsStore.listen(this.settingsDidUpdate)
     navigationDispatch.on('opensettings', this.handleOpenSettings)
   },
 
   componentWillUnmount () {
-    flux.settings.S.unlisten(this.settingsDidUpdate)
+    settingsStore.unlisten(this.settingsDidUpdate)
     navigationDispatch.off('opensettings', this.handleOpenSettings)
   },
 
@@ -38,24 +35,20 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState () {
-    const settingsStore = flux.settings.S.getState()
+    const settingsState = settingsStore.getState()
     return {
-      sidebar: settingsStore.ui.sidebarEnabled,
-      titlebar: settingsStore.ui.showTitlebar,
+      sidebar: settingsState.ui.sidebarEnabled,
+      titlebar: settingsState.ui.showTitlebar,
       settingsDialog: false,
       settingsRoute: null
     }
   },
 
-  settingsDidUpdate (store) {
+  settingsDidUpdate (settingsStatee) {
     this.setState({
-      sidebar: store.ui.sidebarEnabled,
-      titlebar: store.ui.showTitlebar
+      sidebar: settingsStatee.ui.sidebarEnabled,
+      titlebar: settingsStatee.ui.showTitlebar
     })
-  },
-
-  shouldComponentUpdate (nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState)
   },
 
   /* **************************************************************************/
@@ -81,9 +74,10 @@ module.exports = React.createClass({
   // Rendering
   /* **************************************************************************/
 
-  /**
-  * Renders the app
-  */
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
+  },
+
   render () {
     return (
       <div>
@@ -101,6 +95,7 @@ module.exports = React.createClass({
         <DictionaryInstallHandler />
         <UpdateCheckDialog />
         <MailboxComposePicker />
+        <MailboxWizard />
       </div>
     )
   }
