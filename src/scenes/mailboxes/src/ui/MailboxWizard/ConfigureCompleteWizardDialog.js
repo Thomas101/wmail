@@ -2,6 +2,8 @@ const React = require('react')
 const { FontIcon, Dialog, RaisedButton } = require('material-ui')
 const Colors = require('material-ui/styles/colors')
 const { mailboxWizardStore, mailboxWizardActions } = require('../../stores/mailboxWizard')
+const { appWizardActions } = require('../../stores/appWizard')
+const { settingsStore } = require('../../stores/settings')
 
 const styles = {
   container: {
@@ -28,11 +30,13 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   componentDidMount () {
-    mailboxWizardStore.listen(this.wizardChanged)
+    mailboxWizardStore.listen(this.mailboxWizardChanged)
+    settingsStore.listen(this.settingsChanged)
   },
 
   componentWillUnmount () {
-    mailboxWizardStore.unlisten(this.wizardChanged)
+    mailboxWizardStore.unlisten(this.mailboxWizardChanged)
+    settingsStore.unlisten(this.settingsChanged)
   },
 
   /* **************************************************************************/
@@ -40,14 +44,18 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState () {
-    const wizardState = mailboxWizardStore.getState()
     return {
-      isOpen: wizardState.configurationCompleteOpen
+      isOpen: mailboxWizardStore.getState().configurationCompleteOpen,
+      hasSeenAppWizard: settingsStore.getState().app.hasSeenAppWizard
     }
   },
 
-  wizardChanged (wizardState) {
+  mailboxWizardChanged (wizardState) {
     this.setState({ isOpen: wizardState.configurationCompleteOpen })
+  },
+
+  settingsChanged (settingsState) {
+    this.setState({ hasSeenAppWizard: settingsStore.getState().app.hasSeenAppWizard })
   },
 
   /* **************************************************************************/
@@ -55,12 +63,19 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   render () {
-    const { isOpen } = this.state
+    const { isOpen, hasSeenAppWizard } = this.state
     const actions = (
       <RaisedButton
         label='Finish'
         primary
-        onClick={() => mailboxWizardActions.configurationComplete()} />
+        onClick={() => {
+          mailboxWizardActions.configurationComplete()
+          if (!hasSeenAppWizard) {
+            setTimeout(() => {
+              appWizardActions.startWizard()
+            }, 500) // Feels more natural after a delay
+          }
+        }} />
     )
 
     return (
