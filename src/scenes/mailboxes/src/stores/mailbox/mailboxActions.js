@@ -2,6 +2,7 @@ const alt = require('../alt')
 const { ipcRenderer, remote } = window.nativeRequire('electron')
 const { session } = remote
 const mailboxDispatch = require('../../Dispatch/mailboxDispatch')
+const Mailbox = require('shared/Models/Mailbox/Mailbox')
 
 class MailboxActions {
 
@@ -200,8 +201,12 @@ class MailboxActions {
 
   /**
   * Changes the active mailbox
+  * @param id: the id of the mailbox
+  * @param service=default: the service to change to
   */
-  changeActive (id) { return { id: id } }
+  changeActive (id, service = Mailbox.SERVICES.DEFAULT) {
+    return { id: id, service: service }
+  }
 
   /**
   * Changes the active mailbox to the previous in the list
@@ -220,14 +225,20 @@ class MailboxActions {
   /**
   * Starts searching the mailbox
   * @param id: the mailbox id
+  * @param service: the type of service to search for
   */
-  startSearchingMailbox (id) { return {id: id} }
+  startSearchingMailbox (id, service) {
+    return {id: id, service: service}
+  }
 
   /**
   * Stops searching the mailbox
   * @param id: the mailbox id
+  * @param service: the type of service to stop search for
   */
-  stopSearchingMailbox (id) { return {id: id} }
+  stopSearchingMailbox (id, service) {
+    return {id: id, service: service}
+  }
 
   /* **************************************************************************/
   // Ordering

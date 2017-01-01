@@ -9,6 +9,9 @@ const persistence = {
 const { MAILBOX_INDEX_KEY } = require('shared/constants')
 const { BLANK_PNG } = require('shared/b64Assets')
 const migration = require('./migration')
+const {
+  remote: ipcRenderer
+} = window.nativeRequire('electron')
 
 class MailboxStore {
   /* **************************************************************************/
@@ -20,6 +23,7 @@ class MailboxStore {
     this.mailboxes = new Map()
     this.avatars = new Map()
     this.active = null
+    this.activeService = Mailbox.SERVICES.DEFAULT
     this.search = new Map()
 
     /* ****************************************/
@@ -62,9 +66,31 @@ class MailboxStore {
     this.activeMailboxId = () => { return this.active }
 
     /**
+    * @return the service type of the active mailbox
+    */
+    this.activeMailboxService = () => {
+      if (this.activeService === Mailbox.SERVICES.DEFAULT) {
+        return Mailbox.SERVICES.DEFAULT
+      } else {
+        const mailbox = this.activeMailbox()
+        const valid = mailbox.enabledServies.findIndex((s) => s === this.activeService) !== -1
+        return valid ? this.activeService : Mailbox.SERVICES.DEFAULT
+      }
+    }
+
+    /**
     * @return the active mailbox
     */
     this.activeMailbox = () => { return this.mailboxes.get(this.active) }
+
+    /**
+    * @param mailboxId: the id of the mailbox
+    * @param service: the type of service
+    * @return true if this mailbox is active, false otherwise
+    */
+    this.isActive = (mailboxId, service) => {
+      return this.activeMailboxId() === mailboxId && this.activeMailboxService() === service
+    }
 
     /* ****************************************/
     // Search
@@ -72,10 +98,11 @@ class MailboxStore {
 
     /**
     * @param mailboxId: the id of the mailbox
+    * @param service: the service of the mailbox
     * @return true if the mailbox is searching, false otherwise
     */
-    this.isSearchingMailbox = (mailboxId) => {
-      return this.search.get(mailboxId) === true
+    this.isSearchingMailbox = (mailboxId, service) => {
+      return this.search.get(`${mailboxId}:${service}`) === true
     }
 
     /* ****************************************/
@@ -180,6 +207,7 @@ class MailboxStore {
         this.index = allMailboxes[MAILBOX_INDEX_KEY]
       } else {
         this.mailboxes.set(id, new Mailbox(id, allMailboxes[id]))
+        ipcRenderer.send('prepare-webview-session', { partition: 'persist:' + id })
       }
     })
     this.active = this.index[0] || null
@@ -202,6 +230,7 @@ class MailboxStore {
   handleCreate ({id, data}) {
     persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
+    ipcRenderer.send('prepare-webview-session', { partition: 'persist:' + id })
     this.index.push(id)
     persistence.mailbox.setJSONItem(MAILBOX_INDEX_KEY, this.index)
     this.active = id
@@ -380,9 +409,11 @@ class MailboxStore {
   /**
   * Handles the active mailbox changing
   * @param id: the id of the mailbox
+  * @param service: the service type
   */
-  handleChangeActive ({id}) {
+  handleChangeActive ({id, service}) {
     this.active = id
+    this.activeService = service
   }
 
   /**
@@ -391,6 +422,7 @@ class MailboxStore {
   handleChangeActivePrev () {
     const activeIndex = this.index.findIndex((id) => id === this.active)
     this.active = this.index[Math.max(0, activeIndex - 1)] || null
+    this.activeService = Mailbox.SERVICES.DEFAULT
   }
 
   /**
@@ -399,6 +431,7 @@ class MailboxStore {
   handleChangeActiveNext () {
     const activeIndex = this.index.findIndex((id) => id === this.active)
     this.active = this.index[Math.min(this.index.length - 1, activeIndex + 1)] || null
+    this.activeService = Mailbox.SERVICES.DEFAULT
   }
 
   /**
@@ -430,15 +463,23 @@ class MailboxStore {
   /**
   * Indicates the mailbox is searching
   */
-  handleStartSearchingMailbox (params) {
-    this.search.set(params.id || this.active, true)
+  handleStartSearchingMailbox ({ id, service }) {
+    if (id && service) {
+      this.search.set(`${id}:${service}`, true)
+    } else {
+      this.search.set(`${this.active}:${this.activeService}`, true)
+    }
   }
 
   /**
   * Indicates the mailbox is no longer searching
   */
-  handleStopSearchingMailbox (params) {
-    this.search.delete(params.id || this.active)
+  handleStopSearchingMailbox ({id, service}) {
+    if (id && service) {
+      this.search.delete(`${id}:${service}`)
+    } else {
+      this.search.delete(`${this.active}:${this.activeService}`)
+    }
   }
 
 }

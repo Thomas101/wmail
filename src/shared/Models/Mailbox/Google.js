@@ -1,4 +1,5 @@
 const Model = require('../Model')
+const SERVICES = require('./MailboxServices')
 
 const UNREAD_MODES = {
   INBOX: 'inbox',
@@ -7,6 +8,18 @@ const UNREAD_MODES = {
   INBOX_UNREAD_IMPORTANT: 'inbox_unread_important'
 }
 
+const SERVICE_URLS = { }
+SERVICE_URLS[SERVICES.STORAGE] = 'https://drive.google.com'
+SERVICE_URLS[SERVICES.CONTACTS] = 'https://contacts.google.com'
+SERVICE_URLS[SERVICES.NOTES] = 'https://notes.google.com'
+SERVICE_URLS[SERVICES.CALENDAR] = 'https://calendar.google.com'
+
+const SERVICE_NAMES = { }
+SERVICE_NAMES[SERVICES.STORAGE] = 'Drive'
+SERVICE_NAMES[SERVICES.CONTACTS] = 'Contacts'
+SERVICE_NAMES[SERVICES.NOTES] = 'Notes'
+SERVICE_NAMES[SERVICES.CALENDAR] = 'Calendar'
+
 class Google extends Model {
 
   /* **************************************************************************/
@@ -14,6 +27,10 @@ class Google extends Model {
   /* **************************************************************************/
 
   static get UNREAD_MODES () { return UNREAD_MODES }
+  static get SUPPORTED_SERVICES () { return SERVICES }
+  static get DEFAULT_SERVICES () { return [SERVICES.CALENDAR, SERVICES.STORAGE, SERVICES.NOTES] }
+  static get SERVICE_URLS () { return SERVICE_URLS }
+  static get SERVICE_NAMES () { return SERVICE_NAMES }
 
   /* **************************************************************************/
   // Lifecycle
