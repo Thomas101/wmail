@@ -2,8 +2,14 @@ import './mailboxWindow.less'
 
 const React = require('react')
 const { mailboxStore } = require('../../stores/mailbox')
-const GoogleMailboxMailTab = require('./GoogleMailboxMailTab')
 const Welcome = require('../Welcome/Welcome')
+const Mailbox = require('shared/Models/Mailbox/Mailbox')
+
+const GoogleMailboxCalendarTab = require('./Google/GoogleMailboxCalendarTab')
+const GoogleMailboxContactsTab = require('./Google/GoogleMailboxContactsTab')
+const GoogleMailboxMailTab = require('./Google/GoogleMailboxMailTab')
+const GoogleMailboxNotesTab = require('./Google/GoogleMailboxNotesTab')
+const GoogleMailboxStorageTab = require('./Google/GoogleMailboxStorageTab')
 
 module.exports = React.createClass({
   displayName: 'MailboxWindows',
@@ -27,14 +33,30 @@ module.exports = React.createClass({
   getInitialState () {
     const mailboxState = mailboxStore.getState()
     return {
-      mailboxIds: mailboxState.mailboxIds(),
+      tabIds: this.generateMailboxList(mailboxState),
       activeMailboxId: mailboxState.activeMailboxId() // doesn't cause re-render
     }
   },
 
+  /**
+  * Generates the mailbox list from the state
+  * @param mailboxState: the state of the mailbox
+  * @return a list of mailboxIds + service types
+  */
+  generateMailboxList (mailboxState) {
+    return mailboxState.allMailboxes().reduce((acc, mailbox) => {
+      return acc.concat(
+        [`${mailbox.type}:${mailbox.id}:${Mailbox.SERVICES.DEFAULT}`],
+        mailbox.enabledServies.map((service) => {
+          return `${mailbox.type}:${mailbox.id}:${service}`
+        })
+      )
+    }, [])
+  },
+
   mailboxesChanged (mailboxState) {
     this.setState({
-      mailboxIds: mailboxState.mailboxIds(),
+      tabIds: this.generateMailboxList(mailboxState),
       activeMailboxId: mailboxState.activeMailboxId()
     })
   },
@@ -43,42 +65,48 @@ module.exports = React.createClass({
   // Rendering
   /* **************************************************************************/
 
-  /**
-  * This deals with an electron bug by badly updating the body style
-  * https://github.com/Thomas101/wmail/issues/211
-  */
-  preventWindowMovementBug (nextState) {
-    if (this.state.activeMailboxId !== nextState.activeMailboxId) {
-      setTimeout(() => {
-        document.body.style.position = 'absolute'
-        setTimeout(() => {
-          document.body.style.position = 'fixed'
-        }, 50)
-      }, 50)
-    }
-  },
-
   shouldComponentUpdate (nextProps, nextState) {
-    this.preventWindowMovementBug(nextState)
-
-    if (JSON.stringify(this.state.mailboxIds) !== JSON.stringify(nextState.mailboxIds)) { return true }
-
+    if (JSON.stringify(this.state.tabIds) !== JSON.stringify(nextState.tabIds)) { return true }
     return false
   },
 
+  /**
+  * Renders an individual tab
+  * @param key: the element key
+  * @param mailboxType: the type of mailbox
+  * @param mailboxId: the id of the mailbox
+  * @param service: the service of the tab
+  * @return jsx
+  */
+  renderTab (key, mailboxType, mailboxId, service) {
+    if (mailboxType === Mailbox.TYPE_GMAIL || mailboxType === Mailbox.TYPE_GINBOX) {
+      switch (service) {
+        case Mailbox.SERVICES.DEFAULT: return (<GoogleMailboxMailTab mailboxId={mailboxId} key={key} />)
+        case Mailbox.SERVICES.CALENDAR: return (<GoogleMailboxCalendarTab mailboxId={mailboxId} key={key} />)
+        case Mailbox.SERVICES.CONTACTS: return (<GoogleMailboxContactsTab mailboxId={mailboxId} key={key} />)
+        case Mailbox.SERVICES.NOTES: return (<GoogleMailboxNotesTab mailboxId={mailboxId} key={key} />)
+        case Mailbox.SERVICES.STORAGE: return (<GoogleMailboxStorageTab mailboxId={mailboxId} key={key} />)
+      }
+    }
+
+    return undefined
+  },
+
   render () {
-    const { mailboxIds } = this.state
-    if (mailboxIds.length) {
+    const { tabIds } = this.state
+
+    if (tabIds.length) {
       return (
-        <div className='mailboxes'>
-          {mailboxIds.map((id) => {
-            return (<GoogleMailboxMailTab mailboxId={id} key={id} />)
+        <div className='ReactComponent-MailboxWindows'>
+          {tabIds.map((id) => {
+            const [mailboxType, mailboxId, service] = id.split(':')
+            return this.renderTab(id, mailboxType, mailboxId, service)
           })}
         </div>
       )
     } else {
       return (
-        <div className='mailboxes'>
+        <div className='ReactComponent-MailboxWindows'>
           <Welcome />
         </div>
       )

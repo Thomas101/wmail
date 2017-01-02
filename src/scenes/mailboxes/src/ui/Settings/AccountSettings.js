@@ -11,6 +11,7 @@ const AccountUnreadSettings = require('./Accounts/AccountUnreadSettings')
 const AccountCustomCodeSettings = require('./Accounts/AccountCustomCodeSettings')
 const AccountAdvancedSettings = require('./Accounts/AccountAdvancedSettings')
 const AccountManagementSettings = require('./Accounts/AccountManagementSettings')
+const AccountServiceSettings = require('./Accounts/AccountServiceSettings')
 
 module.exports = React.createClass({
   displayName: 'AccountSettings',
@@ -141,6 +142,7 @@ module.exports = React.createClass({
             <Col md={6}>
               <AccountCustomCodeSettings mailbox={selected} />
               <AccountAdvancedSettings mailbox={selected} showRestart={showRestart} />
+              <AccountServiceSettings mailbox={selected} />
               <AccountManagementSettings mailbox={selected} />
             </Col>
           </Row>

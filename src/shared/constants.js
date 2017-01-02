@@ -2,6 +2,7 @@ module.exports = Object.freeze({
   APP_ID: 'tombeverley.wmail',
 
   MAILBOX_INDEX_KEY: '__index__',
+  MAILBOX_SLEEP_WAIT: 1000 * 30, // 30 seconds
 
   WEB_URL: 'https://thomas101.github.io/wmail/',
   GITHUB_URL: 'https://github.com/Thomas101/wmail/',

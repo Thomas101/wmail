@@ -3,7 +3,6 @@ const { mailboxStore, mailboxActions } = require('../../stores/mailbox')
 const { settingsStore } = require('../../stores/settings')
 const { ipcRenderer } = window.nativeRequire('electron')
 const {mailboxDispatch, navigationDispatch} = require('../../Dispatch')
-const TimerMixin = require('react-timer-mixin')
 const { WebView } = require('../../Components')
 const MailboxSearch = require('./MailboxSearch')
 const MailboxTargetUrl = require('./MailboxTargetUrl')
@@ -13,8 +12,12 @@ const BROWSER_REF = 'browser'
 const SEARCH_REF = 'search'
 
 module.exports = React.createClass({
+
+  /* **************************************************************************/
+  // Class
+  /* **************************************************************************/
+
   displayName: 'MailboxTab',
-  mixins: [TimerMixin],
   propTypes: Object.assign({
     mailboxId: React.PropTypes.string.isRequired,
     service: React.PropTypes.string.isRequired
@@ -44,7 +47,7 @@ module.exports = React.createClass({
 
     // Autofocus on the first run
     if (this.state.isActive) {
-      this.setTimeout(() => { this.refs[BROWSER_REF].focus() })
+      setTimeout(() => { this.refs[BROWSER_REF].focus() })
     }
   },
 
@@ -78,11 +81,13 @@ module.exports = React.createClass({
     const mailboxState = mailboxStore.getState()
     const mailbox = mailboxState.getMailbox(props.mailboxId)
     const settingState = settingsStore.getState()
+
+    const isActive = mailboxState.isActive(props.mailboxId, props.service)
     return {
       mailbox: mailbox,
-      isActive: mailboxState.isActive(props.mailboxId, props.service),
+      isActive: isActive,
       isSearching: mailboxState.isSearchingMailbox(props.mailboxId, props.service),
-      browserSrc: mailbox.url,
+      browserSrc: mailbox.resolveServiceUrl(props.service),
       language: settingState.language,
       focusedUrl: null
     }
@@ -92,22 +97,22 @@ module.exports = React.createClass({
     const { mailboxId, service } = this.props
     const mailbox = mailboxState.getMailbox(mailboxId)
     if (mailbox) {
-      // Precompute
-      const zoomChanged = this.state.mailbox.zoomFactor !== mailbox.zoomFactor
-      const isSearching = mailboxState.isSearchingMailbox(mailboxId, service)
+      this.setState((prevState) => {
+        const isActive = mailboxState.isActive(mailboxId, service)
 
-      // Set the state
-      this.setState({
-        mailbox: mailbox,
-        isActive: mailboxState.isActive(mailboxId, service),
-        isSearching: isSearching,
-        browserSrc: mailbox.url
+        // Submit zoom state
+        if (prevState.mailbox.zoomFactor !== mailbox.zoomFactor) {
+          this.refs[BROWSER_REF].setZoomLevel(mailbox.zoomFactor)
+        }
+
+        // Return state
+        return {
+          mailbox: mailbox,
+          isActive: isActive,
+          isSearching: mailboxState.isSearchingMailbox(mailboxId, service),
+          browserSrc: mailbox.resolveServiceUrl(service)
+        }
       })
-
-      // Apply any actions
-      if (zoomChanged) {
-        this.refs[BROWSER_REF].setZoomLevel(mailbox.zoomFactor)
-      }
     } else {
       this.setState({ mailbox: null })
     }
@@ -164,7 +169,7 @@ module.exports = React.createClass({
   */
   handleRefocus (evt) {
     if (!evt.mailboxId || !evt.service || (evt.mailboxId === this.props.mailboxId && evt.service === this.props.service)) {
-      this.setTimeout(() => { this.refs[BROWSER_REF].focus() })
+      setTimeout(() => { this.refs[BROWSER_REF].focus() })
     }
   },
 
@@ -286,7 +291,7 @@ module.exports = React.createClass({
     // the lamest protection again dragging files into the window
     // but this is the only thing I could find that leaves file drag working
     if (evt.url.indexOf('file://') === 0) {
-      this.setState({ browserSrc: this.state.mailbox.url })
+      this.setState({ browserSrc: this.state.mailbox.resolveServiceUrl(this.props.service) })
     }
   },
 
@@ -350,9 +355,7 @@ module.exports = React.createClass({
   */
   handleIPCSearchStart () {
     if (this.state.isActive) {
-      setTimeout(() => {
-        this.refs[SEARCH_REF].focus()
-      })
+      setTimeout(() => { this.refs[SEARCH_REF].focus() })
     }
   },
 
@@ -395,7 +398,6 @@ module.exports = React.createClass({
   * Renders the app
   */
   render () {
-    if (!this.state.mailbox) { return false }
     // Extract our props and pass props
     const { isActive, browserSrc, focusedUrl, isSearching, mailbox } = this.state
     const { mailboxId, className, ...passProps } = this.props
@@ -406,16 +408,19 @@ module.exports = React.createClass({
       return acc
     }, {})
 
+    // See if we should render
+    if (!mailbox) { return false }
+
     // Prep Clasnames and running functions
     const saltedClassName = [
       className,
-      'mailbox-tab',
+      'ReactComponent-MailboxTab',
       isActive ? 'active' : undefined
     ].filter((c) => !!c).join(' ')
     const zoomFixFn = mailbox.zoomFactor === 1 ? undefined : this.handleZoomFixEvent
 
     if (isActive) {
-      this.setTimeout(() => { this.refs[BROWSER_REF].focus() })
+      setTimeout(() => { this.refs[BROWSER_REF].focus() })
     }
 
     return (

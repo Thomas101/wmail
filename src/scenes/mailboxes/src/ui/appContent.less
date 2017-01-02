@@ -1,22 +1,20 @@
 #app {
-  overflow: hidden;
-
-  .titlebar {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    height: 16px;
-    -webkit-app-region: drag;
-    z-index: 100;
-  }
-
-  &, .mailboxes, .master, .detail {
-    position: absolute;
+  &, .master, .detail, .titlebar {
+    position: fixed;
     top: 0px;
     left: 0px;
     right: 0px;
     bottom: 0px;
+  }
+  & {
+    overflow: hidden;
+  }
+
+  .titlebar {
+    bottom: auto;
+    height: 16px;
+    -webkit-app-region: drag;
+    z-index: 100;
   }
 
   .master {

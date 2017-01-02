@@ -98,7 +98,7 @@ module.exports = React.createClass({
     delete passProps.isSearching
 
     const className = [
-      'mailbox-search',
+      'ReactComponent-MailboxSearch',
       this.props.isSearching ? 'active' : undefined
     ].concat(this.props.className).filter((c) => !!c).join(' ')
 

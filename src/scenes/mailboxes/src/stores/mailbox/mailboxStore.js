@@ -160,6 +160,7 @@ class MailboxStore {
       // Update
       handleUpdate: actions.UPDATE,
       handleSetCustomAvatar: actions.SET_CUSTOM_AVATAR,
+      handleToggleService: actions.TOGGLE_SERVICE,
 
       // Active Update
       handleIncreaseActiveZoom: actions.INCREASE_ACTIVE_ZOOM,
@@ -316,6 +317,20 @@ class MailboxStore {
     }
     persistence.mailbox.setJSONItem(id, data)
     this.mailboxes.set(id, new Mailbox(id, data))
+  }
+
+  handleToggleService ({id, service, enabled}) {
+    const mailbox = this.mailboxes.get(id)
+    const mailboxJS = mailbox.cloneData()
+    const services = new Set(mailbox.enabledServies)
+    if (enabled) {
+      services.add(service)
+    } else {
+      services.delete(service)
+    }
+    mailboxJS.services = Array.from(services)
+    persistence.mailbox.setJSONItem(id, mailboxJS)
+    this.mailboxes.set(id, new Mailbox(id, mailboxJS))
   }
 
   /* **************************************************************************/

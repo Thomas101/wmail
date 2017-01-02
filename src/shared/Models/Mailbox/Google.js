@@ -11,7 +11,7 @@ const UNREAD_MODES = {
 const SERVICE_URLS = { }
 SERVICE_URLS[SERVICES.STORAGE] = 'https://drive.google.com'
 SERVICE_URLS[SERVICES.CONTACTS] = 'https://contacts.google.com'
-SERVICE_URLS[SERVICES.NOTES] = 'https://notes.google.com'
+SERVICE_URLS[SERVICES.NOTES] = 'https://keep.google.com'
 SERVICE_URLS[SERVICES.CALENDAR] = 'https://calendar.google.com'
 
 const SERVICE_NAMES = { }

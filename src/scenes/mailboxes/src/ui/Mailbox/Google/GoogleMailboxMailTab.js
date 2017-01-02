@@ -1,11 +1,11 @@
 const React = require('react')
-const MailboxTab = require('./MailboxTab')
+const MailboxTab = require('../MailboxTab')
 const Mailbox = require('shared/Models/Mailbox/Mailbox')
-const { composeStore, composeActions } = require('../../stores/compose')
-const { mailboxStore } = require('../../stores/mailbox')
-const { settingsStore } = require('../../stores/settings')
-const { googleActions } = require('../../stores/google')
-const { mailboxDispatch } = require('../../Dispatch')
+const { composeStore, composeActions } = require('../../../stores/compose')
+const { mailboxStore } = require('../../../stores/mailbox')
+const { settingsStore } = require('../../../stores/settings')
+const { googleActions } = require('../../../stores/google')
+const { mailboxDispatch } = require('../../../Dispatch')
 const URL = window.nativeRequire('url')
 const {
   remote: {shell}, ipcRenderer

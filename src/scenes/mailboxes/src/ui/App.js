@@ -46,7 +46,6 @@ module.exports = React.createClass({
     mailboxDispatch.on('blurred', this.mailboxBlurred)
 
     ipcRenderer.on('download-completed', this.downloadCompleted)
-    window.addEventListener('resize', this.preventWindowMovementBug, false)
   },
 
   componentWillUnmount () {
@@ -59,9 +58,6 @@ module.exports = React.createClass({
     ipcRenderer.removeListener('download-completed', this.downloadCompleted)
 
     mailboxDispatch.off('blurred', this.mailboxBlurred)
-
-    this.preventWindowMovementBugThrottle = null
-    window.removeEventListener('resize', this.preventWindowMovementBug)
   },
 
   /* **************************************************************************/
@@ -80,10 +76,6 @@ module.exports = React.createClass({
   },
 
   mailboxesChanged (store) {
-    if (this.state.activeMailboxId !== store.activeMailboxId()) {
-      this.preventWindowMovementBug()
-    }
-
     this.setState({
       activeMailboxId: store.activeMailboxId(),
       messagesUnreadCount: store.totalUnreadCountForAppBadge()
@@ -157,24 +149,6 @@ module.exports = React.createClass({
 
   shouldComponentUpdate (nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState)
-  },
-
-  /**
-  * This deals with an electron bug by badly updating the dom styles. The user
-  * should see no change, but the dom should flush out
-  * https://github.com/Thomas101/wmail/issues/211
-  */
-  preventWindowMovementBug () {
-    clearTimeout(this.preventWindowMovementBugThrottle)
-    this.preventWindowMovementBugThrottle = setTimeout(() => {
-      const targets = document.querySelectorAll('body, #app, #app .master, #app .detail')
-      setTimeout(() => {
-        targets.forEach((el) => { el.style.position = 'fixed' })
-        setTimeout(() => {
-          targets.forEach((el) => { el.style.position = 'absolute' })
-        }, 50)
-      }, 50)
-    }, 250)
   },
 
   render () {

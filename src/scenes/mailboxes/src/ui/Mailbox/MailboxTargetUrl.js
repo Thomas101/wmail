@@ -19,7 +19,7 @@ module.exports = React.createClass({
     const { url, ...passProps } = this.props
 
     const className = [
-      'mailbox-target-url',
+      'ReactComponent-MailboxTargetUrl',
       url ? 'active' : undefined
     ].concat(this.props.className).filter((c) => !!c).join(' ')
     return (

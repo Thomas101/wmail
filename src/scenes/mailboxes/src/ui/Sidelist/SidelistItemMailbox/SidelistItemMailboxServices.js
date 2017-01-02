@@ -66,7 +66,7 @@ module.exports = React.createClass({
 
     return (
       <div style={styles.mailboxServiceIcons}>
-        {mailbox.enabledServies.map((service) => {
+        {mailbox.enabledServies.sort().map((service) => {
           return this.renderService(mailbox, service, onOpenService)
         })}
       </div>

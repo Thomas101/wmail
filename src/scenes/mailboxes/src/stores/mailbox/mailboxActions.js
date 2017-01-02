@@ -58,6 +58,16 @@ class MailboxActions {
   setCustomAvatar (id, b64Image) { return { id: id, b64Image: b64Image } }
 
   /**
+  * Toggles a service on or off
+  * @param id: the id of the mailbox
+  * @param service: the service type
+  * @param enabled: true if enabled, false otherwise
+  */
+  toggleService (id, service, enabled) {
+    return { id: id, service: service, enabled: enabled }
+  }
+
+  /**
   * @param id: the id of the mailbox
   * @param show: sets whether to show the unread badge or not
   */

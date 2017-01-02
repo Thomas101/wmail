@@ -98,6 +98,7 @@ module.exports = {
     padding: 2
   },
   mailboxServiceIconImage: {
-    maxWidth: '100%'
+    maxWidth: '100%',
+    maxHeight: 22
   }
 }
