@@ -9,9 +9,7 @@ const persistence = {
 const { MAILBOX_INDEX_KEY } = require('shared/constants')
 const { BLANK_PNG } = require('shared/b64Assets')
 const migration = require('./migration')
-const {
-  remote: ipcRenderer
-} = window.nativeRequire('electron')
+const { ipcRenderer } = window.nativeRequire('electron')
 
 class MailboxStore {
   /* **************************************************************************/

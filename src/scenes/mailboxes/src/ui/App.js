@@ -102,10 +102,6 @@ module.exports = React.createClass({
     })
   },
 
-  shouldComponentUpdate (nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState)
-  },
-
   /* **************************************************************************/
   // IPC Events
   /* **************************************************************************/
@@ -158,6 +154,10 @@ module.exports = React.createClass({
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
+  },
 
   /**
   * This deals with an electron bug by badly updating the dom styles. The user

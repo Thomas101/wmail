@@ -1,51 +1,42 @@
 const React = require('react')
 const { mailboxStore, mailboxActions } = require('../../stores/mailbox')
-const { googleActions } = require('../../stores/google')
 const { settingsStore } = require('../../stores/settings')
-const { composeStore, composeActions } = require('../../stores/compose')
-const {
-  remote: {shell}, ipcRenderer
-} = window.nativeRequire('electron')
-const URL = window.nativeRequire('url')
+const { ipcRenderer } = window.nativeRequire('electron')
 const {mailboxDispatch, navigationDispatch} = require('../../Dispatch')
 const TimerMixin = require('react-timer-mixin')
-const {WebView} = require('../../Components')
+const { WebView } = require('../../Components')
 const MailboxSearch = require('./MailboxSearch')
 const MailboxTargetUrl = require('./MailboxTargetUrl')
 const shallowCompare = require('react-addons-shallow-compare')
 
+const BROWSER_REF = 'browser'
+const SEARCH_REF = 'search'
+
 module.exports = React.createClass({
-  displayName: 'GoogleMailboxWindow',
+  displayName: 'MailboxTab',
   mixins: [TimerMixin],
-  propTypes: {
-    mailboxId: React.PropTypes.string.isRequired
-  },
+  propTypes: Object.assign({
+    mailboxId: React.PropTypes.string.isRequired,
+    service: React.PropTypes.string.isRequired
+  }, WebView.REACT_WEBVIEW_EVENTS.reduce((acc, name) => {
+    acc[name] = React.PropTypes.func
+    return acc
+  }, {})),
 
   /* **************************************************************************/
   // Lifecycle
   /* **************************************************************************/
 
-  componentWillMount () {
-    ipcRenderer.send('prepare-webview-session', {
-      partition: 'persist:' + this.props.mailboxId
-    })
-  },
-
   componentDidMount () {
-    this.gmailCountPromises = {}
-
     // Stores
     mailboxStore.listen(this.mailboxesChanged)
     settingsStore.listen(this.settingsChanged)
-    composeStore.listen(this.composeChanged)
 
     // Handle dispatch events
     mailboxDispatch.on('devtools', this.handleOpenDevTools)
     mailboxDispatch.on('refocus', this.handleRefocus)
     mailboxDispatch.on('reload', this.handleReload)
-    mailboxDispatch.on('openMessage', this.handleOpenMessage)
     mailboxDispatch.respond('fetch-process-memory-info', this.handleFetchProcessMemoryInfo)
-    mailboxDispatch.respond('get-google-unread-count:' + this.props.mailboxId, this.handleGetGoogleUnreadCount)
     ipcRenderer.on('mailbox-window-find-start', this.handleIPCSearchStart)
     ipcRenderer.on('mailbox-window-find-next', this.handleIPCSearchNext)
     ipcRenderer.on('mailbox-window-navigate-back', this.handleIPCNavigateBack)
@@ -53,26 +44,20 @@ module.exports = React.createClass({
 
     // Autofocus on the first run
     if (this.state.isActive) {
-      this.setTimeout(() => { this.refs.browser.focus() })
+      this.setTimeout(() => { this.refs[BROWSER_REF].focus() })
     }
-
-    // Fire an artifical compose change in case the compose event is waiting
-    this.composeChanged(composeStore.getState())
   },
 
   componentWillUnmount () {
     // Stores
     mailboxStore.unlisten(this.mailboxesChanged)
     settingsStore.unlisten(this.settingsChanged)
-    composeStore.unlisten(this.composeChanged)
 
     // Handle dispatch events
     mailboxDispatch.off('devtools', this.handleOpenDevTools)
     mailboxDispatch.off('refocus', this.handleRefocus)
     mailboxDispatch.off('reload', this.handleReload)
-    mailboxDispatch.off('openMessage', this.handleOpenMessage)
     mailboxDispatch.unrespond('fetch-process-memory-info', this.handleFetchProcessMemoryInfo)
-    mailboxDispatch.unrespond('get-google-unread-count:' + this.props.mailboxId, this.handleGetGoogleUnreadCount)
     ipcRenderer.removeListener('mailbox-window-find-start', this.handleIPCSearchStart)
     ipcRenderer.removeListener('mailbox-window-find-next', this.handleIPCSearchNext)
     ipcRenderer.removeListener('mailbox-window-navigate-back', this.handleIPCNavigateBack)
@@ -80,12 +65,7 @@ module.exports = React.createClass({
   },
 
   componentWillReceiveProps (nextProps) {
-    if (this.props.mailboxId !== nextProps.mailboxId) {
-      mailboxDispatch.unrespond('get-google-unread-count:' + this.props.mailboxId, this.handleGetGoogleUnreadCount)
-      mailboxDispatch.respond('get-google-unread-count:' + nextProps.mailboxId, this.handleGetGoogleUnreadCount)
-      ipcRenderer.send('prepare-webview-session', {
-        partition: 'persist:' + nextProps.mailboxId
-      })
+    if (this.props.mailboxId !== nextProps.mailboxId || this.props.service !== nextProps.service) {
       this.setState(this.getInitialState(nextProps))
     }
   },
@@ -100,90 +80,65 @@ module.exports = React.createClass({
     const settingState = settingsStore.getState()
     return {
       mailbox: mailbox,
-      mailboxCount: mailboxState.mailboxCount(),
-      isActive: mailboxState.activeMailboxId() === props.mailboxId,
-      isSearching: mailboxState.isSearchingMailbox(props.mailboxId),
+      isActive: mailboxState.isActive(props.mailboxId, props.service),
+      isSearching: mailboxState.isSearchingMailbox(props.mailboxId, props.service),
       browserSrc: mailbox.url,
       language: settingState.language,
-      ui: settingState.ui,
-      os: settingState.os,
       focusedUrl: null
     }
   },
 
   mailboxesChanged (mailboxState) {
-    const mailbox = mailboxState.getMailbox(this.props.mailboxId)
+    const { mailboxId, service } = this.props
+    const mailbox = mailboxState.getMailbox(mailboxId)
     if (mailbox) {
       // Precompute
       const zoomChanged = this.state.mailbox.zoomFactor !== mailbox.zoomFactor
-      const isSearching = mailboxState.isSearchingMailbox(this.props.mailboxId)
+      const isSearching = mailboxState.isSearchingMailbox(mailboxId, service)
 
       // Set the state
       this.setState({
         mailbox: mailbox,
-        mailboxCount: mailboxState.mailboxCount(),
-        isActive: mailboxState.activeMailboxId() === this.props.mailboxId,
+        isActive: mailboxState.isActive(mailboxId, service),
         isSearching: isSearching,
         browserSrc: mailbox.url
       })
 
       // Apply any actions
       if (zoomChanged) {
-        this.refs.browser.setZoomLevel(mailbox.zoomFactor)
+        this.refs[BROWSER_REF].setZoomLevel(mailbox.zoomFactor)
       }
     } else {
-      this.setState({
-        mailbox: null,
-        mailboxCount: mailboxState.mailboxCount()
-      })
+      this.setState({ mailbox: null })
     }
   },
 
   settingsChanged (settingsState) {
-    const updates = {
-      os: settingsState.os
-    }
+    this.setState((prevState) => {
+      if (settingsState.language !== prevState.language) {
+        const prevLanguage = prevState.language
+        const nextLanguage = settingsState.language
 
-    // Not strictly the react way to do this here, but we need a point to push
-    // changes down to the webview and this seems like the most sensible place
-    // to do that
-    if (settingsState.language !== this.state.language) {
-      const prevLanguage = this.state.language
-      const nextLanguage = settingsState.language
+        if (prevLanguage.spellcheckerLanguage !== nextLanguage.spellcheckerLanguage || prevLanguage.secondarySpellcheckerLanguage !== nextLanguage.secondarySpellcheckerLanguage) {
+          this.refs[BROWSER_REF].send('start-spellcheck', {
+            language: nextLanguage.spellcheckerLanguage,
+            secondaryLanguage: nextLanguage.secondarySpellcheckerLanguage
+          })
+        }
 
-      if (prevLanguage.spellcheckerLanguage !== nextLanguage.spellcheckerLanguage || prevLanguage.secondarySpellcheckerLanguage !== nextLanguage.secondarySpellcheckerLanguage) {
-        this.refs.browser.send('start-spellcheck', {
-          language: nextLanguage.spellcheckerLanguage,
-          secondaryLanguage: nextLanguage.secondarySpellcheckerLanguage
-        })
+        return { language: nextLanguage }
+      } else {
+        return undefined
       }
-
-      updates.language = nextLanguage
-    }
-
-    if (settingsState.ui !== this.state.ui) {
-      this.refs.browser.send('window-icons-in-screen', {
-        inscreen: !settingsState.ui.sidebarEnabled && !settingsState.ui.showTitlebar && process.platform === 'darwin'
-      })
-
-      updates.ui = settingsState.ui
-    }
-
-    if (Object.keys(updates).length) {
-      this.setState(updates)
-    }
+    })
   },
 
-  composeChanged (composeState) {
-    // Look to see if we should dispatch a compose event down to the UI
-    // We clear this directly here rather resetting state
-    if (composeState.composing) {
-      if (this.state.mailboxCount === 1 || composeState.targetMailbox === this.props.mailboxId) {
-        this.refs.browser.send('compose-message', composeState.getMessageInfo())
-        composeActions.clearCompose.defer()
-      }
-    }
-  },
+  /* **************************************************************************/
+  // Webview pass throughs
+  /* **************************************************************************/
+
+  send () { return this.refs[BROWSER_REF].send.apply(this, Array.from(arguments)) },
+  sendWithResponse () { return this.refs[BROWSER_REF].sendWithResponse.apply(this, Array.from(arguments)) },
 
   /* **************************************************************************/
   // Dispatcher Events
@@ -195,7 +150,11 @@ module.exports = React.createClass({
   */
   handleOpenDevTools (evt) {
     if (evt.mailboxId === this.props.mailboxId) {
-      this.refs.browser.openDevTools()
+      if (!evt.service && this.state.isActive) {
+        this.refs[BROWSER_REF].openDevTools()
+      } else if (evt.service === this.props.service) {
+        this.refs[BROWSER_REF].openDevTools()
+      }
     }
   },
 
@@ -204,8 +163,8 @@ module.exports = React.createClass({
   * @param evt: the event that fired
   */
   handleRefocus (evt) {
-    if (evt.mailboxId === this.props.mailboxId || (!evt.mailboxId && this.state.isActive)) {
-      this.setTimeout(() => { this.refs.browser.focus() })
+    if (!evt.mailboxId || !evt.service || (evt.mailboxId === this.props.mailboxId && evt.service === this.props.service)) {
+      this.setTimeout(() => { this.refs[BROWSER_REF].focus() })
     }
   },
 
@@ -215,17 +174,13 @@ module.exports = React.createClass({
   */
   handleReload (evt) {
     if (evt.mailboxId === this.props.mailboxId) {
-      this.refs.browser.reload()
-    }
-  },
-
-  /**
-  * Handles opening a new message
-  * @param evt: the event that fired
-  */
-  handleOpenMessage (evt) {
-    if (evt.mailboxId === this.props.mailboxId) {
-      this.refs.browser.send('open-message', { messageId: evt.messageId, threadId: evt.threadId })
+      if (evt.allServices) {
+        this.refs[BROWSER_REF].reload()
+      } else if (!evt.service && this.state.isActive) {
+        this.refs[BROWSER_REF].reload()
+      } else if (evt.service === this.props.service) {
+        this.refs[BROWSER_REF].reload()
+      }
     }
   },
 
@@ -234,7 +189,7 @@ module.exports = React.createClass({
   * @return promise
   */
   handleFetchProcessMemoryInfo () {
-    return this.refs.browser.getProcessMemoryInfo().then((memoryInfo) => {
+    return this.refs[BROWSER_REF].getProcessMemoryInfo().then((memoryInfo) => {
       return Promise.resolve({
         mailboxId: this.props.mailboxId,
         memoryInfo: memoryInfo
@@ -242,12 +197,21 @@ module.exports = React.createClass({
     })
   },
 
+  /* **************************************************************************/
+  // Browser Events
+  /* **************************************************************************/
+
   /**
-  * Fetches the gmail unread count
-  * @return promise
+  * Calls multiple handlers for browser events
+  * @param callers: a list of callers to execute
+  * @param args: the arguments to supply them with
   */
-  handleGetGoogleUnreadCount () {
-    return this.refs.browser.sendWithResponse('get-google-unread-count', {}, 1000)
+  multiCallBrowserEvent (callers, args) {
+    callers.forEach((caller) => {
+      if (caller) {
+        caller.apply(this, args)
+      }
+    })
   },
 
   /* **************************************************************************/
@@ -260,9 +224,7 @@ module.exports = React.createClass({
   */
   dispatchBrowserIPCMessage (evt) {
     switch (evt.channel.type) {
-      case 'unread-count-changed': this.handleWebViewUnreadCountChange(evt); break
       case 'open-settings': navigationDispatch.openSettings(); break
-      case 'js-new-window': this.handleBrowserJSNewWindow(evt); break
       default: break
     }
   },
@@ -276,26 +238,20 @@ module.exports = React.createClass({
   */
   handleBrowserDomReady () {
     // Push the settings across
-    this.refs.browser.setZoomLevel(this.state.mailbox.zoomFactor)
+    this.refs[BROWSER_REF].setZoomLevel(this.state.mailbox.zoomFactor)
 
     // Language
     const languageSettings = this.state.language
     if (languageSettings.spellcheckerEnabled) {
-      this.refs.browser.send('start-spellcheck', {
+      this.refs[BROWSER_REF].send('start-spellcheck', {
         language: languageSettings.spellcheckerLanguage,
         secondaryLanguage: languageSettings.secondarySpellcheckerLanguage
       })
     }
 
-    // UI Fixes
-    const ui = this.state.ui
-    this.refs.browser.send('window-icons-in-screen', {
-      inscreen: !ui.sidebarEnabled && !ui.showTitlebar && process.platform === 'darwin'
-    })
-
     // Push the custom user content
     if (this.state.mailbox.hasCustomCSS || this.state.mailbox.hasCustomJS) {
-      this.refs.browser.send('inject-custom-content', {
+      this.refs[BROWSER_REF].send('inject-custom-content', {
         css: this.state.mailbox.customCSS,
         js: this.state.mailbox.customJS
       })
@@ -307,20 +263,20 @@ module.exports = React.createClass({
   * be really agressive about setting zoom levels
   */
   handleZoomFixEvent () {
-    this.refs.browser.setZoomLevel(this.state.mailbox.zoomFactor)
+    this.refs[BROWSER_REF].setZoomLevel(this.state.mailbox.zoomFactor)
+  },
+
+  /**
+  * Updates the target url that the user is hovering over
+  * @param evt: the event that fired
+  */
+  handleBrowserUpdateTargetUrl (evt) {
+    this.setState({ focusedUrl: evt.url !== '' ? evt.url : null })
   },
 
   /* **************************************************************************/
   // Browser Events : Navigation
   /* **************************************************************************/
-
-  /**
-  * Handles the webview indicating the unread count may have changed
-  * @param evt: the event that fired
-  */
-  handleWebViewUnreadCountChange (evt) {
-    googleActions.suggestSyncMailboxUnreadCount(this.state.mailbox.id)
-  },
 
   /**
   * Handles a browser preparing to navigate
@@ -335,57 +291,6 @@ module.exports = React.createClass({
   },
 
   /* **************************************************************************/
-  // Browser Events : New Windows
-  /* **************************************************************************/
-
-  /**
-  * Handles a new window open request
-  * @param evt: the event
-  * @param webview: the webview element the event came from
-  */
-  handleBrowserOpenNewWindow (evt) {
-    this.handleOpenNewWindow(evt.url)
-  },
-
-  /**
-  * Handles a new JS browser window
-  * @Param evt: the event that fired
-  */
-  handleBrowserJSNewWindow (evt) {
-    this.handleOpenNewWindow(evt.channel.url)
-  },
-
-  /**
-  * Opens a new url in the correct way
-  * @param url: the url to open
-  */
-  handleOpenNewWindow (url) {
-    const purl = URL.parse(url, true)
-    let mode = 'external'
-    if (purl.host === 'inbox.google.com') {
-      mode = 'source'
-    } else if (purl.host === 'mail.google.com') {
-      if (purl.query.ui === '2' || purl.query.view === 'om') {
-        mode = 'tab'
-      } else {
-        mode = 'source'
-      }
-    }
-
-    switch (mode) {
-      case 'external':
-        shell.openExternal(url, { activate: !this.state.os.openLinksInBackground })
-        break
-      case 'source':
-        this.setState({ browserSrc: url })
-        break
-      case 'tab':
-        ipcRenderer.send('new-window', { partition: 'persist:' + this.props.mailboxId, url: url })
-        break
-    }
-  },
-
-  /* **************************************************************************/
   // Browser Events : Focus
   /* **************************************************************************/
 
@@ -393,14 +298,14 @@ module.exports = React.createClass({
   * Handles a browser focusing
   */
   handleBrowserFocused () {
-    mailboxDispatch.focused(this.props.mailboxId)
+    mailboxDispatch.focused(this.props.mailboxId, this.props.service)
   },
 
   /**
   * Handles a browser un-focusing
   */
   handleBrowserBlurred () {
-    mailboxDispatch.blurred(this.props.mailboxId)
+    mailboxDispatch.blurred(this.props.mailboxId, this.props.service)
   },
 
   /* **************************************************************************/
@@ -413,9 +318,9 @@ module.exports = React.createClass({
   */
   handleSearchChanged (str) {
     if (str.length) {
-      this.refs.browser.findInPage(str)
+      this.refs[BROWSER_REF].findInPage(str)
     } else {
-      this.refs.browser.stopFindInPage('clearSelection')
+      this.refs[BROWSER_REF].stopFindInPage('clearSelection')
     }
   },
 
@@ -424,7 +329,7 @@ module.exports = React.createClass({
   */
   handleSearchNext (str) {
     if (str.length) {
-      this.refs.browser.findInPage(str, { findNext: true })
+      this.refs[BROWSER_REF].findInPage(str, { findNext: true })
     }
   },
 
@@ -432,8 +337,8 @@ module.exports = React.createClass({
   * Handles cancelling searching
   */
   handleSearchCancel () {
-    mailboxActions.stopSearchingMailbox(this.props.mailboxId)
-    this.refs.browser.stopFindInPage('clearSelection')
+    mailboxActions.stopSearchingMailbox(this.props.mailboxId, this.props.service)
+    this.refs[BROWSER_REF].stopFindInPage('clearSelection')
   },
 
   /* **************************************************************************/
@@ -446,7 +351,7 @@ module.exports = React.createClass({
   handleIPCSearchStart () {
     if (this.state.isActive) {
       setTimeout(() => {
-        this.refs.search.focus()
+        this.refs[SEARCH_REF].focus()
       })
     }
   },
@@ -456,7 +361,7 @@ module.exports = React.createClass({
   */
   handleIPCSearchNext () {
     if (this.state.isActive) {
-      this.handleSearchNext(this.refs.search.searchQuery())
+      this.handleSearchNext(this.refs[SEARCH_REF].searchQuery())
     }
   },
 
@@ -465,7 +370,7 @@ module.exports = React.createClass({
   */
   handleIPCNavigateBack () {
     if (this.state.isActive) {
-      this.refs.browser.navigateBack()
+      this.refs[BROWSER_REF].navigateBack()
     }
   },
 
@@ -474,7 +379,7 @@ module.exports = React.createClass({
   */
   handleIPCNavigateForward () {
     if (this.state.isActive) {
-      this.refs.browser.navigateForward()
+      this.refs[BROWSER_REF].navigateForward()
     }
   },
 
@@ -491,41 +396,70 @@ module.exports = React.createClass({
   */
   render () {
     if (!this.state.mailbox) { return false }
+    // Extract our props and pass props
     const { isActive, browserSrc, focusedUrl, isSearching, mailbox } = this.state
+    const { mailboxId, className, ...passProps } = this.props
+    delete passProps.service
+    const webviewEventProps = WebView.REACT_WEBVIEW_EVENTS.reduce((acc, name) => {
+      acc[name] = this.props[name]
+      delete passProps[name]
+      return acc
+    }, {})
 
-    const className = [
-      'mailbox-window',
+    // Prep Clasnames and running functions
+    const saltedClassName = [
+      className,
+      'mailbox-tab',
       isActive ? 'active' : undefined
     ].filter((c) => !!c).join(' ')
+    const zoomFixFn = mailbox.zoomFactor === 1 ? undefined : this.handleZoomFixEvent
 
     if (isActive) {
-      this.setTimeout(() => { this.refs.browser.focus() })
+      this.setTimeout(() => { this.refs[BROWSER_REF].focus() })
     }
 
     return (
-      <div className={className}>
+      <div className={saltedClassName}>
         <WebView
-          loadCommit={mailbox.zoomFactor === 1 ? undefined : this.handleZoomFixEvent}
-          didGetResponseDetails={mailbox.zoomFactor === 1 ? undefined : this.handleZoomFixEvent}
-          didNavigate={mailbox.zoomFactor === 1 ? undefined : this.handleZoomFixEvent}
-          didNavigateInPage={mailbox.zoomFactor === 1 ? undefined : this.handleZoomFixEvent}
-          ref='browser'
+          ref={BROWSER_REF}
           preload='../platform/webviewInjection/google'
-          partition={'persist:' + this.props.mailboxId}
+          partition={'persist:' + mailboxId}
           src={browserSrc}
-          domReady={this.handleBrowserDomReady}
-          ipcMessage={this.dispatchBrowserIPCMessage}
-          newWindow={this.handleBrowserOpenNewWindow}
-          willNavigate={(evt) => {
-            if (mailbox.zoomFactor !== 1) { this.handleZoomFixEvent() }
-            this.handleBrowserWillNavigate(evt)
+
+          {...webviewEventProps}
+          loadCommit={(evt) => {
+            this.multiCallBrowserEvent([zoomFixFn, webviewEventProps.loadCommit], [evt])
           }}
-          focus={this.handleBrowserFocused}
-          blur={this.handleBrowserBlurred}
-          updateTargetUrl={(evt) => this.setState({ focusedUrl: evt.url !== '' ? evt.url : null })} />
+          didGetResponseDetails={(evt) => {
+            this.multiCallBrowserEvent([zoomFixFn, webviewEventProps.didGetResponseDetails], [evt])
+          }}
+          didNavigate={(evt) => {
+            this.multiCallBrowserEvent([zoomFixFn, webviewEventProps.didNavigate], [evt])
+          }}
+          didNavigateInPage={(evt) => {
+            this.multiCallBrowserEvent([zoomFixFn, webviewEventProps.didNavigateInPage], [evt])
+          }}
+          domReady={(evt) => {
+            this.multiCallBrowserEvent([this.handleBrowserDomReady, webviewEventProps.domReady], [evt])
+          }}
+          ipcMessage={(evt) => {
+            this.multiCallBrowserEvent([this.dispatchBrowserIPCMessage, webviewEventProps.ipcMessage], [evt])
+          }}
+          willNavigate={(evt) => {
+            this.multiCallBrowserEvent([zoomFixFn, this.handleBrowserWillNavigate, webviewEventProps.willNavigate], [evt])
+          }}
+          focus={(evt) => {
+            this.multiCallBrowserEvent([this.handleBrowserFocused, webviewEventProps.focus], [evt])
+          }}
+          blur={(evt) => {
+            this.multiCallBrowserEvent([this.handleBrowserBlurred, webviewEventProps.blur], [evt])
+          }}
+          updateTargetUrl={(evt) => {
+            this.multiCallBrowserEvent([this.handleBrowserUpdateTargetUrl, webviewEventProps.updateTargetUrl], [evt])
+          }} />
         <MailboxTargetUrl url={focusedUrl} />
         <MailboxSearch
-          ref='search'
+          ref={SEARCH_REF}
           isSearching={isSearching}
           onSearchChange={this.handleSearchChanged}
           onSearchNext={this.handleSearchNext}

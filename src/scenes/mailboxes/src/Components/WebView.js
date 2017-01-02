@@ -31,6 +31,7 @@ const WEBVIEW_EVENTS = [
   'blur',
   'update-target-url'
 ]
+const REACT_WEBVIEW_EVENTS = WEBVIEW_EVENTS.map((name) => camelCase(name))
 
 const WEBVIEW_PROPS = {
   autosize: React.PropTypes.bool,
@@ -53,10 +54,13 @@ module.exports = React.createClass({
   displayName: 'BrowserView',
   propTypes: Object.assign({
     className: React.PropTypes.string
-  }, WEBVIEW_PROPS, WEBVIEW_EVENTS.reduce((acc, name) => {
-    acc[camelCase(name)] = React.PropTypes.func
+  }, WEBVIEW_PROPS, REACT_WEBVIEW_EVENTS.reduce((acc, name) => {
+    acc[name] = React.PropTypes.func
     return acc
   }, {})),
+  statics: {
+    REACT_WEBVIEW_EVENTS: REACT_WEBVIEW_EVENTS
+  },
 
   /* **************************************************************************/
   // Lifecycle

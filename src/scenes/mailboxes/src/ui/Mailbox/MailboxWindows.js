@@ -1,10 +1,8 @@
 import './mailboxWindow.less'
 
 const React = require('react')
-const flux = {
-  mailbox: require('../../stores/mailbox')
-}
-const GoogleMailboxWindow = require('./GoogleMailboxWindow')
+const { mailboxStore } = require('../../stores/mailbox')
+const GoogleMailboxMailTab = require('./GoogleMailboxMailTab')
 const Welcome = require('../Welcome/Welcome')
 
 module.exports = React.createClass({
@@ -15,11 +13,11 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   componentDidMount () {
-    flux.mailbox.S.listen(this.mailboxesChanged)
+    mailboxStore.listen(this.mailboxesChanged)
   },
 
   componentWillUnmount () {
-    flux.mailbox.S.unlisten(this.mailboxesChanged)
+    mailboxStore.unlisten(this.mailboxesChanged)
   },
 
   /* **************************************************************************/
@@ -27,17 +25,17 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState () {
-    const mailboxStore = flux.mailbox.S.getState()
+    const mailboxState = mailboxStore.getState()
     return {
-      mailboxIds: mailboxStore.mailboxIds(),
-      activeMailboxId: mailboxStore.activeMailboxId() // doesn't cause re-render
+      mailboxIds: mailboxState.mailboxIds(),
+      activeMailboxId: mailboxState.activeMailboxId() // doesn't cause re-render
     }
   },
 
-  mailboxesChanged (store) {
+  mailboxesChanged (mailboxState) {
     this.setState({
-      mailboxIds: store.mailboxIds(),
-      activeMailboxId: store.activeMailboxId()
+      mailboxIds: mailboxState.mailboxIds(),
+      activeMailboxId: mailboxState.activeMailboxId()
     })
   },
 
@@ -63,23 +61,18 @@ module.exports = React.createClass({
   shouldComponentUpdate (nextProps, nextState) {
     this.preventWindowMovementBug(nextState)
 
-    if (!this.state || !nextState) { return true }
-    if (this.state.mailboxIds.length !== nextState.mailboxIds.length) { return true }
-
-    const mismatch = this.state.mailboxIds.findIndex((id) => {
-      return nextState.mailboxIds.findIndex((nId) => nId === id) === -1
-    }) !== -1
-    if (mismatch) { return true }
+    if (JSON.stringify(this.state.mailboxIds) !== JSON.stringify(nextState.mailboxIds)) { return true }
 
     return false
   },
 
   render () {
-    if (this.state.mailboxIds.length) {
+    const { mailboxIds } = this.state
+    if (mailboxIds.length) {
       return (
         <div className='mailboxes'>
-          {this.state.mailboxIds.map((id) => {
-            return (<GoogleMailboxWindow mailboxId={id} key={id} />)
+          {mailboxIds.map((id) => {
+            return (<GoogleMailboxMailTab mailboxId={id} key={id} />)
           })}
         </div>
       )

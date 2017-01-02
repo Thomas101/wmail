@@ -44,7 +44,7 @@ module.exports = React.createClass({
     }
 
     this.setState({ editingJS: false, editingCSS: false })
-    mailboxDispatch.reload(this.props.mailbox.id)
+    mailboxDispatch.reloadAllServices(this.props.mailbox.id)
   },
 
   /* **************************************************************************/

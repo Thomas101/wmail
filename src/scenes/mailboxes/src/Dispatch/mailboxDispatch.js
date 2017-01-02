@@ -118,41 +118,54 @@ class MailboxDispatch {
   /**
   * Emits a open dev tools command
   * @param mailboxId: the id of the mailbox
+  * @param service: the service to open for
   */
-  openDevTools (mailboxId) {
-    this.emit('devtools', { mailboxId: mailboxId })
+  openDevTools (mailboxId, service) {
+    this.emit('devtools', { mailboxId: mailboxId, service: service })
   }
 
   /**
   * Emits a focus event for a mailbox
   * @param mailboxId=undefined: the id of the mailbox
+  * @param service=undefined: the service of the mailbox
   */
-  refocus (mailboxId = undefined) {
-    this.emit('refocus', { mailboxId: mailboxId })
+  refocus (mailboxId = undefined, service = undefined) {
+    this.emit('refocus', { mailboxId: mailboxId, service: service })
   }
 
   /**
   * Reloads a mailbox
   * @param mailboxId: the id of mailbox
+  * @param service: the service of the mailbox
   */
-  reload (mailboxId) {
-    this.emit('reload', { mailboxId: mailboxId })
+  reload (mailboxId, service) {
+    this.emit('reload', { mailboxId: mailboxId, service: service, allServices: false })
+  }
+
+  /**
+  * Reloads all mailboxes services with the given id
+  * @param mailboxId: the id of mailbox
+  */
+  reloadAllServices (mailboxId) {
+    this.emit('reload', { mailboxId: mailboxId, allServices: true })
   }
 
   /**
   * Emis a blurred event for a mailbox
   * @param mailboxId: the id of the mailbox
+  * @param service: the service of the mailbox
   */
-  blurred (mailboxId) {
-    this.emit('blurred', { mailboxId: mailboxId })
+  blurred (mailboxId, service) {
+    this.emit('blurred', { mailboxId: mailboxId, service: service })
   }
 
   /**
   * Emis a focused event for a mailbox
   * @param mailboxId: the id of the mailbox
+  * @param service: the service of the mailbox
   */
-  focused (mailboxId) {
-    this.emit('focused', { mailboxId: mailboxId })
+  focused (mailboxId, service) {
+    this.emit('focused', { mailboxId: mailboxId, service: service })
   }
 
   /**

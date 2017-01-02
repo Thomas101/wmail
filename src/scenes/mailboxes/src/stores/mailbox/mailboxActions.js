@@ -278,7 +278,7 @@ class MailboxActions {
         })
       })
       .then(() => {
-        mailboxDispatch.reload(id)
+        mailboxDispatch.reloadAllServices(id)
         return Promise.resolve()
       })
 
