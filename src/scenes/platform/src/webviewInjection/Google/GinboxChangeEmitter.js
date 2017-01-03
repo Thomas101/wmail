@@ -1,6 +1,7 @@
 const {ipcRenderer} = require('electron')
 const injector = require('../injector')
 const GinboxApi = require('./GinboxApi')
+const MAX_MESSAGE_HASH_TIME = 1000 * 60 * 10 // 10 mins
 
 class GinboxChangeEmitter {
 
@@ -10,7 +11,8 @@ class GinboxChangeEmitter {
 
   constructor () {
     this.state = {
-      messageHash: this.currentMessageHash
+      messageHash: this.currentMessageHash,
+      messageHashTime: new Date().getTime()
     }
 
     this.latestMessageInterval = setInterval(this.recheckMessageHash.bind(this), 2000)
@@ -38,9 +40,11 @@ class GinboxChangeEmitter {
   * changed
   */
   recheckMessageHash () {
+    const now = new Date().getTime()
     const nextMessageHash = this.currentMessageHash
-    if (this.state.messageHash !== nextMessageHash) {
+    if (this.state.messageHash !== nextMessageHash || now - this.state.messageHashTime > MAX_MESSAGE_HASH_TIME) {
       this.state.messageHash = nextMessageHash
+      this.state.messageHashTime = now
       clearTimeout(this.clickThrottle)
       ipcRenderer.sendToHost({
         type: 'unread-count-changed',
