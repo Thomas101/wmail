@@ -99,6 +99,12 @@ module.exports = {
   },
   mailboxServiceIconImage: {
     maxWidth: '100%',
+    maxHeight: 18,
+    opacity: 0.7,
+    filter: 'grayscale(25%)'
+  },
+  mailboxServiceIconImageActive: {
+    maxWidth: '100%',
     maxHeight: 18
   }
 }

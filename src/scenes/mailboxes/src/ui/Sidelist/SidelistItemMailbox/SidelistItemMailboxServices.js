@@ -11,6 +11,8 @@ module.exports = React.createClass({
   displayName: 'SidelistItemMailboxServices',
   propTypes: {
     mailbox: React.PropTypes.object.isRequired,
+    isActiveMailbox: React.PropTypes.bool.isRequired,
+    activeService: React.PropTypes.string.isRequired,
     onOpenService: React.PropTypes.func.isRequired
   },
 
@@ -44,10 +46,11 @@ module.exports = React.createClass({
   * Renders a single service
   * @param mailbox: the mailbox we are rendering for
   * @param service: the service type
+  * @param isActive: true if this service is active
   * @param onOpenService: execute on click
   * @return jsx
   */
-  renderService (mailbox, service, onOpenService) {
+  renderService (mailbox, service, isActive, onOpenService) {
     return (
       <div
         key={service}
@@ -55,19 +58,20 @@ module.exports = React.createClass({
         onClick={(evt) => onOpenService(evt, service)}>
         <img
           src={this.getServiceIconUrl(mailbox.type, service)}
-          style={styles.mailboxServiceIconImage} />
+          style={isActive ? styles.mailboxServiceIconImageActive : styles.mailboxServiceIconImage} />
       </div>
     )
   },
 
   render () {
-    const { mailbox, onOpenService } = this.props
+    const { mailbox, isActiveMailbox, activeService, onOpenService } = this.props
     if (!mailbox.hasEnabledServices) { return null }
 
     return (
       <div style={styles.mailboxServiceIcons}>
         {mailbox.enabledServies.map((service) => {
-          return this.renderService(mailbox, service, onOpenService)
+          const isActive = isActiveMailbox && activeService === service
+          return this.renderService(mailbox, service, isActive, onOpenService)
         })}
       </div>
     )

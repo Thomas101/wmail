@@ -47,6 +47,7 @@ module.exports = React.createClass({
     return {
       mailbox: mailbox,
       isActive: mailboxState.activeMailboxId() === this.props.mailboxId,
+      activeService: mailboxState.activeMailboxService(),
       popover: false,
       popoverAnchor: null,
       hovering: false
@@ -57,7 +58,8 @@ module.exports = React.createClass({
     const mailbox = mailboxState.getMailbox(this.props.mailboxId)
     this.setState({
       mailbox: mailbox,
-      isActive: mailboxState.activeMailboxId() === this.props.mailboxId
+      isActive: mailboxState.activeMailboxId() === this.props.mailboxId,
+      activeService: mailboxState.activeMailboxService()
     })
   },
 
@@ -161,7 +163,7 @@ module.exports = React.createClass({
 
   render () {
     if (!this.state.mailbox) { return null }
-    const { mailbox, isActive, popover, popoverAnchor, hovering } = this.state
+    const { mailbox, isActive, activeService, popover, popoverAnchor, hovering } = this.state
     const { index, isFirst, isLast, style, ...passProps } = this.props
     delete passProps.mailboxId
 
@@ -188,6 +190,8 @@ module.exports = React.createClass({
           onClick={this.handleClick} />
         <SidelistItemMailboxServices
           mailbox={mailbox}
+          isActiveMailbox={isActive}
+          activeService={activeService}
           onOpenService={this.handleOpenService} />
         {this.renderBadge(mailbox)}
         {this.renderActiveIndicator(mailbox, isActive)}
