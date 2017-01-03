@@ -69,7 +69,6 @@ module.exports = React.createClass({
         ref={REF}
         mailboxId={mailboxId}
         service={Mailbox.SERVICES.NOTES}
-        allowSleeping
         newWindow={(evt) => { this.handleOpenNewWindow(evt.url) }} />
     )
   }

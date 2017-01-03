@@ -43,16 +43,20 @@ module.exports = React.createClass({
   getInitialState (props = this.props) {
     const mailboxState = mailboxStore.getState()
     const isActive = mailboxState.isActive(props.mailboxId, props.service)
+    const mailbox = mailboxState.getMailbox(props.mailboxId)
     return {
       isActive: isActive,
-      isSleeping: !isActive
+      isSleeping: !isActive,
+      allowsSleeping: mailbox ? (new Set(mailbox.sleepableServices)).has(props.service) : true
     }
   },
 
   mailboxUpdated (mailboxState) {
     this.setState((prevState) => {
+      const mailbox = mailboxState.getMailbox(this.props.mailboxId)
       const update = {
-        isActive: mailboxState.isActive(this.props.mailboxId, this.props.service)
+        isActive: mailboxState.isActive(this.props.mailboxId, this.props.service),
+        allowsSleeping: mailbox ? (new Set(mailbox.sleepableServices)).has(this.props.service) : true
       }
       if (prevState.isActive !== update.isActive) {
         clearTimeout(this.sleepWait)
@@ -92,7 +96,7 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   render () {
-    if (this.state.isSleeping) {
+    if (this.state.allowsSleeping && this.state.isSleeping) {
       return false
     } else {
       return (<MailboxTab ref={REF} {...this.props} />)

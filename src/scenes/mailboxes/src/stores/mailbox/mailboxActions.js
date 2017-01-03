@@ -58,16 +58,6 @@ class MailboxActions {
   setCustomAvatar (id, b64Image) { return { id: id, b64Image: b64Image } }
 
   /**
-  * Toggles a service on or off
-  * @param id: the id of the mailbox
-  * @param service: the service type
-  * @param enabled: true if enabled, false otherwise
-  */
-  toggleService (id, service, enabled) {
-    return { id: id, service: service, enabled: enabled }
-  }
-
-  /**
   * @param id: the id of the mailbox
   * @param show: sets whether to show the unread badge or not
   */
@@ -142,6 +132,56 @@ class MailboxActions {
   */
   artificiallyPersistCookies (id, persist) {
     return this.update(id, { artificiallyPersistCookies: persist })
+  }
+
+  /* **************************************************************************/
+  // Updating: Services
+  /* **************************************************************************/
+
+  /**
+  * Adds a service
+  * @param id: the id of the mailbox
+  * @Param service: the service type
+  */
+  addService (id, service) {
+    return { id: id, service: service }
+  }
+
+  /**
+  * Removes a service
+  * @param id: the id of the mailbox
+  * @Param service: the service type
+  */
+  removeService (id, service) {
+    return { id: id, service: service }
+  }
+
+  /**
+  * Moves a service up
+  * @param id: the id of the mailbox
+  * @Param service: the service type
+  */
+  moveServiceUp (id, service) {
+    return { id: id, service: service }
+  }
+
+  /**
+  * Moves a service down
+  * @param id: the id of the mailbox
+  * @Param service: the service type
+  */
+  moveServiceDown (id, service) {
+    return { id: id, service: service }
+  }
+
+  /**
+  * Toggles the service sleepable state
+  * @param id: the id of the mailbox
+  * @param service: service type
+  * @param sleepable: true if the service is sleepable, false otherwise
+  */
+  toggleServiceSleepable (id, service, sleepable) {
+    return { id: id, service: service, sleepable: sleepable }
   }
 
   /* **************************************************************************/

@@ -89,16 +89,16 @@ module.exports = {
   mailboxServiceIcons: {
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'center',
     marginLeft: 2,
     marginRight: 2
   },
   mailboxServiceIcon: {
     cursor: 'pointer',
-    flexBasis: '100%',
     padding: 2
   },
   mailboxServiceIconImage: {
     maxWidth: '100%',
-    maxHeight: 22
+    maxHeight: 18
   }
 }

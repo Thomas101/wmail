@@ -67,7 +67,7 @@ class Mailbox extends Model {
     switch (this.type) {
       case Mailbox.TYPE_GINBOX:
       case Mailbox.TYPE_GMAIL:
-        return Google.SUPPORTED_SERVICES
+        return Array.from(Google.SUPPORTED_SERVICES)
       default:
         return []
     }
@@ -76,13 +76,14 @@ class Mailbox extends Model {
     switch (this.type) {
       case Mailbox.TYPE_GINBOX:
       case Mailbox.TYPE_GMAIL:
-        return Google.DEFAULT_SERVICES
+        return Array.from(Google.DEFAULT_SERVICES)
       default:
         return []
     }
   }
   get enabledServies () { return this._value_('services', this.defaultServices) }
   get hasEnabledServices () { return this.enabledServies.length !== 0 }
+  get sleepableServices () { return this._value_('sleepableServices', this.supportedServices) }
 
   /**
   * Resolves the url for a service

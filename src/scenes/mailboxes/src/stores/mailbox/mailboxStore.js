@@ -160,7 +160,13 @@ class MailboxStore {
       // Update
       handleUpdate: actions.UPDATE,
       handleSetCustomAvatar: actions.SET_CUSTOM_AVATAR,
-      handleToggleService: actions.TOGGLE_SERVICE,
+
+      // Update: Services
+      handleAddService: actions.ADD_SERVICE,
+      handleRemoveService: actions.REMOVE_SERVICE,
+      handleMoveServiceUp: actions.MOVE_SERVICE_UP,
+      handleMoveServiceDown: actions.MOVE_SERVICE_DOWN,
+      handleToggleServiceSleepable: actions.TOGGLE_SERVICE_SLEEPABLE,
 
       // Active Update
       handleIncreaseActiveZoom: actions.INCREASE_ACTIVE_ZOOM,
@@ -182,6 +188,20 @@ class MailboxStore {
       handleMoveUp: actions.MOVE_UP,
       handleMoveDown: actions.MOVE_DOWN
     })
+  }
+
+  /* **************************************************************************/
+  // Utils
+  /* **************************************************************************/
+
+  /**
+  * Saves a mailbox
+  * @param mailboxId: the id of the mailbox
+  * @param mailboxJS: the js of the mailbox
+  */
+  saveMailbox (mailboxId, mailboxJS) {
+    persistence.mailbox.setJSONItem(mailboxId, mailboxJS)
+    this.mailboxes.set(mailboxId, new Mailbox(mailboxId, mailboxJS))
   }
 
   /* **************************************************************************/
@@ -227,8 +247,7 @@ class MailboxStore {
   * @param data: the data to seed the mailbox with
   */
   handleCreate ({id, data}) {
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
+    this.saveMailbox(id, data)
     ipcRenderer.send('prepare-webview-session', { partition: 'persist:' + id })
     this.index.push(id)
     persistence.mailbox.setJSONItem(MAILBOX_INDEX_KEY, this.index)
@@ -291,8 +310,7 @@ class MailboxStore {
     } else {
       this._updateMailboxJSWithPath_(mailboxJS, path, value)
     }
-    persistence.mailbox.setJSONItem(id, mailboxJS)
-    this.mailboxes.set(id, new Mailbox(id, mailboxJS))
+    this.saveMailbox(id, mailboxJS)
   }
 
   /**
@@ -315,22 +333,65 @@ class MailboxStore {
         delete data.customAvatar
       }
     }
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
+    this.saveMailbox(id, data)
   }
 
-  handleToggleService ({id, service, enabled}) {
+  /* **************************************************************************/
+  // Handlers Update Service
+  /* **************************************************************************/
+
+  handleAddService ({ id, service }) {
     const mailbox = this.mailboxes.get(id)
-    const mailboxJS = mailbox.cloneData()
-    const services = new Set(mailbox.enabledServies)
-    if (enabled) {
-      services.add(service)
-    } else {
-      services.delete(service)
+
+    const supportedIndex = new Set(mailbox.supportedServices)
+    if (!supportedIndex.has(service)) { return }
+
+    const enabledIndex = new Set(mailbox.enabledServies)
+    if (enabledIndex.has(service)) { return }
+
+    this.saveMailbox(id, mailbox.changeData({
+      services: Array.from(mailbox.enabledServies).concat(service)
+    }))
+  }
+
+  handleRemoveService ({ id, service }) {
+    const mailbox = this.mailboxes.get(id)
+    this.saveMailbox(id, mailbox.changeData({
+      services: Array.from(mailbox.enabledServies).filter((s) => s !== service)
+    }))
+  }
+
+  handleMoveServiceUp ({ id, service }) {
+    const mailbox = this.mailboxes.get(id)
+    const services = Array.from(mailbox.enabledServies)
+    const serviceIndex = services.findIndex((s) => s === service)
+    if (serviceIndex !== -1 && serviceIndex !== 0) {
+      services.splice(serviceIndex - 1, 0, services.splice(serviceIndex, 1)[0])
+      this.saveMailbox(id, mailbox.changeData({
+        services: services
+      }))
     }
-    mailboxJS.services = Array.from(services)
-    persistence.mailbox.setJSONItem(id, mailboxJS)
-    this.mailboxes.set(id, new Mailbox(id, mailboxJS))
+  }
+
+  handleMoveServiceDown ({ id, service }) {
+    const mailbox = this.mailboxes.get(id)
+    const services = Array.from(mailbox.enabledServies)
+    const serviceIndex = services.findIndex((s) => s === service)
+    if (serviceIndex !== -1 && serviceIndex < services.length) {
+      services.splice(serviceIndex + 1, 0, services.splice(serviceIndex, 1)[0])
+      this.saveMailbox(id, mailbox.changeData({
+        services: services
+      }))
+    }
+  }
+
+  handleToggleServiceSleepable ({ id, service, sleepable }) {
+    const mailbox = this.mailboxes.get(id)
+    const services = new Set(mailbox.sleepableServices)
+    services[sleepable ? 'add' : 'delete'](service)
+    this.saveMailbox(id, mailbox.changeData({
+      sleepableServices: Array.from(services)
+    }))
   }
 
   /* **************************************************************************/
@@ -343,8 +404,7 @@ class MailboxStore {
       const mailboxJS = mailbox.changeData({
         zoomFactor: Math.min(1.5, mailbox.zoomFactor + 0.1)
       })
-      persistence.mailbox.setJSONItem(mailbox.id, mailboxJS)
-      this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
+      this.saveMailbox(mailbox.id, mailboxJS)
     }
   }
 
@@ -354,8 +414,7 @@ class MailboxStore {
       const mailboxJS = mailbox.changeData({
         zoomFactor: Math.min(1.5, mailbox.zoomFactor - 0.1)
       })
-      persistence.mailbox.setJSONItem(mailbox.id, mailboxJS)
-      this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
+      this.saveMailbox(mailbox.id, mailboxJS)
     }
   }
 
@@ -363,8 +422,7 @@ class MailboxStore {
     const mailbox = this.activeMailbox()
     if (mailbox) {
       const mailboxJS = mailbox.changeData({ zoomFactor: 1.0 })
-      persistence.mailbox.setJSONItem(mailbox.id, mailboxJS)
-      this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
+      this.saveMailbox(mailbox.id, mailboxJS)
     }
   }
 
@@ -380,8 +438,7 @@ class MailboxStore {
   handleUpdateGoogleConfig ({id, updates}) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleConf = Object.assign(data.googleConf || {}, updates)
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
+    this.saveMailbox(id, data)
   }
 
   /**
@@ -411,8 +468,7 @@ class MailboxStore {
     const data = this.mailboxes.get(id).cloneData()
     data.googleUnreadMessageInfo_v2 = data.googleUnreadMessageInfo_v2 || {}
     data.googleUnreadMessageInfo_v2.latestUnreadThreads = nextThreads
-    persistence.mailbox.setJSONItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
+    this.saveMailbox(id, data)
   }
 
   /* **************************************************************************/

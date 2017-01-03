@@ -27,7 +27,7 @@ class Google extends Model {
   /* **************************************************************************/
 
   static get UNREAD_MODES () { return UNREAD_MODES }
-  static get SUPPORTED_SERVICES () { return SERVICES }
+  static get SUPPORTED_SERVICES () { return Object.keys(SERVICES).map((k) => SERVICES[k]) }
   static get DEFAULT_SERVICES () { return [SERVICES.CALENDAR, SERVICES.STORAGE, SERVICES.NOTES] }
   static get SERVICE_URLS () { return SERVICE_URLS }
   static get SERVICE_NAMES () { return SERVICE_NAMES }

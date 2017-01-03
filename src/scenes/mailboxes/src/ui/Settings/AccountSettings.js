@@ -138,11 +138,11 @@ module.exports = React.createClass({
             <Col md={6}>
               <AccountUnreadSettings mailbox={selected} />
               <AccountAvatarSettings mailbox={selected} />
+              <AccountCustomCodeSettings mailbox={selected} />
             </Col>
             <Col md={6}>
-              <AccountCustomCodeSettings mailbox={selected} />
-              <AccountAdvancedSettings mailbox={selected} showRestart={showRestart} />
               <AccountServiceSettings mailbox={selected} />
+              <AccountAdvancedSettings mailbox={selected} showRestart={showRestart} />
               <AccountManagementSettings mailbox={selected} />
             </Col>
           </Row>
