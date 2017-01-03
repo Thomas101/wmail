@@ -20,7 +20,8 @@ module.exports = React.createClass({
   displayName: 'MailboxTab',
   propTypes: Object.assign({
     mailboxId: React.PropTypes.string.isRequired,
-    service: React.PropTypes.string.isRequired
+    service: React.PropTypes.string.isRequired,
+    preload: React.PropTypes.string
   }, WebView.REACT_WEBVIEW_EVENTS.reduce((acc, name) => {
     acc[name] = React.PropTypes.func
     return acc
@@ -400,7 +401,7 @@ module.exports = React.createClass({
   render () {
     // Extract our props and pass props
     const { isActive, browserSrc, focusedUrl, isSearching, mailbox } = this.state
-    const { mailboxId, className, ...passProps } = this.props
+    const { mailboxId, className, preload, ...passProps } = this.props
     delete passProps.service
     const webviewEventProps = WebView.REACT_WEBVIEW_EVENTS.reduce((acc, name) => {
       acc[name] = this.props[name]
@@ -427,7 +428,7 @@ module.exports = React.createClass({
       <div className={saltedClassName}>
         <WebView
           ref={BROWSER_REF}
-          preload='../platform/webviewInjection/google'
+          preload={preload}
           partition={'persist:' + mailboxId}
           src={browserSrc}
 

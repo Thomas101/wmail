@@ -1,8 +1,8 @@
 const elconsole = require('./elconsole')
 try {
-  const Google = require('./Google/Google')
+  const GoogleService = require('./Google/GoogleService')
   /*eslint-disable */
-  const google = new Google()
+  const googleService = new GoogleService()
   /*eslint-enable */
 } catch (ex) {
   elconsole.error('Error', ex)

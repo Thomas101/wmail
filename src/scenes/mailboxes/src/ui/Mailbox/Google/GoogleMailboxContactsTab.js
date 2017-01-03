@@ -67,6 +67,7 @@ module.exports = React.createClass({
     return (
       <MailboxTabSleepable
         ref={REF}
+        preload='../platform/webviewInjection/googleService'
         mailboxId={mailboxId}
         service={Mailbox.SERVICES.CONTACTS}
         newWindow={(evt) => { this.handleOpenNewWindow(evt.url) }} />

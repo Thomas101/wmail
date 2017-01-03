@@ -189,6 +189,7 @@ module.exports = React.createClass({
     return (
       <MailboxTab
         ref={REF}
+        preload='../platform/webviewInjection/googleMail'
         mailboxId={this.props.mailboxId}
         service={Mailbox.SERVICES.DEFAULT}
         newWindow={(evt) => { this.handleOpenNewWindow(evt.url) }}

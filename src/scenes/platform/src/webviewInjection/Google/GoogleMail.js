@@ -1,5 +1,3 @@
-const Browser = require('../Browser/Browser')
-const WMail = require('../WMail/WMail')
 const injector = require('../injector')
 const {ipcRenderer} = require('electron')
 const GoogleWindowOpen = require('./GoogleWindowOpen')
@@ -10,16 +8,16 @@ const GinboxChangeEmitter = require('./GinboxChangeEmitter')
 const GinboxApi = require('./GinboxApi')
 const GmailApiExtras = require('./GmailApiExtras')
 const elconsole = require('../elconsole')
+const GoogleService = require('./GoogleService')
 
-class Google {
+class GoogleMail extends GoogleService {
 
   /* **************************************************************************/
   // Lifecycle
   /* **************************************************************************/
 
   constructor () {
-    this.browser = new Browser()
-    this.wmail = new WMail()
+    super()
     this.googleWindowOpen = new GoogleWindowOpen()
 
     this.sidebarStylesheet = document.createElement('style')
@@ -177,4 +175,4 @@ class Google {
   }
 }
 
-module.exports = Google
+module.exports = GoogleMail
