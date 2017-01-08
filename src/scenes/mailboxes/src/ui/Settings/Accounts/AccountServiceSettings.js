@@ -1,6 +1,6 @@
 const React = require('react')
 const {
-  Paper, IconButton, FontIcon, FlatButton, Popover, Menu, MenuItem, Checkbox,
+  Paper, IconButton, FontIcon, FlatButton, Popover, Menu, MenuItem, Checkbox, Toggle,
   Table, TableBody, TableRow, TableRowColumn, TableHeader, TableHeaderColumn
 } = require('material-ui')
 const mailboxActions = require('../../../stores/mailbox/mailboxActions')
@@ -230,6 +230,11 @@ module.exports = React.createClass({
         <h1 style={settingStyles.subheading}>Services</h1>
         {this.renderServices(mailbox, mailbox.enabledServies, mailbox.sleepableServices)}
         {this.renderAddPopover(mailbox, disabledServices)}
+        <Toggle
+          toggled={mailbox.compactServicesUI}
+          label='Compact Services UI'
+          labelPosition='right'
+          onToggle={(evt, toggled) => mailboxActions.setCompactServicesUI(mailbox.id, toggled)} />
       </Paper>
     )
   }

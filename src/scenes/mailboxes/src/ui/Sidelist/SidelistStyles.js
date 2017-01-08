@@ -86,25 +86,43 @@ module.exports = {
   /**
   * Mailbox Item: Services
   */
-  mailboxServiceIcons: {
+  mailboxServiceIconsCompact: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     marginLeft: 2,
     marginRight: 2
   },
-  mailboxServiceIcon: {
+  mailboxServiceIconCompact: {
     cursor: 'pointer',
     padding: 2
   },
-  mailboxServiceIconImage: {
+  mailboxServiceIconImageCompact: {
     maxWidth: '100%',
     maxHeight: 18,
     opacity: 0.7,
     filter: 'grayscale(25%)'
   },
-  mailboxServiceIconImageActive: {
+  mailboxServiceIconImageActiveCompact: {
     maxWidth: '100%',
     maxHeight: 18
+  },
+  mailboxServiceIconsFull: {
+
+  },
+  mailboxServiceIconImageFull: {
+    display: 'block',
+    margin: '4px auto',
+    borderWidth: 3,
+    borderStyle: 'solid',
+    cursor: 'pointer',
+    opacity: 0.8
+  },
+  mailboxServiceIconImageFullActive: {
+    display: 'block',
+    margin: '4px auto',
+    borderWidth: 3,
+    borderStyle: 'solid',
+    cursor: 'pointer'
   }
 }

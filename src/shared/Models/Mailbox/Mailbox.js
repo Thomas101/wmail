@@ -84,6 +84,7 @@ class Mailbox extends Model {
   get enabledServies () { return this._value_('services', this.defaultServices) }
   get hasEnabledServices () { return this.enabledServies.length !== 0 }
   get sleepableServices () { return this._value_('sleepableServices', this.supportedServices) }
+  get compactServicesUI () { return this._value_('compactServicesUI', false) }
 
   /**
   * Resolves the url for a service

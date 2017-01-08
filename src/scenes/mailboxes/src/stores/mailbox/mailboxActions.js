@@ -184,6 +184,15 @@ class MailboxActions {
     return { id: id, service: service, sleepable: sleepable }
   }
 
+  /**
+  * Sets the services to be compact
+  * @param id: the id of the mailbox
+  * @param compact: true to make them ompact
+  */
+  setCompactServicesUI (id, compact) {
+    return this.update(id, { compactServicesUI: compact })
+  }
+
   /* **************************************************************************/
   // Updating: Zoom
   /* **************************************************************************/
