@@ -13,7 +13,7 @@ class GinboxApi {
   * @return the unread count
   */
   static getVisibleUnreadCount () {
-    const unread = Array.from(document.querySelectorAll('[data-item-id][aria-expanded="false"] [email]')).reduce((acc, elm) => {
+    const unread = Array.from(document.querySelectorAll('[data-item-id] [email]')).reduce((acc, elm) => {
       const isUnread = elm.tagName !== 'IMG' && window.getComputedStyle(elm).fontWeight === 'bold'
       if (isUnread) {
         const clusterElm = elm.closest('[data-item-id^="#clusters"]')
