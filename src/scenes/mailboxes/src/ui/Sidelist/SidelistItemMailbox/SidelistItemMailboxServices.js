@@ -25,7 +25,7 @@ module.exports = React.createClass({
   },
 
   render () {
-    const { mailbox, isActiveMailbox, activeService, onOpenService } = this.props
+    const { mailbox, isActiveMailbox, activeService, onOpenService, onContextMenu } = this.props
     if (!mailbox.hasEnabledServices) { return null }
 
     return (
@@ -34,6 +34,7 @@ module.exports = React.createClass({
           return (
             <SidelistItemMailboxService
               key={service}
+              onContextMenu={onContextMenu}
               mailbox={mailbox}
               isActiveMailbox={isActiveMailbox}
               isActiveService={activeService === service}

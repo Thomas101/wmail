@@ -116,6 +116,7 @@ module.exports = React.createClass({
       const badgeContent = mailbox.unread >= 1000 ? Math.floor(mailbox.unread / 1000) + 'K+' : mailbox.unread
       return (
         <Badge
+          onContextMenu={this.handleOpenPopover}
           onClick={this.handleClick}
           badgeContent={badgeContent}
           badgeStyle={styles.mailboxBadge}
@@ -173,7 +174,6 @@ module.exports = React.createClass({
         style={Object.assign({}, styles.itemContainer, styles.mailboxItemContainer, style)}
         onMouseEnter={() => this.setState({ hovering: true })}
         onMouseLeave={() => this.setState({ hovering: false })}
-        onContextMenu={this.handleOpenPopover}
         data-tip={this.renderTooltipContent(mailbox)}
         data-for={`ReactComponent-Sidelist-Item-Mailbox-${mailbox.id}`}
         data-html>
@@ -183,12 +183,14 @@ module.exports = React.createClass({
           type='dark'
           effect='solid' />
         <SidelistItemMailboxAvatar
+          onContextMenu={this.handleOpenPopover}
           isActive={isActive}
           isHovering={hovering}
           mailbox={mailbox}
           index={index}
           onClick={this.handleClick} />
         <SidelistItemMailboxServices
+          onContextMenu={this.handleOpenPopover}
           mailbox={mailbox}
           isActiveMailbox={isActive}
           activeService={activeService}

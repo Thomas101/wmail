@@ -27,7 +27,7 @@ module.exports = React.createClass({
   },
 
   render () {
-    const { isActive, isHovering, mailbox, index, onClick } = this.props
+    const { isActive, isHovering, mailbox, index, ...passProps } = this.props
 
     let url
     let children
@@ -46,12 +46,12 @@ module.exports = React.createClass({
 
     return (
       <Avatar
+        {...passProps}
         src={url}
         size={50}
         backgroundColor={backgroundColor}
         color='white'
         draggable={false}
-        onClick={onClick}
         style={Object.assign({ borderColor: borderColor }, styles.mailboxAvatar)}>
         {children}
       </Avatar>

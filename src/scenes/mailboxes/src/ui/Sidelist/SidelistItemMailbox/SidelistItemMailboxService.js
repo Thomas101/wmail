@@ -53,14 +53,14 @@ module.exports = React.createClass({
   },
 
   render () {
-    const { mailbox, isActiveMailbox, isActiveService, service, onOpenService } = this.props
+    const { mailbox, isActiveMailbox, isActiveService, service, onOpenService, ...passProps } = this.props
     const { isHovering } = this.state
     const isActive = isActiveMailbox && isActiveService
 
     if (mailbox.compactServicesUI) {
       return (
         <div
-          key={service}
+          {...passProps}
           onMouseEnter={() => this.setState({ isHovering: true })}
           onMouseLeave={() => this.setState({ isHovering: false })}
           style={styles.mailboxServiceIconCompact}
@@ -75,6 +75,7 @@ module.exports = React.createClass({
       const baseStyle = isActive || isHovering ? styles.mailboxServiceIconImageFullActive : styles.mailboxServiceIconImageFull
       return (
         <Avatar
+          {...passProps}
           src={this.getServiceIconUrl(mailbox.type, service)}
           onMouseEnter={() => this.setState({ isHovering: true })}
           onMouseLeave={() => this.setState({ isHovering: false })}
