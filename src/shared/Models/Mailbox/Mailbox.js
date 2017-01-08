@@ -26,6 +26,7 @@ class Mailbox extends Model {
     this.__id__ = id
 
     this.__google__ = new Google(
+      this.type,
       this.__data__.googleAuth,
       this.__data__.googleConf,
       this.__data__.googleLabelInfo_v2,

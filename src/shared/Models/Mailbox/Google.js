@@ -1,5 +1,6 @@
 const Model = require('../Model')
 const SERVICES = require('./MailboxServices')
+const TYPES = require('./MailboxTypes')
 
 const UNREAD_MODES = {
   INBOX: 'inbox',
@@ -36,14 +37,21 @@ class Google extends Model {
   // Lifecycle
   /* **************************************************************************/
 
-  constructor (auth, config, labelInfo, unreadMessageInfo) {
+  constructor (type, auth, config, labelInfo, unreadMessageInfo) {
     super({
       auth: auth || {},
       config: config || {},
       labelInfo: labelInfo,
       unreadMessages: unreadMessageInfo || {}
     })
+    this.__type__ = type
   }
+
+  /* **************************************************************************/
+  // Properties
+  /* **************************************************************************/
+
+  get type () { return this.__type__ }
 
   /* **************************************************************************/
   // Properties : GoogleAuth
@@ -84,21 +92,27 @@ class Google extends Model {
       case UNREAD_MODES.INBOX_UNREAD_IMPORTANT: return false
     }
   }
-
   get takeLabelCountFromUI () {
-    if (this.unreadMode === UNREAD_MODES.INBOX || this.unreadMode === UNREAD_MODES.INBOX_UNREAD) {
+    if (this.canChangeTakeLabelCountFromUI) {
       if (this.__data__.config.takeLabelCountFromUI === undefined) {
         return false
       } else {
         return this.__data__.config.takeLabelCountFromUI
       }
     } else {
-      return true
+      if (this.type === TYPES.GMAIL) {
+        if (this.unreadMode === UNREAD_MODES.PRIMARY_INBOX_UNREAD || this.unreadMode === UNREAD_MODES.INBOX_UNREAD_IMPORTANT) {
+          return true
+        }
+      }
     }
+    return false
   }
   get canChangeTakeLabelCountFromUI () {
-    if (this.unreadMode === UNREAD_MODES.INBOX || this.unreadMode === UNREAD_MODES.INBOX_UNREAD) {
-      return true
+    if (this.type === TYPES.GMAIL) {
+      return this.unreadMode === UNREAD_MODES.INBOX || this.unreadMode === UNREAD_MODES.INBOX_UNREAD
+    } else if (this.type === TYPES.GINBOX) {
+      return this.unreadMode === UNREAD_MODES.INBOX_UNREAD
     } else {
       return false
     }
