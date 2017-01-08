@@ -153,9 +153,21 @@
   })
 
   ipcMain.on('new-window', (evt, body) => {
+    const mailboxesWindow = windowManager.mailboxesWindow
+    const copyPosition = !mailboxesWindow.window.isFullScreen() && !mailboxesWindow.window.isMaximized()
+    const windowOptions = copyPosition ? (() => {
+      const position = mailboxesWindow.window.getPosition()
+      const size = mailboxesWindow.window.getSize()
+      return {
+        x: position[0] + 20,
+        y: position[1] + 20,
+        width: size[0],
+        height: size[1]
+      }
+    })() : undefined
     const window = new ContentWindow(analytics)
     windowManager.addContentWindow(window)
-    window.start(body.url, body.partition)
+    window.start(body.url, body.partition, windowOptions)
   })
 
   ipcMain.on('focus-app', (evt, body) => {

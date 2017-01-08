@@ -2,8 +2,9 @@ const React = require('react')
 const MailboxTabSleepable = require('../MailboxTabSleepable')
 const Mailbox = require('shared/Models/Mailbox/Mailbox')
 const { settingsStore } = require('../../../stores/settings')
+const URL = window.nativeRequire('url')
 const {
-  remote: {shell}
+  remote: {shell}, ipcRenderer
 } = window.nativeRequire('electron')
 
 const REF = 'mailbox_tab'
@@ -54,7 +55,12 @@ module.exports = React.createClass({
   * @param url: the url to open
   */
   handleOpenNewWindow (url) {
-    shell.openExternal(url, { activate: !this.state.os.openLinksInBackground })
+    const purl = URL.parse(url)
+    if (purl.host === 'docs.google.com') {
+      ipcRenderer.send('new-window', { partition: 'persist:' + this.props.mailboxId, url: url })
+    } else {
+      shell.openExternal(url, { activate: !this.state.os.openLinksInBackground })
+    }
   },
 
   /* **************************************************************************/
