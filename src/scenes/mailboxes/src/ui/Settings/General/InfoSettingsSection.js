@@ -8,6 +8,7 @@ const { shell } = remote
 const { WEB_URL, GITHUB_URL, GITHUB_ISSUE_URL } = require('shared/constants')
 const {mailboxDispatch} = require('../../../Dispatch')
 const mailboxStore = require('../../../stores/mailbox/mailboxStore')
+const pkg = window.appPackage()
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -76,9 +77,14 @@ module.exports = React.createClass({
           style={{color: Colors.blue700, fontSize: '85%', marginBottom: 10, display: 'block'}}
           onClick={this.handleShowMemoryInfo}
           href='#'>Memory Info</a>
-        <p>
-          Made with ♥ by Thomas Beverley
-        </p>
+        <div style={{ fontSize: '85%' }}>
+          <p>
+            {`Version ${pkg.version} ${pkg.prerelease ? 'Prerelease' : ''}`}
+          </p>
+          <p>
+            Made with ♥ by Thomas Beverley
+          </p>
+        </div>
       </Paper>
     )
   }
