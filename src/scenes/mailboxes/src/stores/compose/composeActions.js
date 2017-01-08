@@ -1,6 +1,7 @@
 const alt = require('../alt')
 const { ipcRenderer } = window.nativeRequire('electron')
 const URI = require('urijs')
+const addressparser = require('addressparser')
 
 class ComposeActions {
 
@@ -48,8 +49,9 @@ class ComposeActions {
   processMailtoLink (mailtoLink = '') {
     if (mailtoLink.indexOf('mailto:') === 0) {
       const uri = URI(mailtoLink || '')
+      const recipients = addressparser(decodeURIComponent(uri.pathname())).map((r) => r.address)
       const qs = uri.search(true)
-      return this.composeNewMessage(uri.pathname(), qs.subject || qs.Subject, qs.body || qs.Body)
+      return this.composeNewMessage(recipients.join(','), qs.subject || qs.Subject, qs.body || qs.Body)
     } else {
       return { valid: false }
     }
