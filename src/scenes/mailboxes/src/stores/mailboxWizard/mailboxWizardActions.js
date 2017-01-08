@@ -76,6 +76,15 @@ class MailboxWizardActions {
   }
 
   /**
+  * Configures the enabled services
+  * @param enabledServices: the enabled servies
+  * @param compact: whether they should be compact or not
+  */
+  configureMailboxServices (enabledServices, compact) {
+    return { enabledServices: enabledServices, compact: compact }
+  }
+
+  /**
   * Completes mailbox configuration
   */
   configurationComplete () { return {} }

@@ -3,6 +3,7 @@ const { mailboxWizardStore } = require('../../stores/mailboxWizard')
 const shallowCompare = require('react-addons-shallow-compare')
 const AddMailboxWizardDialog = require('./AddMailboxWizardDialog')
 const ConfigureMailboxWizardDialog = require('./ConfigureMailboxWizardDialog')
+const ConfigureMailboxServicesDialog = require('./ConfigureMailboxServicesDialog')
 const ConfigureCompleteWizardDialog = require('./ConfigureCompleteWizardDialog')
 
 module.exports = React.createClass({
@@ -70,6 +71,7 @@ module.exports = React.createClass({
         <div>
           <AddMailboxWizardDialog />
           <ConfigureMailboxWizardDialog />
+          <ConfigureMailboxServicesDialog />
           <ConfigureCompleteWizardDialog />
         </div>
       )
