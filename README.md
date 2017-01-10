@@ -18,6 +18,6 @@ The missing desktop client for Gmail & Google Inbox. Bringing the online Gmail &
 
 ![Screenshot](https://raw.githubusercontent.com/Thomas101/wmail/master/.github/screenshot.png "Screenshot")
 
-[Bulding from Source](https://github.com/Thomas101/wmail/wiki/Building-from-Source)
+[Building from Source](https://github.com/Thomas101/wmail/wiki/Building-from-Source)
 
 Made with ♥ by Thomas Beverley. [Buy me a beer](https://www.paypal.me/ThomasBeverley) &#127866;
