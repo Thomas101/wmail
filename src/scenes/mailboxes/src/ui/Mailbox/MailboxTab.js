@@ -112,7 +112,7 @@ module.exports = React.createClass({
           mailbox: mailbox,
           isActive: isActive,
           isSearching: mailboxState.isSearchingMailbox(mailboxId, service),
-          browserSrc: mailbox.resolveServiceUrl(service)
+          browserSrc: this.props.src || mailbox.resolveServiceUrl(service)
         }
       })
     } else {
