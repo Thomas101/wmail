@@ -3,9 +3,6 @@ const MailboxTabSleepable = require('../MailboxTabSleepable')
 const Mailbox = require('shared/Models/Mailbox/Mailbox')
 const { settingsStore } = require('../../../stores/settings')
 const URL = window.nativeRequire('url')
-const {
-  remote: {shell}
-} = window.nativeRequire('electron')
 
 const REF = 'mailbox_tab'
 
