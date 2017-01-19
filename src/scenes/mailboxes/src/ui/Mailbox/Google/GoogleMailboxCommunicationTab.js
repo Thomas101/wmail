@@ -2,6 +2,7 @@ const React = require('react')
 const MailboxTabSleepable = require('../MailboxTabSleepable')
 const Mailbox = require('shared/Models/Mailbox/Mailbox')
 const { settingsStore } = require('../../../stores/settings')
+const URL = window.nativeRequire('url')
 const {
   remote: {shell}
 } = window.nativeRequire('electron')
@@ -54,7 +55,11 @@ module.exports = React.createClass({
   * @param url: the url to open
   */
   handleOpenNewWindow (url) {
-    shell.openExternal(url, { activate: !this.state.os.openLinksInBackground })
+    const purl = URL.parse(url, true)
+
+    if (purl.host === 'hangouts.google.com') {
+      this.setState({ browserSrc: url })
+    }
   },
 
   /* **************************************************************************/
@@ -67,6 +72,7 @@ module.exports = React.createClass({
     return (
       <MailboxTabSleepable
         ref={REF}
+        src={this.state.browserSrc}
         preload='../platform/webviewInjection/googleService'
         mailboxId={mailboxId}
         service={Mailbox.SERVICES.COMMUNICATION}
