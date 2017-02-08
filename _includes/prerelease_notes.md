@@ -1,12 +1,6 @@
-This release contains some awesome fixes and UI tweaks over the previous pre-release. Thanks to everyone who tested 2.0.8 and provided feedback!
+This release contains the following updates over the 2.0.9 prerelease
 
-**Here's what's new...**
+* Updated to Chromium 56
+* Updated to Electron 1.6.0
 
-- Made the services appear larger and as vertical items in the left hand side based on feedback from the previous release. Services can still be set to render with the small icons through the settings.
-- Added basic services configuration to the add account wizard to get users setup the first time
-- Added the WMail version into the settings #495
-- Made Google docs items (sheets, docs, slides) appear in a new WMail window rather than opening out to the browser #489
-- Improved the mailto parsing to handle email addresses with user info #492
-- Changed the default setting of `Ignore GPU blacklist` to improve compatibility on linux
-- Improved the Google Inbox unread scraping to not report the incorrect count when a cluster is open
-- Updated some dependencies including React
+Chromium 56 contains a number of memory enhancements over the previous version used in WMail as well as some critical security upgrades hence this upgrade is recommended for all users
