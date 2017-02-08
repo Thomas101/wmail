@@ -1,11 +1,11 @@
 const appdmg = process.platform === 'darwin' ? require('appdmg') : undefined
-const msiPackager = require('msi-packager')
 const path = require('path')
 const fs = require('fs-extra')
 const childProcess = require('child_process')
 const TaskLogger = require('./TaskLogger')
 const uuid = require('uuid')
 const debianInstaller = require('nobin-debian-installer')
+const recursiveReaddir = require('recursive-readdir')
 const temp = require('temp')
 temp.track()
 
@@ -33,9 +33,9 @@ class Distribution {
       const distPath = path.join(ROOT_PATH, 'dist')
       const targetPath = path.join(distPath, filename)
       fs.mkdirsSync(distPath)
-      try {
-        fs.unlinkSync(targetPath)
-      } catch (ex) { /* no-op */ }
+      if (fs.existsSync(targetPath)) {
+        fs.removeSync(targetPath)
+      }
 
       const dmgCreate = appdmg({
         target: targetPath,
@@ -78,58 +78,75 @@ class Distribution {
   */
   static distributeWindows (pkg, arch) {
     return new Promise((resolve, reject) => {
-      const task = TaskLogger.start(`Windows MSI (${arch})`)
+      const task = TaskLogger.start(`Windows MSI Prep (${arch})`)
 
       // Pre-calc all the needed paths
       const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_windows_${ARCH_FILENAME[arch]}`
       const distPath = path.join(ROOT_PATH, 'dist')
       const builtPath = path.join(ROOT_PATH, arch === ARCH.X64 ? 'WMail-win32-x64' : 'WMail-win32-ia32')
-      const msiTargetPath = path.join(distPath, filename + '.msi')
-      const zipTargetPath = path.join(distPath, filename + '.zip')
-      const zipExtraPaths = [
-        path.join(builtPath, 'LICENSE')
-      ].concat(
-        fs.readdirSync(path.join(builtPath, 'vendor-licenses')).map((f) => {
-          return path.join(builtPath, 'vendor-licenses', f)
-        })
-      )
+      const targetPath = path.join(distPath, filename)
+      const aipName = `WMail_${ARCH_FILENAME[arch]}.aip`
+      const aipPath = path.join(__dirname, 'msi', aipName)
 
-      // Clean-up old
+      // Clean-up old & Copy across
+      if (fs.existsSync(targetPath)) {
+        fs.removeSync(targetPath)
+      }
       try {
-        fs.unlinkSync(msiTargetPath)
-      } catch (ex) { /* no-op */ }
-      try {
-        fs.unlinkSync(zipTargetPath)
-      } catch (ex) { /* no-op */ }
+        fs.copySync(builtPath, targetPath)
+      } catch (ex) { task.fail(); reject(ex); return }
 
-      // Package
-      msiPackager({
-        source: builtPath,
-        output: msiTargetPath,
-        name: 'WMail',
-        upgradeCode: WINDOWS_UPGRADE_CODE,
-        version: pkg.version,
-        manufacturer: 'http://thomas101.github.io/wmail',
-        iconPath: path.join(ROOT_PATH, 'assets/icons/app.ico'),
-        executable: 'WMail.exe',
-        arch: arch
-      }, (err) => {
-        if (err) { task.fail(); reject(err); return }
+      // Validate the installer file
+      recursiveReaddir(targetPath, (error, filePaths) => {
+        if (error) { task.fail(error); reject(error); return }
+        filePaths = filePaths.map((filePath) => path.relative(targetPath, filePath).split(path.sep).join('\\'))
 
-        // Zip
-        const cmd = `zip -X -r -q -j "${zipTargetPath}" "${msiTargetPath}" ${zipExtraPaths.map((p) => '"' + p + '"').join(' ')}`
-        childProcess.exec(cmd, {}, (error, stdout, stderr) => {
-          if (error) { console.error(error) }
-          if (stdout) { console.log(`stdout: ${stdout}`) }
-          if (stderr) { console.log(`stderr: ${stderr}`) }
+        const aipContent = fs.readFileSync(aipPath, 'utf8')
+        const missingAsset = filePaths.find((filePath) => aipContent.indexOf(filePath) === -1)
+        if (missingAsset) {
+          task.fail()
+          reject('Windows api is missing the following asset: ' + missingAsset)
+          return
+        }
 
-          if (error) { task.fail(); reject(); return }
+        const patchedAipContent = aipContent
+          .replace('__WMAIL_OUTPUTFILENAME__', filename)
+          .replace('__WMAIL_VERSION__', pkg.version)
+          .replace('__WMAIL_UPGRADECODE__', WINDOWS_UPGRADE_CODE)
+          .replace('__WMAIL_PRODUCTCODE__', uuid.v4().toUpperCase())
 
-          fs.unlinkSync(msiTargetPath)
-          task.finish()
-          resolve()
-        })
+        fs.copySync(path.join(__dirname, 'msi/installer_icon.ico'), path.join(targetPath, 'installer_icon.ico'))
+        fs.writeFileSync(path.join(targetPath, aipName), patchedAipContent)
+
+        task.finish()
+        resolve()
       })
+    })
+  }
+
+  /**
+  * Extracts the built windows MSI files
+  * @param pkg: the package info
+  * @param arch: one of 'x86' or 'x64'
+  * @return promise
+  */
+  static finaliseWindowsDistribution (pkg, arch) {
+    return new Promise((resolve, reject) => {
+      const task = TaskLogger.start(`Windows MSI Finalise (${arch})`)
+
+      const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_windows_${ARCH_FILENAME[arch]}`
+      const distPath = path.join(ROOT_PATH, 'dist')
+      const prepPath = path.join(distPath, filename)
+      const setupFilesPath = `WMail_${ARCH_FILENAME[arch]}-SetupFiles`
+
+      const msiPath = path.join(prepPath, setupFilesPath, filename + '.msi')
+      const outputPath = path.join(distPath, filename + '.msi')
+
+      fs.copySync(msiPath, outputPath)
+      fs.removeSync(prepPath)
+
+      task.finish()
+      resolve()
     })
   }
 
@@ -147,9 +164,9 @@ class Distribution {
       const targetPath = path.join(ROOT_PATH, 'dist', filename)
       const builtDirectory = arch === ARCH.X64 ? 'WMail-linux-x64' : 'WMail-linux-ia32'
 
-      try {
-        fs.unlinkSync(targetPath)
-      } catch (ex) { /* no-op */ }
+      if (fs.existsSync(targetPath)) {
+        fs.removeSync(targetPath)
+      }
 
       const cmd = `cd ${ROOT_PATH}; tar czf "${targetPath}" "${builtDirectory}"`
       childProcess.exec(cmd, {}, (error, stdout, stderr) => {
@@ -180,52 +197,41 @@ class Distribution {
 
     return new Promise((resolve, reject) => {
       const task = TaskLogger.start(`Linux deb (${arch})`)
-      temp.mkdir('wmail_distribution_' + uuid.v4(), (err, tempPath) => {
-        if (err) { task.fail(); reject(err); return }
 
-        fs.writeFileSync(path.join(tempPath, 'wmail.desktop'), [
-          '[Desktop Entry]',
-          'Version=1.0',
-          'Name=WMail',
-          'Comment=' + pkg.description,
-          'Exec=/opt/wmail-desktop/WMail',
-          'Icon=/opt/wmail-desktop/icon.png',
-          'Terminal=false',
-          'Type=Application',
-          'Categories=Application;Network;Email;'
-        ].join('\n'))
-
-        debianInstaller().pack({
-          'package': pkg,
-          info: {
-            name: 'wmail-desktop',
-            arch: ARCH_MAPPING[arch],
-            targetDir: path.join(ROOT_PATH, 'dist'),
-            scripts: {
-              postinst: path.join(__dirname, 'deb/postinst')
+      debianInstaller().pack({
+        'package': pkg,
+        info: {
+          name: 'wmail-desktop',
+          arch: ARCH_MAPPING[arch],
+          depends: [
+            'lsb-base (>= 3.2)',
+            'libappindicator1 (>= 12.10.1)'
+          ].join(','),
+          targetDir: path.join(ROOT_PATH, 'dist'),
+          scripts: {
+            postinst: path.join(__dirname, 'deb/postinst')
+          }
+        }
+      }, [
+        { cwd: CWD_MAPPING[arch], expand: true, src: ['./**'], dest: '/opt/wmail-desktop' },
+        { cwd: CWD_MAPPING[arch], src: ['./wmail.desktop'], dest: '/usr/share/applications' }
+      ], function (err) {
+        if (err) {
+          task.fail()
+          reject(err)
+        } else {
+          const outputFilename = `wmail-desktop_${pkg.version}-1_${ARCH_MAPPING[arch]}.deb`
+          const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_linux_${ARCH_FILENAME[arch]}.deb`
+          fs.move(path.join(ROOT_PATH, 'dist', outputFilename), path.join(ROOT_PATH, 'dist', filename), { clobber: true }, (err) => {
+            if (err) {
+              task.fail()
+              reject(err)
+            } else {
+              task.finish()
+              resolve()
             }
-          }
-        }, [
-          { cwd: CWD_MAPPING[arch], expand: true, src: ['./**'], dest: '/opt/wmail-desktop' },
-          { cwd: tempPath, src: ['./wmail.desktop'], dest: '/usr/share/applications' }
-        ], function (err) {
-          if (err) {
-            task.fail()
-            reject(err)
-          } else {
-            const outputFilename = `wmail-desktop_${pkg.version}-1_${ARCH_MAPPING[arch]}.deb`
-            const filename = `WMail_${pkg.version.replace(/\./g, '_')}${pkg.prerelease ? '_prerelease' : ''}_linux_${ARCH_FILENAME[arch]}.deb`
-            fs.move(path.join(ROOT_PATH, 'dist', outputFilename), path.join(ROOT_PATH, 'dist', filename), { clobber: true }, (err) => {
-              if (err) {
-                task.fail()
-                reject(err)
-              } else {
-                task.finish()
-                resolve()
-              }
-            })
-          }
-        })
+          })
+        }
       })
     })
   }
@@ -250,6 +256,24 @@ class Distribution {
           .then(() => Distribution.distributeLinuxDeb(pkg, ARCH.X86))
           .then(() => Distribution.distributeLinuxTar(pkg, ARCH.X64))
           .then(() => Distribution.distributeLinuxDeb(pkg, ARCH.X64))
+      } else {
+        return acc
+      }
+    }, Promise.resolve())
+  }
+
+  /**
+  * Finalises the distrubiton of the apps for the given platforms
+  * @param platforms: the platforms to finalise for
+  * @param pkg: the package info
+  * @return promise
+  */
+  static finaliseDistribute (platforms, pkg) {
+    return platforms.reduce((acc, platform) => {
+      if (platform === 'win32') {
+        return acc
+          .then(() => Distribution.finaliseWindowsDistribution(pkg, ARCH.X86))
+          .then(() => Distribution.finaliseWindowsDistribution(pkg, ARCH.X64))
       } else {
         return acc
       }

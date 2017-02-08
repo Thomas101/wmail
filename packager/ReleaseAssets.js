@@ -17,6 +17,8 @@ class ReleaseAssets {
     if (platformsSet.has('linux')) {
       fs.copySync(path.join(ROOT_PATH, 'assets/icons/app.png'), path.join(ROOT_PATH, 'WMail-linux-ia32/icon.png'))
       fs.copySync(path.join(ROOT_PATH, 'assets/icons/app.png'), path.join(ROOT_PATH, 'WMail-linux-x64/icon.png'))
+      fs.copySync(path.join(__dirname, 'linux/wmail.desktop'), path.join(ROOT_PATH, 'WMail-linux-ia32/wmail.desktop'))
+      fs.copySync(path.join(__dirname, 'linux/wmail.desktop'), path.join(ROOT_PATH, 'WMail-linux-x64/wmail.desktop'))
     }
 
     return Promise.resolve()

@@ -42,7 +42,7 @@ class TaskLogger {
   */
   fail (pass) {
     console.log(`[FAIL] ${this.name} (${(new Date().getTime() - this.start)}ms)`)
-    return Promise.resolve(pass)
+    return Promise.reject(pass)
   }
 }
 
