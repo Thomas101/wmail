@@ -115,7 +115,9 @@ module.exports = React.createClass({
             <TableRow>
               <TableHeaderColumn style={serviceStyles.actionCell} />
               <TableHeaderColumn style={serviceStyles.titleCell}>Service</TableHeaderColumn>
-              <TableHeaderColumn style={serviceStyles.actionCell}>Sleepable</TableHeaderColumn>
+              <TableHeaderColumn style={serviceStyles.actionCell} tooltip="Allows services to sleep to reduce memory consumption">
+                Sleepable
+              </TableHeaderColumn>
               <TableHeaderColumn style={serviceStyles.actionCell} />
               <TableHeaderColumn style={serviceStyles.actionCell} />
               <TableHeaderColumn style={serviceStyles.actionCell} />
