@@ -1,6 +1,6 @@
 {
   "name": "wmail",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "prerelease": false,
   "description": "The missing desktop client for Gmail and Google Inbox",
   "scripts": {
@@ -42,8 +42,8 @@
     "clean-webpack-plugin": "0.1.13",
     "copy-webpack-plugin": "3.0.1",
     "css-loader": "0.25.0",
-    "electron-packager": "8.1.0",
-    "electron-prebuilt": "1.4.4",
+    "electron-packager": "8.5.1",
+    "electron": "1.6.0",
     "extract-text-webpack-plugin": "1.0.1",
     "file-loader": "0.9.0",
     "json-loader": "0.5.4",
