@@ -1,4 +1,4 @@
-**This release builds on version 2.0.0** and does not contain updates from the previous prerelease channel (2.0.9). If you're upgrading from version 2.0.0 you should upgrade to this version.
+**This release builds on version 2.0.0** and does not contain updates from the current prerelease channel (2.0.9 & 2.1.1). If you're upgrading from version 2.0.0 you should upgrade to this version. If you're upgrading from version 2.0.9 prerelease you should upgrade to the 2.1.1 prerelease.
 
 This release contains the following updates over version 2.0.0
 
