@@ -1,3 +1,5 @@
+**This release builds on version 2.0.0** and does not contain updates from the previous prerelease channel (2.0.9). If you're upgrading from version 2.0.0 you should upgrade to this version.
+
 This release contains the following updates over version 2.0.0
 
 * Updated to Chromium 56

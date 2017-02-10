@@ -1,3 +1,5 @@
+**This release builds on the 2.0.9 prerelease version** and contains additional prerelease features such as services. If you're upgrading from the version 2.0.9 prerelease you should upgrade to this version.
+
 This release contains the following updates over the 2.0.9 prerelease
 
 * Updated to Chromium 56
