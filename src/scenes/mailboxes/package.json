@@ -10,9 +10,9 @@
     "bootstrap-grid": "2.0.1",
     "camelcase": "4.0.0",
     "compare-version": "0.1.2",
-    "fbjs": "0.8.8",
+    "fbjs": "0.8.9",
     "https-proxy-agent": "1.0.0",
-    "material-ui": "0.16.6",
+    "material-ui": "0.17.0",
     "minivents": "2.0.2",
     "react": "15.4.2",
     "react-addons-shallow-compare": "15.4.2",
@@ -20,8 +20,8 @@
     "react-dom": "15.4.2",
     "react-tap-event-plugin": "2.0.1",
     "react-timer-mixin": "0.13.3",
-    "react-tooltip": "3.2.2",
-    "urijs": "1.18.4",
+    "react-tooltip": "3.2.7",
+    "urijs": "1.18.7",
     "uuid": "3.0.1"
   },
   "devDependencies": {

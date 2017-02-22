@@ -61,7 +61,7 @@ module.exports = React.createClass({
         <div style={styles.heading}>
           <div style={styles.icon} />
           <h1 style={styles.headingTitle}>Welcome to WMail</h1>
-          <h2 style={styles.headingSubtitle}>...the free and open-source desktop client for Gmail and Google Inbox</h2>
+          <h2 style={styles.headingSubtitle}>...the open-source desktop client for Gmail and Google Inbox</h2>
         </div>
         <div style={styles.setupItem}>
           <RaisedButton
