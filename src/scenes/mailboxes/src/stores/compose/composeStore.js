@@ -1,6 +1,7 @@
 const alt = require('../alt')
 const actions = require('./composeActions')
 const uuid = require('uuid')
+const { ipcRenderer } = window.nativeRequire('electron')
 
 class ComposeStore {
   /* **************************************************************************/
@@ -45,6 +46,7 @@ class ComposeStore {
   /* **************************************************************************/
 
   handleComposeNewMessage ({ recipient, subject, body }) {
+    ipcRenderer.send('focus-app', { })
     this.composing = true
     this.composeRef = uuid.v4()
     this.recipient = recipient
