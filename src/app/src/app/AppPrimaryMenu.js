@@ -39,7 +39,7 @@ class AppPrimaryMenu {
           { label: 'Show Window', accelerator: 'CmdOrCtrl+N', click: this._selectors.showWindow },
           { label: 'Hide Window', accelerator: 'CmdOrCtrl+W', click: this._selectors.closeWindow },
           { label: 'Hide', accelerator: 'CmdOrCtrl+H', role: 'hide' },
-          { label: 'Hide Others', accelerator: 'Alt+CmdOrCtrl+H', role: 'hideothers' },
+          { label: 'Hide Others', accelerator: process.platform === 'darwin' ? 'Command+Alt+H' : 'Ctrl+Shift+H', role: 'hideothers' },
           { label: 'Show All', role: 'unhide' },
           { type: 'separator' },
           { label: 'Quit', accelerator: 'CmdOrCtrl+Q', click: this._selectors.fullQuit }
@@ -65,7 +65,7 @@ class AppPrimaryMenu {
         label: 'View',
         submenu: [
           { label: 'Toggle Full Screen', accelerator: process.platform === 'darwin' ? 'Ctrl+Command+F' : 'F11', click: this._selectors.fullscreenToggle },
-          { label: 'Toggle Sidebar', accelerator: (process.platform === 'darwin' ? 'Ctrl+Command+S' : 'Ctrl+alt+S'), click: this._selectors.sidebarToggle },
+          { label: 'Toggle Sidebar', accelerator: (process.platform === 'darwin' ? 'Ctrl+Command+S' : 'Ctrl+Shift+S'), click: this._selectors.sidebarToggle },
           process.platform === 'darwin' ? undefined : { label: 'Toggle Menu', accelerator: 'CmdOrCtrl+\\', click: this._selectors.menuToggle },
           { type: 'separator' },
           { label: 'Navigate Back', accelerator: 'CmdOrCtrl+[', click: this._selectors.mailboxNavBack },
@@ -77,7 +77,7 @@ class AppPrimaryMenu {
           { label: 'Reset Mailbox Zoom', accelerator: 'CmdOrCtrl+0', click: this._selectors.zoomReset },
           { type: 'separator' },
           { label: 'Reload', accelerator: 'CmdOrCtrl+R', click: this._selectors.reload },
-          { label: 'Developer Tools', accelerator: 'Alt+CmdOrCtrl+J', click: this._selectors.devTools }
+          { label: 'Developer Tools', accelerator: process.platform === 'darwin' ? 'Cmd+Alt+J' : 'Ctrl+Shift+J', click: this._selectors.devTools }
         ].filter((item) => item !== undefined)
       },
       {

@@ -55,7 +55,7 @@ module.exports = React.createClass({
           )}
           <Toggle
             toggled={ui.sidebarEnabled}
-            label={`Show Sidebar (${process.platform === 'darwin' ? 'Ctrl+cmd+S' : 'Ctrl+alt+S'})`}
+            label={`Show Sidebar (${process.platform === 'darwin' ? 'Ctrl+cmd+S' : 'Ctrl+shift+S'})`}
             labelPosition='right'
             onToggle={(evt, toggled) => settingsActions.setEnableSidebar(toggled)} />
           <Toggle
