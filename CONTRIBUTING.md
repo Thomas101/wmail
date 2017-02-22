@@ -1,3 +1,7 @@
+# Pull Requests
+
+By submitting a pull request, you represent that you have the right to license your contribution to us and the community, and agree by submitting the patch that your contributions are licensed under the MPL-2.0 license.
+
 # Raising a new issue & requesting Features
 
 Thanks for being an A* tester and helping to make WMail better by either reporting a bug or raising an issue! Before you create a new issue here are a few things that might be worth checking first...
