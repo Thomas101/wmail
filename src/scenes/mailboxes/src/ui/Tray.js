@@ -37,6 +37,9 @@ module.exports = React.createClass({
       this.appTray.on('double-click', () => {
         ipcRenderer.send('toggle-mailbox-visibility-from-tray')
       })
+      this.appTray.on('click', () => {
+        ipcRenderer.send('toggle-mailbox-visibility-from-tray')
+      })
     } else if (process.platform === 'linux') {
       // On platforms that have app indicator support - i.e. ubuntu clicking on the
       // icon will launch the context menu. On other linux platforms the context
