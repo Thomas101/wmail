@@ -5,6 +5,7 @@ const { ipcRenderer } = window.nativeRequire('electron')
 const reporter = require('../../reporter')
 const mailboxActions = require('../mailbox/mailboxActions')
 const googleActions = require('../google/googleActions')
+const googleHTTP = require('../google/googleHTTP')
 
 class MailboxWizardStore {
   /* **************************************************************************/
@@ -140,13 +141,22 @@ class MailboxWizardStore {
   // Authentication Callbacks
   /* **************************************************************************/
 
-  handleAuthGoogleMailboxSuccess ({ provisionalId, type, auth }) {
-    this.configurationOpen = true
-    this.provisionalId = provisionalId
-    this.provisionalJS = {
-      type: type,
-      googleAuth: auth
-    }
+  handleAuthGoogleMailboxSuccess ({ provisionalId, type, temporaryAuth }) {
+    googleHTTP.upgradeAuthCodeToPermenant(temporaryAuth).then((auth) => {
+      this.configurationOpen = true
+      this.provisionalId = provisionalId
+      this.provisionalJS = {
+        type: type,
+        googleAuth: auth
+      }
+      this.emitChange()
+    }).catch((err) => {
+      console.error('[AUTH ERR]', err)
+      console.error(err.errorString)
+      console.error(err.errorStack)
+      reporter.reportError('[AUTH ERR]' + err.errorString)
+      this.completeClear()
+    })
   }
 
   handleAuthGoogleMailboxFailure ({ evt, data }) {

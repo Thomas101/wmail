@@ -51,7 +51,7 @@ class MailboxWizardActions {
   * @param data: the data that came across the ipc
   */
   authGoogleMailboxSuccess (evt, data) {
-    return { provisionalId: data.id, type: data.type, auth: data.auth }
+    return { provisionalId: data.id, type: data.type, temporaryAuth: data.temporaryAuth }
   }
 
   /**

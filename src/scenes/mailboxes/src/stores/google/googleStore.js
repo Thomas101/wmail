@@ -1,8 +1,5 @@
 const alt = require('../alt')
 const actions = require('./googleActions')
-const google = window.appNodeModulesRequire('googleapis')
-const OAuth2 = google.auth.OAuth2
-const credentials = require('shared/credentials')
 const { mailboxStore, mailboxActions } = require('../mailbox')
 const googleHTTP = require('./googleHTTP')
 const { mailboxDispatch } = require('../../Dispatch')
@@ -59,33 +56,25 @@ class GoogleStore {
   /**
   * Sets up the auth for a mailbox
   * @param mailboxId: the id of the mailbox to setup for
-  * @return { auth, mailboxId } the mailbox auth and the mailbox id
+  * @return { auth } the mailbox auth and the mailbox id
   */
   getAPIAuth (mailboxId) {
     const mailbox = mailboxStore.getState().getMailbox(mailboxId)
-    let generate = false
-    if (this.cachedAuths.has(mailboxId)) {
-      if (this.cachedAuths.get(mailboxId).time !== mailbox.google.authTime) {
-        generate = true
-      }
-    } else {
-      generate = true
+    if (!mailbox) {
+      return { auth: undefined }
+    }
+
+    let generate = true
+    if (this.cachedAuths.has(mailboxId) && this.cachedAuths.get(mailboxId).time === mailbox.google.authTime) {
+      generate = false
     }
 
     if (generate && mailbox.google.hasAuth) {
-      const auth = new OAuth2(credentials.GOOGLE_CLIENT_ID, credentials.GOOGLE_CLIENT_SECRET)
-      auth.setCredentials({
-        access_token: mailbox.google.accessToken,
-        refresh_token: mailbox.google.refreshToken,
-        expiry_date: mailbox.google.authExpiryTime
-      })
-      this.cachedAuths.set(mailbox.id, {
-        time: mailbox.google.authTime,
-        auth: auth
-      })
+      const auth = googleHTTP.generateAuth(mailbox.google.accessToken, mailbox.google.refreshToken, mailbox.google.authExpiryTime)
+      this.cachedAuths.set(mailbox.id, { time: mailbox.google.authTime, auth: auth })
     }
 
-    return this.cachedAuths.get(mailboxId)
+    return (this.cachedAuths.get(mailbox.id) || {})
   }
 
   /* **************************************************************************/
