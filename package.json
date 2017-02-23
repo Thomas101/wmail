@@ -1,7 +1,7 @@
 {
   "name": "wmail",
   "version": "2.1.1",
-  "prerelease": false,
+  "prerelease": true,
   "description": "The missing desktop client for Gmail and Google Inbox",
   "scripts": {
     "prestart": "webpack",

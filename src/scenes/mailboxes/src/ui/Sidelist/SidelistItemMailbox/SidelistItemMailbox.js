@@ -8,6 +8,7 @@ const styles = require('../SidelistStyles')
 const SidelistItemMailboxPopover = require('./SidelistItemMailboxPopover')
 const SidelistItemMailboxAvatar = require('./SidelistItemMailboxAvatar')
 const SidelistItemMailboxServices = require('./SidelistItemMailboxServices')
+const pkg = window.appPackage()
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -189,12 +190,14 @@ module.exports = React.createClass({
           mailbox={mailbox}
           index={index}
           onClick={this.handleClick} />
-        <SidelistItemMailboxServices
-          onContextMenu={this.handleOpenPopover}
-          mailbox={mailbox}
-          isActiveMailbox={isActive}
-          activeService={activeService}
-          onOpenService={this.handleOpenService} />
+        {pkg.prerelease ? (
+          <SidelistItemMailboxServices
+            onContextMenu={this.handleOpenPopover}
+            mailbox={mailbox}
+            isActiveMailbox={isActive}
+            activeService={activeService}
+            onOpenService={this.handleOpenService} />
+        ) : undefined}
         {this.renderBadge(mailbox)}
         {this.renderActiveIndicator(mailbox, isActive)}
         <SidelistItemMailboxPopover

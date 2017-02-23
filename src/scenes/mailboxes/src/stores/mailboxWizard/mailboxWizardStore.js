@@ -6,6 +6,7 @@ const reporter = require('../../reporter')
 const mailboxActions = require('../mailbox/mailboxActions')
 const googleActions = require('../google/googleActions')
 const googleHTTP = require('../google/googleHTTP')
+const pkg = window.appPackage()
 
 class MailboxWizardStore {
   /* **************************************************************************/
@@ -143,16 +144,24 @@ class MailboxWizardStore {
 
   handleAuthGoogleMailboxSuccess ({ provisionalId, type, temporaryAuth }) {
     googleHTTP.upgradeAuthCodeToPermenant(temporaryAuth).then((auth) => {
-      if (type === Mailbox.TYPE_GMAIL) {
-        this.configurationOpen = true
-      } else if (type === Mailbox.TYPE_GINBOX) {
-        this.configureServicesOpen = true
-      }
       this.provisionalId = provisionalId
       this.provisionalJS = {
         type: type,
         googleAuth: auth
       }
+
+      if (type === Mailbox.TYPE_GMAIL) {
+        this.configurationOpen = true
+      } else if (type === Mailbox.TYPE_GINBOX) {
+        if (pkg.prerelease) {
+          this.configureServicesOpen = true
+        } else {
+          this.createMailbox()
+          this.completeClear()
+          this.configurationCompleteOpen = true
+        }
+      }
+
       this.emitChange()
     }).catch((err) => {
       console.error('[AUTH ERR]', err)
@@ -181,7 +190,13 @@ class MailboxWizardStore {
 
   handleConfigureMailbox ({ configuration }) {
     this.provisionalJS = Object.assign(this.provisionalJS, configuration)
-    this.configureServicesOpen = true
+    if (pkg.prerelease) {
+      this.configureServicesOpen = true
+    } else {
+      this.createMailbox()
+      this.completeClear()
+      this.configurationCompleteOpen = true
+    }
   }
 
   handleConfigureServices ({ enabledServices, compact }) {
