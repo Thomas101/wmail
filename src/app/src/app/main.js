@@ -33,6 +33,7 @@
   const ContentWindow = require('./windows/ContentWindow')
   const pkg = require('../package.json')
   const AppPrimaryMenu = require('./AppPrimaryMenu')
+  const KeyboardShortcuts = require('./KeyboardShortcuts')
   const WindowManager = require('./windows/WindowManager')
   const constants = require('../shared/constants')
   const storage = require('./storage')
@@ -67,7 +68,7 @@
   const analytics = new AppAnalytics()
   const mailboxesWindow = new MailboxesWindow(analytics)
   windowManager = new WindowManager(mailboxesWindow)
-  const appMenu = new AppPrimaryMenu({
+  const selectors = {
     fullQuit: () => {
       windowManager.quit()
     },
@@ -142,7 +143,9 @@
     findNext: () => { windowManager.mailboxesWindow.findNext() },
     mailboxNavBack: () => { windowManager.mailboxesWindow.navigateMailboxBack() },
     mailboxNavForward: () => { windowManager.mailboxesWindow.navigateMailboxForward() }
-  })
+  }
+  const appMenu = new AppPrimaryMenu(selectors)
+  const keyboardShortcuts = new KeyboardShortcuts(selectors)
 
   /* ****************************************************************************/
   // IPC Events
@@ -213,15 +216,26 @@
     windowManager.mailboxesWindow.start(openHidden)
   })
 
-  app.on('window-all-closed', function () {
+  app.on('window-all-closed', () => {
     app.quit()
   })
 
-  app.on('activate', function () {
+  app.on('activate', () => {
     windowManager.mailboxesWindow.show()
   })
 
+  // Keyboard shortcuts in Electron need to be registered and unregistered
+  // on focus/blur respectively due to the global nature of keyboard shortcuts.
+  // See  https://github.com/electron/electron/issues/1334
+  app.on('browser-window-focus', () => {
+    keyboardShortcuts.register()
+  })
+  app.on('browser-window-blur', () => {
+    keyboardShortcuts.unregister()
+  })
+
   app.on('before-quit', () => {
+    keyboardShortcuts.unregister()
     windowManager.forceQuit = true
   })
 
