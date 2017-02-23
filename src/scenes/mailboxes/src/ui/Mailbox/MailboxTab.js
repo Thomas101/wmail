@@ -21,7 +21,8 @@ module.exports = React.createClass({
   propTypes: Object.assign({
     mailboxId: React.PropTypes.string.isRequired,
     service: React.PropTypes.string.isRequired,
-    preload: React.PropTypes.string
+    preload: React.PropTypes.string,
+    src: React.PropTypes.string
   }, WebView.REACT_WEBVIEW_EVENTS.reduce((acc, name) => {
     acc[name] = React.PropTypes.func
     return acc
@@ -69,7 +70,7 @@ module.exports = React.createClass({
   },
 
   componentWillReceiveProps (nextProps) {
-    if (this.props.mailboxId !== nextProps.mailboxId || this.props.service !== nextProps.service) {
+    if (this.props.mailboxId !== nextProps.mailboxId || this.props.service !== nextProps.service || this.props.src !== nextProps.src) {
       this.setState(this.getInitialState(nextProps))
     }
   },
@@ -88,7 +89,7 @@ module.exports = React.createClass({
       mailbox: mailbox,
       isActive: isActive,
       isSearching: mailboxState.isSearchingMailbox(props.mailboxId, props.service),
-      browserSrc: mailbox.resolveServiceUrl(props.service),
+      browserSrc: props.src || mailbox.resolveServiceUrl(props.service),
       language: settingState.language,
       focusedUrl: null
     }
@@ -111,7 +112,7 @@ module.exports = React.createClass({
           mailbox: mailbox,
           isActive: isActive,
           isSearching: mailboxState.isSearchingMailbox(mailboxId, service),
-          browserSrc: mailbox.resolveServiceUrl(service)
+          browserSrc: this.props.src || mailbox.resolveServiceUrl(service)
         }
       })
     } else {

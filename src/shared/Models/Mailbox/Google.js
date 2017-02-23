@@ -15,12 +15,14 @@ SERVICE_URLS[SERVICES.STORAGE] = 'https://drive.google.com'
 SERVICE_URLS[SERVICES.CONTACTS] = 'https://contacts.google.com'
 SERVICE_URLS[SERVICES.NOTES] = 'https://keep.google.com'
 SERVICE_URLS[SERVICES.CALENDAR] = 'https://calendar.google.com'
+SERVICE_URLS[SERVICES.COMMUNICATION] = 'https://hangouts.google.com'
 
 const SERVICE_NAMES = { }
 SERVICE_NAMES[SERVICES.STORAGE] = 'Drive'
 SERVICE_NAMES[SERVICES.CONTACTS] = 'Contacts'
 SERVICE_NAMES[SERVICES.NOTES] = 'Notes'
 SERVICE_NAMES[SERVICES.CALENDAR] = 'Calendar'
+SERVICE_NAMES[SERVICES.COMMUNICATION] = 'Hangouts'
 
 class Google extends Model {
 
