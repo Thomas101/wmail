@@ -143,7 +143,11 @@ class MailboxWizardStore {
 
   handleAuthGoogleMailboxSuccess ({ provisionalId, type, temporaryAuth }) {
     googleHTTP.upgradeAuthCodeToPermenant(temporaryAuth).then((auth) => {
-      this.configurationOpen = true
+      if (type === Mailbox.TYPE_GMAIL) {
+        this.configurationOpen = true
+      } else if (type === Mailbox.TYPE_GINBOX) {
+        this.configureServicesOpen = true
+      }
       this.provisionalId = provisionalId
       this.provisionalJS = {
         type: type,

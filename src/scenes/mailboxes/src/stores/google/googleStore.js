@@ -220,7 +220,8 @@ class GoogleStore {
           .then(({ response }) => {
             // Step 2.3: find the changed threads
             const threads = response.threads || []
-            if (threads.length === 0) { return { threads: threads, changedThreads: [] } }
+
+            if (threads.length === 0) { return { threads: threads, changedThreads: [], resultSizeEstimate: response.resultSizeEstimate } }
 
             const mailbox = mailboxStore.getState().getMailbox(mailboxId)
             const currentThreadsIndex = mailbox.google.latestUnreadThreads.reduce((acc, thread) => {
@@ -238,11 +239,11 @@ class GoogleStore {
               return acc
             }, [])
 
-            return { threads: threads, changedThreads: changedThreads }
+            return { threads: threads, changedThreads: changedThreads, resultSizeEstimate: response.resultSizeEstimate }
           })
-          .then(({ threads, changedThreads }) => {
+          .then(({ threads, changedThreads, resultSizeEstimate }) => {
             // Step 2.4: Grab the full threads
-            if (changedThreads.length === 0) { return { threads: threads, changedThreads: [] } }
+            if (changedThreads.length === 0) { return { threads: threads, changedThreads: [], resultSizeEstimate: resultSizeEstimate } }
 
             return Promise.all(threads.map((thread) => {
               return Promise.resolve()
@@ -250,10 +251,10 @@ class GoogleStore {
                 .then(({response}) => response)
             }))
             .then((changedThreads) => {
-              return { threads: threads, changedThreads: changedThreads }
+              return { threads: threads, changedThreads: changedThreads, resultSizeEstimate: resultSizeEstimate }
             })
           })
-          .then(({threads, changedThreads}) => {
+          .then(({threads, changedThreads, resultSizeEstimate}) => {
             // Step 2.5: Store the grabbed threads
             if (changedThreads.length !== 0) {
               const changedIndexed = changedThreads.reduce((acc, thread) => {
@@ -277,10 +278,10 @@ class GoogleStore {
                 return acc
               }, {})
 
-              mailboxActions.setGoogleLatestUnreadThreads(mailboxId, threads, changedIndexed)
+              mailboxActions.setGoogleLatestUnreadThreads(mailboxId, threads, resultSizeEstimate, changedIndexed)
               return { threads: threads, changedIndex: changedIndexed }
             } else {
-              mailboxActions.setGoogleLatestUnreadThreads(mailboxId, threads, {})
+              mailboxActions.setGoogleLatestUnreadThreads(mailboxId, threads, resultSizeEstimate, {})
               return { threads: threads, changedIndex: {} }
             }
           })

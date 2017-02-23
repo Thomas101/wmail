@@ -446,8 +446,9 @@ class MailboxStore {
   * @param id: the id of the mailbox
   * @param threadList: the complete thread list as an array
   * @param fetchedThreads: the threads that were fetched in an object by id
+  * @param resultSizeEstimate: the size estimate
   */
-  handleSetGoogleLatestUnreadThreads ({ id, threadList, fetchedThreads }) {
+  handleSetGoogleLatestUnreadThreads ({ id, threadList, fetchedThreads, resultSizeEstimate }) {
     const prevThreads = this.mailboxes.get(id).google.latestUnreadThreads.reduce((acc, thread) => {
       acc[thread.id] = thread
       return acc
@@ -468,6 +469,7 @@ class MailboxStore {
     const data = this.mailboxes.get(id).cloneData()
     data.googleUnreadMessageInfo_v2 = data.googleUnreadMessageInfo_v2 || {}
     data.googleUnreadMessageInfo_v2.latestUnreadThreads = nextThreads
+    data.googleUnreadMessageInfo_v2.resultSizeEstimate = resultSizeEstimate
     this.saveMailbox(id, data)
   }
 

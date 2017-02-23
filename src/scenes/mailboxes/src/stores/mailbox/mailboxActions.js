@@ -239,10 +239,11 @@ class MailboxActions {
   * Sets the latest unread thread list
   * @param id: the id of the mailbox
   * @param threadList: the list of threads as an array
+  * @param resultSizeEstimate: the size of the results
   * @param fetchedThreads: the full threads that have been fetched sent as an object keyed by id
   */
-  setGoogleLatestUnreadThreads (id, threadList, fetchedThreads) {
-    return { id: id, threadList: threadList, fetchedThreads: fetchedThreads }
+  setGoogleLatestUnreadThreads (id, threadList, resultSizeEstimate, fetchedThreads) {
+    return { id: id, threadList: threadList, fetchedThreads: fetchedThreads, resultSizeEstimate: resultSizeEstimate }
   }
 
   /**

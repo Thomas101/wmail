@@ -55,6 +55,10 @@ module.exports = React.createClass({
             }}
             floatingLabelText='Unread Mode'>
             <MenuItem
+              key={Google.UNREAD_MODES.GINBOX_DEFAULT}
+              value={Google.UNREAD_MODES.GINBOX_DEFAULT}
+              primaryText='All Unread Unbundled Messages' />
+            <MenuItem
               key={Google.UNREAD_MODES.INBOX_UNREAD}
               value={Google.UNREAD_MODES.INBOX_UNREAD}
               primaryText='All Unread Messages' />
@@ -90,22 +94,21 @@ module.exports = React.createClass({
               primaryText='All Messages in inbox' />
           </SelectField>
         ) : undefined}
-        <Toggle
-          defaultToggled={mailbox.google.takeLabelCountFromUI}
-          label='Scrape unread count directly from UI'
-          labelPosition='right'
-          disabled={!mailbox.google.canChangeTakeLabelCountFromUI}
-          onToggle={(evt, toggled) => {
-            mailboxActions.updateGoogleConfig(mailbox.id, { takeLabelCountFromUI: toggled })
-          }} />
-        {mailbox.type === Mailbox.TYPE_GINBOX ? (
-          <div style={{color: Colors.grey500}}>
-            <small><strong>Experimental:</strong> Works best with inbox zero</small>
+        {mailbox.type === Mailbox.TYPE_GMAIL ? (
+          <div>
+            <Toggle
+              defaultToggled={mailbox.google.takeLabelCountFromUI}
+              label='Scrape unread count directly from UI'
+              labelPosition='right'
+              disabled={!mailbox.google.canChangeTakeLabelCountFromUI}
+              onToggle={(evt, toggled) => {
+                mailboxActions.updateGoogleConfig(mailbox.id, { takeLabelCountFromUI: toggled })
+              }} />
+            <div style={{color: Colors.grey500}}>
+              <small>This will take the unread count directly from the Gmail user interface. This can improve unread count accuracy</small>
+            </div>
           </div>
         ) : undefined}
-        <div style={{color: Colors.grey500}}>
-          <small>This will take the unread count directly from the Gmail or Inbox user interface. This can improve unread count accuracy</small>
-        </div>
       </Paper>
     )
   }

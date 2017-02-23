@@ -6,7 +6,8 @@ const UNREAD_MODES = {
   INBOX: 'inbox',
   INBOX_UNREAD: 'inbox_unread',
   PRIMARY_INBOX_UNREAD: 'primary_inbox_unread',
-  INBOX_UNREAD_IMPORTANT: 'inbox_unread_important'
+  INBOX_UNREAD_IMPORTANT: 'inbox_unread_important',
+  GINBOX_DEFAULT: 'ginbox_default'
 }
 
 const SERVICE_URLS = { }
@@ -67,13 +68,24 @@ class Google extends Model {
   // Properties : Google Config
   /* **************************************************************************/
 
-  get unreadMode () { return this.__data__.config.unreadMode || UNREAD_MODES.INBOX_UNREAD }
+  get unreadMode () {
+    if (this.__data__.config.unreadMode) {
+      return this.__data__.config.unreadMode
+    } else {
+      if (this.type === TYPES.GMAIL) {
+        return UNREAD_MODES.INBOX_UNREAD
+      } else if (this.type === TYPES.GINBOX) {
+        return UNREAD_MODES.GINBOX_DEFAULT
+      }
+    }
+  }
   get unreadQuery () {
     switch (this.unreadMode) {
       case UNREAD_MODES.INBOX: return 'label:inbox'
       case UNREAD_MODES.INBOX_UNREAD: return 'label:inbox label:unread'
       case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return 'label:inbox label:unread category:primary'
       case UNREAD_MODES.INBOX_UNREAD_IMPORTANT: return 'label:inbox label:unread label:important'
+      case UNREAD_MODES.GINBOX_DEFAULT: return 'label:inbox label:unread -has:userlabels -category:promotions -category:forums -category:social'
     }
   }
   get unreadLabel () {
@@ -82,6 +94,7 @@ class Google extends Model {
       case UNREAD_MODES.INBOX_UNREAD: return 'INBOX'
       case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return 'CATEGORY_PERSONAL' // actually primary
       case UNREAD_MODES.INBOX_UNREAD_IMPORTANT: return 'IMPORTANT'
+      case UNREAD_MODES.GINBOX_DEFAULT: return 'INBOX'
     }
   }
   get unreadCountIncludesReadMessages () {
@@ -90,6 +103,7 @@ class Google extends Model {
       case UNREAD_MODES.INBOX_UNREAD: return false
       case UNREAD_MODES.PRIMARY_INBOX_UNREAD: return false
       case UNREAD_MODES.INBOX_UNREAD_IMPORTANT: return false
+      case UNREAD_MODES.GINBOX_DEFAULT: return false
     }
   }
   get takeLabelCountFromUI () {
@@ -111,8 +125,6 @@ class Google extends Model {
   get canChangeTakeLabelCountFromUI () {
     if (this.type === TYPES.GMAIL) {
       return this.unreadMode === UNREAD_MODES.INBOX || this.unreadMode === UNREAD_MODES.INBOX_UNREAD
-    } else if (this.type === TYPES.GINBOX) {
-      return this.unreadMode === UNREAD_MODES.INBOX_UNREAD
     } else {
       return false
     }
@@ -128,7 +140,11 @@ class Google extends Model {
   get threadsTotal () { return this.labelInfo.threadsTotal || 0 }
   get threadsUnread () { return this.labelInfo.threadsUnread || 0 }
   get unreadCount () {
-    return this.unreadCountIncludesReadMessages ? this.threadsTotal : this.threadsUnread
+    if (this.unreadMode === UNREAD_MODES.GINBOX_DEFAULT) {
+      return this.__data__.unreadMessages.resultSizeEstimate || 0
+    } else {
+      return this.unreadCountIncludesReadMessages ? this.threadsTotal : this.threadsUnread
+    }
   }
 
   /* **************************************************************************/
