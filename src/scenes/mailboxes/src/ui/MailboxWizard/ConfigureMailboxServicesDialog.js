@@ -107,6 +107,7 @@ module.exports = React.createClass({
         case Mailbox.SERVICES.CONTACTS: return 'Google Contacts'
         case Mailbox.SERVICES.NOTES: return 'Google Keep'
         case Mailbox.SERVICES.CALENDAR: return 'Google Calendar'
+        case Mailbox.SERVICES.COMMUNICATION: return 'Google Hangouts'
       }
     }
 
@@ -125,6 +126,7 @@ module.exports = React.createClass({
         case Mailbox.SERVICES.CONTACTS: return '../../images/google_services/logo_contacts_128px.png'
         case Mailbox.SERVICES.NOTES: return '../../images/google_services/logo_keep_128px.png'
         case Mailbox.SERVICES.CALENDAR: return '../../images/google_services/logo_calendar_128px.png'
+        case Mailbox.SERVICES.COMMUNICATION: return '../../images/google_services/logo_hangouts_128px.png'
       }
     }
 
