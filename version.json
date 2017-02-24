@@ -1,6 +1,6 @@
 {
   "release": {
-    "version": "2.1.0",
+    "version": "2.2.0",
     "news": {
       "id": 1,
       "level": "notify",
@@ -8,7 +8,7 @@
     }
   },
   "prerelease": {
-    "version": "2.1.1",
+    "version": "2.2.1",
     "news": {
       "id": 1,
       "level": "notify",

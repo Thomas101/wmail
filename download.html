@@ -1,9 +1,9 @@
 ---
 layout: default
-release_v: "2.1.0"
-release_s: "2_1_0"
-prerelease_v: "v2.1.1"
-prerelease_s: "2_1_1"
+release_v: "v2.2.0"
+release_s: "2_2_0"
+prerelease_v: "v2.2.1"
+prerelease_s: "2_2_1"
 ---
 {% capture release_notes %}{% include release_notes.md %}{% endcapture %}
 {% capture prerelease_notes %}{% include prerelease_notes.md %}{% endcapture %}
@@ -37,7 +37,7 @@ prerelease_s: "2_1_1"
               Tested by the community and ready to go. Generally more stable
               than the Pre-Release channel but missing some of the latest features
             </p>
-            <h4><span class="label label-success">Latest Release</span> v{{ page.release_v }}</h4>
+            <h4><span class="label label-success">Latest Release</span> {{ page.release_v }}</h4>
 
             <p>
               <a href="https://github.com/Thomas101/wmail/releases/download/{{ page.release_v }}/WMail_{{ page.release_s }}_osx.dmg" class="btn btn-default">
