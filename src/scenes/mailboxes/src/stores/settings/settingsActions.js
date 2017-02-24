@@ -289,6 +289,37 @@ class SettingsActions {
   setDpiMultiplier (val) {
     return this.update(SEGMENTS.TRAY, 'dpiMultiplier', parseInt(val))
   }
+
+  /* **************************************************************************/
+  // News
+  /* **************************************************************************/
+
+  /**
+  * @param serverResponse: the response received from the update server
+  */
+  updateLatestNews (serverResponse) {
+    return this.update(SEGMENTS.NEWS, {
+      newsId: serverResponse.id,
+      newsLevel: serverResponse.level,
+      newsFeed: serverResponse.feed
+    })
+  }
+
+  /**
+  * Marks a news item as opened
+  * @param newsId: the id of the news item
+  */
+  openNewsItem (newsId) {
+    return this.update(SEGMENTS.NEWS, 'openedNewsId', newsId)
+  }
+
+  /**
+  * Sets whether to show news in the sidebar
+  * @param show: true to show, false otherwise
+  */
+  setShowNewsInSidebar (show) {
+    return this.update(SEGMENTS.NEWS, 'showNewsInSidebar', show)
+  }
 }
 
 const actions = alt.createActions(SettingsActions)

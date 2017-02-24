@@ -7,6 +7,7 @@ const { mailboxActions, mailboxStore } = require('../stores/mailbox')
 const { composeActions } = require('../stores/compose')
 const { BLANK_PNG } = require('shared/b64Assets')
 const { TrayRenderer } = require('../Components')
+const navigationDispatch = require('../Dispatch/navigationDispatch')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -185,6 +186,13 @@ module.exports = React.createClass({
         label: 'Show / Hide',
         click: (e) => {
           ipcRenderer.send('toggle-mailbox-visibility-from-tray')
+        }
+      },
+      {
+        label: 'WMail News',
+        click: (e) => {
+          navigationDispatch.openNews()
+          ipcRenderer.send('focus-app', { })
         }
       },
       { type: 'separator' },

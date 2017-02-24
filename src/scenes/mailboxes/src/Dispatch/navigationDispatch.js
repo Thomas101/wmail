@@ -42,6 +42,13 @@ class NavigationDispatch {
       }
     })
   }
+
+  /**
+  * Opens the news
+  */
+  openNews () {
+    this.emit('opennews', {})
+  }
 }
 
 module.exports = new NavigationDispatch()

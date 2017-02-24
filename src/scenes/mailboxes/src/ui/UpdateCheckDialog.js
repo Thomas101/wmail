@@ -5,6 +5,7 @@ const compareVersion = require('compare-version')
 const { UPDATE_CHECK_URL, UPDATE_CHECK_INTERVAL, UPDATE_DOWNLOAD_URL } = require('shared/constants')
 const { FlatButton, RaisedButton, Dialog } = require('material-ui')
 const settingsStore = require('../stores/settings/settingsStore')
+const settingsActions = require('../stores/settings/settingsActions')
 const pkg = window.appPackage()
 const {
   remote: {shell}
@@ -33,7 +34,8 @@ module.exports = React.createClass({
 
   getInitialState () {
     return {
-      newerVersion: null
+      newerVersion: null,
+      recheckRestart: false
     }
   },
 
@@ -45,9 +47,8 @@ module.exports = React.createClass({
   * Checks with the server for an update
   */
   checkNow () {
-    if (settingsStore.getState().app.checkForUpdates === false) { return }
     Promise.resolve()
-      .then(() => window.fetch(UPDATE_CHECK_URL))
+      .then(() => window.fetch(`${UPDATE_CHECK_URL}?_=${new Date().getTime()}`))
       .then((res) => res.ok ? Promise.resolve(res) : Promise.reject(res))
       .then((res) => res.json())
       .then((res) => {
@@ -68,9 +69,23 @@ module.exports = React.createClass({
           }
         }
 
+        if (pkg.prerelease) {
+          if (res.prerelease.news) {
+            settingsActions.updateLatestNews(res.prerelease.news)
+          }
+        } else {
+          if (res.release.news) {
+            settingsActions.updateLatestNews(res.release.news)
+          }
+        }
+
         if (update) {
-          this.setState({ newerVersion: update })
-          this.clearTimeout(this.recheckTO)
+          if (this.state.recheckRestart || settingsStore.getState().app.checkForUpdates === false) {
+            this.scheduleNextCheck()
+          } else {
+            this.setState({ newerVersion: update })
+            this.clearTimeout(this.recheckTO)
+          }
         } else {
           this.setState({ newerVersion: null })
           this.scheduleNextCheck()
@@ -100,8 +115,11 @@ module.exports = React.createClass({
   * Cancels the recheck and rechecks after reboot
   */
   recheckRestart () {
-    this.setState({ newerVersion: null })
-    this.clearTimeout(this.recheckTO)
+    this.setState({
+      newerVersion: null,
+      recheckRestart: true
+    })
+    this.recheckLater()
   },
 
   /**

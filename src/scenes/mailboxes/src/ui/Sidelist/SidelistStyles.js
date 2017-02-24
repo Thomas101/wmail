@@ -1,7 +1,6 @@
 import './SidelistStyles.less'
 const Colors = require('material-ui/styles/colors')
-const FOOTER_HEIGHT = 100
-const FOOTER_HEIGHT_WIZARD = 150
+const FOOTER_ITEM_HEIGHT = 50
 
 module.exports = {
   /**
@@ -16,26 +15,32 @@ module.exports = {
     right: 0
   },
   footer: {
-    height: FOOTER_HEIGHT,
+    height: 2 * FOOTER_ITEM_HEIGHT,
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0
   },
-  footerWithWizard: {
-    height: FOOTER_HEIGHT_WIZARD
+  footer3Icons: {
+    height: 3 * FOOTER_ITEM_HEIGHT
+  },
+  footer4Icons: {
+    height: 4 * FOOTER_ITEM_HEIGHT
   },
   scroller: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    bottom: FOOTER_HEIGHT,
+    bottom: 2 * FOOTER_ITEM_HEIGHT,
     overflowY: 'auto',
     overflowX: 'hidden'
   },
-  scrollerWithWizard: {
-    bottom: FOOTER_HEIGHT_WIZARD
+  scroller3Icons: {
+    bottom: 3 * FOOTER_ITEM_HEIGHT
+  },
+  scroller4Icons: {
+    bottom: 4 * FOOTER_ITEM_HEIGHT
   },
   itemContainer: {
     textAlign: 'center'
@@ -124,5 +129,32 @@ module.exports = {
     borderWidth: 3,
     borderStyle: 'solid',
     cursor: 'pointer'
+  },
+
+  /**
+  * News Item
+  */
+  newsItemContainer: {
+    position: 'relative',
+    textAlign: 'center'
+  },
+  newsBadge: {
+    backgroundColor: 'rgba(238, 54, 55, 0.95)',
+    color: Colors.red50,
+    fontWeight: '100',
+    width: 'auto',
+    minWidth: 24,
+    paddingLeft: 4,
+    paddingRight: 4,
+    borderRadius: 12,
+    WebkitUserSelect: 'none',
+    cursor: 'pointer'
+  },
+  newsBadgeContainer: {
+    position: 'absolute',
+    top: -3,
+    right: 3,
+    cursor: 'pointer',
+    zIndex: 2
   }
 }

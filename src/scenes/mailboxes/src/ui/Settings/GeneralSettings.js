@@ -49,6 +49,7 @@ module.exports = React.createClass({
     return {
       ui: store.ui,
       os: store.os,
+      news: store.news,
       language: store.language,
       tray: store.tray
     }
@@ -94,6 +95,7 @@ module.exports = React.createClass({
       os,
       language,
       tray,
+      news,
       openAtLoginSupported,
       openAtLogin,
       openAsHiddenAtLogin,
@@ -110,6 +112,7 @@ module.exports = React.createClass({
               <UISettingsSection
                 ui={ui}
                 os={os}
+                news={news}
                 showRestart={showRestart} />
               <NotificationSettingsSection os={os} />
               <DownloadSettingsSection os={os} />
