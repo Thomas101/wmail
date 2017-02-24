@@ -1,0 +1,70 @@
+---
+layout: news
+---
+
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>
+          <span class="color-red-600 fa fa-fw fa-newspaper-o"></span> Welcome to WMail News
+        </h1>
+        <p class="color-grey-600">24th February 2017</p>
+        <p>
+          <span class="color-red-600">Hello Prerelease tester!</span> Welcome to the WMail
+          news feed! You can now stay up to date with all the updates in the latest releases
+          and find out about all the awesome stuff that's making its way out of WMail HQ!
+        </p>
+        <p>
+          You've obviously upgraded to latest and greatest release to be seeing this
+          which includes some awesome features and fixes. You can find out exactly
+          what's changed in the Release news article listed below
+        </p>
+        <p>
+          <em>
+            P.S. stay tuned for some sneak peaks about what's on the horizon
+            over the coming weeks...
+          </em>
+        </p>
+        <p class="color-red-600">
+          <strong>
+            P.P.S. thanks for being awesome and testing WMail! <span class="fa fa-fw fa-thumbs-up"></span>
+          </strong>
+        </p>
+      </div>
+    </div>
+  </div>
+  <hr />
+</section>
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>
+          <span class="color-red-600 fa fa-fw fa-rocket"></span> Version 2.2.1 Prerelease
+        </h1>
+        <p class="color-grey-600">24th February 2017</p>
+        <p><strong>Available from the <a href="https://thomas101.github.io/wmail/download" target="_blank">downloads page</a></strong></p>
+        {% capture prerelease_notes_2_2_1 %}{% include prerelease_notes_2_2_1.md %}{% endcapture %}
+        {{ prerelease_notes_2_2_1 | markdownify }}
+      </div>
+    </div>
+  </div>
+  <hr />
+</section>
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>
+          <span class="color-red-600 fa fa-fw fa-rocket"></span> Version 2.2.0 Release
+        </h1>
+        <p class="color-grey-600">24th February 2017</p>
+        <p><strong>Available from the <a href="https://thomas101.github.io/wmail/download" target="_blank">downloads page</a></strong></p>
+        {% capture release_notes_2_2_0 %}{% include release_notes_2_2_0.md %}{% endcapture %}
+        {{ release_notes_2_2_0 | markdownify }}
+      </div>
+    </div>
+  </div>
+  <hr />
+</section>

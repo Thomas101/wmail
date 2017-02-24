@@ -1,8 +1,18 @@
 {
   "release": {
-    "version": "2.1.0"
+    "version": "2.1.0",
+    "news": {
+      "id": 1,
+      "level": "notify",
+      "feed": "https://thomas101.github.io/wmail/releasefeed"
+    }
   },
   "prerelease": {
-    "version": "2.1.1"
+    "version": "2.1.1",
+    "news": {
+      "id": 1,
+      "level": "notify",
+      "feed": "https://thomas101.github.io/wmail/prereleasefeed"
+    }
   }
 }
