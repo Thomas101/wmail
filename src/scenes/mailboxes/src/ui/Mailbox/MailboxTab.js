@@ -266,6 +266,14 @@ module.exports = React.createClass({
   },
 
   /**
+  * Until https://github.com/electron/electron/issues/6958 is fixed we need to
+  * be really agressive about setting zoom levels
+  */
+  handleZoomFixEvent () {
+    this.refs[BROWSER_REF].setZoomLevel(this.state.mailbox.zoomFactor)
+  },
+
+  /**
   * Updates the target url that the user is hovering over
   * @param evt: the event that fired
   */
@@ -411,6 +419,7 @@ module.exports = React.createClass({
       'ReactComponent-MailboxTab',
       isActive ? 'active' : undefined
     ].filter((c) => !!c).join(' ')
+    const zoomFixFn = mailbox.zoomFactor === 1 ? undefined : this.handleZoomFixEvent
 
     if (isActive) {
       setTimeout(() => { this.refs[BROWSER_REF].focus() })
@@ -425,6 +434,18 @@ module.exports = React.createClass({
           src={browserSrc}
 
           {...webviewEventProps}
+          loadCommit={(evt) => {
+            this.multiCallBrowserEvent([zoomFixFn, webviewEventProps.loadCommit], [evt])
+          }}
+          didGetResponseDetails={(evt) => {
+            this.multiCallBrowserEvent([zoomFixFn, webviewEventProps.didGetResponseDetails], [evt])
+          }}
+          didNavigate={(evt) => {
+            this.multiCallBrowserEvent([zoomFixFn, webviewEventProps.didNavigate], [evt])
+          }}
+          didNavigateInPage={(evt) => {
+            this.multiCallBrowserEvent([zoomFixFn, webviewEventProps.didNavigateInPage], [evt])
+          }}
           domReady={(evt) => {
             this.multiCallBrowserEvent([this.handleBrowserDomReady, webviewEventProps.domReady], [evt])
           }}
@@ -432,7 +453,7 @@ module.exports = React.createClass({
             this.multiCallBrowserEvent([this.dispatchBrowserIPCMessage, webviewEventProps.ipcMessage], [evt])
           }}
           willNavigate={(evt) => {
-            this.multiCallBrowserEvent([this.handleBrowserWillNavigate, webviewEventProps.willNavigate], [evt])
+            this.multiCallBrowserEvent([zoomFixFn, this.handleBrowserWillNavigate, webviewEventProps.willNavigate], [evt])
           }}
           focus={(evt) => {
             this.multiCallBrowserEvent([this.handleBrowserFocused, webviewEventProps.focus], [evt])

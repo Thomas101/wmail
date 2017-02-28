@@ -1,7 +1,7 @@
 const KeyboardNavigator = require('./KeyboardNavigator')
 const Spellchecker = require('./Spellchecker')
 const ContextMenu = require('./ContextMenu')
-const { ipcRenderer, webFrame } = require('electron')
+const { ipcRenderer } = require('electron')
 
 class Browser {
 
@@ -19,13 +19,6 @@ class Browser {
         data: process.getProcessMemoryInfo(),
         type: data.__respond__
       })
-    })
-
-    ipcRenderer.on('set-zoom-level', (evt, data) => {
-      webFrame.setLayoutZoomLevelLimits(-999999, 999999)
-      webFrame.setZoomFactor(data.level)
-      const ezl = webFrame.getZoomLevel()
-      webFrame.setLayoutZoomLevelLimits(ezl, ezl)
     })
   }
 }
