@@ -8,6 +8,7 @@ const { composeActions } = require('../stores/compose')
 const { BLANK_PNG } = require('shared/b64Assets')
 const { TrayRenderer } = require('../Components')
 const navigationDispatch = require('../Dispatch/navigationDispatch')
+const uuid = require('uuid')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -232,7 +233,8 @@ module.exports = React.createClass({
   render () {
     const { unreadCount, traySettings } = this.props
 
-    // Not great that this happens in a promise, but it's pretty quick so should be okay
+    const renderId = uuid.v4()
+    this.renderId = renderId
     TrayRenderer.renderNativeImage({
       unreadCount: unreadCount,
       showUnreadCount: traySettings.showUnreadCount,
@@ -243,6 +245,7 @@ module.exports = React.createClass({
       size: this.trayIconSize(),
       pixelRatio: this.trayIconPixelRatio()
     }).then((image) => {
+      if (renderId !== this.renderId) { return }
       this.appTray.setImage(image)
       this.appTray.setToolTip(this.renderTooltip())
       this.appTray.setContextMenu(this.renderContextMenu())

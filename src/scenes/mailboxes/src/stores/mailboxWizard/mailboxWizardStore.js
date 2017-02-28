@@ -74,6 +74,7 @@ class MailboxWizardStore {
 
       handleAuthenticateGinboxMailbox: actions.AUTHENTICATE_GINBOX_MAILBOX,
       handleAuthenticateGmailMailbox: actions.AUTHENTICATE_GMAIL_MAILBOX,
+      handleReauthenticateGoogleMailbox: actions.REAUTHENTICATE_GOOGLE_MAILBOX,
 
       handleAuthGoogleMailboxSuccess: actions.AUTH_GOOGLE_MAILBOX_SUCCESS,
       handleAuthGoogleMailboxFailure: actions.AUTH_GOOGLE_MAILBOX_FAILURE,
@@ -138,31 +139,43 @@ class MailboxWizardStore {
     ipcRenderer.send('auth-google', { id: provisionalId, type: Mailbox.TYPE_GMAIL })
   }
 
+  handleReauthenticateGoogleMailbox ({ mailboxId }) {
+    this.addMailboxOpen = false
+    ipcRenderer.send('auth-google', { id: mailboxId, mode: 'reauthenticate' })
+  }
+
   /* **************************************************************************/
   // Authentication Callbacks
   /* **************************************************************************/
 
-  handleAuthGoogleMailboxSuccess ({ provisionalId, type, temporaryAuth }) {
+  handleAuthGoogleMailboxSuccess ({ provisionalId, type, temporaryAuth, mode }) {
     googleHTTP.upgradeAuthCodeToPermenant(temporaryAuth).then((auth) => {
-      this.provisionalId = provisionalId
-      this.provisionalJS = {
-        type: type,
-        googleAuth: auth
-      }
-
-      if (type === Mailbox.TYPE_GMAIL) {
-        this.configurationOpen = true
-      } else if (type === Mailbox.TYPE_GINBOX) {
-        if (pkg.prerelease) {
-          this.configureServicesOpen = true
-        } else {
-          this.createMailbox()
-          this.completeClear()
-          this.configurationCompleteOpen = true
+      if (mode === 'reauthenticate') {
+        mailboxActions.setGoogleAuth.defer(provisionalId, auth)
+        googleActions.syncMailboxProfile.defer(provisionalId)
+        googleActions.syncMailboxUnreadCount.defer(provisionalId)
+        this.completeClear()
+      } else {
+        this.provisionalId = provisionalId
+        this.provisionalJS = {
+          type: type,
+          googleAuth: auth
         }
-      }
 
-      this.emitChange()
+        if (type === Mailbox.TYPE_GMAIL) {
+          this.configurationOpen = true
+        } else if (type === Mailbox.TYPE_GINBOX) {
+          if (pkg.prerelease) {
+            this.configureServicesOpen = true
+          } else {
+            this.createMailbox()
+            this.completeClear()
+            this.configurationCompleteOpen = true
+          }
+        }
+
+        this.emitChange()
+      }
     }).catch((err) => {
       console.error('[AUTH ERR]', err)
       console.error(err.errorString)

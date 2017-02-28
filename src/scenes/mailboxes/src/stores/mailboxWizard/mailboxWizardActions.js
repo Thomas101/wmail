@@ -41,6 +41,14 @@ class MailboxWizardActions {
     return { provisionalId: Mailbox.provisionId() }
   }
 
+  /**
+  * Reauthetnicates a google mailbox
+  * @param mailboxId: the id of the mailbox
+  */
+  reauthenticateGoogleMailbox (mailboxId) {
+    return { mailboxId: mailboxId }
+  }
+
   /* **************************************************************************/
   // Authentication callbacks
   /* **************************************************************************/
@@ -51,7 +59,7 @@ class MailboxWizardActions {
   * @param data: the data that came across the ipc
   */
   authGoogleMailboxSuccess (evt, data) {
-    return { provisionalId: data.id, type: data.type, temporaryAuth: data.temporaryAuth }
+    return { provisionalId: data.id, type: data.type, temporaryAuth: data.temporaryAuth, mode: data.mode }
   }
 
   /**

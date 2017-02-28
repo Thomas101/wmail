@@ -180,6 +180,7 @@ class MailboxStore {
       // Google
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
       handleSetGoogleLatestUnreadThreads: actions.SET_GOOGLE_LATEST_UNREAD_THREADS,
+      handleSetGoogleHasGrantError: actions.SET_GOOGLE_HAS_GRANT_ERROR,
 
       // Active & Ordering
       handleChangeActive: actions.CHANGE_ACTIVE,
@@ -471,6 +472,17 @@ class MailboxStore {
     data.googleUnreadMessageInfo_v2.latestUnreadThreads = nextThreads
     data.googleUnreadMessageInfo_v2.resultSizeEstimate = resultSizeEstimate
     this.saveMailbox(id, data)
+  }
+
+  handleSetGoogleHasGrantError ({ id, hasError }) {
+    const data = this.mailboxes.get(id).cloneData()
+
+    if (data.googleAuth.invalidGrant !== hasError) {
+      data.googleAuth.invalidGrant = hasError
+      this.saveMailbox(id, data)
+    } else {
+      this.preventDefault()
+    }
   }
 
   /* **************************************************************************/

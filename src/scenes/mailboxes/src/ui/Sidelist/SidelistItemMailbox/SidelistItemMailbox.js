@@ -1,5 +1,5 @@
 const React = require('react')
-const { Badge } = require('material-ui')
+const { Badge, FontIcon } = require('material-ui')
 const { navigationDispatch } = require('../../../Dispatch')
 const { mailboxStore, mailboxActions } = require('../../../stores/mailbox')
 const shallowCompare = require('react-addons-shallow-compare')
@@ -113,7 +113,16 @@ module.exports = React.createClass({
   * @return jsx
   */
   renderBadge (mailbox) {
-    if (mailbox.showUnreadBadge && mailbox.unread) {
+    if (mailbox.google.authHasGrantError) {
+      return (
+        <Badge
+          onContextMenu={this.handleOpenPopover}
+          onClick={this.handleClick}
+          badgeContent={(<FontIcon className='fa fa-exclamation' style={{ color: 'white', fontSize: 16 }} />)}
+          badgeStyle={styles.mailboxBadge}
+          style={styles.mailboxBadgeContainer} />
+      )
+    } else if (mailbox.showUnreadBadge && mailbox.unread) {
       const badgeContent = mailbox.unread >= 1000 ? Math.floor(mailbox.unread / 1000) + 'K+' : mailbox.unread
       return (
         <Badge
@@ -154,11 +163,14 @@ module.exports = React.createClass({
   renderTooltipContent (mailbox) {
     if (!mailbox.email && !mailbox.unread) { return undefined }
     const hr = '<hr style="height: 1px; border: 0; background-image: linear-gradient(to right, #bcbcbc, #fff, #bcbcbc);" />'
+    const hasError = mailbox.google.authHasGrantError
     return `
       <div style="text-align:left;">
         ${mailbox.email || ''}
         ${mailbox.email && mailbox.unread ? hr : ''}
         ${mailbox.unread ? `<small>${mailbox.unread} unread message${mailbox.unread > 1 ? 's' : ''}</small>` : ''}
+        ${hasError ? hr : ''}
+        ${hasError ? '<span style="color:red;">Authentication Error. Right click to reauthenticate</span>' : ''}
       </div>
     `
   },

@@ -2,6 +2,7 @@ const React = require('react')
 const { Popover, Menu, MenuItem, Divider, FontIcon } = require('material-ui')
 const { mailboxDispatch, navigationDispatch } = require('../../../Dispatch')
 const { mailboxActions } = require('../../../stores/mailbox')
+const { mailboxWizardActions } = require('../../../stores/mailboxWizard')
 const shallowCompare = require('react-addons-shallow-compare')
 
 module.exports = React.createClass({
@@ -117,6 +118,19 @@ module.exports = React.createClass({
           key='info'
           primaryText={mailbox.email}
           disabled />) : undefined,
+
+      mailbox.google.authHasGrantError ? (
+        <MenuItem
+          key='autherr'
+          primaryText='Reauthenticate Account'
+          style={{ color: 'red' }}
+          onClick={() => {
+            mailboxWizardActions.reauthenticateGoogleMailbox(mailbox.id)
+            this.handleClosePopover()
+          }}
+          leftIcon={<FontIcon className='material-icons' style={{ color: 'red' }}>error_outline</FontIcon>} />
+      ) : undefined,
+      mailbox.google.authHasGrantError ? (<Divider key='div-err' />) : undefined,
 
       // Ordering controls
       isFirst ? undefined : (

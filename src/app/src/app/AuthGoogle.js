@@ -101,12 +101,14 @@ class AuthGoogle {
         evt.sender.send('auth-google-complete', {
           id: body.id,
           type: body.type,
+          mode: body.mode,
           temporaryAuth: authCode
         })
       }, (err) => {
         evt.sender.send('auth-google-error', {
           id: body.id,
           type: body.type,
+          mode: body.mode,
           error: err,
           errorString: (err || {}).toString ? (err || {}).toString() : undefined,
           errorMessage: (err || {}).message ? (err || {}).message : undefined,

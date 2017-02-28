@@ -65,6 +65,9 @@ class Google extends Model {
   get accessToken () { return this.__data__.auth.access_token }
   get refreshToken () { return this.__data__.auth.refresh_token }
   get authExpiryTime () { return (this.__data__.auth.date || 0) + (this.__data__.auth.expires_in || 0) }
+  get authHasGrantError () {
+    return this.__data__.auth.invalidGrant === undefined ? false : this.__data__.auth.invalidGrant
+  }
 
   /* **************************************************************************/
   // Properties : Google Config

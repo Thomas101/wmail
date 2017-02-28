@@ -255,6 +255,13 @@ class MailboxActions {
     return this.update(id, 'googleUnreadMessageInfo_v2.lastNotifiedInternalDate', parseInt(internalDate))
   }
 
+  /**
+  * Sets the google auth info
+  */
+  setGoogleAuth (id, auth) {
+    return this.update(id, 'googleAuth', auth)
+  }
+
   /* **************************************************************************/
   // Active
   /* **************************************************************************/
@@ -277,6 +284,15 @@ class MailboxActions {
   * Changes the active mailbox to the next in the list
   */
   changeActiveToNext () { return {} }
+
+  /**
+  * Sets if the google config has a grant error
+  * @param id: the mailbox id
+  * @param hasError: true if there is an error, false otherwise
+  */
+  setGoogleHasGrantError (id, hasError) {
+    return { id: id, hasError: hasError }
+  }
 
   /* **************************************************************************/
   // Search

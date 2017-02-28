@@ -62,19 +62,27 @@ class GoogleStore {
     const mailbox = mailboxStore.getState().getMailbox(mailboxId)
     if (!mailbox) {
       return { auth: undefined }
+    } else {
+      return { auth: googleHTTP.generateAuth(mailbox.google.accessToken, mailbox.google.refreshToken, mailbox.google.authExpiryTime) }
     }
+  }
 
-    let generate = true
-    if (this.cachedAuths.has(mailboxId) && this.cachedAuths.get(mailboxId).time === mailbox.google.authTime) {
-      generate = false
+  /* **************************************************************************/
+  // Error Detection
+  /* **************************************************************************/
+
+  /**
+  * Checks if an error is an invalid grant error
+  * @param err: the error that was thrown
+  * @return true if this error is invalid grant
+  */
+  isInvalidGrantError (err) {
+    if (err && typeof (err.message) === 'string') {
+      if (err.message.indexOf('invalid_grant') !== -1) {
+        return true
+      }
     }
-
-    if (generate && mailbox.google.hasAuth) {
-      const auth = googleHTTP.generateAuth(mailbox.google.accessToken, mailbox.google.refreshToken, mailbox.google.authExpiryTime)
-      this.cachedAuths.set(mailbox.id, { time: mailbox.google.authTime, auth: auth })
-    }
-
-    return (this.cachedAuths.get(mailbox.id) || {})
+    return false
   }
 
   /* **************************************************************************/
@@ -146,10 +154,15 @@ class GoogleStore {
 
   handleSyncMailboxProfileSuccess ({ mailboxId }) {
     this.openProfileRequests.set(this.openProfileRequests.get(mailboxId) - 1)
+    mailboxActions.setGoogleHasGrantError.defer(mailboxId, false)
   }
 
   handleSyncMailboxProfileFailure ({ mailboxId, err }) {
-    console.warn('[SYNC ERR] Mailbox Profile', err)
+    if (this.isInvalidGrantError(err.err)) {
+      mailboxActions.setGoogleHasGrantError.defer(mailboxId, true)
+    } else {
+      console.warn('[SYNC ERR] Mailbox Profile', err)
+    }
     this.openProfileRequests.set(this.openProfileRequests.get(mailboxId) - 1)
   }
 
@@ -300,11 +313,16 @@ class GoogleStore {
 
   handleSyncMailboxUnreadCountSuccess ({ mailboxId }) {
     this.openUnreadCountRequests.set(this.openUnreadCountRequests.get(mailboxId) - 1)
+    mailboxActions.setGoogleHasGrantError.defer(mailboxId, false)
   }
 
   handleSyncMailboxUnreadCountFailure ({ mailboxId, err }) {
     this.openUnreadCountRequests.set(this.openUnreadCountRequests.get(mailboxId) - 1)
-    console.warn('[SYNC ERR] Mailbox Unread Count', err)
+    if (this.isInvalidGrantError(err.err)) {
+      mailboxActions.setGoogleHasGrantError.defer(mailboxId, true)
+    } else {
+      console.warn('[SYNC ERR] Mailbox Unread Count', err)
+    }
   }
 }
 
