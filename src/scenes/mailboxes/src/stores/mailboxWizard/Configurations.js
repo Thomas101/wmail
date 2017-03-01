@@ -21,14 +21,16 @@ configurations[Mailbox.TYPE_GMAIL] = {
   }
 }
 configurations[Mailbox.TYPE_GINBOX] = {
-  COUNT_SCRAPE: {
+  UNREAD_INBOX: {
     googleConf: {
-      takeLabelCountFromUI: true
+      takeLabelCountFromUI: false,
+      unreadMode: Google.UNREAD_MODES.INBOX_UNREAD
     }
   },
-  COUNT_API: {
+  DEFAULT_INBOX: {
     googleConf: {
-      takeLabelCountFromUI: false
+      takeLabelCountFromUI: false,
+      unreadMode: Google.UNREAD_MODES.GINBOX_DEFAULT
     }
   }
 }

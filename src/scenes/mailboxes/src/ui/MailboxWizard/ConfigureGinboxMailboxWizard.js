@@ -85,35 +85,34 @@ module.exports = React.createClass({
         <div style={styles.configurations}>
           <Paper
             style={styles.configuration}
-            onClick={() => onPickedConfiguration(Configurations[Mailbox.TYPE_GINBOX].COUNT_SCRAPE)}>
+            onClick={() => onPickedConfiguration(Configurations[Mailbox.TYPE_GINBOX].DEFAULT_INBOX)}>
             <div>
-              <RaisedButton primary label='Inbox Zero (Default)' style={styles.configurationButton} />
+              <RaisedButton primary label='Unread Bundled Messages (Default)' style={styles.configurationButton} />
               <div style={Object.assign({
-                backgroundImage: `url("../../images/ginbox_mode_zero_small.png")`
+                backgroundImage: `url("../../images/ginbox_mode_unreadunbundled.png")`
               }, styles.configurationImage)} />
               <p>
-                I like to read all my emails and mark them as done so that I only
-                have a few emails in my inbox
+                I'm only interested in messages in my inbox that aren't in bundles.
+                This is default behaviour also seen in the iOS and Android Inbox Apps
               </p>
               <p style={styles.configurationTechInfo}>
-                This will take the unread count from the user interface
+                Unread Unbundled Messages in Inbox
               </p>
             </div>
           </Paper>
           <Paper
             style={styles.configuration}
-            onClick={() => onPickedConfiguration(Configurations[Mailbox.TYPE_GINBOX].COUNT_API)}>
+            onClick={() => onPickedConfiguration(Configurations[Mailbox.TYPE_GINBOX].UNREAD_INBOX)}>
             <div>
-              <RaisedButton primary label='Full Inbox' style={styles.configurationButton} />
+              <RaisedButton primary label='All Unread Messages' style={styles.configurationButton} />
               <div style={Object.assign({
-                backgroundImage: `url("../../images/ginbox_mode_full_small.png")`
+                backgroundImage: `url("../../images/ginbox_mode_inbox.png")`
               }, styles.configurationImage)} />
               <p>
-                I leave all my emails in my inbox and just deal with the new ones
-                as they arrive
+                I'm interested in all unread messages in my inbox
               </p>
               <p style={styles.configurationTechInfo}>
-                This will take the unread count the Gmail API
+                Unread Messages in Inbox
               </p>
             </div>
           </Paper>

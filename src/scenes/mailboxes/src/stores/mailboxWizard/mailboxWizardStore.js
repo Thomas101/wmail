@@ -162,18 +162,7 @@ class MailboxWizardStore {
           googleAuth: auth
         }
 
-        if (type === Mailbox.TYPE_GMAIL) {
-          this.configurationOpen = true
-        } else if (type === Mailbox.TYPE_GINBOX) {
-          if (pkg.prerelease) {
-            this.configureServicesOpen = true
-          } else {
-            this.createMailbox()
-            this.completeClear()
-            this.configurationCompleteOpen = true
-          }
-        }
-
+        this.configurationOpen = true
         this.emitChange()
       }
     }).catch((err) => {

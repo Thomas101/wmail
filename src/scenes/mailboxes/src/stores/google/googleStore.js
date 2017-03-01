@@ -78,7 +78,7 @@ class GoogleStore {
   */
   isInvalidGrantError (err) {
     if (err && typeof (err.message) === 'string') {
-      if (err.message.indexOf('invalid_grant') !== -1) {
+      if (err.message.indexOf('invalid_grant') !== -1 || err.message.indexOf('Invalid Credentials') !== -1) {
         return true
       }
     }
