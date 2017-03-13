@@ -5,6 +5,7 @@ const settingsActions = require('../../../stores/settings/settingsActions')
 const styles = require('../settingStyles')
 const shallowCompare = require('react-addons-shallow-compare')
 const Tray = require('../../Tray')
+const constants = require('../../../../../../shared/constants')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -42,9 +43,44 @@ module.exports = React.createClass({
             labelPosition='right'
             disabled={!tray.show}
             onToggle={(evt, toggled) => settingsActions.setShowTrayUnreadCount(toggled)} />
+          <Toggle
+            toggled={tray.hideWhenClosed}
+            disabled={!tray.show}
+            label='Hide main window when closed'
+            labelPosition='right'
+            onToggle={(evt, toggled) => { settingsActions.setHideWhenClosed(toggled) }} />
+          <Toggle
+            toggled={tray.hideWhenMinimized}
+            disabled={!tray.show}
+            label='Hide main window when minimized'
+            labelPosition='right'
+            onToggle={(evt, toggled) => { settingsActions.setHideWhenMinimized(toggled) }} />
+          {Tray.platformSupportsDoubleClick() ? (
+            <SelectField
+              fullWidth
+              floatingLabelText='Mouse trigger'
+              disabled={!tray.show}
+              onChange={(evt, index, value) => settingsActions.setMouseTrigger(value)}
+              value={tray.mouseTrigger}>
+              <MenuItem value={constants.MOUSE_TRIGGERS.SINGLE} primaryText='Single click' />
+              <MenuItem value={constants.MOUSE_TRIGGERS.DOUBLE} primaryText='Double click' />
+            </SelectField>
+          ) : undefined }
+          {Tray.platformSupportsDoubleClick() ? (
+            <SelectField
+              fullWidth
+              floatingLabelText='Mouse action'
+              disabled={!tray.show}
+              onChange={(evt, index, value) => settingsActions.setMouseTriggerAction(value)}
+              value={tray.mouseTriggerAction}>
+              <MenuItem value={constants.MOUSE_TRIGGER_ACTIONS.TOGGLE} primaryText='Toggle window visibility' />
+              <MenuItem value={constants.MOUSE_TRIGGER_ACTIONS.SHOW} primaryText='Show window' />
+            </SelectField>
+          ) : undefined }
           {Tray.platformSupportsDpiMultiplier() ? (
             <SelectField
               floatingLabelText='DPI Multiplier'
+              disabled={!tray.show}
               value={tray.dpiMultiplier}
               onChange={(evt, index, value) => settingsActions.setDpiMultiplier(value)}>
               <MenuItem value={1} primaryText='1x' />

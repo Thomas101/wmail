@@ -21,5 +21,15 @@ module.exports = Object.freeze({
   REFOCUS_MAILBOX_INTERVAL_MS: 300,
 
   DB_EXTENSION: 'wmaildb',
-  DB_WRITE_DELAY_MS: 500 // 0.5secs
+  DB_WRITE_DELAY_MS: 500, // 0.5secs
+
+  MOUSE_TRIGGERS: {
+    SINGLE: 0,
+    DOUBLE: 1
+  },
+
+  MOUSE_TRIGGER_ACTIONS: {
+    TOGGLE: 0,
+    SHOW: 1
+  }
 })
