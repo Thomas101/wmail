@@ -1,20 +1,24 @@
 # WMail
 
-[![Join the chat at https://gitter.im/wmail-desktop/Lobby](https://badges.gitter.im/wmail-desktop/Lobby.svg)](https://gitter.im/wmail-desktop/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-![](https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg)
-[![Travis Build Status](https://img.shields.io/travis/Thomas101/wmail.svg)](http://travis-ci.org/Thomas101/wmail)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
-[![Download](https://img.shields.io/github/downloads/Thomas101/wmail/total.svg)](https://github.com/Thomas101/wmail/releases)
+The missing desktop client for Gmail & Google Inbox. Bringing the online Gmail & Google Inbox experience to your desktop in a neatly packaged app. WMail was created to make your webmail feel right at home on your laptop or computer. It keeps the best of Gmail and Google Inbox whilst adding all those extra bits that you miss when using them in a web browser.
 
+# Introducing Wavebox
 
-The missing desktop client for Gmail & Google Inbox. Bringing the online Gmail & Google Inbox experience to your desktop in a neatly packaged app. WMail was created to make your webmail feel right at home on your laptop or computer. It keeps the best of Gmail and Google Inbox whilst adding all those extra bits that you miss when using them in a web browser. Visit the [Official Homepage](http://thomas101.github.io/wmail/) for more information
+**WMail is now Wavebox!** Wavebox adds support for much more than just e-mail. Google Inbox, Gmail, Outlook, Office 365, Slack, Trello & Any Web link and everything you love about WMail.
 
-[Download the latest release](http://thomas101.github.io/wmail/download) | [All releases](https://github.com/Thomas101/wmail/releases)
+![Wavebox & WMail Logo](https://raw.githubusercontent.com/Thomas101/wmail/master/.github/wmail_wavebox.gif)
 
-[Raise an issue or request a feature](https://github.com/Thomas101/wmail/issues) | [Contribute](https://github.com/Thomas101/wmail/wiki/Contributing)
+We hope that you'll give Wavebox a try and love it as much as we love developing it!
 
-[Find out more in the Wiki](https://github.com/Thomas101/wmail/wiki) | [Official Homepage](http://thomas101.github.io/wmail/)
+* Developed full time by the original creator of WMail
+* Still open-source on [Github](https://github.com/wavebox/waveboxapp)
+* Licensed under MPL-2.0 just like WMail
+* Ready to build from source and tweak
+* Even more awesome!
 
-![Screenshot](https://raw.githubusercontent.com/Thomas101/wmail/master/.github/screenshot.png "Screenshot")
+--
 
-Made with ♥ by Thomas Beverley
+Find out more about [WMail becoming Wavebox](https://blog.wavebox.io/introducing-wavebox/)
+Visit [Wavebox on Github](https://github.com/wavebox/waveboxapp)
+Check out our swanky new website at [wavebox.io](https://wavebox.io)
+Read more about what's happening at on the [Wavebox blog](https://blog.wavebox.io)
