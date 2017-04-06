@@ -2,7 +2,7 @@
   "release": {
     "version": "2.3.0",
     "news": {
-      "id": 2,
+      "id": 3,
       "level": "notify",
       "feed": "https://thomas101.github.io/wmail/releasefeed"
     }
