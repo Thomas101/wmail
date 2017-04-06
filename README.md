@@ -16,9 +16,12 @@ We hope that you'll give Wavebox a try and love it as much as we love developing
 * Ready to build from source and tweak
 * Even more awesome!
 
---
+---
 
 Find out more about [WMail becoming Wavebox](https://blog.wavebox.io/introducing-wavebox/)
+
 Visit [Wavebox on Github](https://github.com/wavebox/waveboxapp)
+
 Check out our swanky new website at [wavebox.io](https://wavebox.io)
+
 Read more about what's happening at on the [Wavebox blog](https://blog.wavebox.io)
