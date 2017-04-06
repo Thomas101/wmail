@@ -14,6 +14,77 @@
     </div>
 
     {% include footer.html %}
+    <div id="wavebox" class="modal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <a href="https://wavebox.io">
+              <img src="images/wavebox_icon.svg" alt="Wavebox Icon" style="height: 100px;" class="center-block" />
+            </a>
+            <h1>Introducing Wavebox</h1>
+            <p class="lead">
+              WMail is changing its name to Wavebox, whilst adding support for far
+              more than just e-mail. Google Inbox, Gmail, Outlook, Office 365, Slack,
+              Trello &amp; any Web link right at your fingertips
+            </p>
+            <a href="https://wavebox.io">
+              <img src="images/wavebox_services.png" alt="Wavebox Services" class="img-responsive center-block" />
+            </a>
+            <p class="lead">
+              That's not all though. Wavebox is jam-packed with more features! Here's a brief overview of some of the other new things that that come in Wavebox...
+            </p>
+            <div class="container-fluid text-left" style="font-size: 120%;">
+              <div class="row">
+                <div class="col-sm-6">
+                  <ul class="list-unstyled" style="margin-bottom:0;">
+                    <li><span class="fa fa-fw fa-check"></span>Better Google Services integration.</li>
+                    <li><span class="fa fa-fw fa-check"></span>Integrations with Microsoft Services.</li>
+                    <li><span class="fa fa-fw fa-check"></span>Google Docs &amp; Office editing.</li>
+                    <li><span class="fa fa-fw fa-check"></span>Sleeping tabs to save you oodles of memory <a href="https://blog.wavebox.io/put-wavebox-sleeping-tabs-to-the-test/">more</a>.</li>
+                    <li><span class="fa fa-fw fa-check"></span>Services toolbar.</li>
+                  </ul>
+                </div>
+                <div class="col-sm-6">
+                  <ul class="list-unstyled" style="margin-bottom:0;">
+                    <li><span class="fa fa-fw fa-check"></span>Supercharged Google Notifications.</li>
+                    <li><span class="fa fa-fw fa-check"></span>Automatic updates on macOS &amp; Windows.</li>
+                    <li><span class="fa fa-fw fa-check"></span>Signed Binaries for easier install &amp; added security.</li>
+                    <li><span class="fa fa-fw fa-check"></span>Still open-source on <a href="https://github.com/wavebox/waveboxapp">Github</a>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer text-center">
+            <div class="hidden-xs hidden-sm">
+              <a href="https://github.com/wavebox/waveboxapp" class="btn btn-lg btn-default">
+                <span class="fa fa-fw fa-github"></span>Wavebox on Github
+              </a>
+              <a href="https://blog.wavebox.io/introducing-wavebox/" class="btn btn-lg btn-default">
+                <span class="fa fa-fw fa-newspaper-o"></span>WMail becoming Wavebox
+              </a>
+              <a href="https://wavebox.io" class="btn btn-lg btn-primary">
+                Visit Wavebox.io
+              </a>
+            </div>
+            <div class="hidden-md hidden-lg">
+              <a href="https://github.com/wavebox/waveboxapp" class="btn btn-default">
+                <span class="fa fa-fw fa-github"></span>Wavebox on Github
+              </a>
+              <a href="https://blog.wavebox.io/introducing-wavebox/" class="btn btn-default">
+                <span class="fa fa-fw fa-newspaper-o"></span>WMail becoming Wavebox
+              </a>
+              <a href="https://wavebox.io" class="btn btn-primary">
+                Visit Wavebox.io
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      $('#wavebox').modal('show')
+    </script>
 
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
