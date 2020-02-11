@@ -1,4 +1,6 @@
 module.exports = {
   A: require('./mailboxActions'),
-  S: require('./mailboxStore')
+  mailboxActions: require('./mailboxActions'),
+  S: require('./mailboxStore'),
+  mailboxStore: require('./mailboxStore')
 }

@@ -1,46 +1,78 @@
-import './welcome.less'
 const React = require('react')
-const flux = {
-  google: require('../../stores/google')
+const { mailboxWizardActions } = require('../../stores/mailboxWizard')
+const { RaisedButton, FontIcon } = require('material-ui')
+const Colors = require('material-ui/styles/colors')
+
+const styles = {
+  icon: {
+    height: 80,
+    width: 80,
+    display: 'inline-block',
+    marginLeft: 10,
+    marginRight: 10,
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundImage: 'url("../../icons/app_512.png")'
+  },
+  container: {
+    textAlign: 'center',
+    overflow: 'auto'
+  },
+  heading: {
+    backgroundColor: Colors.red400,
+    color: 'white',
+    paddingTop: 40,
+    paddingBottom: 20
+  },
+  headingTitle: {
+    fontWeight: '200',
+    fontSize: '30px',
+    marginBottom: 0
+  },
+  headingSubtitle: {
+    fontWeight: '200',
+    fontSize: '18px'
+  },
+  setupItem: {
+    marginTop: 32
+  },
+  setupItemExtended: {
+    fontSize: '85%',
+    color: Colors.grey600
+  }
 }
 
 module.exports = React.createClass({
+
+  /* **************************************************************************/
+  // Class
+  /* **************************************************************************/
+
   displayName: 'Welcome',
-
-  /* **************************************************************************/
-  // Events
-  /* **************************************************************************/
-
-  handleAddInbox (evt) {
-    evt.preventDefault()
-    flux.google.A.authInboxMailbox()
-  },
-
-  handleAddGmail (evt) {
-    evt.preventDefault()
-    flux.google.A.authGmailMailbox()
-  },
 
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
 
-  /**
-  * Renders the app
-  */
   render () {
     return (
-      <div className='welcome'>
-        <h1>Add your first mailbox</h1>
-        <p>
-          To get started you need to add a mailbox. You can add your Gmail or Google Inbox account.
-          <br />
-          <small>To add more mailboxes later on just tap the plus icon in the toolbar on the left</small>
-        </p>
-        <br />
-        <br />
-        <button type='button' className='btn' onClick={this.handleAddInbox}>Add Inbox Mailbox</button>
-        <button type='button' className='btn' onClick={this.handleAddGmail}>Add Gmail Mailbox</button>
+      <div style={styles.container}>
+        <div style={styles.heading}>
+          <div style={styles.icon} />
+          <h1 style={styles.headingTitle}>Welcome to WMail</h1>
+          <h2 style={styles.headingSubtitle}>...the open-source desktop client for Gmail and Google Inbox</h2>
+        </div>
+        <div style={styles.setupItem}>
+          <RaisedButton
+            label='Add your first mailbox'
+            icon={(<FontIcon className='material-icons'>mail_outline</FontIcon>)}
+            primary
+            onClick={() => mailboxWizardActions.openAddMailbox()} />
+          <p style={styles.setupItemExtended}>
+            Get started by adding your first Gmail or Google Inbox accout
+          </p>
+        </div>
       </div>
     )
   }

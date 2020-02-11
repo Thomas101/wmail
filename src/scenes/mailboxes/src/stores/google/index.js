@@ -1,4 +1,6 @@
 module.exports = {
   A: require('./googleActions'),
-  S: require('./googleStore')
+  googleActions: require('./googleActions'),
+  S: require('./googleStore'),
+  googleStore: require('./googleStore')
 }

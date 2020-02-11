@@ -1,4 +1,8 @@
 module.exports = {
   ColorPickerButton: require('./ColorPickerButton'),
-  Flexbox: require('./Flexbox')
+  Grid: require('./Grid'),
+  TrayIconEditor: require('./TrayIconEditor'),
+  TrayPreview: require('./TrayPreview'),
+  TrayRenderer: require('./TrayRenderer'),
+  WebView: require('./WebView')
 }

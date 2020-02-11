@@ -1,9 +1,6 @@
 const {ipcMain, BrowserWindow} = require('electron')
 const googleapis = require('googleapis')
-const fetch = require('node-fetch')
 const credentials = require('../shared/credentials')
-const HttpsProxyAgent = require('https-proxy-agent')
-const settingStore = require('./stores/settingStore')
 
 const APP_REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
 
@@ -88,37 +85,6 @@ class AuthGoogle {
     })
   }
 
-  /**
-  * Gets the permenant access token from an auth code
-  * @param authCode: the auth code to elevate
-  * @return promise
-  */
-  getPermenantAccessTokenFromAuthCode (authCode) {
-    const proxyAgent = settingStore.proxy.enabled ? new HttpsProxyAgent(settingStore.proxy.url) : undefined
-    const query = {
-      code: authCode,
-      client_id: credentials.GOOGLE_CLIENT_ID,
-      client_secret: credentials.GOOGLE_CLIENT_SECRET,
-      grant_type: 'authorization_code',
-      redirect_uri: APP_REDIRECT_URI
-    }
-    const payload = Object.keys(query)
-      .map((key) => `${key}=${encodeURIComponent(query[key])}`)
-      .join('&')
-
-    return Promise.resolve()
-      .then(() => fetch('https://accounts.google.com/o/oauth2/token', {
-        method: 'post',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: payload,
-        agent: proxyAgent
-      }))
-      .then((res) => res.json())
-  }
-
   /* ****************************************************************************/
   // Request Handlers
   /* ****************************************************************************/
@@ -131,17 +97,18 @@ class AuthGoogle {
   handleAuthGoogle (evt, body) {
     Promise.resolve()
       .then(() => this.promptUserToGetAuthorizationCode(body.id))
-      .then((authCode) => this.getPermenantAccessTokenFromAuthCode(authCode))
-      .then((auth) => {
+      .then((authCode) => {
         evt.sender.send('auth-google-complete', {
           id: body.id,
           type: body.type,
-          auth: auth
+          mode: body.mode,
+          temporaryAuth: authCode
         })
       }, (err) => {
         evt.sender.send('auth-google-error', {
           id: body.id,
           type: body.type,
+          mode: body.mode,
           error: err,
           errorString: (err || {}).toString ? (err || {}).toString() : undefined,
           errorMessage: (err || {}).message ? (err || {}).message : undefined,

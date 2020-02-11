@@ -1,14 +1,57 @@
-.mailboxes .mailbox-window {
-	position: absolute;
-	top: 0px;
-	bottom: 0px;
-	left: auto;
-	right: -10000px;
-	width: 100%;
-	height: 100%;
+.ReactComponent-MailboxWindows {
+  .ReactComponent-MailboxTab {
+    position: absolute;
+  	top: 10000px;
+  	bottom: -10000px;
+  	left: 0px;
+  	right: 0px;
+  	width: 100%;
+  	height: 100%;
 
-	&.active {
-		left: 0px;
-		right: 0px;
-	}
+  	&.active {
+  		top: 0px;
+  		bottom: 0px;
+  	}
+
+    @SEARCH_HEIGHT: 48px;
+    .ReactComponent-MailboxSearch {
+      position: absolute;
+      bottom: -@SEARCH_HEIGHT;
+      left: 0px;
+      min-width: 300px;
+      height: @SEARCH_HEIGHT;
+      background-color: white;
+      transition: none !important;
+      z-index: 10;
+      overflow: hidden;
+
+      &.active {
+        bottom: 0px;
+      }
+    }
+
+    @TARGET_URL_HEIGHT: 16px;
+    .ReactComponent-MailboxTargetUrl {
+      position: absolute;
+      bottom: -@TARGET_URL_HEIGHT;
+      height: @TARGET_URL_HEIGHT;
+      max-width: 50%;
+      right: 0px;
+      background-color: white;
+      z-index: 9;
+      overflow: hidden;
+      text-align: right;
+      font-size: 11px;
+      line-height: @TARGET_URL_HEIGHT;
+      padding-left: 3px;
+      padding-right: 3px;
+      transition-duration: 150ms !important;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      &.active {
+        bottom: 0px;
+      }
+    }
+  }
 }

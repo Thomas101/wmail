@@ -3,15 +3,13 @@ const actions = require('./mailboxActions')
 const Mailbox = require('shared/Models/Mailbox/Mailbox')
 const uuid = require('uuid')
 const persistence = {
-  mailbox: window.remoteRequire('storage/mailboxStorage'),
-  avatar: window.remoteRequire('storage/avatarStorage')
+  mailbox: require('./mailboxPersistence'),
+  avatar: require('./avatarPersistence')
 }
-const {
-  GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS,
-  MAILBOX_INDEX_KEY
-} = require('shared/constants')
+const { MAILBOX_INDEX_KEY } = require('shared/constants')
 const { BLANK_PNG } = require('shared/b64Assets')
 const migration = require('./migration')
+const { ipcRenderer } = window.nativeRequire('electron')
 
 class MailboxStore {
   /* **************************************************************************/
@@ -23,6 +21,8 @@ class MailboxStore {
     this.mailboxes = new Map()
     this.avatars = new Map()
     this.active = null
+    this.activeService = Mailbox.SERVICES.DEFAULT
+    this.search = new Map()
 
     /* ****************************************/
     // Fetching Mailboxes
@@ -43,6 +43,11 @@ class MailboxStore {
     */
     this.getMailbox = (id) => { return this.mailboxes.get(id) || null }
 
+    /**
+    * @return the count of mailboxes
+    */
+    this.mailboxCount = () => { return this.mailboxes.size }
+
     /* ****************************************/
     // Avatar
     /* ****************************************/
@@ -59,9 +64,44 @@ class MailboxStore {
     this.activeMailboxId = () => { return this.active }
 
     /**
+    * @return the service type of the active mailbox
+    */
+    this.activeMailboxService = () => {
+      if (this.activeService === Mailbox.SERVICES.DEFAULT) {
+        return Mailbox.SERVICES.DEFAULT
+      } else {
+        const mailbox = this.activeMailbox()
+        const valid = mailbox.enabledServies.findIndex((s) => s === this.activeService) !== -1
+        return valid ? this.activeService : Mailbox.SERVICES.DEFAULT
+      }
+    }
+
+    /**
     * @return the active mailbox
     */
     this.activeMailbox = () => { return this.mailboxes.get(this.active) }
+
+    /**
+    * @param mailboxId: the id of the mailbox
+    * @param service: the type of service
+    * @return true if this mailbox is active, false otherwise
+    */
+    this.isActive = (mailboxId, service) => {
+      return this.activeMailboxId() === mailboxId && this.activeMailboxService() === service
+    }
+
+    /* ****************************************/
+    // Search
+    /* ****************************************/
+
+    /**
+    * @param mailboxId: the id of the mailbox
+    * @param service: the service of the mailbox
+    * @return true if the mailbox is searching, false otherwise
+    */
+    this.isSearchingMailbox = (mailboxId, service) => {
+      return this.search.get(`${mailboxId}:${service}`) === true
+    }
 
     /* ****************************************/
     // Aggregated queries
@@ -121,22 +161,48 @@ class MailboxStore {
       handleUpdate: actions.UPDATE,
       handleSetCustomAvatar: actions.SET_CUSTOM_AVATAR,
 
+      // Update: Services
+      handleAddService: actions.ADD_SERVICE,
+      handleRemoveService: actions.REMOVE_SERVICE,
+      handleMoveServiceUp: actions.MOVE_SERVICE_UP,
+      handleMoveServiceDown: actions.MOVE_SERVICE_DOWN,
+      handleToggleServiceSleepable: actions.TOGGLE_SERVICE_SLEEPABLE,
+
       // Active Update
       handleIncreaseActiveZoom: actions.INCREASE_ACTIVE_ZOOM,
       handleDecreaseActiveZoom: actions.DECREASE_ACTIVE_ZOOM,
       handleResetActiveZoom: actions.RESET_ACTIVE_ZOOM,
 
+      // Search
+      handleStartSearchingMailbox: actions.START_SEARCHING_MAILBOX,
+      handleStopSearchingMailbox: actions.STOP_SEARCHING_MAILBOX,
+
       // Google
       handleUpdateGoogleConfig: actions.UPDATE_GOOGLE_CONFIG,
-      handleSetGoogleUnreadMessageIds: actions.SET_GOOGLE_UNREAD_MESSAGE_IDS,
-      handleUpdateGoogleUnread: actions.UPDATE_GOOGLE_UNREAD,
-      handleSetGoogleUnreadNotificationsShown: actions.SET_GOOGLE_UNREAD_NOTIFICATIONS_SHOWN,
+      handleSetGoogleLatestUnreadThreads: actions.SET_GOOGLE_LATEST_UNREAD_THREADS,
+      handleSetGoogleHasGrantError: actions.SET_GOOGLE_HAS_GRANT_ERROR,
 
       // Active & Ordering
       handleChangeActive: actions.CHANGE_ACTIVE,
+      handleChangeActivePrev: actions.CHANGE_ACTIVE_TO_PREV,
+      handleChangeActiveNext: actions.CHANGE_ACTIVE_TO_NEXT,
       handleMoveUp: actions.MOVE_UP,
       handleMoveDown: actions.MOVE_DOWN
     })
+  }
+
+  /* **************************************************************************/
+  // Utils
+  /* **************************************************************************/
+
+  /**
+  * Saves a mailbox
+  * @param mailboxId: the id of the mailbox
+  * @param mailboxJS: the js of the mailbox
+  */
+  saveMailbox (mailboxId, mailboxJS) {
+    persistence.mailbox.setJSONItem(mailboxId, mailboxJS)
+    this.mailboxes.set(mailboxId, new Mailbox(mailboxId, mailboxJS))
   }
 
   /* **************************************************************************/
@@ -151,8 +217,8 @@ class MailboxStore {
     migration.from_1_3_1()
 
     // Load
-    const allAvatars = persistence.avatar.allStrings()
-    const allMailboxes = persistence.mailbox.allItems()
+    const allAvatars = persistence.avatar.allItemsSync()
+    const allMailboxes = persistence.mailbox.allJSONItemsSync()
     this.index = []
 
     // Mailboxes
@@ -161,6 +227,7 @@ class MailboxStore {
         this.index = allMailboxes[MAILBOX_INDEX_KEY]
       } else {
         this.mailboxes.set(id, new Mailbox(id, allMailboxes[id]))
+        ipcRenderer.send('prepare-webview-session', { partition: 'persist:' + id })
       }
     })
     this.active = this.index[0] || null
@@ -181,10 +248,10 @@ class MailboxStore {
   * @param data: the data to seed the mailbox with
   */
   handleCreate ({id, data}) {
-    persistence.mailbox.setItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
+    this.saveMailbox(id, data)
+    ipcRenderer.send('prepare-webview-session', { partition: 'persist:' + id })
     this.index.push(id)
-    persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
+    persistence.mailbox.setJSONItem(MAILBOX_INDEX_KEY, this.index)
     this.active = id
   }
 
@@ -195,7 +262,7 @@ class MailboxStore {
   handleRemove ({id}) {
     const wasActive = this.active === id
     this.index = this.index.filter((i) => i !== id)
-    persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
+    persistence.mailbox.setJSONItem(MAILBOX_INDEX_KEY, this.index)
     this.mailboxes.delete(id)
     persistence.mailbox.removeItem(id)
 
@@ -209,14 +276,42 @@ class MailboxStore {
   /* **************************************************************************/
 
   /**
+  * Updates a mailboxJS object by taking the path and value
+  * @param mailboxJS: the mailbox js object to update in situ
+  * @param path: the path to update
+  * @param value: the value to update with
+  * @return the updated mailboxJS although this item has been updated in situ
+  */
+  _updateMailboxJSWithPath_ (mailboxJS, path, value) {
+    let pointer = mailboxJS
+    path.split('.').forEach((fragment, index, fragments) => {
+      if (index === fragments.length - 1) {
+        pointer[fragment] = value
+      } else {
+        if (!pointer[fragment]) {
+          pointer[fragment] = {}
+        }
+        pointer = pointer[fragment]
+      }
+    })
+    return mailboxJS
+  }
+
+  /**
   * Handles a mailbox updating
   * @param id: the id of the tem
   * @param updates: the updates to merge in
   */
-  handleUpdate ({id, updates}) {
-    const mailboxJS = this.mailboxes.get(id).changeData(updates)
-    persistence.mailbox.setItem(id, mailboxJS)
-    this.mailboxes.set(id, new Mailbox(id, mailboxJS))
+  handleUpdate ({id, updates, path, value}) {
+    const mailboxJS = this.mailboxes.get(id).cloneData()
+    if (updates !== undefined) {
+      Object.keys(updates).forEach((path) => {
+        this._updateMailboxJSWithPath_(mailboxJS, path, updates[path])
+      })
+    } else {
+      this._updateMailboxJSWithPath_(mailboxJS, path, value)
+    }
+    this.saveMailbox(id, mailboxJS)
   }
 
   /**
@@ -230,7 +325,7 @@ class MailboxStore {
     if (b64Image) {
       const imageId = uuid.v4()
       data.customAvatar = imageId
-      persistence.avatar.setString(imageId, b64Image)
+      persistence.avatar.setItem(imageId, b64Image)
       this.avatars.set(imageId, b64Image)
     } else {
       if (data.customAvatar) {
@@ -239,8 +334,65 @@ class MailboxStore {
         delete data.customAvatar
       }
     }
-    persistence.mailbox.setItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
+    this.saveMailbox(id, data)
+  }
+
+  /* **************************************************************************/
+  // Handlers Update Service
+  /* **************************************************************************/
+
+  handleAddService ({ id, service }) {
+    const mailbox = this.mailboxes.get(id)
+
+    const supportedIndex = new Set(mailbox.supportedServices)
+    if (!supportedIndex.has(service)) { return }
+
+    const enabledIndex = new Set(mailbox.enabledServies)
+    if (enabledIndex.has(service)) { return }
+
+    this.saveMailbox(id, mailbox.changeData({
+      services: Array.from(mailbox.enabledServies).concat(service)
+    }))
+  }
+
+  handleRemoveService ({ id, service }) {
+    const mailbox = this.mailboxes.get(id)
+    this.saveMailbox(id, mailbox.changeData({
+      services: Array.from(mailbox.enabledServies).filter((s) => s !== service)
+    }))
+  }
+
+  handleMoveServiceUp ({ id, service }) {
+    const mailbox = this.mailboxes.get(id)
+    const services = Array.from(mailbox.enabledServies)
+    const serviceIndex = services.findIndex((s) => s === service)
+    if (serviceIndex !== -1 && serviceIndex !== 0) {
+      services.splice(serviceIndex - 1, 0, services.splice(serviceIndex, 1)[0])
+      this.saveMailbox(id, mailbox.changeData({
+        services: services
+      }))
+    }
+  }
+
+  handleMoveServiceDown ({ id, service }) {
+    const mailbox = this.mailboxes.get(id)
+    const services = Array.from(mailbox.enabledServies)
+    const serviceIndex = services.findIndex((s) => s === service)
+    if (serviceIndex !== -1 && serviceIndex < services.length) {
+      services.splice(serviceIndex + 1, 0, services.splice(serviceIndex, 1)[0])
+      this.saveMailbox(id, mailbox.changeData({
+        services: services
+      }))
+    }
+  }
+
+  handleToggleServiceSleepable ({ id, service, sleepable }) {
+    const mailbox = this.mailboxes.get(id)
+    const services = new Set(mailbox.sleepableServices)
+    services[sleepable ? 'add' : 'delete'](service)
+    this.saveMailbox(id, mailbox.changeData({
+      sleepableServices: Array.from(services)
+    }))
   }
 
   /* **************************************************************************/
@@ -253,8 +405,7 @@ class MailboxStore {
       const mailboxJS = mailbox.changeData({
         zoomFactor: Math.min(1.5, mailbox.zoomFactor + 0.1)
       })
-      persistence.mailbox.setItem(mailbox.id, mailboxJS)
-      this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
+      this.saveMailbox(mailbox.id, mailboxJS)
     }
   }
 
@@ -264,8 +415,7 @@ class MailboxStore {
       const mailboxJS = mailbox.changeData({
         zoomFactor: Math.min(1.5, mailbox.zoomFactor - 0.1)
       })
-      persistence.mailbox.setItem(mailbox.id, mailboxJS)
-      this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
+      this.saveMailbox(mailbox.id, mailboxJS)
     }
   }
 
@@ -273,8 +423,7 @@ class MailboxStore {
     const mailbox = this.activeMailbox()
     if (mailbox) {
       const mailboxJS = mailbox.changeData({ zoomFactor: 1.0 })
-      persistence.mailbox.setItem(mailbox.id, mailboxJS)
-      this.mailboxes.set(mailbox.id, new Mailbox(mailbox.id, mailboxJS))
+      this.saveMailbox(mailbox.id, mailboxJS)
     }
   }
 
@@ -284,122 +433,56 @@ class MailboxStore {
 
   /**
   * Handles the google config updating
-  * @param id: the id of the tem
+  * @param id: the id of the mailbox
   * @param updates: the updates to merge in
   */
   handleUpdateGoogleConfig ({id, updates}) {
     const data = this.mailboxes.get(id).cloneData()
     data.googleConf = Object.assign(data.googleConf || {}, updates)
-    persistence.mailbox.setItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
+    this.saveMailbox(id, data)
   }
 
   /**
-  * Marks the unread messages as seen & also marks any un-included messages
-  * as read
-  * @param id: the id of mailbox
-  * @param messageIds: the complete lis of unread message ids
-  */
-  handleSetGoogleUnreadMessageIds ({id, messageIds}) {
-    const data = this.mailboxes.get(id).cloneData()
-    data.googleUnreadMessages = data.googleUnreadMessages || {}
-
-    // Run through all the messages google has given us and mark them as unread
-    // and also mark them as seen
-    const now = new Date().getTime()
-    const messageIdIndex = {}
-    messageIds.forEach((messageId) => {
-      messageIdIndex[messageId] = true
-      if (data.googleUnreadMessages[messageId]) {
-        data.googleUnreadMessages[messageId] = Object.assign(
-          data.googleUnreadMessages[messageId],
-          { seen: now, unread: true }
-        )
-      } else {
-        data.googleUnreadMessages[messageId] = {
-          recordCreated: now, seen: now, unread: true
-        }
-      }
-    })
-
-    // If we haven't seen a message from google, then it must be read, but
-    // we might want to keep the record around to prevent duplicate notificiations
-    Object.keys(data.googleUnreadMessages).forEach((messageId) => {
-      if (!messageIdIndex[messageId]) {
-        data.googleUnreadMessages[messageId].unread = false
-      }
-    })
-
-    persistence.mailbox.setItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
-  }
-
-  /**
-  * Merges the google unread items and removes any flags for updated ites
+  * Updates the google unread threads
   * @param id: the id of the mailbox
-  * @param messageIds: the ids of the messages
-  * @param updates: the updates to apply
+  * @param threadList: the complete thread list as an array
+  * @param fetchedThreads: the threads that were fetched in an object by id
+  * @param resultSizeEstimate: the size estimate
   */
-  handleUpdateGoogleUnread ({id, messageIds, updates}) {
-    const data = this.mailboxes.get(id).cloneData()
-    data.googleUnreadMessages = data.googleUnreadMessages || {}
-
-    // Add the update
-    const now = new Date().getTime()
-    messageIds.forEach((messageId) => {
-      if (data.googleUnreadMessages[messageId]) {
-        data.googleUnreadMessages[messageId] = Object.assign(
-          data.googleUnreadMessages[messageId],
-          { seen: now },
-          updates)
-      } else {
-        data.googleUnreadMessages[messageId] = Object.assign({
-          recordCreated: now, seen: now
-        }, updates)
-      }
-    })
-
-    // Clean up old records
-    data.googleUnreadMessages = Object.keys(data.googleUnreadMessages).reduce((acc, messageId) => {
-      const rec = data.googleUnreadMessages[messageId]
-      if (now - rec.seen < GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS) {
-        acc[messageId] = rec
-      }
+  handleSetGoogleLatestUnreadThreads ({ id, threadList, fetchedThreads, resultSizeEstimate }) {
+    const prevThreads = this.mailboxes.get(id).google.latestUnreadThreads.reduce((acc, thread) => {
+      acc[thread.id] = thread
       return acc
     }, {})
 
-    persistence.mailbox.setItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
+    // Merge changes
+    const nextThreads = threadList.map((threadHead) => {
+      if (fetchedThreads[threadHead.id]) {
+        return fetchedThreads[threadHead.id]
+      } else if (prevThreads[threadHead.id]) {
+        return prevThreads[threadHead.id]
+      } else {
+        return undefined
+      }
+    }).filter((thread) => !!thread)
+
+    // Write it
+    const data = this.mailboxes.get(id).cloneData()
+    data.googleUnreadMessageInfo_v2 = data.googleUnreadMessageInfo_v2 || {}
+    data.googleUnreadMessageInfo_v2.latestUnreadThreads = nextThreads
+    data.googleUnreadMessageInfo_v2.resultSizeEstimate = resultSizeEstimate
+    this.saveMailbox(id, data)
   }
 
-  /**
-  * Sets that the given thread ids have sent notifications
-  * @param id: the id of the mailbox
-  * @param messageId: the id of the message to mark
-  */
-  handleSetGoogleUnreadNotificationsShown ({id, messageIds}) {
+  handleSetGoogleHasGrantError ({ id, hasError }) {
     const data = this.mailboxes.get(id).cloneData()
-    data.googleUnreadMessages = data.googleUnreadMessages || {}
 
-    const now = new Date().getTime()
-    messageIds.forEach((messageId) => {
-      if (data.googleUnreadMessages[messageId]) {
-        data.googleUnreadMessages[messageId].notified = now
-        data.googleUnreadMessages[messageId].seen = now
-      }
-    })
-
-    // Clean up old records
-    data.googleUnreadMessages = Object.keys(data.googleUnreadMessages).reduce((acc, messageId) => {
-      const rec = data.googleUnreadMessages[messageId]
-      if (now - rec.seen < GMAIL_NOTIFICATION_MESSAGE_CLEANUP_AGE_MS) {
-        acc[messageId] = rec
-      }
-      return acc
-    }, {})
-
-    persistence.mailbox.setItem(id, data)
-    this.mailboxes.set(id, new Mailbox(id, data))
+    if (data.googleAuth.invalidGrant !== hasError) {
+      data.googleAuth.invalidGrant = hasError
+      this.saveMailbox(id, data)
+    } else {
+      this.preventDefault()
+    }
   }
 
   /* **************************************************************************/
@@ -409,9 +492,29 @@ class MailboxStore {
   /**
   * Handles the active mailbox changing
   * @param id: the id of the mailbox
+  * @param service: the service type
   */
-  handleChangeActive ({id}) {
+  handleChangeActive ({id, service}) {
     this.active = id
+    this.activeService = service
+  }
+
+  /**
+  * Handles the active mailbox changing to the prev in the index
+  */
+  handleChangeActivePrev () {
+    const activeIndex = this.index.findIndex((id) => id === this.active)
+    this.active = this.index[Math.max(0, activeIndex - 1)] || null
+    this.activeService = Mailbox.SERVICES.DEFAULT
+  }
+
+  /**
+  * Handles the active mailbox changing to the next in the index
+  */
+  handleChangeActiveNext () {
+    const activeIndex = this.index.findIndex((id) => id === this.active)
+    this.active = this.index[Math.min(this.index.length - 1, activeIndex + 1)] || null
+    this.activeService = Mailbox.SERVICES.DEFAULT
   }
 
   /**
@@ -421,7 +524,7 @@ class MailboxStore {
     const mailboxIndex = this.index.findIndex((i) => i === id)
     if (mailboxIndex !== -1 && mailboxIndex !== 0) {
       this.index.splice(mailboxIndex - 1, 0, this.index.splice(mailboxIndex, 1)[0])
-      persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
+      persistence.mailbox.setJSONItem(MAILBOX_INDEX_KEY, this.index)
     }
   }
 
@@ -432,7 +535,33 @@ class MailboxStore {
     const mailboxIndex = this.index.findIndex((i) => i === id)
     if (mailboxIndex !== -1 && mailboxIndex < this.index.length) {
       this.index.splice(mailboxIndex + 1, 0, this.index.splice(mailboxIndex, 1)[0])
-      persistence.mailbox.setItem(MAILBOX_INDEX_KEY, this.index)
+      persistence.mailbox.setJSONItem(MAILBOX_INDEX_KEY, this.index)
+    }
+  }
+
+  /* **************************************************************************/
+  // Handlers : Search
+  /* **************************************************************************/
+
+  /**
+  * Indicates the mailbox is searching
+  */
+  handleStartSearchingMailbox ({ id, service }) {
+    if (id && service) {
+      this.search.set(`${id}:${service}`, true)
+    } else {
+      this.search.set(`${this.active}:${this.activeService}`, true)
+    }
+  }
+
+  /**
+  * Indicates the mailbox is no longer searching
+  */
+  handleStopSearchingMailbox ({id, service}) {
+    if (id && service) {
+      this.search.delete(`${id}:${service}`)
+    } else {
+      this.search.delete(`${this.active}:${this.activeService}`)
     }
   }
 

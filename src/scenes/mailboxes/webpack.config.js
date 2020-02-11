@@ -23,6 +23,12 @@ const options = {
     filename: 'mailboxes.js'
   },
   plugins: [
+    !isProduction ? undefined : new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
+
     // Clean out our bin dir
     new CleanWebpackPlugin([path.relative(BIN_DIR, OUT_DIR)], {
       root: BIN_DIR,
@@ -35,7 +41,9 @@ const options = {
 
     // Copy our static assets
     new CopyWebpackPlugin([
-      { from: path.join(__dirname, 'src/mailboxes.html'), to: 'mailboxes.html', force: true }
+      { from: path.join(__dirname, 'src/mailboxes.html'), to: 'mailboxes.html', force: true },
+      { from: path.join(__dirname, 'src/offline.html'), to: 'offline.html', force: true },
+      { from: path.join(__dirname, 'src/notification.html'), to: 'notification.html', force: true }
     ], {
       ignore: [ '.DS_Store' ]
     }),
@@ -62,7 +70,10 @@ const options = {
         test: /(\.jsx|\.js)$/,
         loader: 'babel',
         exclude: /node_modules/,
-        include: __dirname,
+        include: [
+          __dirname,
+          path.resolve(path.join(__dirname, '../../shared'))
+        ],
         query: {
           cacheDirectory: true,
           presets: ['react', 'stage-0', 'es2015']
@@ -71,6 +82,10 @@ const options = {
       {
         test: /(\.less|\.css)$/,
         loaders: ['style', 'css', 'less']
+      },
+      {
+        test: /(\.json)$/,
+        loader: 'json'
       }
     ]
   }

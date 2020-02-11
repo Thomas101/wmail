@@ -30,7 +30,7 @@ class WindowManager {
   * @param evt: the event that occured
   */
   handleClose (evt) {
-    if (this.focused() && !this.forceQuit) {
+    if (!this.forceQuit) {
       this.contentWindows.forEach((w) => w.close())
       if (process.platform === 'darwin' || settingStore.tray.show) {
         this.mailboxesWindow.hide()
@@ -89,15 +89,41 @@ class WindowManager {
   * Focuses the main mailboxes window and shows it if it's hidden
   */
   focusMailboxesWindow () {
-    if (this.focused()) {
-      // If there's already a focused window, do nothing
-      return
+    if (this.focused() === this.mailboxesWindow) {
+      return // If there's already a focused window, do nothing
     }
 
     if (!this.mailboxesWindow.isVisible()) {
       this.mailboxesWindow.show()
     }
     this.mailboxesWindow.focus()
+  }
+
+  /**
+  * Toggles the mailboxes window visibility by hiding or showing the mailboxes windoww
+  */
+  toggleMailboxWindowVisibilityFromTray () {
+    if (process.platform === 'win32') {
+      // On windows clicking on non-window elements (e.g. tray) causes window
+      // to lose focus, so the window will never have focus
+      if (this.mailboxesWindow.isVisible()) {
+        this.mailboxesWindow.close()
+      } else {
+        this.mailboxesWindow.show()
+        this.mailboxesWindow.focus()
+      }
+    } else {
+      if (this.mailboxesWindow.isVisible()) {
+        if (this.focused() === this.mailboxesWindow) {
+          this.mailboxesWindow.hide()
+        } else {
+          this.mailboxesWindow.focus()
+        }
+      } else {
+        this.mailboxesWindow.show()
+        this.mailboxesWindow.focus()
+      }
+    }
   }
 
   /* ****************************************************************************/

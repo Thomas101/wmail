@@ -1,16 +1,19 @@
-'use strict'
-
+import './layout.less'
 import './appContent.less'
 
 const React = require('react')
 const MailboxWindows = require('./Mailbox/MailboxWindows')
+const MailboxComposePicker = require('./Mailbox/MailboxComposePicker')
 const Sidelist = require('./Sidelist')
 const shallowCompare = require('react-addons-shallow-compare')
 const SettingsDialog = require('./Settings/SettingsDialog')
-const navigationDispatch = require('./Dispatch/navigationDispatch')
-const flux = {
-  settings: require('../stores/settings')
-}
+const DictionaryInstallHandler = require('./DictionaryInstaller/DictionaryInstallHandler')
+const {navigationDispatch} = require('../Dispatch')
+const UpdateCheckDialog = require('./UpdateCheckDialog')
+const { settingsStore } = require('../stores/settings')
+const MailboxWizard = require('./MailboxWizard')
+const AppWizard = require('./AppWizard')
+const NewsDialog = require('./NewsDialog')
 
 module.exports = React.createClass({
   displayName: 'AppContent',
@@ -20,12 +23,12 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   componentDidMount () {
-    flux.settings.S.listen(this.settingsDidUpdate)
+    settingsStore.listen(this.settingsDidUpdate)
     navigationDispatch.on('opensettings', this.handleOpenSettings)
   },
 
   componentWillUnmount () {
-    flux.settings.S.unlisten(this.settingsDidUpdate)
+    settingsStore.unlisten(this.settingsDidUpdate)
     navigationDispatch.off('opensettings', this.handleOpenSettings)
   },
 
@@ -34,20 +37,20 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   getInitialState () {
+    const settingsState = settingsStore.getState()
     return {
-      sidebar: flux.settings.S.getState().ui.sidebarEnabled,
-      settingsDialog: false
+      sidebar: settingsState.ui.sidebarEnabled,
+      titlebar: settingsState.ui.showTitlebar,
+      settingsDialog: false,
+      settingsRoute: null
     }
   },
 
-  settingsDidUpdate (store) {
+  settingsDidUpdate (settingsStatee) {
     this.setState({
-      sidebar: store.ui.sidebarEnabled
+      sidebar: settingsStatee.ui.sidebarEnabled,
+      titlebar: settingsStatee.ui.showTitlebar
     })
-  },
-
-  shouldComponentUpdate (nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState)
   },
 
   /* **************************************************************************/
@@ -56,32 +59,47 @@ module.exports = React.createClass({
 
   /**
   * Opens the settings dialog
+  * @param evt: the event that fired if any
   */
-  handleOpenSettings () {
-    this.setState({ settingsDialog: true })
+  handleOpenSettings (evt) {
+    this.setState({
+      settingsDialog: true,
+      settingsRoute: evt && evt.route ? evt.route : null
+    })
   },
 
   handleCloseSettings () {
-    this.setState({ settingsDialog: false })
+    this.setState({ settingsDialog: false, settingsRoute: null })
   },
 
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
 
-  /**
-  * Renders the app
-  */
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
+  },
+
   render () {
     return (
       <div>
+        {!this.state.titlebar ? (<div className='titlebar' />) : undefined}
         <div className='master' style={{ display: this.state.sidebar ? 'block' : 'none' }}>
           <Sidelist />
         </div>
         <div className='detail' style={{ left: this.state.sidebar ? 70 : 0 }}>
           <MailboxWindows />
         </div>
-        <SettingsDialog open={this.state.settingsDialog} onRequestClose={this.handleCloseSettings} />
+        <SettingsDialog
+          open={this.state.settingsDialog}
+          onRequestClose={this.handleCloseSettings}
+          initialRoute={this.state.settingsRoute} />
+        <DictionaryInstallHandler />
+        <AppWizard />
+        <MailboxWizard />
+        <NewsDialog />
+        <UpdateCheckDialog />
+        <MailboxComposePicker />
       </div>
     )
   }

@@ -1,6 +1,8 @@
 const Model = require('../Model')
 const uuid = require('uuid')
 const Google = require('./Google')
+const SERVICES = require('./MailboxServices')
+const TYPES = require('./MailboxTypes')
 
 class Mailbox extends Model {
 
@@ -9,6 +11,11 @@ class Mailbox extends Model {
   /* **************************************************************************/
 
   static provisionId () { return uuid.v4() }
+  static get TYPES () { return Object.assign({}, TYPES) }
+  static get SERVICES () { return Object.assign({}, SERVICES) }
+
+  static get TYPE_GMAIL () { return TYPES.GMAIL }
+  static get TYPE_GINBOX () { return TYPES.GINBOX }
 
   /* **************************************************************************/
   // Lifecycle
@@ -18,15 +25,14 @@ class Mailbox extends Model {
     super(data)
     this.__id__ = id
 
-    this.__google__ = new Google(this.__data__.googleAuth, this.__data__.googleConf, this.__data__.googleUnreadMessages)
+    this.__google__ = new Google(
+      this.type,
+      this.__data__.googleAuth,
+      this.__data__.googleConf,
+      this.__data__.googleLabelInfo_v2,
+      this.__data__.googleUnreadMessageInfo_v2
+    )
   }
-
-  /* **************************************************************************/
-  // Constants
-  /* **************************************************************************/
-
-  static get TYPE_GMAIL () { return 'gmail' }
-  static get TYPE_GINBOX () { return 'ginbox' }
 
   /* **************************************************************************/
   // Properties
@@ -34,6 +40,11 @@ class Mailbox extends Model {
 
   get id () { return this.__id__ }
   get type () { return this._value_('type', Mailbox.TYPE_GINBOX) }
+
+  /* **************************************************************************/
+  // Properties: Constants
+  /* **************************************************************************/
+
   get typeName () {
     switch (this.type) {
       case Mailbox.TYPE_GINBOX: return 'Google Inbox'
@@ -50,6 +61,71 @@ class Mailbox extends Model {
   }
 
   /* **************************************************************************/
+  // Properties : Services
+  /* **************************************************************************/
+
+  get supportedServices () {
+    switch (this.type) {
+      case Mailbox.TYPE_GINBOX:
+      case Mailbox.TYPE_GMAIL:
+        return Array.from(Google.SUPPORTED_SERVICES)
+      default:
+        return []
+    }
+  }
+  get defaultServices () {
+    switch (this.type) {
+      case Mailbox.TYPE_GINBOX:
+      case Mailbox.TYPE_GMAIL:
+        return Array.from(Google.DEFAULT_SERVICES)
+      default:
+        return []
+    }
+  }
+  get enabledServies () { return this._value_('services', this.defaultServices) }
+  get hasEnabledServices () { return this.enabledServies.length !== 0 }
+  get sleepableServices () { return this._value_('sleepableServices', this.supportedServices) }
+  get compactServicesUI () { return this._value_('compactServicesUI', false) }
+
+  /**
+  * Resolves the url for a service
+  * @param service: the type of service to resolve for
+  * @return the url for the service or undefined
+  */
+  resolveServiceUrl (service) {
+    if (service === SERVICES.DEFAULT) {
+      return this.url
+    } else {
+      switch (this.type) {
+        case Mailbox.TYPE_GINBOX:
+        case Mailbox.TYPE_GMAIL:
+          return Google.SERVICE_URLS[service]
+        default:
+          return undefined
+      }
+    }
+  }
+
+  /**
+  * Resolves the human name for a service
+  * @param service: the type of service to resolve for
+  * @return the url for the service or undefined
+  */
+  resolveServiceName (service) {
+    if (service === SERVICES.DEFAULT) {
+      return this.typeName
+    } else {
+      switch (this.type) {
+        case Mailbox.TYPE_GINBOX:
+        case Mailbox.TYPE_GMAIL:
+          return Google.SERVICE_NAMES[service]
+        default:
+          return undefined
+      }
+    }
+  }
+
+  /* **************************************************************************/
   // Properties : Options
   /* **************************************************************************/
 
@@ -57,6 +133,7 @@ class Mailbox extends Model {
   get showUnreadBadge () { return this._value_('showUnreadBadge', true) }
   get unreadCountsTowardsAppUnread () { return this._value_('unreadCountsTowardsAppUnread', true) }
   get showNotifications () { return this._value_('showNotifications', true) }
+  get artificiallyPersistCookies () { return this._value_('artificiallyPersistCookies', false) }
 
   /* **************************************************************************/
   // Properties : Account Details
@@ -77,13 +154,23 @@ class Mailbox extends Model {
   }
   get email () { return this.__data__.email }
   get name () { return this.__data__.name }
-  get unread () { return this.__data__.unread }
+  get unread () { return this.__google__.unreadCount }
 
   /* **************************************************************************/
   // Properties : Auth types
   /* **************************************************************************/
 
   get google () { return this.__google__ }
+
+  /* **************************************************************************/
+  // Properties : Custom injectables
+  /* **************************************************************************/
+
+  get customCSS () { return this.__data__.customCSS }
+  get hasCustomCSS () { return !!this.customCSS }
+
+  get customJS () { return this.__data__.customJS }
+  get hasCustomJS () { return !!this.customJS }
 }
 
 module.exports = Mailbox

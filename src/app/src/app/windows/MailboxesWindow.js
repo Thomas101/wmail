@@ -1,9 +1,14 @@
 const WMailWindow = require('./WMailWindow')
 const AuthGoogle = require('../AuthGoogle')
-const update = require('../update')
 const path = require('path')
-const MailboxesSessionManager = require('../MailboxesSessionManager')
+const MailboxesSessionManager = require('./MailboxesSessionManager')
 const settingStore = require('../stores/settingStore')
+
+const MAILBOXES_DIR = path.resolve(path.join(__dirname, '/../../../scenes/mailboxes'))
+const ALLOWED_URLS = new Set([
+  'file://' + path.join(MAILBOXES_DIR, 'mailboxes.html'),
+  'file://' + path.join(MAILBOXES_DIR, 'offline.html')
+])
 
 class MailboxesWindow extends WMailWindow {
 
@@ -23,20 +28,17 @@ class MailboxesWindow extends WMailWindow {
     this.sessionManager = new MailboxesSessionManager(this)
   }
 
-  start (url) {
-    super.start('file://' + path.join(__dirname, '/../../../scenes/mailboxes/mailboxes.html'))
-  }
-
-  /* ****************************************************************************/
-  // Creation & Closing
-  /* ****************************************************************************/
-
-  defaultWindowPreferences () {
-    return Object.assign(super.defaultWindowPreferences(), {
-      minWidth: 955,
-      minHeight: 400,
+  /**
+  * @param url: the url to load
+  * @param hidden=false: true to start the window hidden
+  */
+  start (hidden = false) {
+    super.start('file://' + path.join(MAILBOXES_DIR, 'mailboxes.html'), {
+      show: !hidden,
+      minWidth: 770,
+      minHeight: 300,
       fullscreenable: true,
-      titleBarStyle: settingStore.ui.hasTitlebar ? 'default' : 'hidden',
+      titleBarStyle: settingStore.ui.showTitlebar ? 'default' : 'hidden',
       title: 'WMail',
       backgroundColor: '#f2f2f2',
       webPreferences: {
@@ -45,15 +47,20 @@ class MailboxesWindow extends WMailWindow {
     })
   }
 
+  /* ****************************************************************************/
+  // Creation & Closing
+  /* ****************************************************************************/
+
   createWindow () {
     super.createWindow.apply(this, Array.from(arguments))
 
     // We're locking on to our window. This stops file drags redirecting the page
-    this.window.webContents.on('will-navigate', (evt) => {
-      evt.preventDefault()
+    this.window.webContents.on('will-navigate', (evt, url) => {
+      if (!ALLOWED_URLS.has(url)) {
+        evt.preventDefault()
+      }
     })
 
-    update.checkNow(this.window)
     this.analytics.appOpened(this.window)
     this.heartbeatInterval = setInterval(() => {
       this.analytics.appHeartbeat(this.window)
@@ -109,6 +116,20 @@ class MailboxesWindow extends WMailWindow {
   }
 
   /**
+  * Switches to the previous mailbox
+  */
+  switchPrevMailbox () {
+    this.window.webContents.send('switch-mailbox', { prev: true })
+  }
+
+  /**
+  * Switches to the next mailbox
+  */
+  switchNextMailbox () {
+    this.window.webContents.send('switch-mailbox', { next: true })
+  }
+
+  /**
   * Launches the preferences modal
   */
   launchPreferences () {
@@ -139,6 +160,42 @@ class MailboxesWindow extends WMailWindow {
       path: path,
       filename: filename
     })
+  }
+
+  /**
+  * Starts finding in the mailboxes window
+  */
+  findStart () {
+    this.window.webContents.send('mailbox-window-find-start', { })
+  }
+
+  /**
+  * Finds the next in the mailbox window
+  */
+  findNext () {
+    this.window.webContents.send('mailbox-window-find-next', { })
+  }
+
+  /**
+  * Tells the active mailbox to navigate back
+  */
+  navigateMailboxBack () {
+    this.window.webContents.send('mailbox-window-navigate-back', { })
+  }
+
+  /**
+  * Tells the active mailbox to navigate back
+  */
+  navigateMailboxForward () {
+    this.window.webContents.send('mailbox-window-navigate-forward', { })
+  }
+
+  /**
+  * Opens a mailto link
+  * @param mailtoLink: the link to open
+  */
+  openMailtoLink (mailtoLink) {
+    this.window.webContents.send('open-mailto-link', { mailtoLink: mailtoLink })
   }
 
 }

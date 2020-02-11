@@ -1,25 +1,32 @@
 {
   "name": "wmail-scenes-mailboxes",
   "author": "Thomas Beverley",
-  "license": "BSD-2-Clause",
+  "license": "MPL-2.0",
   "repository": "https://github.com/Thomas101/wmail",
   "description": "The mailboxes window for the WMail app",
   "dependencies": {
-    "alt": "0.18.4",
-    "fbjs": "0.8.3",
-    "flexboxgrid": "6.3.0",
+    "addressparser": "1.0.1",
+    "alt": "0.18.6",
+    "bootstrap-grid": "2.0.1",
+    "camelcase": "4.0.0",
+    "compare-version": "0.1.2",
+    "fbjs": "0.8.9",
     "https-proxy-agent": "1.0.0",
-    "material-ui": "0.15.0",
+    "material-ui": "0.17.0",
     "minivents": "2.0.2",
-    "react": "15.1.0",
-    "react-addons-shallow-compare": "15.1.0",
-    "react-color": "2.1.0",
-    "react-dom": "15.1.0",
-    "react-tap-event-plugin": "1.0.0",
+    "qs": "6.3.1",
+    "querystring": "0.2.0",
+    "react": "15.4.2",
+    "react-addons-shallow-compare": "15.4.2",
+    "react-color": "2.11.1",
+    "react-dom": "15.4.2",
+    "react-tap-event-plugin": "2.0.1",
     "react-timer-mixin": "0.13.3",
-    "uuid": "2.0.2"
+    "react-tooltip": "3.2.7",
+    "urijs": "1.18.7",
+    "uuid": "3.0.1"
   },
   "devDependencies": {
-    "standard": "7.1.1"
+    "standard": "8.6.0"
   }
 }

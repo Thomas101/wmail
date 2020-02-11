@@ -1,18 +1,84 @@
 const alt = require('../alt')
 const actions = require('./settingsActions')
-const persistence = window.remoteRequire('storage/settingStorage')
+const persistence = require('./settingsPersistence')
+const dictionaries = require('shared/dictionaries.js')
 const {
-  Settings: {LanguageSettings, OSSettings, ProxySettings, TraySettings, UISettings, SettingsIdent}
+  Settings: {
+    AppSettings,
+    LanguageSettings,
+    NewsSettings,
+    OSSettings,
+    ProxySettings,
+    TraySettings,
+    UISettings,
+    SettingsIdent
+  }
 } = require('shared/Models')
 const migration = require('./migration')
+const homeDir = window.appNodeModulesRequire('home-dir') // pull this from main thread
+const {systemPreferences} = window.nativeRequire('electron').remote
+const fs = require('fs')
 
 class SettingsStore {
+  /* **************************************************************************/
+  // Class
+  /* **************************************************************************/
+
+  /**
+  * Generates the themed defaults for the tray
+  * @return the defaults
+  */
+  static generateTrayThemedDefaults () {
+    if (process.platform === 'darwin') {
+      return {
+        readColor: systemPreferences.isDarkMode() ? '#FFFFFF' : '#000000',
+        readBackgroundColor: 'transparent',
+        unreadColor: '#C82018',
+        unreadBackgroundColor: 'transparent'
+      }
+    } else if (process.platform === 'win32') {
+      // Windows is predominantely dark themed, but with no way to check assume it is
+      return {
+        readColor: '#FFFFFF',
+        readBackgroundColor: 'transparent',
+        unreadColor: '#C82018',
+        unreadBackgroundColor: 'transparent'
+      }
+    } else if (process.platform === 'linux') {
+      let isDark = false
+      // GTK
+      try {
+        const gtkConf = fs.readFileSync(homeDir('.config/gtk-3.0/settings.ini'), 'utf8')
+        if (gtkConf.indexOf('gtk-application-prefer-dark-theme=1') !== -1) {
+          isDark = true
+        }
+      } catch (ex) { }
+
+      return {
+        readColor: isDark ? '#FFFFFF' : '#000000',
+        readBackgroundColor: 'transparent',
+        unreadColor: '#C82018',
+        unreadBackgroundColor: 'transparent'
+      }
+    }
+
+    // Catch all
+    return {
+      readColor: '#000000',
+      readBackgroundColor: 'transparent',
+      unreadColor: '#C82018',
+      unreadBackgroundColor: 'transparent'
+    }
+  }
+
   /* **************************************************************************/
   // Lifecycle
   /* **************************************************************************/
 
   constructor () {
+    this.app = null
     this.language = null
+    this.news = null
     this.os = null
     this.proxy = null
     this.tray = null
@@ -21,7 +87,10 @@ class SettingsStore {
     this.bindListeners({
       handleLoad: actions.LOAD,
       handleUpdate: actions.UPDATE,
-      handleToggleBool: actions.TOGGLE
+      handleToggleBool: actions.TOGGLE,
+
+      handleSetSpellcheckerLanguage: actions.SET_SPELLCHECKER_LANGUAGE,
+      handleSetSecondarySpellcheckerLanguage: actions.SET_SECONDARY_SPELLCHECKER_LANGUAGE
     })
   }
 
@@ -32,13 +101,16 @@ class SettingsStore {
   handleLoad () {
     // Migrate
     migration.from_1_3_1()
+    this.trayDefaults = SettingsStore.generateTrayThemedDefaults()
 
     // Load everything
-    this.language = new LanguageSettings(persistence.getItem('language', {}))
-    this.os = new OSSettings(persistence.getItem('os', {}))
-    this.proxy = new ProxySettings(persistence.getItem('proxy', {}))
-    this.tray = new TraySettings(persistence.getItem('tray', {}))
-    this.ui = new UISettings(persistence.getItem('ui', {}))
+    this.app = new AppSettings(persistence.getJSONItemSync('app', {}))
+    this.language = new LanguageSettings(persistence.getJSONItemSync('language', {}))
+    this.news = new NewsSettings(persistence.getJSONItemSync('news', {}))
+    this.os = new OSSettings(persistence.getJSONItemSync('os', {}))
+    this.proxy = new ProxySettings(persistence.getJSONItemSync('proxy', {}))
+    this.tray = new TraySettings(persistence.getJSONItemSync('tray', {}), this.trayDefaults)
+    this.ui = new UISettings(persistence.getJSONItemSync('ui', {}))
   }
 
   /* **************************************************************************/
@@ -51,7 +123,9 @@ class SettingsStore {
   */
   storeKeyFromSegment (segment) {
     switch (segment) {
+      case SettingsIdent.SEGMENTS.APP: return 'app'
       case SettingsIdent.SEGMENTS.LANGUAGE: return 'language'
+      case SettingsIdent.SEGMENTS.NEWS: return 'news'
       case SettingsIdent.SEGMENTS.OS: return 'os'
       case SettingsIdent.SEGMENTS.PROXY: return 'proxy'
       case SettingsIdent.SEGMENTS.TRAY: return 'tray'
@@ -65,7 +139,9 @@ class SettingsStore {
   */
   storeClassFromSegment (segment) {
     switch (segment) {
+      case SettingsIdent.SEGMENTS.APP: return AppSettings
       case SettingsIdent.SEGMENTS.LANGUAGE: return LanguageSettings
+      case SettingsIdent.SEGMENTS.NEWS: return NewsSettings
       case SettingsIdent.SEGMENTS.OS: return OSSettings
       case SettingsIdent.SEGMENTS.PROXY: return ProxySettings
       case SettingsIdent.SEGMENTS.TRAY: return TraySettings
@@ -79,7 +155,9 @@ class SettingsStore {
   */
   persistenceKeyFromSegment (segment) {
     switch (segment) {
+      case SettingsIdent.SEGMENTS.APP: return 'app'
       case SettingsIdent.SEGMENTS.LANGUAGE: return 'language'
+      case SettingsIdent.SEGMENTS.NEWS: return 'news'
       case SettingsIdent.SEGMENTS.OS: return 'os'
       case SettingsIdent.SEGMENTS.PROXY: return 'proxy'
       case SettingsIdent.SEGMENTS.TRAY: return 'tray'
@@ -98,8 +176,12 @@ class SettingsStore {
     const persistenceKey = this.persistenceKeyFromSegment(segment)
 
     const js = this[storeKey].changeData(updates)
-    persistence.setItem(persistenceKey, js)
-    this[storeKey] = new StoreClass(js)
+    persistence.setJSONItem(persistenceKey, js)
+    if (segment === SettingsIdent.SEGMENTS.TRAY) {
+      this[storeKey] = new StoreClass(js, this.trayDefaults)
+    } else {
+      this[storeKey] = new StoreClass(js)
+    }
   }
 
   /**
@@ -114,8 +196,54 @@ class SettingsStore {
 
     const js = this[storeKey].cloneData()
     js[key] = !js[key]
-    persistence.setItem(persistenceKey, js)
-    this[storeKey] = new StoreClass(js)
+    persistence.setJSONItem(persistenceKey, js)
+    if (segment === SettingsIdent.SEGMENTS.TRAY) {
+      this[storeKey] = new StoreClass(js, this.trayDefaults)
+    } else {
+      this[storeKey] = new StoreClass(js)
+    }
+  }
+
+  /* **************************************************************************/
+  // Changing : Spellchecker
+  /* **************************************************************************/
+
+  handleSetSpellcheckerLanguage ({ lang }) {
+    const primaryInfo = dictionaries[lang]
+    const secondaryInfo = (dictionaries[this.language.secondarySpellcheckerLanguage] || {})
+
+    if (primaryInfo.charset !== secondaryInfo.charset) {
+      this.handleUpdate({
+        segment: SettingsIdent.SEGMENTS.LANGUAGE,
+        updates: {
+          spellcheckerLanguage: lang,
+          secondarySpellcheckerLanguage: null
+        }
+      })
+    } else {
+      this.handleUpdate({
+        segment: SettingsIdent.SEGMENTS.LANGUAGE,
+        updates: { spellcheckerLanguage: lang }
+      })
+    }
+  }
+
+  handleSetSecondarySpellcheckerLanguage ({ lang }) {
+    if (!lang) {
+      this.handleUpdate({
+        segment: SettingsIdent.SEGMENTS.LANGUAGE,
+        updates: { secondarySpellcheckerLanguage: null }
+      })
+    } else {
+      const primaryInfo = (dictionaries[this.language.spellcheckerLanguage] || {})
+      const secondaryInfo = (dictionaries[lang] || {})
+      if (primaryInfo.charset === secondaryInfo.charset) {
+        this.handleUpdate({
+          segment: SettingsIdent.SEGMENTS.LANGUAGE,
+          updates: { secondarySpellcheckerLanguage: lang }
+        })
+      }
+    }
   }
 }
 

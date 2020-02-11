@@ -54,6 +54,16 @@ class SettingsActions {
     return this.update(SEGMENTS.LANGUAGE, 'spellcheckerEnabled', enabled)
   }
 
+  /**
+  * @param lang: the language to set to
+  */
+  setSpellcheckerLanguage (lang) { return {lang: lang} }
+
+  /**
+  * @param lang: the language to set to
+  */
+  setSecondarySpellcheckerLanguage (lang) { return {lang: lang} }
+
   /* **************************************************************************/
   // OS
   /* **************************************************************************/
@@ -91,6 +101,13 @@ class SettingsActions {
   */
   setOpenLinksInBackground (background) {
     return this.update(SEGMENTS.OS, 'openLinksInBackground', background)
+  }
+
+  /**
+  * @param mode: the login open mode
+  */
+  setLoginOpenMode (mode) {
+    return this.update(SEGMENTS.OS, 'loginOpenMode', mode)
   }
 
   /* **************************************************************************/
@@ -140,6 +157,13 @@ class SettingsActions {
   }
 
   /**
+  * @param show: true to show the unread count in the titlebar
+  */
+  setShowTitlebarUnreadCount (show) {
+    return this.update(SEGMENTS.UI, 'showTitlebarCount', show)
+  }
+
+  /**
   * @param show: true to show the app menu, false otherwise
   */
   setShowAppMenu (show) {
@@ -165,6 +189,52 @@ class SettingsActions {
   */
   toggleSidebar () {
     return this.toggle(SEGMENTS.UI, 'sidebarEnabled')
+  }
+
+  /**
+  * Opens the app hidden by default
+  */
+  setOpenHidden (toggled) {
+    return this.update(SEGMENTS.UI, 'openHidden', toggled)
+  }
+
+  /* **************************************************************************/
+  // App
+  /* **************************************************************************/
+
+  /**
+  * @param ignore: true to ignore the gpu blacklist
+  */
+  ignoreGPUBlacklist (ignore) {
+    return this.update(SEGMENTS.APP, 'ignoreGPUBlacklist', ignore)
+  }
+
+  /**
+  * @param enable: true to enable using zoom for dsf
+  */
+  enableUseZoomForDSF (enable) {
+    return this.update(SEGMENTS.APP, 'enableUseZoomForDSF', enable)
+  }
+
+  /**
+  * @param disable: true to disable smooth scrolling
+  */
+  disableSmoothScrolling (disable) {
+    return this.update(SEGMENTS.APP, 'disableSmoothScrolling', disable)
+  }
+
+  /**
+  * @param toggled: true to check for updates
+  */
+  checkForUpdates (toggled) {
+    return this.update(SEGMENTS.APP, 'checkForUpdates', toggled)
+  }
+
+  /**
+  * @param hasSeen: true if the user has seen the app wizard
+  */
+  setHasSeenAppWizard (hasSeen) {
+    return this.update(SEGMENTS.APP, 'hasSeenAppWizard', hasSeen)
   }
 
   /* **************************************************************************/
@@ -193,10 +263,62 @@ class SettingsActions {
   }
 
   /**
+  * @param col: the hex colour to make the tray icon background
+  */
+  setTrayReadBackgroundColor (col) {
+    return this.update(SEGMENTS.TRAY, 'readBackgroundColor', col)
+  }
+
+  /**
   * @param col: the hex colour to make the tray icon
   */
   setTrayUnreadColor (col) {
     return this.update(SEGMENTS.TRAY, 'unreadColor', col)
+  }
+
+  /**
+  * @param col: the hex colour to make the tray icon background
+  */
+  setTrayUnreadBackgroundColor (col) {
+    return this.update(SEGMENTS.TRAY, 'unreadBackgroundColor', col)
+  }
+
+  /**
+  * @param val: the multiplier to apply to the tray icon
+  */
+  setDpiMultiplier (val) {
+    return this.update(SEGMENTS.TRAY, 'dpiMultiplier', parseInt(val))
+  }
+
+  /* **************************************************************************/
+  // News
+  /* **************************************************************************/
+
+  /**
+  * @param serverResponse: the response received from the update server
+  */
+  updateLatestNews (serverResponse) {
+    return this.update(SEGMENTS.NEWS, {
+      newsId: serverResponse.id,
+      newsLevel: serverResponse.level,
+      newsFeed: serverResponse.feed
+    })
+  }
+
+  /**
+  * Marks a news item as opened
+  * @param newsId: the id of the news item
+  */
+  openNewsItem (newsId) {
+    return this.update(SEGMENTS.NEWS, 'openedNewsId', newsId)
+  }
+
+  /**
+  * Sets whether to show news in the sidebar
+  * @param show: true to show, false otherwise
+  */
+  setShowNewsInSidebar (show) {
+    return this.update(SEGMENTS.NEWS, 'showNewsInSidebar', show)
   }
 }
 

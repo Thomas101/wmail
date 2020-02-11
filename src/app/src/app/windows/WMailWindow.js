@@ -2,6 +2,7 @@ const {BrowserWindow} = require('electron')
 const EventEmitter = require('events')
 const settingStore = require('../stores/settingStore')
 const appStorage = require('../storage/appStorage')
+const path = require('path')
 
 class WMailWindow extends EventEmitter {
 
@@ -25,9 +26,10 @@ class WMailWindow extends EventEmitter {
   /**
   * Starts the app
   * @param url: the start url
+  * @param windowPreferences=undefined: additional window preferences to supply
   */
-  start (url) {
-    this.createWindow(this.defaultWindowPreferences(), url)
+  start (url, windowPreferences = undefined) {
+    this.createWindow(this.defaultWindowPreferences(windowPreferences), url)
   }
 
   /* ****************************************************************************/
@@ -36,12 +38,21 @@ class WMailWindow extends EventEmitter {
 
   /**
   * The default window preferences
+  * @param extraPreferences = undefined: extra preferences to merge into the prefs
   * @return the settings
   */
-  defaultWindowPreferences () {
-    return {
-      title: 'WMail'
+  defaultWindowPreferences (extraPreferences = undefined) {
+    let icon
+    if (process.platform === 'win32') {
+      icon = path.join(__dirname, '/../../../icons/app.ico')
+    } else if (process.platform === 'linux') {
+      icon = path.join(__dirname, '/../../../icons/app.png')
     }
+
+    return Object.assign({
+      title: 'WMail',
+      icon: icon
+    }, extraPreferences)
   }
 
   /**
@@ -54,7 +65,7 @@ class WMailWindow extends EventEmitter {
 
     // Load up the window location & last state
     this.window = new BrowserWindow(Object.assign(settings, screenLocation))
-    if (screenLocation.maximized) {
+    if (screenLocation.maximized && settings.show !== false) {
       this.window.maximize()
     }
     if (this.options.screenLocationNS) {
@@ -63,7 +74,7 @@ class WMailWindow extends EventEmitter {
       this.window.on('maximize', (evt) => { this.saveWindowScreenLocation() })
       this.window.on('unmaximize', (evt) => { this.saveWindowScreenLocation() })
     }
-    this[settingStore.ui.hasAppMenu ? 'showAppMenu' : 'hideAppMenu']()
+    this[settingStore.ui.showAppMenu ? 'showAppMenu' : 'hideAppMenu']()
 
     // Bind to change events
     this.window.on('close', (evt) => { this.emit('close', evt) })
@@ -95,20 +106,18 @@ class WMailWindow extends EventEmitter {
   saveWindowScreenLocation () {
     clearTimeout(this.windowScreenLocationSaver)
     this.windowScreenLocationSaver = setTimeout(() => {
-      const state = {
-        fullscreen: this.window.isFullScreen(),
-        maximized: this.window.isMaximized()
-      }
-      if (!this.window.isMaximized() && !this.window.isMinimized()) {
-        const position = this.window.getPosition()
-        const size = this.window.getSize()
-        state.x = position[0]
-        state.y = position[1]
-        state.width = size[0]
-        state.height = size[1]
-      }
+      if (this.window.isMinimized()) { return }
+      const position = this.window.getPosition()
+      const size = this.window.getSize()
 
-      appStorage.setItem(this.options.screenLocationNS, state)
+      appStorage.setJSONItem(this.options.screenLocationNS, {
+        fullscreen: this.window.isFullScreen(),
+        maximized: this.window.isMaximized(),
+        x: position[0],
+        y: position[1],
+        width: size[0],
+        height: size[1]
+      })
     }, 2000)
   }
 
@@ -118,7 +127,7 @@ class WMailWindow extends EventEmitter {
   */
   loadWindowScreenLocation () {
     if (this.options.screenLocationNS) {
-      return appStorage.getItem(this.options.screenLocationNS, {})
+      return appStorage.getJSONItem(this.options.screenLocationNS, {})
     }
 
     return {}
@@ -128,7 +137,7 @@ class WMailWindow extends EventEmitter {
   * Updates the menubar
   */
   updateWindowMenubar (prev, next) {
-    this[settingStore.ui.hasAppMenu ? 'showAppMenu' : 'hideAppMenu']()
+    this[settingStore.ui.showAppMenu ? 'showAppMenu' : 'hideAppMenu']()
   }
 
   /* ****************************************************************************/
@@ -188,9 +197,9 @@ class WMailWindow extends EventEmitter {
     this.window.webContents.openDevTools()
   }
 
-	/**
-	* Show the app menu
-	*/
+  /**
+  * Show the app menu
+  */
   showAppMenu () {
     this.window.setMenuBarVisibility(true)
   }

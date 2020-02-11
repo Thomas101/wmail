@@ -1,28 +1,30 @@
 #app {
-  .master, .detail {
-    position: absolute;
+  &, .master, .detail, .titlebar {
+    position: fixed;
     top: 0px;
     left: 0px;
     right: 0px;
     bottom: 0px;
-
-    &.master {
-      width: 70px;
-      right: auto;
-      z-index: 100;
-      -webkit-app-region: drag;
-    }
-
-    &.detail {
-      left: 70px;
-    }
+  }
+  & {
+    overflow: hidden;
   }
 
-  .mailboxes {
-  	position: absolute;
-  	top: 0px;
-  	bottom: 0px;
-  	left: 0px;
-  	right: 0px;
+  .titlebar {
+    bottom: auto;
+    height: 16px;
+    -webkit-app-region: drag;
+    z-index: 100;
+  }
+
+  .master {
+    width: 70px;
+    right: auto;
+    z-index: 100;
+    -webkit-app-region: drag;
+  }
+
+  .detail {
+    left: 70px;
   }
 }

@@ -1,6 +1,6 @@
 const React = require('react')
 const { RaisedButton, Popover } = require('material-ui')
-const { SwatchesPicker } = require('react-color')
+const { ChromePicker } = require('react-color')
 
 module.exports = React.createClass({
   /* **************************************************************************/
@@ -12,6 +12,9 @@ module.exports = React.createClass({
     value: React.PropTypes.string,
     label: React.PropTypes.string.isRequired,
     disabled: React.PropTypes.bool.isRequired,
+    anchorOrigin: React.PropTypes.object.isRequired,
+    targetOrigin: React.PropTypes.object.isRequired,
+    icon: React.PropTypes.node,
     onChange: React.PropTypes.func
   },
 
@@ -29,7 +32,9 @@ module.exports = React.createClass({
   getDefaultProps () {
     return {
       label: 'Pick Colour',
-      disabled: false
+      disabled: false,
+      anchorOrigin: {horizontal: 'left', vertical: 'bottom'},
+      targetOrigin: {horizontal: 'left', vertical: 'top'}
     }
   },
 
@@ -38,25 +43,27 @@ module.exports = React.createClass({
   /* **************************************************************************/
 
   render () {
-    const { label, disabled, onChange, ...passProps } = this.props
+    const { label, disabled, onChange, anchorOrigin, targetOrigin, icon, ...passProps } = this.props
     return (
       <div {...passProps}>
         <RaisedButton
+          icon={icon}
           label={label}
           disabled={disabled}
           onClick={(evt) => this.setState({ open: true, anchor: evt.target })} />
         <Popover
-          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          anchorOrigin={anchorOrigin}
+          targetOrigin={targetOrigin}
           anchorEl={this.state.anchor}
           open={this.state.open}
           onRequestClose={() => this.setState({open: false})}>
-          <SwatchesPicker
+          <ChromePicker
             color={this.props.value}
             onChangeComplete={(col) => {
-              this.setState({ open: false })
               if (onChange) {
-                setTimeout(() => { onChange(col) }, 100)
+                onChange(Object.assign({}, col, {
+                  rgbaStr: `rgba(${col.rgb.r}, ${col.rgb.g}, ${col.rgb.b}, ${col.rgb.a})`
+                }))
               }
             }} />
         </Popover>

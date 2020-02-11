@@ -5,6 +5,7 @@ const osLanguage = require('os-locale').sync().replace(/_/g, '-').toLowerCase()
 const pkg = require('../package.json')
 const HttpsProxyAgent = require('https-proxy-agent')
 const settingStore = require('./stores/settingStore')
+const mailboxStore = require('./stores/mailboxStore')
 const appStorage = require('./storage/appStorage')
 
 class AppAnalytics {
@@ -40,10 +41,12 @@ class AppAnalytics {
       v: 1,
       tid: credentials.GOOGLE_ANALYTICS_ID,
       cid: this.id,
+      cd1: mailboxStore.index.length,
       t: 'screenview',
       vp: windowSize,
       ul: osLanguage,
       an: pkg.name,
+      ua: window.webContents.getUserAgent(),
       av: process.platform + '-' + pkg.version
     }, args)
 

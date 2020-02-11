@@ -1,5 +1,3 @@
-'use strict'
-
 const React = require('react')
 const flux = {
   mailbox: require('../stores/mailbox'),
@@ -7,22 +5,24 @@ const flux = {
   settings: require('../stores/settings')
 }
 const {
-  ipcRenderer, remote: {app, shell}
+  ipcRenderer, remote: {shell}
 } = window.nativeRequire('electron')
+const {
+  mailboxDispatch, navigationDispatch
+} = require('../Dispatch')
 const AppContent = require('./AppContent')
-const mailboxDispatch = require('./Dispatch/mailboxDispatch')
 const TimerMixin = require('react-timer-mixin')
 const constants = require('shared/constants')
-const UnreadNotifications = require('../daemons/UnreadNotifications')
+const UnreadNotifications = require('../Notifications/UnreadNotifications')
 const shallowCompare = require('react-addons-shallow-compare')
 const Tray = require('./Tray')
+const AppBadge = require('./AppBadge')
 const appTheme = require('./appTheme')
 const MuiThemeProvider = require('material-ui/styles/MuiThemeProvider').default
 
 const injectTapEventPlugin = require('react-tap-event-plugin')
 injectTapEventPlugin()
 
-const navigationDispatch = require('./Dispatch/navigationDispatch')
 navigationDispatch.bindIPCListeners()
 
 module.exports = React.createClass({
@@ -42,8 +42,6 @@ module.exports = React.createClass({
     flux.mailbox.S.listen(this.mailboxesChanged)
     flux.settings.S.listen(this.settingsChanged)
     flux.google.A.startPollingUpdates()
-    flux.google.A.syncAllMailboxes()
-    flux.google.A.syncAllMailboxUnreadMessages()
 
     mailboxDispatch.on('blurred', this.mailboxBlurred)
 
@@ -70,8 +68,8 @@ module.exports = React.createClass({
     const settingsStore = flux.settings.S.getState()
     const mailboxStore = flux.mailbox.S.getState()
     return {
+      activeMailboxId: mailboxStore.activeMailboxId(),
       messagesUnreadCount: mailboxStore.totalUnreadCountForAppBadge(),
-      unreadMessages: mailboxStore.unreadMessagesForAppBadge(),
       uiSettings: settingsStore.ui,
       traySettings: settingsStore.tray
     }
@@ -79,8 +77,8 @@ module.exports = React.createClass({
 
   mailboxesChanged (store) {
     this.setState({
-      messagesUnreadCount: store.totalUnreadCountForAppBadge(),
-      unreadMessages: store.unreadMessagesForAppBadge()
+      activeMailboxId: store.activeMailboxId(),
+      messagesUnreadCount: store.totalUnreadCountForAppBadge()
     })
     ipcRenderer.send('mailboxes-changed', {
       mailboxes: store.allMailboxes().map((mailbox) => {
@@ -94,10 +92,6 @@ module.exports = React.createClass({
       uiSettings: store.ui,
       traySettings: store.tray
     })
-  },
-
-  shouldComponentUpdate (nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState)
   },
 
   /* **************************************************************************/
@@ -114,7 +108,7 @@ module.exports = React.createClass({
       body: req.filename
     })
     notification.onclick = function () {
-      shell.showItemInFolder(req.path)
+      shell.openItem(req.path) || shell.showItemInFolder(req.path)
     }
   },
 
@@ -153,17 +147,26 @@ module.exports = React.createClass({
   // Rendering
   /* **************************************************************************/
 
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
+  },
+
   render () {
     const {
       traySettings,
       uiSettings,
-      unreadMessages,
       messagesUnreadCount
     } = this.state
 
-    if (process.platform === 'darwin') {
-      const badgeString = uiSettings.showAppBadge && messagesUnreadCount ? messagesUnreadCount.toString() : ''
-      app.dock.setBadge(badgeString)
+    // Update the app title
+    if (uiSettings.showTitlebarCount) {
+      if (messagesUnreadCount === 0) {
+        document.title = 'WMail'
+      } else {
+        document.title = `WMail (${messagesUnreadCount})`
+      }
+    } else {
+      document.title = 'WMail'
     }
 
     return (
@@ -173,12 +176,12 @@ module.exports = React.createClass({
         </MuiThemeProvider>
         {!traySettings.show ? undefined : (
           <Tray
-            unreadMessages={unreadMessages}
             unreadCount={messagesUnreadCount}
-            showUnreadCount={traySettings.showUnreadCount}
-            unreadColor={traySettings.unreadColor}
-            readColor={traySettings.readColor} />
-          )}
+            traySettings={traySettings} />
+        )}
+        {!uiSettings.showAppBadge ? undefined : (
+          <AppBadge unreadCount={messagesUnreadCount} />
+        )}
       </div>
     )
   }

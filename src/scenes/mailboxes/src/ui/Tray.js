@@ -1,41 +1,64 @@
 const electron = window.nativeRequire('electron')
-const {Tray, systemPreferences, Menu, nativeImage} = electron.remote
-const ipc = electron.ipcRenderer
+const { ipcRenderer, remote } = electron
+const { Tray, Menu, nativeImage } = remote
 const React = require('react')
-const shallowCompare = require('react-addons-shallow-compare')
-const mailboxDispatch = require('./Dispatch/mailboxDispatch')
-const mailboxActions = require('../stores/mailbox/mailboxActions')
-const {
-  BLANK_PNG,
-  MAIL_SVG
-} = require('shared/b64Assets')
+const { mailboxDispatch } = require('../Dispatch')
+const { mailboxActions, mailboxStore } = require('../stores/mailbox')
+const { composeActions } = require('../stores/compose')
+const { BLANK_PNG } = require('shared/b64Assets')
+const { TrayRenderer } = require('../Components')
+const navigationDispatch = require('../Dispatch/navigationDispatch')
+const uuid = require('uuid')
 
 module.exports = React.createClass({
+  /* **************************************************************************/
+  // Class
+  /* **************************************************************************/
   displayName: 'Tray',
 
+  // Pretty strict on updating. If you're changing these, change shouldComponentUpdate :)
   propTypes: {
     unreadCount: React.PropTypes.number.isRequired,
-    unreadMessages: React.PropTypes.object.isRequired,
-    showUnreadCount: React.PropTypes.bool.isRequired,
-    unreadColor: React.PropTypes.string,
-    readColor: React.PropTypes.string
+    traySettings: React.PropTypes.object.isRequired
+  },
+  statics: {
+    platformSupportsDpiMultiplier: () => {
+      return process.platform === 'darwin' || process.platform === 'linux'
+    }
   },
 
   /* **************************************************************************/
-  // Lifecycle
+  // Component Lifecycle
   /* **************************************************************************/
 
   componentDidMount () {
-    const loader = new window.Image()
-    loader.src = MAIL_SVG
-    loader.onload = (e) => {
-      this.setState({ icon: loader })
+    mailboxStore.listen(this.mailboxesChanged)
+
+    this.appTray = new Tray(nativeImage.createFromDataURL(BLANK_PNG))
+    if (process.platform === 'win32') {
+      this.appTray.on('double-click', () => {
+        ipcRenderer.send('toggle-mailbox-visibility-from-tray')
+      })
+      this.appTray.on('click', () => {
+        ipcRenderer.send('toggle-mailbox-visibility-from-tray')
+      })
+    } else if (process.platform === 'linux') {
+      // On platforms that have app indicator support - i.e. ubuntu clicking on the
+      // icon will launch the context menu. On other linux platforms the context
+      // menu is opened on right click. For app indicator platforms click event
+      // is ignored
+      this.appTray.on('click', () => {
+        ipcRenderer.send('toggle-mailbox-visibility-from-tray')
+      })
     }
   },
 
   componentWillUnmount () {
-    if (this.state.appTray) {
-      this.state.appTray.destroy()
+    mailboxStore.unlisten(this.mailboxesChanged)
+
+    if (this.appTray) {
+      this.appTray.destroy()
+      this.appTray = null
     }
   },
 
@@ -43,72 +66,84 @@ module.exports = React.createClass({
   // Data lifecycle
   /* **************************************************************************/
 
-  getDefaultReadColor () { return process.platform === 'darwin' && systemPreferences.isDarkMode() ? '#FFFFFF' : '#000000' },
-  getDefaultUnreadColor () { return '#C82018' },
-
   getInitialState () {
-    const appTray = new Tray(nativeImage.createFromDataURL(BLANK_PNG))
-    if (process.platform === 'win32') {
-      appTray.on('double-click', () => {
-        ipc.send('focus-app')
-      })
-    }
-    return { appTray: appTray }
+    return Object.assign({}, this.generateMenuUnreadMessages())
   },
 
-  shouldComponentUpdate (nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState)
+  mailboxesChanged (store) {
+    this.setState(this.generateMenuUnreadMessages(store))
+  },
+
+  /**
+  * Generates the unread messages from the mailboxes store
+  * @param store=autogen: the mailbox store
+  * @return { menuUnreadMessages, menuUnreadMessagesSig } with menuUnreadMessages
+  * being an array of mailboxes with menu items prepped to display and menuUnreadMessagesSig
+  * being a string hash of these to compare
+  */
+  generateMenuUnreadMessages (store = mailboxStore.getState()) {
+    const menuItems = store.mailboxIds().map((mailboxId) => {
+      const mailbox = store.getMailbox(mailboxId)
+      const menuItems = mailbox.google.latestUnreadMessages.map((message) => {
+        const headers = message.payload.headers
+        const subject = (headers.find((h) => h.name === 'Subject') || {}).value || 'No Subject'
+        const fromEmail = (headers.find((h) => h.name === 'From') || {}).value || ''
+        const fromEmailMatch = fromEmail.match('(.+)<(.+)@(.+)>$')
+        const sender = fromEmailMatch ? fromEmailMatch[1].trim() : fromEmail
+
+        return {
+          id: `${mailboxId}:${message.threadId}:${message.id}`, // used for update tracking
+          label: `${sender} : ${subject}`,
+          date: parseInt(message.internalDate),
+          click: (e) => {
+            ipcRenderer.send('focus-app', { })
+            mailboxActions.changeActive(mailboxId)
+            mailboxDispatch.openMessage(mailboxId, message.threadId, message.id)
+          }
+        }
+      })
+      .filter((info) => info !== undefined)
+      .sort((a, b) => b.date - a.date)
+      .slice(0, 10)
+
+      const unreadString = isNaN(mailbox.unread) || mailbox.unread === 0 ? '' : `(${mailbox.unread})`
+
+      return {
+        label: `${unreadString} ${mailbox.email || 'Untitled'}`,
+        submenu: menuItems.length !== 0 ? menuItems : [
+          { label: 'No messages', enabled: false }
+        ]
+      }
+    })
+
+    const sig = menuItems
+      .map((mailboxItem) => mailboxItem.submenu.map((item) => item.id).join('|'))
+      .join('|')
+
+    return { menuUnreadMessages: menuItems, menuUnreadMessagesSig: sig }
   },
 
   /* **************************************************************************/
   // Rendering
   /* **************************************************************************/
 
-  /**
-  * @return the nativeImage for the tray
-  */
-  renderImage () {
-    const SIZE = 22 * window.devicePixelRatio
-    const PADDING = SIZE * 0.15
-    const CENTER = SIZE / 2
-    const COLOR = this.props.unreadCount ? (this.props.unreadColor || this.getDefaultUnreadColor()) : (this.props.readColor || this.getDefaultReadColor())
+  shouldComponentUpdate (nextProps, nextState) {
+    if (this.props.unreadCount !== nextProps.unreadCount) { return true }
+    if (this.state.menuUnreadMessagesSig !== nextState.menuUnreadMessagesSig) { return true }
 
-    const canvas = document.createElement('canvas')
-    canvas.width = SIZE
-    canvas.height = SIZE
+    const trayDiff = [
+      'unreadColor',
+      'unreadBackgroundColor',
+      'readColor',
+      'readBackgroundColor',
+      'showUnreadCount',
+      'dpiMultiplier'
+    ].findIndex((k) => {
+      return this.props.traySettings[k] !== nextProps.traySettings[k]
+    }) !== -1
+    if (trayDiff) { return true }
 
-    const ctx = canvas.getContext('2d')
-
-    // Count
-    if (this.props.showUnreadCount && this.props.unreadCount && this.props.unreadCount < 99) {
-      ctx.fillStyle = COLOR
-      ctx.textAlign = 'center'
-      if (this.props.unreadCount < 10) {
-        ctx.font = (SIZE * 0.5) + 'px Helvetica'
-        ctx.fillText(this.props.unreadCount, CENTER, CENTER + (SIZE * 0.20))
-      } else {
-        ctx.font = (SIZE * 0.4) + 'px Helvetica'
-        ctx.fillText(this.props.unreadCount, CENTER, CENTER + (SIZE * 0.15))
-      }
-    } else {
-      const ICON_SIZE = SIZE * 0.5
-      const POS = (SIZE - ICON_SIZE) / 2
-      ctx.fillStyle = COLOR
-      ctx.fillRect(0, 0, SIZE, SIZE)
-      ctx.globalCompositeOperation = 'destination-atop'
-      ctx.drawImage(this.state.icon, POS, POS, ICON_SIZE, ICON_SIZE)
-    }
-
-    // Outer circle
-    ctx.globalCompositeOperation = 'source-over'
-    ctx.beginPath()
-    ctx.arc(CENTER, CENTER, (SIZE / 2) - PADDING, 0, 2 * Math.PI, false)
-    ctx.lineWidth = window.devicePixelRatio * 1.1
-    ctx.strokeStyle = COLOR
-    ctx.stroke()
-
-    const pngData = nativeImage.createFromDataURL(canvas.toDataURL('image/png')).toPng()
-    return nativeImage.createFromBuffer(pngData, window.devicePixelRatio)
+    return false
   },
 
   /**
@@ -122,68 +157,100 @@ module.exports = React.createClass({
   * @return the context menu for the tray icon
   */
   renderContextMenu () {
-    // Build the unread items up
-    const unreadItems = Object.keys(this.props.unreadMessages)
-      .reduce((acc, mailboxId) => {
-        const messages = Object.keys(this.props.unreadMessages[mailboxId])
-          .map((id) => this.props.unreadMessages[mailboxId][id])
-          .map((info) => {
-            info.mailboxId = mailboxId
-            return info
-          })
-        return acc.concat(messages)
-      }, [])
-      .filter((info) => info.message !== undefined)
-      .sort((a, b) => {
-        return parseInt(b.message.internalDate) - parseInt(a.message.internalDate)
-      })
-      .slice(0, 5)
-      .map((info) => {
-        const headers = info.message.payload.headers
-        const subject = (headers.find((h) => h.name === 'Subject') || {}).value || 'No Subject'
-        const fromEmail = (headers.find((h) => h.name === 'From') || {}).value || ''
-        const fromEmailMatch = fromEmail.match('(.+)<(.+)@(.+)>$')
-        if (fromEmailMatch) {
-          info.snippet = fromEmailMatch[1].trim() + ' : ' + subject
-        } else {
-          info.snippet = fromEmail + ' : ' + subject
-        }
-        return info
-      })
-      .map((info) => {
-        return {
-          label: info.snippet,
-          click: (e) => {
-            mailboxActions.changeActive(info.mailboxId)
-            mailboxDispatch.openMessage(info.mailboxId, info.message.threadId, info.message.id)
-          }
-        }
-      })
+    let unreadItems = []
+    if (this.state.menuUnreadMessages.length === 1) { // Only one account
+      unreadItems = this.state.menuUnreadMessages[0].submenu
+    } else if (this.state.menuUnreadMessages.length > 1) { // Multiple accounts
+      unreadItems = this.state.menuUnreadMessages
+    }
 
     // Build the template
     let template = [
+      {
+        label: 'Compose New Message',
+        click: (e) => {
+          ipcRenderer.send('focus-app')
+          composeActions.composeNewMessage()
+        }
+      },
       { label: this.renderTooltip(), enabled: false },
       { type: 'separator' }
     ]
+
     if (unreadItems.length) {
       template = template.concat(unreadItems)
       template.push({ type: 'separator' })
     }
+
     template = template.concat([
-      { label: 'Focus', click: (e) => ipc.send('focus-app') },
+      {
+        label: 'Show / Hide',
+        click: (e) => {
+          ipcRenderer.send('toggle-mailbox-visibility-from-tray')
+        }
+      },
+      {
+        label: 'WMail News',
+        click: (e) => {
+          navigationDispatch.openNews()
+          ipcRenderer.send('focus-app', { })
+        }
+      },
       { type: 'separator' },
-      { label: 'Quit', click: (e) => ipc.send('quit-app') }
+      {
+        label: 'Quit',
+        click: (e) => {
+          ipcRenderer.send('quit-app')
+        }
+      }
     ])
 
     return Menu.buildFromTemplate(template)
   },
 
-  render () {
-    if (!this.state.appTray || !this.state.icon) { return false }
-    this.state.appTray.setImage(this.renderImage())
-    this.state.appTray.setToolTip(this.renderTooltip())
-    this.state.appTray.setContextMenu(this.renderContextMenu())
+  /**
+  * @return the tray icon size
+  */
+  trayIconSize () {
+    switch (process.platform) {
+      case 'darwin': return 22
+      case 'win32': return 16
+      case 'linux': return 32 * this.props.traySettings.dpiMultiplier
+      default: return 32
+    }
+  },
 
-    return <div></div>
+  /**
+  * @return the pixel ratio
+  */
+  trayIconPixelRatio () {
+    switch (process.platform) {
+      case 'darwin': return this.props.traySettings.dpiMultiplier
+      default: return 1
+    }
+  },
+
+  render () {
+    const { unreadCount, traySettings } = this.props
+
+    const renderId = uuid.v4()
+    this.renderId = renderId
+    TrayRenderer.renderNativeImage({
+      unreadCount: unreadCount,
+      showUnreadCount: traySettings.showUnreadCount,
+      unreadColor: traySettings.unreadColor,
+      readColor: traySettings.readColor,
+      unreadBackgroundColor: traySettings.unreadBackgroundColor,
+      readBackgroundColor: traySettings.readBackgroundColor,
+      size: this.trayIconSize(),
+      pixelRatio: this.trayIconPixelRatio()
+    }).then((image) => {
+      if (renderId !== this.renderId) { return }
+      this.appTray.setImage(image)
+      this.appTray.setToolTip(this.renderTooltip())
+      this.appTray.setContextMenu(this.renderContextMenu())
+    })
+
+    return (<div />)
   }
 })

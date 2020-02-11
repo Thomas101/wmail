@@ -1,4 +1,4 @@
-const persistence = window.remoteRequire('storage/settingStorage')
+const persistence = require('./settingsPersistence')
 
 module.exports = {
   /**
@@ -43,11 +43,11 @@ module.exports = {
       transfer('sidebarEnabled', 'ui', 'sidebarEnabled')
 
       // Save
-      persistence.setItem('language', next.language)
-      persistence.setItem('os', next.os)
-      persistence.setItem('proxy', next.proxy)
-      persistence.setItem('tray', next.tray)
-      persistence.setItem('ui', next.ui)
+      persistence.setJSONItemSync('language', next.language)
+      persistence.setJSONItemSync('os', next.os)
+      persistence.setJSONItemSync('proxy', next.proxy)
+      persistence.setJSONItemSync('tray', next.tray)
+      persistence.setJSONItemSync('ui', next.ui)
 
       // Save
       window.localStorage.setItem('pre_1_3_1:App_settings', JSON.stringify(prev))

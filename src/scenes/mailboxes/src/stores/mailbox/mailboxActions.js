@@ -1,5 +1,8 @@
 const alt = require('../alt')
-const {ipcRenderer} = window.nativeRequire('electron')
+const { ipcRenderer, remote } = window.nativeRequire('electron')
+const { session } = remote
+const mailboxDispatch = require('../../Dispatch/mailboxDispatch')
+const Mailbox = require('shared/Models/Mailbox/Mailbox')
 
 class MailboxActions {
 
@@ -36,9 +39,16 @@ class MailboxActions {
   /**
   * Updates a mailbox
   * @param id: the id of the mailbox
-  * @param updates: the updates to apply
+  * @param updatesOrPath: an object indicating the updates to apply or the path string to apply to
+  * @param valueOrUndef: if path is set, the value to set
   */
-  update (id, updates) { return { id: id, updates: updates } }
+  update (id, updatesOrPath, valueOrUndef) {
+    if (typeof (updatesOrPath) === 'string') {
+      return { id: id, updates: undefined, path: updatesOrPath, value: valueOrUndef }
+    } else {
+      return { id: id, updates: updatesOrPath, path: undefined, value: undefined }
+    }
+  }
 
   /**
   * Sets a custom avatar
@@ -82,8 +92,109 @@ class MailboxActions {
     return this.update(id, { color: col })
   }
 
+  /**
+  * Sets the basic profile info
+  * @param id: the mailbox id
+  * @param email: the users email address
+  * @param name: the accounts display name
+  * @param avatar: the accounts avatar
+  */
+  setBasicProfileInfo (id, email, name, avatar) {
+    return this.update(id, {
+      avatar: avatar,
+      email: email,
+      name: name
+    })
+  }
+
+  /**
+  * Sets the custom css
+  * @param id: the mailbox id
+  * @param css: the css code
+  */
+  setCustomCSS (id, css) {
+    return this.update(id, { customCSS: css })
+  }
+
+  /**
+  * Sets the custom js
+  * @param id: the mailbox id
+  * @param js: the js code
+  */
+  setCustomJS (id, js) {
+    return this.update(id, { customJS: js })
+  }
+
+  /**
+  * Artificially persist the cookies for this mailbox
+  * @param id: the mailbox id
+  * @param persist: whether to persist the cookies
+  */
+  artificiallyPersistCookies (id, persist) {
+    return this.update(id, { artificiallyPersistCookies: persist })
+  }
+
   /* **************************************************************************/
-  // Updating: Active
+  // Updating: Services
+  /* **************************************************************************/
+
+  /**
+  * Adds a service
+  * @param id: the id of the mailbox
+  * @Param service: the service type
+  */
+  addService (id, service) {
+    return { id: id, service: service }
+  }
+
+  /**
+  * Removes a service
+  * @param id: the id of the mailbox
+  * @Param service: the service type
+  */
+  removeService (id, service) {
+    return { id: id, service: service }
+  }
+
+  /**
+  * Moves a service up
+  * @param id: the id of the mailbox
+  * @Param service: the service type
+  */
+  moveServiceUp (id, service) {
+    return { id: id, service: service }
+  }
+
+  /**
+  * Moves a service down
+  * @param id: the id of the mailbox
+  * @Param service: the service type
+  */
+  moveServiceDown (id, service) {
+    return { id: id, service: service }
+  }
+
+  /**
+  * Toggles the service sleepable state
+  * @param id: the id of the mailbox
+  * @param service: service type
+  * @param sleepable: true if the service is sleepable, false otherwise
+  */
+  toggleServiceSleepable (id, service, sleepable) {
+    return { id: id, service: service, sleepable: sleepable }
+  }
+
+  /**
+  * Sets the services to be compact
+  * @param id: the id of the mailbox
+  * @param compact: true to make them ompact
+  */
+  setCompactServicesUI (id, compact) {
+    return this.update(id, { compactServicesUI: compact })
+  }
+
+  /* **************************************************************************/
+  // Updating: Zoom
   /* **************************************************************************/
 
   /**
@@ -113,34 +224,43 @@ class MailboxActions {
   updateGoogleConfig (id, updates) { return { id: id, updates: updates } }
 
   /**
-  * Updates the google unread threads
+  * Sets the google unread count info
   * @param id: the id of the mailbox
-  * @param messageIdsOrMessageId: the ids of the messages or a single id
-  * @param updates: the updates to merge in
+  * @param countInfo: the info provided by google
   */
-  updateGoogleUnread (id, messageIdsOrMessageId, updates) {
-    if (Array.isArray(messageIdsOrMessageId)) {
-      return { id: id, messageIds: messageIdsOrMessageId, updates: updates }
-    } else {
-      return { id: id, messageIds: [messageIdsOrMessageId], updates: updates }
-    }
+  setGoogleLabelInfo (id, info) {
+    return this.update(id, Object.keys(info).reduce((acc, key) => {
+      acc['googleLabelInfo_v2.' + key] = info[key]
+      return acc
+    }, {}))
   }
 
   /**
-  * Sets the current list of unread messages. Also marks the list as seen
+  * Sets the latest unread thread list
   * @param id: the id of the mailbox
-  * @param messageIds: the ids of the messages that are currently unread
+  * @param threadList: the list of threads as an array
+  * @param resultSizeEstimate: the size of the results
+  * @param fetchedThreads: the full threads that have been fetched sent as an object keyed by id
   */
-  setGoogleUnreadMessageIds (id, messageIds) {
-    return { id: id, messageIds: messageIds }
+  setGoogleLatestUnreadThreads (id, threadList, resultSizeEstimate, fetchedThreads) {
+    return { id: id, threadList: threadList, fetchedThreads: fetchedThreads, resultSizeEstimate: resultSizeEstimate }
   }
 
   /**
-  * Sets that a thread has sent a notification
+  * Sets the last fired history id
   * @param id: the id of the mailbox
-  * @param messageIds: the ids of the messages
+  * @param historyId: the last historyId
   */
-  setGoogleUnreadNotificationsShown (id, messageIds) { return { id: id, messageIds: messageIds } }
+  setGoogleLastNotifiedInternalDate (id, internalDate) {
+    return this.update(id, 'googleUnreadMessageInfo_v2.lastNotifiedInternalDate', parseInt(internalDate))
+  }
+
+  /**
+  * Sets the google auth info
+  */
+  setGoogleAuth (id, auth) {
+    return this.update(id, 'googleAuth', auth)
+  }
 
   /* **************************************************************************/
   // Active
@@ -148,8 +268,53 @@ class MailboxActions {
 
   /**
   * Changes the active mailbox
+  * @param id: the id of the mailbox
+  * @param service=default: the service to change to
   */
-  changeActive (id) { return { id: id } }
+  changeActive (id, service = Mailbox.SERVICES.DEFAULT) {
+    return { id: id, service: service }
+  }
+
+  /**
+  * Changes the active mailbox to the previous in the list
+  */
+  changeActiveToPrev () { return {} }
+
+  /**
+  * Changes the active mailbox to the next in the list
+  */
+  changeActiveToNext () { return {} }
+
+  /**
+  * Sets if the google config has a grant error
+  * @param id: the mailbox id
+  * @param hasError: true if there is an error, false otherwise
+  */
+  setGoogleHasGrantError (id, hasError) {
+    return { id: id, hasError: hasError }
+  }
+
+  /* **************************************************************************/
+  // Search
+  /* **************************************************************************/
+
+  /**
+  * Starts searching the mailbox
+  * @param id: the mailbox id
+  * @param service: the type of service to search for
+  */
+  startSearchingMailbox (id, service) {
+    return {id: id, service: service}
+  }
+
+  /**
+  * Stops searching the mailbox
+  * @param id: the mailbox id
+  * @param service: the type of service to stop search for
+  */
+  stopSearchingMailbox (id, service) {
+    return {id: id, service: service}
+  }
 
   /* **************************************************************************/
   // Ordering
@@ -167,12 +332,50 @@ class MailboxActions {
   */
   moveDown (id) { return { id: id } }
 
+  /* **************************************************************************/
+  // Auth
+  /* **************************************************************************/
+
+  /**
+  * Reauthenticates the user by logging them out of the webview
+  * @param id: the id of the mailbox
+  */
+  reauthenticateBrowserSession (id) {
+    const ses = session.fromPartition('persist:' + id)
+    const promise = Promise.resolve()
+      .then(() => {
+        return new Promise((resolve) => {
+          ses.clearStorageData(resolve)
+        })
+      })
+      .then(() => {
+        return new Promise((resolve) => {
+          ses.clearCache(resolve)
+        })
+      })
+      .then(() => {
+        mailboxDispatch.reloadAllServices(id)
+        return Promise.resolve()
+      })
+
+    return { promise: promise }
+  }
+
 }
 
 const actions = alt.createActions(MailboxActions)
 ipcRenderer.on('mailbox-zoom-in', actions.increaseActiveZoom)
 ipcRenderer.on('mailbox-zoom-out', actions.decreaseActiveZoom)
 ipcRenderer.on('mailbox-zoom-reset', actions.resetActiveZoom)
-ipcRenderer.on('switch-mailbox', (evt, req) => actions.changeActive(req.mailboxId))
+ipcRenderer.on('mailbox-window-find-start', () => actions.startSearchingMailbox())
+ipcRenderer.on('switch-mailbox', (evt, req) => {
+  if (req.mailboxId) {
+    actions.changeActive(req.mailboxId)
+  } else if (req.prev) {
+    actions.changeActiveToPrev()
+  } else if (req.next) {
+    actions.changeActiveToNext()
+  }
+})
 
 module.exports = actions
