@@ -290,6 +290,48 @@ class SettingsActions {
     return this.update(SEGMENTS.TRAY, 'dpiMultiplier', parseInt(val))
   }
 
+  /**
+  * @param enabled: true to hide the window when minimized, false otherwise
+  */
+  setHideWhenMinimized (enabled) {
+    return this.update(SEGMENTS.TRAY, 'hideWhenMinimized', enabled)
+  }
+
+  /**
+  * Toggles whether to hide when minimized
+  */
+  toggleHideWhenMinimized () {
+    return this.toggle(SEGMENTS.TRAY, 'hideWhenMinimized')
+  }
+
+  /**
+  * @param enabled: true to hide the window when closed, false otherwise
+  */
+  setHideWhenClosed (enabled) {
+    return this.update(SEGMENTS.TRAY, 'hideWhenClosed', enabled)
+  }
+
+  /**
+  * Toggles whether to hide when closed
+  */
+  toggleHideWhenClosed () {
+    return this.toggle(SEGMENTS.TRAY, 'hideWhenClosed')
+  }
+
+  /**
+  * @param val: the mouse clicks that will trigger the action
+  */
+  setMouseTrigger (val) {
+    return this.update(SEGMENTS.TRAY, 'mouseTrigger', parseInt(val))
+  }
+
+  /**
+  * @param val: the action to take when the mouse is triggered
+  */
+  setMouseTriggerAction (val) {
+    return this.update(SEGMENTS.TRAY, 'mouseTriggerAction', parseInt(val))
+  }
+
   /* **************************************************************************/
   // News
   /* **************************************************************************/
